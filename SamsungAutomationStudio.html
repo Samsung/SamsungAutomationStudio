@@ -1,0 +1,1541 @@
+<!--
+  Copyright JS Foundation and other contributors, http://js.foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Node Html -->
+<script type="text/x-red" data-template-name="device-profile">
+    <div class="form-row">
+        <label for="node-input-name">Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-capability">Capability</label>
+        <select type="text" id="node-input-capability" style="width: 70%;"></select>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="device-profile">
+    <p>This node represents an installed device. In this flow, You need to choose a device for automation.</p>
+    <p>Event, Status and Command nodes need to know which devices will subscribe to the SmartThings Cloud or commands.</p>
+    <p>This node has a capability that represents device feature. You can find more information about <a href="https://smartthings.developer.samsung.com/docs/api-ref/capabilities.html" target="_blank">the Capabilities of SmartThings</a>.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name<span class="property-type">required</span></dt>
+        <dd>The label of the Name assigned by the user. It's unique name in flow.</dd>
+        <dt>Capability<span class="property-type">required</span></dt>
+        <dd>
+            <ul>
+                <li>The List of Capabilities provided by this Device.</li>
+                <li>Determine if this Device supports the specified capability name.</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+<script type="text/x-red" data-template-name="installed-device">
+    <div class="form-tips" style="margin-bottom:10px;"><b>Note:</b> create token on the SmartThings <b><a href="https://account.smartthings.com/tokens" target="_blank">personal access token page</a></b></div>
+    <div class="form-row">
+        <label for="node-input-stAccessToken">Personal Access Token</label>
+        <input type="text" id="node-input-stAccessToken">
+    </div>
+    <div id="my-device-list-div" class="form-row sensor-container-row">
+        <ol id="my-device-list-container"></ol>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="installed-device">
+    <p>This node represents an your SmartThings device. You can control your SmartThings devices directly without even registering the Automation.</p>
+    <p>To do this, you should set your PAT on this node and select one on your device list. Then, you can get a condition or put a command to your installed devices by using 'Status', 'Command' nodes.</p>
+    <p>After setting your PAT, get your device list and select device that you want to control.</p>
+    <h3>Getting a SmartThings PAT</h3>
+        <ul>
+            <li>SmartThings Authentication : <a href="https://smartthings.developer.samsung.com/docs/api-ref/st-api.html#section/Authentication">API Reference, Authentication</a></li>
+            <li>PATs can be created and managed on the <a href="https://account.smartthings.com/tokens">personal access token page</a>.</li>
+        </ul>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Device Name<span class="property-type">read-only</span></dt>
+        <dd>The label of the Name assigned by the user. It's unique name in flow.</dd>
+        <dt>Device Label<span class="property-type">read-only</span></dt>
+        <dd> </dd>
+        <dt>Personal Access Token<span class="property-type">required</span></dt>
+        <dd></dd>
+        <dt>Device List</dt>
+        <dd>
+            <ul>
+                <li>The List of your device that .</li>
+                <li>Select device that you want to control, subscribe</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+<script type="text/x-red" data-template-name="automation">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input id="node-input-name" type="text" placeholder="Name"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-url"><i class="fa fa-cog"></i> Endpoint</label>
+        <input id="node-input-url" type="text"  placeholder="/url"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-copyurl"></label>
+        <div style="display: inline-block; position: relative; width: 70%; height: 20.0114px;">
+            <div style="position: absolute; left: 0px; right: 40px;">
+                <input type="text" id="node-input-copyurl" readonly="true" style="width:100%"></input>
+            </div>
+            <a id="export-clipboard" class="editor-button" style="position: absolute; right: 0px; top: 0px;">
+                <i class="fa fa-copy"></i>
+            </a>
+        </div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-publickey"><i class="fa fa-th"></i> Public Key</label>
+        <textarea id="node-input-publickey" cols="60" rows="8"  style="margin: 0px; width: 354px; height: 174px;"></textarea>
+    </div>
+    <div class="form-tips"><b>Note:</b> How to get Public Key. See info box for details.</div>
+</script>
+<script type="text/x-red" data-help-name="automation">
+    <p>This node represents the WebHook Endpoint of SmartApp. the Automation node handles lifecycle of SmartApp.</p>
+    <p>A WebHook endpoint in this context is a web services application which can receive incoming HTTP POST requests.</p>
+    <p></p>
+    <p><a href="https://smartthings.developer.samsung.com/docs/guides/smartapps/webhook-apps.html" target="_blank">more...</a></p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name <span class="property-type">required</span></dt>
+        <dd>A Name for the WebHook endpoint.</dd>
+        <dt>Endpoint <span class="property-type">required</span></dt>
+        <dd>A Endpoint that should be invoked during execution.</dd>
+        <dt>Public Key <span class="property-type">required</span></dt>
+        <dd>The public half of an RSA key pair. Useful for verifying a Webhook execution request signature to ensure it came from SmartThings.</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>[lifecyle] Event</dt>
+        <dd>Next node is the Event node only.</dd>
+    </dl>
+    <h3>Detail</h3>
+    <p><b>How to get the Public Key</b></p>
+    <p>When you create SmartApp on the SmartThing Cloud, you can get the Public Key. You can regist Automation on the SmartThings Developer Workspace.</p>
+    <p><a href="https://smartthings.developer.samsung.com/docs/workspace/tutorials/create-an-automation.html#Register-the-Automation" target="_blank">more...</a></p>
+</script>
+
+<script type="text/x-red" data-template-name="event-device">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width:50%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
+        <select type="text"  id="node-input-deviceId" style="width:50%"></select>
+    </div>
+    <hr align="middle" />
+    <div class="form-row">
+        <label for="node-input-capability"><i class="fa fa-asterisk"></i> Capability</label>
+        <input type="hidden" id="node-input-capability" readonly="true" style="width:50%;"/>
+        <select id="node-input-capability-select" style="width:50%;"/>
+        <input type="hidden" id="node-input-outputs"/>
+        <input type="hidden" id="node-input-eqtype" value="event"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-capability"> <i class="fa fa-sun-o"></i>
+            <span class="sensor-container-row"> Attribute</span>
+        </label>
+        <select style="width:50%" id="node-input-capability-attr" class="form-row"/>
+    </div>
+    <div class="form-row sensor-container-row">
+        <ol id="attr-list-container"></ol>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="event-device">
+    <p>This node represents a change of device.</p>
+    <p>When a user installs a SmartApp, they typically will select the devices to be used by the SmartApp.</p>
+    <p>This event-device node interacts with installed SmartThings device. When the device changes and an event occurs, the event node can receive the event as a subscriber.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name <span class="property-type">required</span></dt>
+        <dd>The label of the Device assigned by the user.</dd>
+        <dt>Device </dt>
+        <dd>The unique system identifier for this Device.</dd>
+        <dt>Capability <span class="property-type">required</span></dt>
+        <dd>
+            <ul>
+                <li>The List of Capabilities provided by this Device.</li>
+                <li>Determine if this Device supports the specified capability name.</li>
+            </ul>
+        </dd>
+        <dt>Attribute</dt>
+        <dd>
+            <ul>
+                <li>The list of Attribute s for this Device.</li>
+                <li>Determine if this Device has the specified attribute.</li>
+            </ul>
+        </dd>
+     </dl>
+</script>
+
+<script type="text/x-red" data-template-name="status-device">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width:50%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
+        <select type="text"  id="node-input-deviceId" style="width:50%"></select>
+    </div>
+    <hr align="middle" />
+    <div class="form-row">
+        <label for="node-input-capability"><i class="fa fa-asterisk"></i> Capability</label>
+        <input type="hidden" id="node-input-capability" readonly="true" style="width:50%;"/>
+        <select id="node-input-capability-select" style="width:50%;"/>
+        <input type="hidden" id="node-input-outputs"/>
+        <input type="hidden" id="node-input-eqtype" value="status"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-capability"> <i class="fa fa-sun-o"></i>
+            <span class="sensor-container-row"> Attribute</span>
+        </label>
+        <select style="width:50%" id="node-input-capability-attr" class="form-row"/>
+    </div>
+    <div class="form-row sensor-container-row">
+        <ol id="attr-list-container"></ol>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="status-device">
+    <p>This node checks the state of the device.</p>
+    <p>When a user installs a SmartApp, A user will select the devices to be used by the SmartApp.</p>
+    <p>This status-device node interact with the installed SmartThings device. This node allows you to branch flows based on the state of the device.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name <span class="property-type">required</span></dt>
+        <dd>The label of the Device assigned by the user.</dd>
+        <dt>Device </dt>
+        <dd>The unique system identifier for this Device.</dd>
+        <dt>Capability <span class="property-type">required</span></dt>
+        <dd>
+            <ul>
+                <li>The List of Capabilities provided by this Device.</li>
+                <li>Determine if this Device supports the specified capability name.</li>
+            </ul>
+        </dd>
+        <dt>Attribute</dt>
+        <dd>
+            <ul>
+                <li>The list of Attribute s for this Device.</li>
+                <li>Determine if this Device has the specified attribute.</li>
+            </ul>
+        </dd>
+     </dl>
+</script>
+
+<script type="text/x-red" data-template-name="command-device">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width:50%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
+        <select type="text"  id="node-input-deviceId" style="width:50%"></select>
+    </div>
+    <hr align="middle" />
+    <div class="form-row">
+        <label for="node-input-capability"><i class="fa fa-asterisk"></i> Capability</label>
+        <input type="hidden" id="node-input-capability" readonly="true" style="width:50%;"/>
+        <select id="node-input-capability-select" style="width:50%;"/>
+        <input type="hidden" id="node-input-outputs"/>
+        <input type="hidden" id="node-input-eqtype" value="command"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-capability"> <i class="fa fa-sun-o"></i>
+            <span class="actuator-container-row"> Command</span>
+        </label>
+        <select style="width:50%" id="node-input-capability-attr" class="form-row"/>
+    </div>
+    <div class="form-row actuator-container-row">
+        <ol id="cmd-list-container"></ol>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="command-device">
+    <p>This node can command to the device.</p>
+    <p>When a user installs a SmartApp, A user will select the devices to be used by the SmartApp.</p>
+    <p>This command-device node interact with the installed SmartThings device. As commands you set, this node changes the state of the device.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name <span class="property-type">required</span></dt>
+        <dd>The label of the Device assigned by the user.</dd>
+        <dt>Device </dt>
+        <dd>The unique system identifier for this Device.</dd>
+        <dt>Capability <span class="property-type">required</span></dt>
+        <dd>
+            <ul>
+                <li>The List of Capabilities provided by this Device.</li>
+                <li>Determine if this Device supports the specified capability name.</li>
+            </ul>
+        </dd>
+        <dt>Command</dt>
+        <dd>
+            <ul>
+                <li>The list of Commands for this Device.</li>
+                <li>Determine if this Device has the specified command name.</li>
+            </ul>
+        </dd>
+     </dl>
+</script>
+<!-- Node Html End-->
+
+<script type="text/javascript">
+    // https://api.smartthings.com/v1/devices
+    SmartThingsApi = {
+        getDeviceList: function (token, done, fail) {
+            $.ajax({
+                url: "https://api.smartthings.com/v1/devices",
+                headers: {
+                    Authorization: 'Bearer ' + token
+                },
+
+            }).done(function (devices, textStatus, xhr) {
+                done(token,devices.items);
+            }).fail(function (e) {
+                fail(e);
+            });
+        }
+    };
+</script>
+<!-- Node Common Script-->
+<script type="text/javascript">
+    function Profiles() {
+        var liveCapabilities;
+        var _capabilities={"accelerationSensor":{"status":"live","attr":[{"acceleration":"ActivityState"}]},"activityLightingMode":{"status":"proposed","attr":[{"lightingMode":"LightingMode"}],"cmd":[{"setLightingMode":{"lightingMode":"LightingMode"}}]},"airConditionerMode":{"status":"proposed","attr":[{"airConditionerMode":"HvacMode"}],"cmd":[{"setAirConditionerMode":{"mode":"HvacMode"}}]},"airQualitySensor":{"status":"live","attr":[{"airQuality":"AirQuality"}]},"alarm":{"status":"live","attr":[{"alarm":"AlertState"}],"cmd":[{"both":{}},{"off":{}},{"siren":{}},{"strobe":{}}]},"audioMute":{"status":"live","attr":[{"mute":"MuteState"}],"cmd":[{"setMute":{"state":"MuteState"}},{"mute":{}},{"unmute":{}}]},"audioVolume":{"status":"proposed","attr":[{"volume":"Volume"}],"cmd":[{"setVolume":{"volume":"Volume"}},{"volumeUp":{}},{"volumeDown":{}}]},"battery":{"status":"live","attr":[{"battery":"Battery"}]},"bodyMassIndexMeasurement":{"status":"proposed","attr":[{"bmiMeasurement":"BmiMeasurement"}]},"bodyWeightMeasurement":{"status":"proposed","attr":[{"bodyWeightMeasurement":"BodyWeightMeasurement"}]},"button":{"status":"live","attr":[{"button":"ButtonState"},{"numberOfButtons":"PositiveInteger"},{"supportedButtonValues":"ButtonStateArray"}]},"carbonDioxideMeasurement":{"status":"live","attr":[{"carbonDioxide":"CarbonDioxide"}]},"carbonMonoxideDetector":{"status":"live","attr":[{"carbonMonoxide":"CarbonMonoxideState"}]},"carbonMonoxideMeasurement":{"status":"proposed","attr":[{"carbonMonoxideLevel":"CarbonMonoxideLevel"}]},"colorControl":{"status":"live","attr":[{"color":"String"},{"hue":"PositiveNumber"},{"saturation":"PositiveNumber"}],"cmd":[{"setColor":{"color":"COLOR_MAP"}},{"setHue":{"hue":"PositiveNumber"}},{"setSaturation":{"saturation":"PositiveNumber"}}]},"colorTemperature":{"status":"live","attr":[{"colorTemperature":"ColorTemperature"}],"cmd":[{"setColorTemperature":{"temperature":"ColorTemperature"}}]},"contactSensor":{"status":"live","attr":[{"contact":"ContactState"}]},"dishwasherMode":{"status":"proposed","attr":[{"dishwasherMode":"DishwasherMode"}],"cmd":[{"setDishwasherMode":{"mode":"DishwasherMode"}}]},"dishwasherOperatingState":{"status":"proposed","attr":[{"machineState":"MachineState"},{"supportedMachineStates":"MachineStateArray"},{"dishwasherJobState":"DishwasherJobState"},{"completionTime":"Iso8601Date"}],"cmd":[{"setMachineState":{"state":"MachineState"}}]},"doorControl":{"status":"live","attr":[{"door":"Door"}],"cmd":[{"close":{}},{"open":{}}]},"dryerMode":{"status":"proposed","attr":[{"dryerMode":"DryerMode"}],"cmd":[{"setDryerMode":{"mode":"DryerMode"}}]},"dryerOperatingState":{"status":"proposed","attr":[{"machineState":"MachineState"},{"supportedMachineStates":"MachineStateArray"},{"dryerJobState":"DryerJobState"},{"completionTime":"Iso8601Date"}],"cmd":[{"setMachineState":{"state":"MachineState"}}]},"dustSensor":{"status":"live","attr":[{"fineDustLevel":"PositiveInteger"},{"dustLevel":"PositiveInteger"}]},"energyMeter":{"status":"live","attr":[{"energy":"Energy"}]},"equivalentCarbonDioxideMeasurement":{"status":"live","attr":[{"equivalentCarbonDioxideMeasurement":"EquivalentCarbonDioxideMeasurement"}]},"fanSpeed":{"status":"proposed","attr":[{"fanSpeed":"PositiveInteger"}],"cmd":[{"setFanSpeed":{"speed":"PositiveInteger"}}]},"filterStatus":{"status":"proposed","attr":[{"filterStatus":"FilterStatus"}]},"formaldehydeMeasurement":{"status":"live","attr":[{"formaldehydeLevel":"FormaldehydeLevel"}]},"garageDoorControl":{"status":"deprecated","attr":[{"door":"Door"}],"cmd":[{"close":{}},{"open":{}}]},"illuminanceMeasurement":{"status":"live","attr":[{"illuminance":"Illuminance"}]},"infraredLevel":{"status":"live","attr":[{"infraredLevel":"InfraredLevel"}],"cmd":[{"setInfraredLevel":{"level":"InfraredLevel"}}]},"lock":{"status":"live","attr":[{"lock":"LockState"}],"cmd":[{"lock":{}},{"unlock":{}}]},"mediaInputSource":{"status":"proposed","attr":[{"inputSource":"MediaSource"},{"supportedInputSources":"MediaSourceArray"}],"cmd":[{"setInputSource":{"mode":"MediaSource"}}]},"mediaPlaybackRepeat":{"status":"proposed","attr":[{"playbackRepeatMode":"PlaybackRepeatMode"}],"cmd":[{"setPlaybackRepeatMode":{"mode":"PlaybackRepeatMode"}}]},"mediaPlaybackShuffle":{"status":"proposed","attr":[{"playbackShuffle":"PlaybackShuffle"}],"cmd":[{"setPlaybackShuffle":{"shuffle":"PlaybackShuffle"}}]},"mediaPlayback":{"status":"proposed","attr":[{"playbackStatus":"PlaybackStatus"},{"supportedPlaybackCommands":"MediaPlaybackCommandsArray"}],"cmd":[{"setPlaybackStatus":{"status":"PlaybackStatus"}},{"play":{}},{"pause":{}},{"stop":{}},{"fastForward":{}},{"rewind":{}}]},"motionSensor":{"status":"live","attr":[{"motion":"ActivityState"}]},"odorSensor":{"status":"proposed","attr":[{"odorLevel":"PositiveInteger"}]},"ovenMode":{"status":"proposed","attr":[{"ovenMode":"OvenMode"}],"cmd":[{"setOvenMode":{"mode":"OvenMode"}}]},"ovenOperatingState":{"status":"proposed","attr":[{"machineState":"MachineState2"},{"supportedMachineStates":"SupportedMachineStatesArray"},{"ovenJobState":"OvenJobState"},{"completionTime":"Iso8601Date"},{"operationTime":"PositiveInteger"},{"progress":"Progress"}],"cmd":[{"setMachineState":{"state":"MachineState3"}},{"stop":{}}]},"ovenSetpoint":{"status":"proposed","attr":[{"ovenSetpoint":"PositiveInteger"}],"cmd":[{"setOvenSetpoint":{"setpoint":"PositiveInteger"}}]},"powerMeter":{"status":"live","attr":[{"power":"Power"}]},"powerSource":{"status":"live","attr":[{"powerSource":"PowerSource"}]},"presenceSensor":{"status":"live","attr":[{"presence":"PresenceState"}]},"rapidCooling":{"status":"proposed","attr":[{"rapidCooling":"RapidCooling"}],"cmd":[{"setRapidCooling":{"rapidCooling":"RapidCooling"}}]},"refrigerationSetpoint":{"status":"proposed","attr":[{"refrigerationSetpoint":"TemperatureValue"}],"cmd":[{"setRefrigerationSetpoint":{"setpoint":"TemperatureValue"}}]},"relativeHumidityMeasurement":{"status":"live","attr":[{"humidity":"Humidity"}]},"robotCleanerCleaningMode":{"status":"proposed","attr":[{"robotCleanerCleaningMode":"RobotCleanerCleaningMode"}],"cmd":[{"setRobotCleanerCleaningMode":{"mode":"RobotCleanerCleaningMode2"}}]},"robotCleanerMovement":{"status":"proposed","attr":[{"robotCleanerMovement":"RobotCleanerMovement"}],"cmd":[{"setRobotCleanerMovement":{"mode":"RobotCleanerMovement"}}]},"robotCleanerTurboMode":{"status":"proposed","attr":[{"robotCleanerTurboMode":"RobotCleanerTurboMode"}],"cmd":[{"setRobotCleanerTurboMode":{"mode":"RobotCleanerTurboMode"}}]},"signalStrength":{"status":"live","attr":[{"lqi":"Lqi"},{"rssi":"Rssi"}]},"smokeDetector":{"status":"live","attr":[{"smoke":"Smoke"}]},"soundSensor":{"status":"live","attr":[{"sound":"Sound"}]},"switchLevel":{"status":"live","attr":[{"level":"Level2"}],"cmd":[{"setLevel":{"level":"Level2","rate":"PositiveInteger"}}]},"switch":{"status":"live","attr":[{"switch":"SwitchState"}],"cmd":[{"off":{}},{"on":{}}]},"tamperAlert":{"status":"live","attr":[{"tamper":"Tamper"}]},"temperatureMeasurement":{"status":"live","attr":[{"temperature":"TemperatureValue"}]},"thermostatCoolingSetpoint":{"status":"live","attr":[{"coolingSetpoint":"TemperatureValue"}],"cmd":[{"setCoolingSetpoint":{"setpoint":"TemperatureValue"}}]},"thermostatFanMode":{"status":"live","attr":[{"thermostatFanMode":"ThermostatFanMode"},{"supportedThermostatFanModes":"ThermostatFanModeArray"}],"cmd":[{"fanAuto":{}},{"fanCirculate":{}},{"fanOn":{}},{"setThermostatFanMode":{"mode":"ThermostatFanMode"}}]},"thermostatHeatingSetpoint":{"status":"live","attr":[{"heatingSetpoint":"TemperatureValue"}],"cmd":[{"setHeatingSetpoint":{"setpoint":"TemperatureValue"}}]},"thermostatMode":{"status":"live","attr":[{"thermostatMode":"ThermostatMode"},{"supportedThermostatModes":"ThermostatModeArray"}],"cmd":[{"auto":{}},{"cool":{}},{"emergencyHeat":{}},{"heat":{}},{"off":{}},{"setThermostatMode":{"mode":"ThermostatMode"}}]},"thermostatOperatingState":{"status":"live","attr":[{"thermostatOperatingState":"ThermostatOperatingState"}]},"thermostatSetpoint":{"status":"deprecated","attr":[{"thermostatSetpoint":"TemperatureValue"}]},"tone":{"status":"live","cmd":[{"beep":{}}]},"tvChannel":{"status":"proposed","attr":[{"tvChannel":"String"}],"cmd":[{"setTvChannel":{"channel":"String"}},{"channelUp":{}},{"channelDown":{}}]},"tvocMeasurement":{"status":"live","attr":[{"tvocLevel":"TvocLevel"}]},"ultravioletIndex":{"status":"live","attr":[{"ultravioletIndex":"UltravioletIndex"}]},"valve":{"status":"live","attr":[{"valve":"Valve"}],"cmd":[{"close":{}},{"open":{}}]},"voltageMeasurement":{"status":"live","attr":[{"voltage":"Number"}]},"washerMode":{"status":"proposed","attr":[{"washerMode":"WasherMode"}],"cmd":[{"setWasherMode":{"mode":"WasherMode"}}]},"washerOperatingState":{"status":"proposed","attr":[{"machineState":"MachineState"},{"supportedMachineStates":"MachineStateArray"},{"washerJobState":"WasherJobState"},{"completionTime":"Iso8601Date"}],"cmd":[{"setMachineState":{"state":"MachineState"}}]},"waterSensor":{"status":"live","attr":[{"water":"MoistureState"}]},"windowShade":{"status":"proposed","attr":[{"windowShade":"OpenableState"}],"cmd":[{"close":{}},{"open":{}},{"presetPosition":{}}]}};
+        var _argTypes={"ActivityState":{"type":"enum","enum":["active","inactive"]},"LightingMode":{"type":"enum","enum":["reading","writing","computer","night"]},"HvacMode":{"type":"enum","enum":["auto","cool","dry","coolClean","dryClean","fanOnly","heat","heatClean","notSupported"]},"AirQuality":{"type":"integer","minimum":0,"maximum":100},"AlertState":{"type":"enum","enum":["both","off","siren","strobe"]},"MuteState":{"type":"enum","enum":["muted","unmuted"]},"Volume":{"type":"integer","minimum":0,"maximum":100},"Battery":{"type":"integer","minimum":0,"maximum":100},"BmiMeasurement":{"type":"number"},"BodyWeightMeasurement":{"type":"number"},"ButtonState":{"type":"enum","enum":["pushed","held","double","pushed_2x","pushed_3x","pushed_4x","pushed_5x","pushed_6x","down","down_2x","down_3x","down_4x","down_5x","down_6x","down_hold","up","up_2x","up_3x","up_4x","up_5x","up_6x","up_hold"]},"PositiveInteger":{"type":"integer","minimum":0},"ButtonStateArray":{"type":"array","item":"ButtonState"},"CarbonDioxide":{"type":"integer","minimum":0,"maximum":1000000},"CarbonMonoxideState":{"type":"enum","enum":["clear","detected","tested"]},"CarbonMonoxideLevel":{"type":"number","minimum":0,"maximum":1000000},"String":{"type":"string","maxLength":255},"PositiveNumber":{"type":"number","minimum":0},"Hue":{"type":"number"},"Saturation":{"type":"number"},"Hex":{"type":"string","maxLength":7},"Level":{"type":"integer"},"Switch":{"type":"string","maxLength":3},"COLOR_MAP":{"type":"object","prop":{"hue":"Hue","saturation":"Saturation","hex":"Hex","level":"Level","switch":"Switch"}},"ColorTemperature":{"type":"integer","minimum":1,"maximum":30000},"ContactState":{"type":"enum","enum":["closed","open"]},"DishwasherMode":{"type":"enum","enum":["auto","quick","rinse","dry"]},"MachineState":{"type":"enum","enum":["pause","run","stop"]},"MachineStateArray":{"type":"array","item":"MachineState"},"DishwasherJobState":{"type":"enum","enum":["airwash","cooling","drying","finish","preDrain","prewash","rinse","spin","unknown","wash","wrinklePrevent"]},"Iso8601Date":{"type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"},"Door":{"type":"enum","enum":["closed","closing","open","opening","unknown"]},"DryerMode":{"type":"enum","enum":["regular","lowHeat","highHeat"]},"DryerJobState":{"type":"enum","enum":["cooling","delayWash","drying","finished","none","weightSensing","wrinklePrevent"]},"Energy":{"type":"number"},"EquivalentCarbonDioxideMeasurement":{"type":"number","minimum":0,"maximum":1000000},"FilterStatus":{"type":"enum","enum":["normal","replace"]},"FormaldehydeLevel":{"type":"number","minimum":0,"maximum":1000000},"Illuminance":{"type":"number","minimum":0,"maximum":100000},"InfraredLevel":{"type":"number","minimum":0,"maximum":100},"LockState":{"type":"enum","enum":["locked","unknown","unlocked","unlockedwithtimeout"]},"MediaSource":{"type":"enum","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]},"MediaSourceArray":{"type":"array","item":"MediaSource"},"PlaybackRepeatMode":{"type":"enum","enum":["all","off","one"]},"PlaybackShuffle":{"type":"enum","enum":["disabled","enabled"]},"PlaybackStatus":{"type":"enum","enum":["pause","play","stop","fastforward","rewind"]},"MediaPlaybackCommands":{"type":"enum","enum":["pause","play","stop","fastForward","rewind"]},"MediaPlaybackCommandsArray":{"type":"array","item":"MediaPlaybackCommands"},"OvenMode":{"type":"enum","enum":["heating","grill","warming","defrosting"]},"MachineState2":{"type":"enum","enum":["ready","running","paused"]},"SupportedMachineStates":{"type":"enum","enum":["ready","running","paused"]},"SupportedMachineStatesArray":{"type":"array","item":"SupportedMachineStates"},"OvenJobState":{"type":"enum","enum":["cleaning","cooking","cooling","draining","preheat","ready","rinsing"]},"Progress":{"type":"integer","minimum":0,"maximum":100},"MachineState3":{"type":"enum","enum":["stop"]},"Power":{"type":"number"},"PowerSource":{"type":"enum","enum":["battery","dc","mains","unknown"]},"PresenceState":{"type":"enum","enum":["present","notpresent"]},"RapidCooling":{"type":"enum","enum":["off","on"]},"TemperatureValue":{"type":"number","minimum":-460,"maximum":10000},"Humidity":{"type":"number","minimum":0,"maximum":100},"RobotCleanerCleaningMode":{"type":"enum","enum":["auto","part","repeat","manual","stop","map"]},"RobotCleanerCleaningMode2":{"type":"enum","enum":["auto","part","repeat","manual","stop"]},"RobotCleanerMovement":{"type":"enum","enum":["homing","idle","charging","alarm","powerOff","reserve","point","after","cleaning"]},"RobotCleanerTurboMode":{"type":"enum","enum":["on","off","silence"]},"Lqi":{"type":"integer","minimum":0,"maximum":255},"Rssi":{"type":"number","minimum":-200,"maximum":0},"Smoke":{"type":"enum","enum":["clear","detected","tested"]},"Sound":{"type":"enum","enum":["detected","notdetected"]},"Level2":{"type":"integer","minimum":0,"maximum":100},"SwitchState":{"type":"enum","enum":["on","off"]},"Tamper":{"type":"enum","enum":["clear","detected"]},"ThermostatFanMode":{"type":"enum","enum":["auto","circulate","followschedule","on"]},"ThermostatFanModeArray":{"type":"array","item":"ThermostatFanMode"},"ThermostatMode":{"type":"enum","enum":["auto","cool","eco","rushhour","emergencyheat","heat","off"]},"ThermostatModeArray":{"type":"array","item":"ThermostatMode"},"ThermostatOperatingState":{"type":"enum","enum":["cooling","fanonly","heating","idle","pendingcool","pendingheat","venteconomizer"]},"TvocLevel":{"type":"number","minimum":0,"maximum":1000000},"UltravioletIndex":{"type":"number","minimum":0,"maximum":255},"Valve":{"type":"enum","enum":["closed","open"]},"Number":{"type":"number"},"WasherMode":{"type":"enum","enum":["regular","heavy","rinse","spinDry"]},"WasherJobState":{"type":"enum","enum":["airWash","cooling","delayWash","drying","finish","none","preWash","rinse","spin","wash","weightSensing","wrinklePrevent"]},"MoistureState":{"type":"enum","enum":["dry","wet"]},"OpenableState":{"type":"enum","enum":["closed","closing","open","opening","partiallyopen","unknown"]}};
+
+        var _capabilityList = {cmd: [], attr: []};
+
+        var _jsonclone = function (obj) {
+            try {
+                return JSON.parse(JSON.stringify(obj));
+            } catch (err) {
+                console.log(err);
+                return {};
+            }
+        };
+
+        var _setUnitItem = function (obj, types) {
+            for (key in obj) {
+                if (typeof (obj[key]) === "object") {
+                    _setUnitItem(obj[key], types);
+                } else {
+                    if (types[obj[key]]) {
+                        obj[key] = types[obj[key]];
+                    }
+                }
+            }
+        };
+
+        this.getArgType = function (type) {
+            var types = _jsonclone(_argTypes[type]);
+            _setUnitItem(types, _argTypes);
+            return types;
+        };
+
+        this.getCmdCapabilities = function(){
+            this.getCapabilityList('cmd')
+        }
+        this.getAttrCapabilities = function(){
+            this.getCapabilityList('attr')
+        }
+        this.getCapabilityList = function (target) {
+            // var target = isAction ? "cmd" : "attr";
+            if (_capabilityList[target].length != 0) {
+                return _capabilityList[target];
+            }
+            for (cpName in _capabilities) {
+                if (_capabilities[cpName].hasOwnProperty(target)) {
+                    _capabilityList[target].push(cpName);
+                }
+            }
+            return _capabilityList[target];
+        };
+
+        this.getCapability = function (cp) {
+            return _capabilities[cp];
+        };
+
+        this.getAllCapabilities = function () {
+            if(liveCapabilities === undefined){
+                liveCapabilities = {};
+                for(var capa in _capabilities){
+                    if(_capabilities[capa].status === 'live' || _capabilities[capa].status === 'proposed'){
+                        liveCapabilities[capa] = _capabilities[capa];
+                    }
+                }
+            }
+            return liveCapabilities;
+        };
+    }
+    var validateAutomationNext = function (id) {
+        //Automation 뒤에는 on device(event) 만 올 수 있다 (input 1, 해당 input port 에 연결된 wires 도 하나)
+        var backLinks = RED.nodes.filterLinks({"source": {"id": id}});
+        if (backLinks.length != 1) return false;
+        if (backLinks[0].target["type"] !== "event-device") return false;
+        return true;
+    }
+
+    var profiles = new Profiles();
+</script>
+<!-- Node Common Script End-->
+
+<!-- Node Script -->
+<script type="text/javascript">
+    const ST_EVENT_DEVICE = "event-device";
+    const ST_STATUS_DEVICE = "status-device";
+    const ST_COMMAND_DEVICE = "command-device";
+    const ST_DEVICE_PROFILE = 'device-profile';
+    const ST_MY_DEVICE = 'installed-device';
+    const ST_AUTOMATION = 'automation';
+    var stDevice={};
+
+    RED.nodes.registerType('device-profile', {
+            category: "SmartThings",
+            paletteLabel: "Device Profile",
+            color: "rgb(168,168,168)",
+            defaults: {
+                name: {
+                    value: "", required: true,
+                    validate: function (v) {
+                        var NODE = this;
+                        var result = true;
+                        RED.nodes.eachNode(function (cNode) {
+                            if (cNode.type == 'device-profile' && cNode.id != NODE.id && cNode.name == NODE.name) {
+                                result = false;
+                            }
+                        });
+                        return result;
+                    }
+                },
+                capability: {value: "", required: true},
+                device:{}
+            },
+            inputs: 0,
+            outputs: 0,
+            icon: "deviceprofile.png",
+            label: function () {
+                if (this.name) {
+                    return this.name + ":" + this.capability;
+                } else {
+                    return "Device Profile";
+                }
+            },
+            oneditprepare: function () {
+                var NODE = this;
+                $("#node-input-capability").empty();
+                $("#node-input-capability").append($("<option></option>").val("").text(""));
+                Object.keys(profiles.getAllCapabilities())
+                    .forEach(function(capability){
+                        $("#node-input-capability").append($("<option></option>").val(capability).text(capability));
+                    })
+
+                $("#node-input-name").val(NODE.name);
+                $("#node-input-capability").val(NODE.capability);
+            },
+            oneditsave: function () {
+                var NODE = this;
+                var nodeName = $("#node-input-name").val();
+                RED.nodes.eachNode(function (n) {
+                    if (nodeName != "" && n.type == 'device-profile' && n.id != NODE.id && n.name == nodeName) {
+                        RED.notify('<p>' + NODE._("SmartThings.error.duplicate-Id") + '</p>', "error");
+                    }
+                });
+                NODE.name = $("#node-input-name").val();
+                NODE.capability = $("#node-input-capability").val();
+                var device = {
+                    type : NODE.type,
+                    name : $("#node-input-name").val(),
+                    capability : $("#node-input-capability").val(),
+                    capabilities : {}
+                }
+                var capabilityId = $("#node-input-capability").val();
+                device.capabilities[capabilityId] = profiles.getCapability(capabilityId);
+                NODE.device = device;
+            }
+    });
+
+    RED.nodes.registerType('installed-device', {
+        category: "SmartThings",
+        paletteLabel: "My Device",
+        color: "rgb(231,147,173)",
+        defaults: {
+            name: {value: "", required: true},
+            label: {value: ""},
+            device:{}
+        },
+        credentials:{
+            stAccessToken:{type:'text', required:true}
+        },
+        inputs: 0,
+        outputs: 0,
+        icon: "mydevice.png",
+        label: function () {
+            if (this.label) {
+                return "My Device:"+this.label;
+            } else {
+                return "My Device";
+            }
+        },
+        oneditprepare: function () {
+            var NODE = this;
+            // $("#node-input-name").val(NODE.name);
+            // $("#node-input-label").val(NODE.label);
+            if(NODE.credentials && NODE.credentials.stAccessToken){
+                $("#node-input-stAccessToken").val(NODE.credentials.stAccessToken);
+            }else{
+                $("#node-input-stAccessToken").val('')
+            }
+
+            $("#my-device-list-container")
+                .css('min-height', '400px')
+                .css('min-width', '150px')
+                .editableList({
+                    header: $("<div>").append('hi this is header'),
+                    addButton: "search",
+                    addItem: function(row, index, data) {
+                    },
+                    resizeItem: function (container) {
+                    },
+                    removeItem: function (opt) {
+                    },
+                    sortItems: function (rules) {
+                    },
+                    sortable: true,
+                    removable: false
+                });
+            var addItem = function(accessToken,device){
+                var device = device || {};
+                var li = $('<li>').appendTo($('#my-device-list-container'));
+                var row = $('<div/>').addClass("red-ui-editableList-item-content device-row").appendTo(li);
+                $('<i class="red-ui-editableList-item-handle fa fa-bars"></i>').appendTo(li);
+                li.addClass("red-ui-editableList-item-sortable");
+                var deviceData = {
+                    type: NODE.type,
+                    token: accessToken,
+                    name: device.name,
+                    label: device.label,
+                    deviceId : device.deviceId,
+                    components: device.components,
+                    capabilities: {}
+                }
+                var capabilityIds = [];
+                if(Array.isArray(device.components)){
+                    device.components.forEach(function(component){
+                        if(Array.isArray(component.capabilities)){
+                            component.capabilities.forEach(function(capability){
+                                deviceData.capabilities[capability.id] = profiles.getCapability(capability.id);
+                                capabilityIds.push(capability.id);
+                            });
+                        }
+                    });
+                }
+                row.data('device', deviceData);
+                $('<div>').text(device.label).appendTo(row);
+                $('<div>').text(capabilityIds.join(", ")).appendTo(row);
+                var selectButton = $('<a/>', {href: "#", class: "red-ui-editableList-item-remove editor-button editor-button-small"}).appendTo(row);
+                selectButton.data('device',deviceData)
+                selectButton.text('select');
+                // $('<i/>', {class: "fa fa-remove"}).appendTo(selectButton);
+                selectButton.on('click',function(){
+                    $('#my-device-list-container .history-stack-selected').removeClass('history-stack-selected');
+                    row.addClass('history-stack-selected');
+                    li.addClass('history-stack-selected');
+
+                    $(this).addClass('history-stack-selected');
+                    var device = $(this).data('device');
+                    $('#node-input-name').val(device.name);
+                    $('#node-input-label').val(device.label);
+                    NODE.device = device;
+                })
+            }
+            var addItems = function (token,list) {
+                if(list){
+                    $('#my-device-list-container').empty();
+                    for (var i in list) {
+                        var device = list[i] || {};
+                        addItem(token,device)
+                    }
+                }
+            }
+            var getItemsFail = function(err){
+                var failMsg = document.createElement('span');
+                failMsg.setAttribute('id','getDeviceListErrMsg');
+                failMsg.style.color='red';
+                failMsg.style.paddingLeft='10px';
+                failMsg.style.fontsize='12px';
+                failMsg.style.fontWeight='bold';
+                failMsg.innerText = err.status + ', '+err.statusText;
+
+                document.querySelector("#my-device-list-div > div > a").insertAdjacentElement('afterend',failMsg);
+                var duration = 3000;
+                $('#getDeviceListErrMsg').fadeOut(duration,function(){
+                    $(this).remove();
+                })
+            }
+
+            $("#my-device-list-div a.editor-button").off('click');
+            $("#my-device-list-div a.editor-button").on('click', function (evt) {
+                var token = $('#node-input-stAccessToken').val();
+                evt.preventDefault();
+                SmartThingsApi.getDeviceList(token, addItems, getItemsFail);
+            })
+            if(NODE.credentials.stAccessToken && (NODE.deviceList==undefined || NODE.deviceList.length == 0)){
+                SmartThingsApi.getDeviceList(NODE.credentials.stAccessToken, addItems, getItemsFail);
+            }else{
+                addItems(NODE.deviceList);
+            }
+        },
+        oneditsave: function () {
+            var NODE = this;
+            var cname = $("#node-input-name").val();
+            RED.nodes.eachNode(function (n) {
+                if (cname != "" && n.type == 'installed-device' && n.id != NODE.id && n.name == cname) {
+                    RED.notify('<p>' + NODE._("SmartThings.error.duplicate-Id") + '</p>', "error");
+                }
+            });
+            /* 해당 노드 수정 시 기존 사용 Node는?
+            for (var i = 0; i < node.users.length; i++) {
+                var user = node.users[i];
+                user.deviceIdEventActive = false;
+            }*/
+            NODE.name = $('#node-input-name').val();
+            NODE.label = $('#node-input-label').val();
+            NODE.credentials.stAccessToken = $("#node-input-stAccessToken").val();
+            NODE.deviceList = [];
+            var list1 = $("#my-device-list-container").editableList('items');
+            list1.each(function(i,row){
+                NODE.deviceList.push(row.data('device'));
+            })
+        }
+    });
+
+    RED.nodes.registerType('automation', {
+        category: 'SmartThings',
+        color: "rgb(80, 196, 253)",
+        defaults: {
+            name: {value: "", required: true},
+            method:{value:'post'},
+            url: {
+                value: "",
+                required: true,
+                validate: function (url) {
+                    return RED.flows.validateUrl(this)
+                }
+            },
+            urlDate:{value:""},
+            isUniqueUrl:{value:false},
+            eqtype: {
+                value: "", validate: function (v) {
+                    return validateAutomationNext(this.id);
+                }
+            },
+            publickey: {value: "---PUBLIC KEY---", required: true}
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "smartapp.png",
+        label: function () {
+            if (this.url) {
+                if(this.method){
+                    return "["+this.method+"]"+this.url;
+                }else{
+                    return this.url;
+                }
+            } else {
+                return "Automation";
+            }
+        },
+        labelStyle: function () {
+            return this.url ? "node_label_italic" : "";
+        },
+        paletteLabel: function () {
+            return "Automation";
+        },
+        oneditprepare: function () {
+            var NODE = this;
+            var $inputUrl = $('#node-input-url')
+
+            RED.popover.create({
+                target: $('#export-clipboard'),
+                content: NODE._("SmartThings.automation.copied"),
+                trigger: 'click',
+                direction: 'right',
+                delay: {show: 750, hide: 2000}
+            });
+            var copyurl = window.location.origin + $inputUrl.val()
+            if (copyurl == undefined || copyurl == "") {
+                $("#node-input-copyurl").val(window.location.origin);
+            } else {
+                $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
+            }
+
+            var urlTooLongPop = RED.popover.create({
+                target: $inputUrl,
+                content: '100 characters limit',
+                direction: 'left',
+                // delay: {show: 750, hide: 2000}
+            });
+            var duplicateUrlPop = RED.popover.create({
+                target: $inputUrl,
+                content: 'duplicated url',
+                direction: 'left',
+                delay: {show: 750, hide: 3000}
+            });
+
+            var validateUrl = function(){
+                var url = $inputUrl.val()||""
+                url=url.replace(/[^a-zA-Z0-9\-\_\/]/gi,'')
+                url=url.replace(/[\/]{2,}/gi,'/')
+                if(url.charAt(0)!='/'){
+                    url='/'+url
+                }
+                if(url.length>100){
+                    url=url.substring(0,100)
+                    urlTooLongPop.open(3000)
+                }
+
+                var method='post'
+                if(RED.flows.isDuplicateEndpoint({method:method, url:url, id:NODE.id})){
+                    duplicateUrlPop.open()
+                    $inputUrl.addClass('input-error')
+                }else{
+                    duplicateUrlPop.close()
+                    $inputUrl.removeClass('input-error')
+                }
+
+                $inputUrl.val(url)
+                $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
+            }
+            $inputUrl.on("keyup", validateUrl);
+            $inputUrl.on("focusin", validateUrl);
+            $inputUrl.on("focusout", function () {
+                duplicateUrlPop.close();
+                urlTooLongPop.close();
+            });
+
+            //if safari, hide clipboard button
+            if (!document.queryCommandSupported("copy")) {
+                $("#node-input-copyurl").parent().closest('div').css('right', '0px');
+                $("#export-clipboard").hide();
+            } else {
+                $("#node-input-copyurl").parent().closest('div').css('right', '40px');
+                $("#export-clipboard").show();
+                $("#export-clipboard").on("click", function () {
+                    RED.clipboard.copyText($("#node-input-copyurl").val());
+                });
+            }
+        },
+        oneditsave: function () {
+            var NODE = this;
+            NODE.method='post'
+            NODE.name = $("#node-input-name").val().trim();
+            if(NODE.url != $("#node-input-url").val().trim()){
+                NODE.urlDate = new Date().getTime()
+                NODE.url = $("#node-input-url").val().trim()
+
+                RED.flows.updateEndpoint(NODE)
+                NODE.isUniqueUrl=RED.flows.isUniqueEndpoint(NODE)
+            }
+        }
+    });
+
+    (function () {
+
+        var operators = [
+            {v: "eq", t: "=="},
+            {v: "neq", t: "!="},
+            {v: "lt", t: "<"},
+            {v: "lte", t: "<="},
+            {v: "gt", t: ">"},
+            {v: "gte", t: ">="}
+        ];
+
+        /*
+         Node Editor창을 열었을때 초기화되는 함수로 Node내에 동작하는 기능함수들이
+         정의되어있다.
+            -.Capability, argType등의 서버정보 조회
+            -.form객체의 이벤트정의
+            -.그리드 add시 row에 유형별 input생성
+        */
+        function ThingCommon(formObj, node) {
+            var THING = this;
+            THING.node = node;
+            THING.type = node.type;       //노드의 타입
+            THING.form = formObj; //json형태의 jquery 폼객체
+            THING.deviceInfo = $("#node-input-deviceId option:selected").data('device');
+            THING.initCapabilitySelect();
+            THING.form.deviceId.on("mouseover", function () {
+                THING.form.deviceId.off("change");
+                THING.form.deviceId.on("change", function () {
+                    console.log('form deviceId:change')
+                    THING.initCapabilitySelect()
+                    THING.initAttributeSelect()
+                    THING.attributeEvent()
+                });
+            })
+
+            THING.form.capabilitySelect.on("mouseover", function () {
+                THING.form.capabilitySelect.off("change");
+                THING.form.capabilitySelect.on("change", function () {
+                    $("#node-input-capability").val($("#node-input-capability-select").find('option:selected').val());
+                    THING.initAttributeSelect()
+                    THING.attributeEvent()
+                });
+            });
+
+            THING.form.capabilityAttr.on("mouseover", function () {
+                THING.form.capabilityAttr.off("change");
+                THING.form.capabilityAttr.on("change", function () {
+                    THING.attributeEvent();
+                });
+            });
+        }
+
+        ThingCommon.prototype = {
+            //type값에 따른 페이지 초기화 함수
+            initContainer: function (data) {
+                this.form.outputCount.val("{}")
+                this.form.container.editableList('empty')
+                if(data){
+                    this.form.container.editableList('addItem',data)
+                }
+            },
+            attributeEvent: function() {
+                //EVENT Device 노드 특성상 한개의 attribute 만 rule 에 추가할 수 있음
+                if (this.type == ST_EVENT_DEVICE) {
+                    $("#attr-list-container").editableList('empty')
+                    this.form.outputCount.val("{}")
+                }
+                this.initContainer()
+            },
+            //deviceid 선택시 해당 section 정보를 셋팅한다.
+            initCapabilitySelect: function () {
+                this.form.capabilitySelect.html('')
+                var capaSelect = this.form.capabilitySelect;
+                var capaInput = this.form.capability;
+
+                var device = this.form.deviceId.find("option:selected").data('device');
+
+                if(device){
+                    for(var capability in device.capabilities){
+                        this.form.capabilitySelect.append($("<option></option>").val(capability).text(capability));
+                    }
+                    capaSelect.removeClass("input-error");
+                    if(capaSelect.find('option').length<=1){
+                        capaSelect.attr('disabled',true);
+                    }else{
+                        capaSelect.attr('disabled',false);
+                    }
+
+                    capaSelect.find('option:first').attr("selected",true);
+                    capaInput.val(capaSelect.find('option:selected').val());
+
+                    var selectedCapability =  capaSelect.find('option:selected').val();
+                    this.initAttributeSelect(selectedCapability);
+                } else {
+                    //선택한device셀렉트박스 값이 없으면 하부내역을 초기화한다.
+                    this.form.deviceId.addClass("input-error");
+                    capaInput.addClass("input-error");
+                    capaInput.val("");
+                }
+            },
+            //capability attr 셀렉트박스구성
+            initAttributeSelect: function (selectedCapability) {
+                this.form.capabilityAttr.html('');
+
+                if(!selectedCapability){
+                    selectedCapability = this.form.capabilitySelect.find("option:selected").val();
+                }
+
+                //capability의 attributes 및 commands 정보 조회
+                this.capabilitiesAttr = profiles.getCapability(selectedCapability);
+
+                if (this.type == ST_EVENT_DEVICE || this.type == ST_STATUS_DEVICE) {
+                    for (var i in this.capabilitiesAttr.attr) {
+                        for (var attr in this.capabilitiesAttr.attr[i]) {
+                            this.form.capabilityAttr.append($("<option></option>").val(attr + "|" + this.capabilitiesAttr.attr[i][attr]).text(attr));
+                        }
+                    }
+                } else {
+                    for (var i in this.capabilitiesAttr.cmd) {
+                        for (var cmd in this.capabilitiesAttr.cmd[i]) {
+                            if (typeof this.capabilitiesAttr.cmd[i][cmd] == 'object') {
+                                this.form.capabilityAttr.append($("<option></option>").val(cmd).text(cmd).attr("arg", JSON.stringify(this.capabilitiesAttr.cmd[i][cmd])));
+                            } else {
+                                this.form.capabilityAttr.append($("<option></option>").val(cmd + "|" + this.capabilitiesAttr.cmd[i][cmd]).text(cmd));
+                            }
+                        }
+                    }
+                }
+                if(this.form.capabilityAttr.find('option').length<=1){
+                    this.form.capabilityAttr.attr('readonly',true);
+                    this.form.capabilityAttr.attr('disabled',true);
+                }else{
+                    this.form.capabilityAttr.attr('readonly',false);
+                    this.form.capabilityAttr.attr('disabled',false);
+                }
+            },
+            //ArgType값으로 row input을 구성한다.
+            makeArgTypeAppend: function (row, inputInfo, inputNm) {
+                var dataKey;
+                if (inputInfo.type == 'object') {
+                    dataKey = 'prop';
+
+                } else if (inputInfo.type == 'enum') {
+                    dataKey = 'enum';
+
+                } else if (inputInfo.type == 'array') {
+                    dataKey = 'item';
+
+                } else if (inputInfo.type == 'number' || inputInfo.type == 'string' || inputInfo.type=='integer') {
+                    dataKey = '';
+
+                    var inputOption;
+                    if (inputNm != undefined) inputOption = {type: "text", title: inputNm, placeholder: inputNm};
+                    else inputOption = {type: "text"};
+
+                    if (inputInfo.type == 'number'||inputInfo.type == 'integer') {
+                        $("<input/>", inputOption).appendTo(row).typedInput({default: "num", types: ["num"]});
+                        //row.append(" "+inputInfo.unit);//enum 이 아닌 일반 문자열일경우의 unit값은 표기하지않는다.
+                        //range일경우의 숫자값 범위체크에 관련해서는 고민이 필요하다.
+                        if (inputInfo.range != undefined && inputInfo.range.length == 2) {
+                            var min = inputInfo.range[0];
+                            var max = inputInfo.range[1];
+                        }
+                    } else {
+                        $("<input/>", inputOption).appendTo(row).typedInput({default: "str", types: ["str"]});
+                    }
+
+                } else if (inputInfo.type == 'NO DEFINED') {
+                    $("<input/>", {type: "text"}).appendTo(row).typedInput({default: "num", types: ["num"]});
+                }
+
+                if (dataKey != '') {
+                    if (Array.isArray(inputInfo[dataKey])) {
+                        var select = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
+                        for (var idx in inputInfo[dataKey]) {
+                            select.append($("<option></option>").val(inputInfo[dataKey][idx]).text(inputInfo[dataKey][idx]));
+                        }
+                    } else {//데이터가 object 형태이면 재귀호출한다.
+                        for (var i in inputInfo[dataKey]) {
+                            if (inputInfo[dataKey].hasOwnProperty('type')) {
+                                this.makeArgTypeAppend(row, inputInfo[dataKey]);
+                                break;
+                            }
+
+                            if (typeof inputInfo[dataKey][i].hasOwnProperty('type')) {
+                                this.makeArgTypeAppend(row, inputInfo[dataKey][i], i);
+                            }
+                        }
+                    }
+                }
+            },
+            makeAttrComponent: function (row, obj) {
+                if (obj.val() != undefined && obj.val() != null) {
+                    row.find("select,input").not(":lt(3)").remove();
+                    row.find(".red-ui-typedInput-container").remove();
+                    //attributes 및 commands 에서 사용하는 인자(arguments)의 타입 정보를 조회
+                    var argType = profiles.getArgType(obj.val().split("|")[1]);
+
+                    //임시로 2개의 인풋이 생기는 구조는 한개로 제한한다.
+                    if (obj.val() == "color|ColorState") {
+                        var x = argType.prop;
+                        delete x.saturation
+                    }
+                    this.makeArgTypeAppend(row, argType);
+
+                    row.find("select,input").not(":lt(3)").each(function (idx, element) {//생성된 input에 class명을 부여한다.
+                        $(element).addClass("field" + (idx + 3));
+                    });
+
+                    //string, enum 비교시에는 ==, != 만 표시되도록 한다.
+                    var removeOperator = false;
+                    var compareObj = row.find(".field3");
+                    if (compareObj.length > 0) {
+                        if (compareObj.is("[class*='red-ui-typedInput']")) {
+                            if (compareObj.typedInput("type") == 'str') removeOperator = true;
+                        } else if (compareObj[0].tagName == 'SELECT') {
+                            removeOperator = true;
+                        }
+                        if (removeOperator) {
+                            $(".field2 option").not($(".field2 option[value*='eq']")).remove();
+                        }
+                    }
+                }
+            },
+            makeCmdComponent: function (row, obj) {
+                if (obj != undefined && obj != null) {
+                    //attributes 및 commands 에서 사용하는 인자(arguments)의 타입 정보를 조회
+                    var argType;
+                    var keyArr = Object.keys(obj);
+                    var reArgType = {};
+
+                    for (var i = 0; i < keyArr.length; i++) {
+                        argType = profiles.getArgType(obj[keyArr[i]]);
+                        reArgType[keyArr[i]] = argType;
+
+                        var inputNm;
+                        if (argType.type == 'number' || argType.type == 'string') inputNm = keyArr[i];
+                        this.makeArgTypeAppend(row, argType, inputNm);
+                    }
+
+                    //생성된 typeinput 의 속성에 필요한값들을 추가한다.
+                    row.find("select,.red-ui-typedInput-container").css("margin-left", "5px")
+                    row.find("select,.red-ui-typedInput-container").each(function (idx, element) {
+                        var typeObj = $(element).find(".red-ui-typedInput");
+                        typeObj.addClass("field" + (idx + 3));
+
+                        if ($(element)[0].tagName != 'SELECT') typeObj.data("types", JSON.stringify(reArgType));
+                        else $(element).addClass("field" + (idx + 3));
+                    });
+                }
+            },
+            //output관련 공통
+            setOutput: function (currentOutputs, containerObj) {
+                var rules = containerObj.editableList('items');
+                rules.each(function (i) {
+                    $(this).find("[class*=attr-output-index]").html(i + 1);
+                    var data = $(this).data('data');
+                    currentOutputs[data.hasOwnProperty('i') ? data.i : data._i] = i;
+                });
+                this.form.outputCount.val(JSON.stringify(currentOutputs));
+            },
+            //typedInput의 width를 조정한다.
+            resizeRule: function (container) {
+                var contWidth = container.width();
+                var typeField = container.find(".red-ui-typedInput");
+
+                if (this.type == ST_COMMAND_DEVICE) {
+                    //input의 크기를 가변적으로 하기위해 기준을 command attribute 셀렉트 박스로 잡았다.
+                    var standardWidth = $("#node-input-capability-attr").width();
+
+                    //기본 인풋박스의 크기를 정해놓은후
+                    typeField.each(function (idx, ele) {
+                        $(ele).typedInput("width", contWidth - standardWidth - 70);
+                    });
+
+                    //만약 줄바꿈이 된다면 input의 크기를 좀더 여유있게 설정한다.
+                    if (container.height() > 50) {
+                        typeField.each(function (idx, ele) {
+                            if (container.find('br').length == 0) $(ele).parent().parent().before('</br>');
+                            $(ele).typedInput("width", contWidth - standardWidth);
+                        });
+
+                        container.find("select").each(function (idx, ele) {
+                            $(ele).css("width", "30%");
+                        });
+                    }
+
+                } else {
+                    var field1 = container.find(".field1");
+                    typeField.typedInput("width", field1.width() + 11);
+
+                    //만약 줄바꿈이 된다면 selectbox의 크기를 좀더 적게 설정한다.
+                    if (container.height() > 50) {
+                        container.find("select").each(function (idx, ele) {
+                            $(ele).css("width", "30%");
+                        });
+                    }
+                }
+            }
+        };
+
+        DeviceNode.prototype = {
+            color: "rgb(170, 75, 205)",
+            category: "SmartThings",
+            defaults: {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
+                name: {required: true},
+                deviceId: {value: "", required: true},
+                capability: {value: "", required: true},
+                attribute: {value: ""},
+                sensorCapaDs: {value: [{isInit: true, col1: "", col2: "", hidden2: "", col3: "", argType: ""}]},//초기화용 배열임을 판단하기위해 isInit값 추가
+                sensorAttrDs: {
+                    value: [{
+                        isInit: true,
+                        col1: "",
+                        hidden1: "",
+                        col2: "",
+                        col3: "",
+                        col4: "",
+                        col5: "",
+                        col6: ""
+                    }]
+                },
+                outputs: {value: 1}
+            },
+            inputs: 1,
+            outputs: 1,
+            paletteLabel: "Device Control",
+            icon: "Device.png",
+            label: function () {
+                return this.name || this.type;
+            },
+            labelStyle: function () {
+                return this.name ? "node_label_italic" : "";
+            },
+            oneditprepare: function () {
+                var NODE = this;
+                var target = (NODE.type == ST_COMMAND_DEVICE) ? "cmd" : "attr";
+                $("#node-input-deviceId").html('')
+                NODE.deviceList = []
+
+                NODE.deviceList = RED.nodes.filterNodes({type:ST_DEVICE_PROFILE})
+                if(NODE.type != ST_EVENT_DEVICE){
+                    NODE.deviceList.concat(RED.nodes.filterNodes({type:ST_MY_DEVICE}))
+                }
+                NODE.deviceList.filter(function(node){
+                    return node.name && node.device && node.device.capabilities && node.device.capabilities[target]
+                }).forEach(function(node){
+                    if (node.type == ST_DEVICE_PROFILE) {
+                        $("#node-input-deviceId").prepend($("<option></option>").val(node.id).data('device',node.device).text(node.name + ":" + node.capability));
+                    }
+                    if (node.type == ST_MY_DEVICE ) {
+                        $("#node-input-deviceId").append($("<option></option>").val(node.id).data('device',node.device).text("(My)"+node.label));
+                    }
+                })
+
+                $("#node-input-deviceId").val(NODE.deviceId);
+                NODE.deviceInfo = $("#node-input-deviceId option:selected").data('device');
+
+                $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
+                    addItem: function (container, idx, opt) {
+                        var isDuplicate = false;
+
+                        //capability추가시 중복된 값이 존재하면 추가시키지 않는다.
+                        if (!opt.hasOwnProperty('r')) {
+                            var list = $("#cmd-list-container").editableList('items');
+                            list.each(function () {
+                                if ((($(this).find(".field1").text() == $("#node-input-capability").val())
+                                    && ($(this).find(".field2").text() == $("#node-input-capability-attr option:selected").text()))
+                                    || $("#node-input-capability-attr").val() == "") {
+                                    isDuplicate = true;
+                                }
+                            });
+                        }
+
+                        //attribute 셀렉트박스에 데이터가 없으면 attr은 추가시키지 않는다.
+                        if ($("#node-input-capability-attr option").length == 0) isDuplicate = true;
+
+                        if (isDuplicate) {
+                            $(container).parent().remove();
+                            return false;
+                        }
+
+                        if (!opt.hasOwnProperty('r')) {
+                            opt.r = {};
+                        }
+
+                        var rule = opt.r;
+                        var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
+                        var span1 = $('<span>', {class: "field1"}).appendTo(row);
+                        var gt1 = $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row);
+                        var span2 = $('<span>', {class: "field2"}).appendTo(row);
+                        var hidden2 = $('<input>', {type: "hidden", class: "hidden2"}).appendTo(row);
+
+                        span1.text($("#node-input-capability").val());
+                        span2.text($("#node-input-capability-attr option:selected").text());
+                        hidden2.val($("#node-input-capability-attr").val());
+
+                        //rule 데이터가 존재한다면 저장한값으로 리스트를 보여준다.
+                        if (typeof rule.col1 != "undefined") {
+                            span1.text(rule.col1);
+                            span2.text(rule.col2);
+                            hidden2.val(rule.hidden2);
+
+                            if (rule.argType != undefined) {
+                                var argType = JSON.parse(rule.argType);
+                                var argTypeLen = Object.keys(argType).length;
+                                $(row).parent().data("argType", argType);
+
+                                if (argTypeLen > 0) {
+                                    eventHandler.makeCmdComponent(row, argType);
+                                    eventHandler.resizeRule(container);
+                                } else {
+                                    var field3 = $('<span>', {class: "field3"}).appendTo(row);
+                                    field3.text("()");
+                                    //input 개체없이 텍스트만 테이블에 표기했을경우 행의 높이가 작아지는 현상이있어 조정하였다.
+                                    row.css({"height": "26px"});
+                                }
+                            }
+
+                            container.find("select,input").not(":lt(1)").not("input[type='hidden']").each(function (idx, element) {
+                                if ($(element).is('[class~="red-ui-typedInput"]')) {
+                                    $(element).typedInput('value', rule["col" + (idx + 3)]);
+                                } else {
+                                    $(element).val(rule["col" + (idx + 3)]);
+                                }
+                            });
+
+                        } else {
+                            if ($("#node-input-capability-attr option:selected").attr("arg") != undefined) {
+                                var argType = JSON.parse($("#node-input-capability-attr option:selected").attr("arg"));
+                                $(row).parent().data("argType", argType);
+                                var argTypeLen = Object.keys(argType).length;
+
+                                if (argTypeLen > 0) {
+                                    //ArgType값으로 row input을 구성한다.
+                                    eventHandler.makeCmdComponent(row, argType);
+                                    eventHandler.resizeRule(container);
+                                } else {
+                                    var field3 = $('<span>', {class: "field3"}).appendTo(row);
+                                    field3.text("()");
+
+                                    //input 개체없이 텍스트만 테이블에 표기했을경우 행의 높이가 작아지는 현상이있어 조정하였다.
+                                    row.css({"height": "26px"});
+                                }
+                            }
+                        }
+
+                        if (this.type == ST_COMMAND_DEVICE) {//Device의 usage가 Action 일 경우는 output을 1개로 한다.
+                            if ($("#cmd-list-container").editableList('items').length > 1) {
+                                $("#cmd-list-container").find(".outputSpan").remove();
+                            }
+                            outputCount.val('{"0":0}');
+                        }
+
+                    },
+                    resizeItem: function (container) {
+                        eventHandler.resizeRule(container);
+                    },
+                    removeItem: function (opt) {
+                    },
+                    sortItems: function (rules) {
+                    },
+                    sortable: true,
+                    removable: true
+                });
+
+                $("#attr-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
+                    addItem: function (container, idx, opt) {
+                        var isRemoveRow = false;
+
+                        if (!opt.hasOwnProperty('r')) {
+                            opt.r = {};
+                        }
+
+                        //attribute 셀렉트박스에 데이터가 없으면 attr은 추가시키지 않는다.
+                        if ($("#node-input-capability-attr option").length == 0) isRemoveRow = true;
+                        if (isRemoveRow) {
+                            $(container).parent().remove();
+                            return false;
+                        }
+
+                        if (!opt.hasOwnProperty('i')) {
+                            opt._i = Math.floor((0x99999 - 0x10000) * Math.random()).toString(16);
+                        }
+
+                        var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
+                        var row2 = $('<div/>', {style: "padding-top: 5px; padding-left: 200px;"}).appendTo(container);
+                        var field1 = $('<input/>', {
+                            class: "field1",
+                            style: "width:35%; margin-right:5px;",
+                            type: "text",
+                            readonly: "true"
+                        }).appendTo(row);
+                        var hidden1 = $('<input>', {type: "hidden", class: "hidden1"}).appendTo(row);
+
+                        var field2 = $('<select/>', {
+                            class: "field2",
+                            style: "width:17%; margin-right: 5px; text-align: center;"
+                        }).appendTo(row);
+                        for (var d in operators) {
+                            field2.append($("<option></option>").val(operators[d].v).text(/^switch/.test(operators[d].t) ? NODE._(operators[d].t) : operators[d].t));
+                        }
+                        var btwnValueField = $('<input/>', {
+                            class: "node-input-rule-btwn-value",
+                            type: "text",
+                            style: "margin-right: 5px; width:20%"
+                        }).appendTo(row2);
+                        var btwnAndLabel = $('<span/>', {
+                            class: "node-input-rule-btwn-label",
+                            style: "width:10%"
+                        }).text(" and ").appendTo(row2);
+                        var btwnValue2Field = $('<input/>', {
+                            class: "node-input-rule-btwn-value2",
+                            type: "text",
+                            style: "margin-left:2px; width:20%"
+                        }).appendTo(row2);
+
+                        //operator 셀렉트박스 이벤트 등록
+                        field2.on('change',function () {
+                            row2.find(":input").val("");
+                            var type = field2.val();
+                            if (type === "btwn") {
+                                row.find("select,input").not(":lt(3)").hide();
+                                row.find(".red-ui-typedInput-container").hide();
+                                field2.css("width", "20%");
+                                btwnValueField.show();
+                            } else {
+                                field2.css("width", "17%");
+                                btwnValueField.hide();
+                                if (type === "true" || type === "false" || type === "null" || type === "nnull" || type === "else") {
+                                    row.find("select,input").not(":lt(3)").hide();
+                                    row.find(".red-ui-typedInput-container").hide();
+                                } else {
+                                    row.find("select,input").not(":lt(3)").show();
+                                    row.find(".red-ui-typedInput-container").show();
+                                }
+                            }
+                            if (type === "btwn") {
+                                row2.show();
+                            } else {
+                                row2.hide();
+                            }
+                        });
+
+                        //ArgType값으로 row input을 구성한다.
+                        field1.on('change',function () {
+                            eventHandler.makeAttrComponent(row, hidden1);
+                            eventHandler.resizeRule(container);
+                        });
+
+                        field1.val($("#node-input-capability-attr option:selected").text());
+                        hidden1.val($("#node-input-capability-attr").val());
+
+                        var finalspan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
+                        finalspan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
+
+                        var rule = opt.r;
+
+                        if (typeof rule.col1 != "undefined") {
+                            field1.val(rule.col1);
+                            hidden1.val(rule.hidden1);
+                            field2.val(rule.col2);
+                        }
+                        field1.change();
+                        field2.change();
+
+                        if (typeof rule.col1 != "undefined") {
+                            container.find("select,input").not(":lt(3)").each(function (idx, element) {
+
+                                if ($(element).is('[class~="red-ui-typedInput"]')) {
+                                    $(element).typedInput('value', rule["col" + (idx + 3)]);
+                                } else {
+                                    $(element).val(rule["col" + (idx + 3)]);
+                                }
+                            });
+                        }
+
+                        var currentOutputs = JSON.parse(outputCount.val() || "{}");
+                        currentOutputs[opt.hasOwnProperty('i') ? opt.i : opt._i] = idx;
+                        outputCount.val(JSON.stringify(currentOutputs));
+                    },
+                    resizeItem: function (container) {
+                        eventHandler.resizeRule(container);
+                    },
+                    removeItem: function (opt) {
+                        var currentOutputs = JSON.parse(outputCount.val() || "{}");
+                        if (opt.hasOwnProperty('i')) {
+                            currentOutputs[opt.i] = -1;
+                        } else {
+                            delete currentOutputs[opt._i];
+                        }
+                        eventHandler.setOutput(currentOutputs, $("#attr-list-container"));
+                    },
+                    sortItems: function (rules) {
+                        var currentOutputs = JSON.parse(outputCount.val() || "{}");
+                        eventHandler.setOutput(currentOutputs, $("#attr-list-container"));
+                    },
+                    sortable: true,
+                    removable: true
+                });
+
+                for (var i = 0; i < this.sensorCapaDs.length; i++) {
+                    var data = this.sensorCapaDs[i];
+                    /*초기화 배열값으로인해 루프를 수행하지않기위해 isInit값을 추가하였다.
+                    내용이없는 로우가 추가되는 현상 발생
+                    */
+                    if (data.isInit) break;
+                    $("#cmd-list-container").editableList('addItem', {r: data, i: i});
+                }
+
+                for (var i = 0; i < this.sensorAttrDs.length; i++) {
+                    var data = this.sensorAttrDs[i];
+                    if (data.isInit) break;
+                    $("#attr-list-container").editableList('addItem', {r: data, i: i});
+                }
+                var formObj = {
+                    deviceId: $("#node-input-deviceId"),
+                    eqtype: $("#node-input-eqtype"),
+                    capability: $("#node-input-capability"),
+                    capabilitySelect: $("#node-input-capability-select"),
+                    capabilityAttr: $("#node-input-capability-attr"),
+                    containerRow: ((NODE.type == ST_COMMAND_DEVICE) ? $(".actuator-container-row") : $(".sensor-container-row")),
+                    container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container")),
+                    // sensorContainerRow: $(".sensor-container-row"),
+                    // actuatorContainerRow: $(".actuator-container-row"),
+                    // sensorCapabilityContainer: $("#cmd-list-container"),
+                    // sensorAttrContainer: $("#attr-list-container"),
+                    outputCount: $("#node-input-outputs"),
+                    containerRowData : ((NODE.type == ST_COMMAND_DEVICE) ? NODE.sensorCapaDs : NODE.sensorAttrDs)
+                };
+
+                //capability관련 component 초기화해주는 객체생성
+                var eventHandler = new ThingCommon(this.type.toLowerCase(), formObj, NODE);
+                var outputCount = $("#node-input-outputs").val("{}");
+            },
+            /*편집 대화 상자 완료처리시 호출*/
+            oneditsave: function () {
+                var NODE = this;
+
+                var list1 = $("#cmd-list-container").editableList('items');
+                NODE.sensorCapaDs = [];
+                list1.each(function (i) {
+                    var r = {};
+                    r.col1 = $(this).find(".field1").text();
+                    r.col2 = $(this).find(".field2").text();
+                    r.hidden2 = $(this).find(".hidden2").val();
+                    r.argType = JSON.stringify($(this).data("argType"));
+
+                    //argType별로 생성된 input의 값을 가져온다.
+                    $(this).find("select,input").not(":lt(1)").not("input[type='hidden']").each(function (idx, element) {
+                        if ($(element).attr("class")) {
+                            if ($(element).is('[class~="red-ui-typedInput"]')) {
+                                r["col" + (idx + 3)] = $(element).typedInput('value');
+                                r["col" + (idx + 3) + "_vt"] = $(element).typedInput('type');
+                                r["types"] = $(element).data('types');
+                            } else {
+                                r["col" + (idx + 3)] = $(element).val();
+                            }
+                        }
+                    });
+                    NODE.sensorCapaDs.push(r);
+                });
+
+                var list2 = $("#attr-list-container").editableList('items');
+                NODE.sensorAttrDs = [];
+                list2.each(function (i) {
+                    var r = {};
+                    r.col1 = $(this).find(".field1").val();
+                    r.hidden1 = $(this).find(".hidden1").val();
+                    r.col2 = $(this).find(".field2").val();
+
+                    //argType별로 생성된 input의 값을 가져온다.
+                    $(this).find("select,input").not(":lt(3)").each(function (idx, element) {
+                        if ($(element).is('[class~="red-ui-typedInput"]')) {
+                            r["col" + (idx + 3)] = $(element).typedInput('value');
+                        } else {
+                            r["col" + (idx + 3)] = $(element).val();
+                        }
+                    });
+
+                    NODE.sensorAttrDs.push(r);
+                });
+
+                if (list2.length == 0) {
+                    var outputCount = $("#node-input-outputs").val('{"0":0}');
+                }
+
+                var temp = $("#node-input-capability-attr option:selected");
+                if (temp) {
+                    NODE.attribute = temp.text();
+                }
+                NODE.deviceId = $("#node-input-deviceId").val();
+                // var t = Object.assign({},$("#node-input-deviceId option:selected").data('device'))
+                // var deviceInfo = {
+                //     type: t.type,
+                //     token: t.token,
+                //     name: t.name,
+                //     label: t.label,
+                //     deviceId : t.deviceId,
+                // }
+                // NODE.device = deviceInfo
+            },
+            //editor height 변화에 따라 attr-container의 height를 조정한다.
+            oneditresize: function (size) {
+                var rows;
+                var resizeContainer;
+                var editorRow;
+
+                if (this.type == ST_COMMAND_DEVICE) {
+                    rows = $("#dialog-form>div:not('[class$=container-row]')");
+                    editorRow = $("#dialog-form>div.actuator-container-row");
+                    resizeContainer = $("#cmd-list-container");
+                } else {
+                    //event, sensor
+                    rows = $("#dialog-form>div:not('[class$=container-row]')");
+                    editorRow = $("#dialog-form>div.sensor-container-row");
+                    resizeContainer = $("#attr-list-container");
+                }
+
+                var height = size.height;
+                for (var i = 0; i < rows.size(); i++) {
+                    height -= $(rows[i]).outerHeight(true);
+                }
+
+                height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+                resizeContainer.editableList('height', height - 100);
+            }
+        };
+
+        function DeviceNode(type) {
+
+            if (type === 'event') {
+                this.paletteLabel = "Event";
+                this.color = "rgb(113,179,145)";
+                this.icon = "st-event.png";
+            } else if (type === 'status') {
+                this.paletteLabel = "Status";
+                this.color = "rgb(119,197,191)";
+                this.icon = "st-status.png";
+            } else {
+                this.paletteLabel = "Command";
+                this.color = "rgb(255,198,109)";
+                this.icon = "st-command.png";
+            }
+
+            var defaultsConfig = {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
+                name: {required: true},
+                deviceId: {value: "", required: true,
+                    validate: function (val) {
+                        var isValidDevice = false;
+                        RED.nodes.eachNode(function(node){
+                            if(node.id == val){
+                                isValidDevice=true
+                            }
+                        })
+                        return !!val && isValidDevice
+                    }
+                },
+                device: {value:{}},
+                capability: {value: "", required: true},
+                eqtype: {value: type},
+                attribute: {value: ""},
+                sensorCapaDs: {value: [{isInit: true, col1: "", col2: "", hidden2: "", col3: "", argType: ""}]},//초기화용 배열임을 판단하기위해 isInit값 추가
+                sensorAttrDs: {
+                    value: [{
+                        isInit: true,
+                        col1: "",
+                        hidden1: "",
+                        col2: "",
+                        col3: "",
+                        col4: "",
+                        col5: "",
+                        col6: ""
+                    }]
+                },
+                outputs: {value: 1}
+            };
+            this.defaults = defaultsConfig;
+        }
+
+        RED.nodes.registerType(ST_EVENT_DEVICE, new DeviceNode("event"));
+        RED.nodes.registerType(ST_STATUS_DEVICE, new DeviceNode("status"));
+        RED.nodes.registerType(ST_COMMAND_DEVICE, new DeviceNode("command"));
+    })();
+    //@ sourceURL=device.node.js
+</script>
+<!-- Node Script End-->
