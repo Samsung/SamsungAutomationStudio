@@ -1,0 +1,226 @@
+<script type="text/x-red" data-template-name="aws-config">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-region"><i class="fa fa-wrench"></i> Region</label>
+        <select type="text" id="node-input-region" style="width:70%!important;">
+            <option value="us-east-1">US East (N. Virginia) us-east-1</option>
+            <option value="us-east-2">US East (Ohio) us-east-2</option>
+            <option value="us-west-1">US West (N. California) us-west-1</option>
+            <option value="us-west-2">US West (Oregon) us-west-2</option>
+            <option value="ap-east-1">Asia Pacific (Hong Kong) ap-east-1</option>
+            <option value="ap-south-1">Asia Pacific (Mumbai) ap-south-1</option>
+            <option value="ap-northeast-2">Asia Pacific (Seoul) ap-northeast-2</option>
+            <option value="ap-southeast-1">Asia Pacific (Singapore) ap-southeast-1</option>
+            <option value="ap-southeast-2">Asia Pacific (Sydney) ap-southeast-2</option>
+            <option value="ap-northeast-1">Asia Pacific (Tokyo) ap-northeast-1</option>
+            <option value="ca-central-1">Canada (Central) ca-central-1</option>
+            <option value="eu-central-1">Europe (Frankfurt) eu-central-1</option>
+            <option value="eu-west-1">Europe (Ireland) eu-west-1</option>
+            <option value="eu-west-2">Europe (London) eu-west-2</option>
+            <option value="eu-west-3">Europe (Paris) eu-west-3</option>
+            <option value="eu-north-1">Europe (Stockholm) eu-north-1</option>
+            <option value="me-south-1">Middle East (Bahrain)</option>
+            <option value="sa-east-1">South America (São Paulo)</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-accessKey"><i class="icon-bookmark"></i> AccessKey</label>
+        <input type="text" id="node-input-accessKey" placeholder="AKIAIOSFODNN7EXAMPLE" autocomplete="off">
+    </div>
+    <div class="form-row">
+        <label for="node-input-secretKey"><i class="icon-bookmark"></i> SecretKey</label>
+        <input type="password" id="node-input-secretKey"placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" autocomplete="off">
+    </div>
+    <div class="form-row">
+        <label for="node-input-proxy"><i class="fa fa-cog"></i> Proxy</label>
+        <input type="text" id="node-input-proxy" style="width:65%!important;" placeholder="http://0.0.0.0:80">
+        <input type="checkbox" id="node-input-proxyRequired" style="width:5%!important;">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="aws-config">
+<p>AWS Config</p>
+<p>When AWS SDK nodes are invoked, AWS Config node is required.</p>
+<h3>Properties</h3>
+<dl class="message-properties">
+    <dt>Name</dt>
+        <dd>You can tag or describe this aws-config.</dd>
+    <dt>Region <span class="property-type">required</span></dt>
+        <dd>To connect programmatically to an AWS service, you use an endpoint. An endpoint is the URL of the entry point for an AWS web service.</dd>
+    <dt>AccessKey <span class="property-type">required</span></dt>
+        <dd>Access keys are long-term credentials for an IAM user or the AWS account root user. You can use access keys to sign programmatic requests to the AWS CLI or AWS API (directly or using the AWS SDK). For more information, see Signing AWS API Requests in the Amazon Web Services General Reference.</dd>
+    <dt>SecretKey <span class="property-type">required</span></dt>
+        <dd>Manage your access keys as securely as you do your user name and password. Do not provide your access keys to a third party, even to help find your canonical user ID. By doing this, you might give someone permanent access to your account.</dd>
+    <dt>Proxy <span class="property-type">optional</span></dt>
+        <dd>Not used on Samsung Automation Studio</dd>
+    </dl>
+
+</script>
+
+<script type="text/x-red" data-template-name="aws-sdk">
+<div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+    <input type="text" id="node-input-name" placeholder="Name"></input>
+</div>
+<div class="form-row">
+    <label for="node-input-config"><i class="fa fa-user"></i> AWS Config</label>
+    <select type="text" id="node-input-config" style="width:70%!important;"></select>
+</div>
+<div class="form-row">
+    <label for="node-input-service"><i class="fa fa-cog"></i> Service</label>
+    <select type="text" id="node-input-service" style="width:70%!important;">
+    <option value="ACM">AWS.ACM</option><option value="ACMPCA">AWS.ACMPCA</option><option value="APIGateway">AWS.APIGateway</option><option value="AccessAnalyzer">AWS.AccessAnalyzer</option><option value="AlexaForBusiness">AWS.AlexaForBusiness</option><option value="Amplify">AWS.Amplify</option><option value="ApiGatewayManagementApi">AWS.ApiGatewayManagementApi</option><option value="ApiGatewayV2">AWS.ApiGatewayV2</option><option value="AppConfig">AWS.AppConfig</option><option value="AppMesh">AWS.AppMesh</option><option value="AppMesh_20181001">AWS.AppMesh_20181001</option><option value="AppStream">AWS.AppStream</option><option value="AppSync">AWS.AppSync</option><option value="ApplicationAutoScaling">AWS.ApplicationAutoScaling</option><option value="ApplicationInsights">AWS.ApplicationInsights</option><option value="Athena">AWS.Athena</option><option value="AugmentedAIRuntime">AWS.AugmentedAIRuntime</option><option value="AutoScaling">AWS.AutoScaling</option><option value="AutoScalingPlans">AWS.AutoScalingPlans</option><option value="Backup">AWS.Backup</option><option value="Batch">AWS.Batch</option><option value="Budgets">AWS.Budgets</option><option value="CUR">AWS.CUR</option><option value="Chime">AWS.Chime</option><option value="Cloud9">AWS.Cloud9</option><option value="CloudDirectory">AWS.CloudDirectory</option><option value="CloudDirectory_20160510">AWS.CloudDirectory_20160510</option><option value="CloudFormation">AWS.CloudFormation</option><option value="CloudFront">AWS.CloudFront</option><option value="CloudFront_20161125">AWS.CloudFront_20161125</option><option value="CloudFront_20170325">AWS.CloudFront_20170325</option><option value="CloudFront_20171030">AWS.CloudFront_20171030</option><option value="CloudFront_20180618">AWS.CloudFront_20180618</option><option value="CloudFront_20181105">AWS.CloudFront_20181105</option><option value="CloudHSM">AWS.CloudHSM</option><option value="CloudHSMV2">AWS.CloudHSMV2</option><option value="CloudSearch">AWS.CloudSearch</option><option value="CloudSearchDomain">AWS.CloudSearchDomain</option><option value="CloudSearch_20110201">AWS.CloudSearch_20110201</option><option value="CloudTrail">AWS.CloudTrail</option><option value="CloudWatch">AWS.CloudWatch</option><option value="CloudWatchEvents">AWS.CloudWatchEvents</option><option value="CloudWatchLogs">AWS.CloudWatchLogs</option><option value="CodeBuild">AWS.CodeBuild</option><option value="CodeCommit">AWS.CodeCommit</option><option value="CodeDeploy">AWS.CodeDeploy</option><option value="CodeGuruProfiler">AWS.CodeGuruProfiler</option><option value="CodeGuruReviewer">AWS.CodeGuruReviewer</option><option value="CodePipeline">AWS.CodePipeline</option><option value="CodeStar">AWS.CodeStar</option><option value="CodeStarNotifications">AWS.CodeStarNotifications</option><option value="CodeStarconnections">AWS.CodeStarconnections</option><option value="CognitoIdentity">AWS.CognitoIdentity</option><option value="CognitoIdentityServiceProvider">AWS.CognitoIdentityServiceProvider</option><option value="CognitoSync">AWS.CognitoSync</option><option value="Comprehend">AWS.Comprehend</option><option value="ComprehendMedical">AWS.ComprehendMedical</option><option value="ComputeOptimizer">AWS.ComputeOptimizer</option><option value="ConfigService">AWS.ConfigService</option><option value="Connect">AWS.Connect</option><option value="ConnectParticipant">AWS.ConnectParticipant</option><option value="CostExplorer">AWS.CostExplorer</option><option value="DAX">AWS.DAX</option><option value="DLM">AWS.DLM</option><option value="DMS">AWS.DMS</option><option value="DataExchange">AWS.DataExchange</option><option value="DataPipeline">AWS.DataPipeline</option><option value="DataSync">AWS.DataSync</option><option value="Detective">AWS.Detective</option><option value="DeviceFarm">AWS.DeviceFarm</option><option value="DirectConnect">AWS.DirectConnect</option><option value="DirectoryService">AWS.DirectoryService</option><option value="Discovery">AWS.Discovery</option><option value="DocDB">AWS.DocDB</option><option value="DynamoDB">AWS.DynamoDB</option><option value="DynamoDBStreams">AWS.DynamoDBStreams</option><option value="DynamoDB_20111205">AWS.DynamoDB_20111205</option><option value="EBS">AWS.EBS</option><option value="EC2">AWS.EC2</option><option value="EC2InstanceConnect">AWS.EC2InstanceConnect</option><option value="ECR">AWS.ECR</option><option value="ECS">AWS.ECS</option><option value="EFS">AWS.EFS</option><option value="EKS">AWS.EKS</option><option value="ELB">AWS.ELB</option><option value="ELBv2">AWS.ELBv2</option><option value="EMR">AWS.EMR</option><option value="ES">AWS.ES</option><option value="ElastiCache">AWS.ElastiCache</option><option value="ElasticBeanstalk">AWS.ElasticBeanstalk</option><option value="ElasticInference">AWS.ElasticInference</option><option value="ElasticTranscoder">AWS.ElasticTranscoder</option><option value="EventBridge">AWS.EventBridge</option><option value="FMS">AWS.FMS</option><option value="FSx">AWS.FSx</option><option value="Firehose">AWS.Firehose</option><option value="ForecastQueryService">AWS.ForecastQueryService</option><option value="ForecastService">AWS.ForecastService</option><option value="FraudDetector">AWS.FraudDetector</option><option value="GameLift">AWS.GameLift</option><option value="Glacier">AWS.Glacier</option><option value="GlobalAccelerator">AWS.GlobalAccelerator</option><option value="Glue">AWS.Glue</option><option value="Greengrass">AWS.Greengrass</option><option value="GroundStation">AWS.GroundStation</option><option value="GuardDuty">AWS.GuardDuty</option><option value="Health">AWS.Health</option><option value="IAM">AWS.IAM</option><option value="Imagebuilder">AWS.Imagebuilder</option><option value="ImportExport">AWS.ImportExport</option><option value="Inspector">AWS.Inspector</option><option value="IoT1ClickDevicesService">AWS.IoT1ClickDevicesService</option><option value="IoT1ClickProjects">AWS.IoT1ClickProjects</option><option value="IoTAnalytics">AWS.IoTAnalytics</option><option value="IoTEvents">AWS.IoTEvents</option><option value="IoTEventsData">AWS.IoTEventsData</option><option value="IoTJobsDataPlane">AWS.IoTJobsDataPlane</option><option value="IoTSecureTunneling">AWS.IoTSecureTunneling</option><option value="IoTThingsGraph">AWS.IoTThingsGraph</option><option value="Iot">AWS.Iot</option><option value="IotData">AWS.IotData</option><option value="KMS">AWS.KMS</option><option value="Kafka">AWS.Kafka</option><option value="Kendra">AWS.Kendra</option><option value="Kinesis">AWS.Kinesis</option><option value="KinesisAnalytics">AWS.KinesisAnalytics</option><option value="KinesisAnalyticsV2">AWS.KinesisAnalyticsV2</option><option value="KinesisVideo">AWS.KinesisVideo</option><option value="KinesisVideoArchivedMedia">AWS.KinesisVideoArchivedMedia</option><option value="KinesisVideoMedia">AWS.KinesisVideoMedia</option><option value="KinesisVideoSignalingChannels">AWS.KinesisVideoSignalingChannels</option><option value="LakeFormation">AWS.LakeFormation</option><option value="Lambda">AWS.Lambda</option><option value="Lambda_20141111">AWS.Lambda_20141111</option><option value="LexModelBuildingService">AWS.LexModelBuildingService</option><option value="LexRuntime">AWS.LexRuntime</option><option value="LicenseManager">AWS.LicenseManager</option><option value="Lightsail">AWS.Lightsail</option><option value="MQ">AWS.MQ</option><option value="MTurk">AWS.MTurk</option><option value="MachineLearning">AWS.MachineLearning</option><option value="Macie">AWS.Macie</option><option value="ManagedBlockchain">AWS.ManagedBlockchain</option><option value="MarketplaceCatalog">AWS.MarketplaceCatalog</option><option value="MarketplaceCommerceAnalytics">AWS.MarketplaceCommerceAnalytics</option><option value="MarketplaceEntitlementService">AWS.MarketplaceEntitlementService</option><option value="MarketplaceMetering">AWS.MarketplaceMetering</option><option value="MediaConnect">AWS.MediaConnect</option><option value="MediaConvert">AWS.MediaConvert</option><option value="MediaLive">AWS.MediaLive</option><option value="MediaPackage">AWS.MediaPackage</option><option value="MediaPackageVod">AWS.MediaPackageVod</option><option value="MediaStore">AWS.MediaStore</option><option value="MediaStoreData">AWS.MediaStoreData</option><option value="MediaTailor">AWS.MediaTailor</option><option value="MigrationHub">AWS.MigrationHub</option><option value="MigrationHubConfig">AWS.MigrationHubConfig</option><option value="Mobile">AWS.Mobile</option><option value="MobileAnalytics">AWS.MobileAnalytics</option><option value="Neptune">AWS.Neptune</option><option value="NetworkManager">AWS.NetworkManager</option><option value="OpsWorks">AWS.OpsWorks</option><option value="OpsWorksCM">AWS.OpsWorksCM</option><option value="Organizations">AWS.Organizations</option><option value="Outposts">AWS.Outposts</option><option value="PI">AWS.PI</option><option value="Personalize">AWS.Personalize</option><option value="PersonalizeEvents">AWS.PersonalizeEvents</option><option value="PersonalizeRuntime">AWS.PersonalizeRuntime</option><option value="Pinpoint">AWS.Pinpoint</option><option value="PinpointEmail">AWS.PinpointEmail</option><option value="PinpointSMSVoice">AWS.PinpointSMSVoice</option><option value="Polly">AWS.Polly</option><option value="Pricing">AWS.Pricing</option><option value="QLDB">AWS.QLDB</option><option value="QLDBSession">AWS.QLDBSession</option><option value="QuickSight">AWS.QuickSight</option><option value="RAM">AWS.RAM</option><option value="RDS">AWS.RDS</option><option value="RDSDataService">AWS.RDSDataService</option><option value="RDS_20130110">AWS.RDS_20130110</option><option value="RDS_20130212">AWS.RDS_20130212</option><option value="RDS_20130909">AWS.RDS_20130909</option><option value="RDS_20140901">AWS.RDS_20140901</option><option value="Redshift">AWS.Redshift</option><option value="Rekognition">AWS.Rekognition</option><option value="ResourceGroups">AWS.ResourceGroups</option><option value="ResourceGroupsTaggingAPI">AWS.ResourceGroupsTaggingAPI</option><option value="RoboMaker">AWS.RoboMaker</option><option value="Route53">AWS.Route53</option><option value="Route53Domains">AWS.Route53Domains</option><option value="Route53Resolver">AWS.Route53Resolver</option><option value="S3">AWS.S3</option><option value="S3Control">AWS.S3Control</option><option value="SES">AWS.SES</option><option value="SESV2">AWS.SESV2</option><option value="SMS">AWS.SMS</option><option value="SNS">AWS.SNS</option><option value="SQS">AWS.SQS</option><option value="SSM">AWS.SSM</option><option value="SSO">AWS.SSO</option><option value="SSOOIDC">AWS.SSOOIDC</option><option value="STS">AWS.STS</option><option value="SWF">AWS.SWF</option><option value="SageMaker">AWS.SageMaker</option><option value="SageMakerRuntime">AWS.SageMakerRuntime</option><option value="SavingsPlans">AWS.SavingsPlans</option><option value="Schemas">AWS.Schemas</option><option value="SecretsManager">AWS.SecretsManager</option><option value="SecurityHub">AWS.SecurityHub</option><option value="ServerlessApplicationRepository">AWS.ServerlessApplicationRepository</option><option value="ServiceCatalog">AWS.ServiceCatalog</option><option value="ServiceDiscovery">AWS.ServiceDiscovery</option><option value="ServiceQuotas">AWS.ServiceQuotas</option><option value="Shield">AWS.Shield</option><option value="Signer">AWS.Signer</option><option value="SimpleDB">AWS.SimpleDB</option><option value="Snowball">AWS.Snowball</option><option value="StepFunctions">AWS.StepFunctions</option><option value="StorageGateway">AWS.StorageGateway</option><option value="Support">AWS.Support</option><option value="Textract">AWS.Textract</option><option value="TranscribeService">AWS.TranscribeService</option><option value="Transfer">AWS.Transfer</option><option value="Translate">AWS.Translate</option><option value="WAF">AWS.WAF</option><option value="WAFRegional">AWS.WAFRegional</option><option value="WAFV2">AWS.WAFV2</option><option value="WorkDocs">AWS.WorkDocs</option><option value="WorkLink">AWS.WorkLink</option><option value="WorkMail">AWS.WorkMail</option><option value="WorkMailMessageFlow">AWS.WorkMailMessageFlow</option><option value="WorkSpaces">AWS.WorkSpaces</option><option value="XRay">AWS.XRay</option>
+    </select>
+</div>
+<div class="form-row">
+    <label for="node-input-operation"><i class="fa fa-wrench"></i> Method</label>
+    <input type="text" id="node-input-operation"/>
+</div>
+<div class="form-row">
+    <label for="node-input-params"><i class="fa fa-code"></i> Params</label>
+    <input type="hidden" id="node-input-params" value="{}" autofocus="autofocus"/>
+    <input type="hidden" id="node-input-noerr"/>
+    <div class="form-row node-text-editor-row"><div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-param-editor" ></div></div>
+</div>
+
+</script>
+
+<script type="text/x-red" data-help-name="aws-sdk">
+    <p>AWS SDK</p>
+    <p>You can extend this flow by connecting it to your AWS using the AWS SDK node. Refer to <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html" target="_blank">AWS api documents.</a></p>
+    <h3>Properties</h3>
+<dl class="message-properties">
+    <dt>Name</dt>
+        <dd>You can tag or describe this aws-sdk.</dd>
+    <dt>AWS Config <span class="property-type">required</span></dt>
+        <dd>Choose a AWS Config Node.</dd>
+    <dt>Service <span class="property-type">required</span></dt>
+        <dd>Choose a AWS Service</dd>
+    <dt>Method <span class="property-type">required</span></dt>
+        <dd>Insert a Method of Service. refer to "Method Summary" section on AWS api documents.</dd>
+    <dt>Params <span class="property-type">optional</span></dt>
+        <dd>Insert a params of method. refer to each method description on AWS api documents. It's a JSON string. You can use <a href="http://mustache.github.io/mustache.5.html" target="_blank">mustache</a> templates.</dd>
+    </dl>
+
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('aws-config', {
+        category: 'Samsung Automation-Studio',
+        color: "#000000",
+        defaults: {
+            name: {value: "AWS Config"},
+            region: {value: "us-east-1", required: true},
+            proxyRequired: {value: false},
+            proxy: {value: ""}
+        },
+        credentials: {
+            accessKey: {type: "text", required: true},
+            secretKey: {type: "password", required: true}
+        },
+        paletteLabel: "AWS Config",
+        icon: "aws.png",
+        label: function () {
+            return this.name;
+        }
+    });
+
+    RED.nodes.registerType('aws-sdk', {
+        category: 'Samsung Automation-Studio',
+        color: "#ed6f2f",
+        defaults: {
+            config: {
+                value: '', required: true,
+                validate: function (val) {
+                    var isValidAwsConfig = false;
+                    RED.nodes.eachNode(function (node) {
+                        if (node.id == val) {
+                            isValidAwsConfig = true
+                        }
+                    })
+                    return !!val && isValidAwsConfig
+                }
+            },
+            name: {value: ''},
+            service: {value: 'S3', required: true},
+            operation: {value: 'listBuckets', required: true},
+            params: {value: '{}'}
+        },
+        inputs: 1,
+        outputs: 1,
+        paletteLabel: "AWS SDK",
+        icon: "aws.png",
+        align: "right",
+        label: function () {
+            if (this.name) return this.name;
+            if (this.service && this.operation) return this.service + "." + this.operation;
+            return "AWS SDK";
+        },
+        oneditprepare: function () {
+            var NODE = this;
+            $("#node-input-config").html('');
+            RED.nodes.eachNode(function (node) {
+                if (node.name && node.region && node.type == 'aws-config') {
+                    $("#node-input-config").append($("<option></option>").val(node.id).text(node.name + " (" + node.id + ")"));
+                }
+            });
+            $("#node-input-config").val(NODE.config);
+            this.editor = RED.editor.createEditor({
+                id: 'node-input-param-editor',
+                mode: 'ace/mode/mustache',
+                value: $("#node-input-params").val(),
+                globals: {
+                    msg: true,
+                    context: true,
+                    RED: true,
+                    util: true,
+                    flow: true,
+                    global: true,
+                    console: true,
+                    Buffer: true,
+                    setTimeout: true,
+                    clearTimeout: true,
+                    setInterval: true,
+                    clearInterval: true
+                }
+            });
+            this.editor.focus();
+        },
+        oneditsave: function () {
+            var annot = this.editor.getSession().getAnnotations();
+            this.noerr = 0;
+            $("#node-input-noerr").val(0);
+            for (var k = 0; k < annot.length; k++) {
+                if (annot[k].type === "error") {
+                    $("#node-input-noerr").val(annot.length);
+                    this.noerr = annot.length;
+                }
+            }
+            $("#node-input-params").val(this.editor.getValue());
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditcancel: function () {
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditresize: function (size) {
+            var rows = $("#dialog-form>div:not(.node-text-editor-row)");
+            var height = $("#dialog-form").height();
+            for (var i = 0; i < rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            var editorRow = $("#dialog-form>div.node-text-editor-row");
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+            $(".node-text-editor").css("height", height + "px");
+            this.editor.resize();
+        }
+    });
+</script>
+
+
+

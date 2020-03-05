@@ -1,0 +1,217 @@
+<script type="text/x-red" data-template-name="db-config">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dbType"><i class="fa fa-database"></i> Type</label>
+        <select type="text" id="node-input-dbType" style="width:70%!important;">
+            <option value="mysql">MySQL</option>
+            <option value="mariadb">MariaDB</option>
+            <option value="postgres">PostgreSQL</option>
+            <!--option value="oracle">Oracle</option -->
+            <!--option value="mssql">MSSQL</option -->
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-dbName"><i class="fa fa-database"></i> DB Name</label>
+        <input type="text" id="node-input-dbName" autocomplete="off">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dbIp"><i class="fa fa-wrench"></i> Host</label>
+        <input type="text" id="node-input-dbIp" placeholder="" autocomplete="off">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dbPort"><i class="fa fa-wrench"></i> Port</label>
+        <select type="text" id="node-input-dbPort" style="width:70%!important;">
+            <option value="3306">3306</option>
+            <option value="5432">5432</option>
+        </select>
+    </div>
+    <!--div class="form-row">
+        <label for="node-input-proxy"><i class="fa fa-cog"></i> Proxy</label>
+        <input type="text" id="node-input-proxy" style="width:65%!important;" placeholder="http://0.0.0.0:80">
+        <input type="checkbox" id="node-input-proxyRequired" style="width:5%!important;">
+    </div -->
+    <div class="form-row">
+        <label for="node-input-userId"><i class="fa fa-user"></i> ID</label>
+        <input type="text" id="node-input-userId" autocomplete="off">
+    </div>
+    <div class="form-row">
+        <label for="node-input-userPwd"><i class="fa fa-user"></i> Password</label>
+        <input type="password" id="node-input-userPwd" autocomplete="off">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="db-config">
+<p>Database Config</p>
+<p>When Database Query nodes are invoked, Database Config node is required.</p>
+<h3>Properties</h3>
+<dl class="message-properties">
+    <dt>Name</dt>
+        <dd>You can tag or describe this db-config.</dd>
+    <dt>DB Type <span class="property-type">required</span></dt>
+        <dd>Choose your database type.</dd>
+    <dt>DB Host <span class="property-type">required</span></dt>
+        <dd>Insert your database IP or domain.</dd>
+    <dt>DB Port <span class="property-type">required</span></dt>
+        <dd>Insert your database port.</dd>
+    <dt>DB Name <span class="property-type">required</span></dt>
+        <dd>Insert your database name that you can connect.</dd>
+    <dt>User ID <span class="property-type">required</span></dt>
+        <dd>Insert your database user id.</dd>
+    <dt>User Password <span class="property-type">required</span></dt>
+        <dd>Insert your database password.</dd>
+</dl>
+</script>
+
+<script type="text/x-red" data-template-name="db-query">
+<div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+    <input type="text" id="node-input-name" placeholder="Name"></input>
+</div>
+<div class="form-row">
+    <label for="node-input-config"><i class="fa fa-user"></i> DB Config</label>
+    <select type="text" id="node-input-config" style="width:70%!important;"></select>
+</div>
+<div class="form-row">
+    <label for="node-input-sql"><i class="fa fa-code"></i> SQL</label>
+    <input type="hidden" id="node-input-sql" value="{}" autofocus="autofocus"/>
+    <input type="hidden" id="node-input-noerr"/>
+    <div class="form-row node-text-editor-row"><div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-sql-editor" ></div></div>
+</div>
+
+</script>
+
+<script type="text/x-red" data-help-name="db-query">
+    <p>Database Query</p>
+    <p>You can extend this flow by connecting it to your Database using the Database Query node.</p>
+    <h3>Properties</h3>
+<dl class="message-properties">
+    <dt>Name</dt>
+        <dd>You can tag or describe this query node.</dd>
+    <dt>Database Config <span class="property-type">required</span></dt>
+        <dd>Choose a Database Config Node.</dd>
+    <dt>SQL <span class="property-type">optional</span></dt>
+        <dd>Insert standard query language to execute on your database.</dd>
+</dl>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('db-config', {
+        category: 'Samsung Automation-Studio',
+        color: "#00619d",
+        defaults: {
+            name: {value: "DB Config"},
+            dbType: {value: "mysql", required: true},
+            dbIp: {value: "", required: true},
+            dbPort: {value: "", required: true},
+            dbName: {value: "", required: true},
+            proxyRequired: {value: false},
+            proxy: {value: ""}
+        },
+        credentials: {
+            userId: {type: "text", required: true},
+            userPwd: {type: "password", required: true}
+        },
+        paletteLabel: "DB Config",
+        icon: "db.png",
+        label: function () {
+            return this.name;
+        }
+    });
+
+    RED.nodes.registerType('db-query', {
+        category: 'Samsung Automation-Studio',
+        color: "#24afed",
+        defaults: {
+            config: {
+                value: "", required: true,
+                validate: function (val) {
+                    var isValidDBconn = false;
+                    RED.nodes.eachNode(function(node){
+                        if(node.id == val){
+                            isValidDBconn=true
+                        }
+                    })
+                    return !!val && isValidDBconn
+                }
+            },
+            name: {value: ""},
+            sql: {value: "select * from {{TableName}}"}
+        },
+        inputs: 1,
+        outputs: 1,
+        paletteLabel: "DB Query",
+        icon: "db.png",
+        align: "right",
+        label: function () {
+            if (this.name) return this.name;
+            if (this.service && this.operation) return this.service + "." + this.operation;
+            return "DB Query";
+        },
+        oneditprepare: function () {
+            var NODE = this;
+            $("#node-input-config").html('');
+            RED.nodes.eachNode(function (node) {
+                if (node.dbName && node.dbIp && node.type == 'db-config') {
+                    $("#node-input-config").append($("<option></option>").val(node.id).text(node.name + " (" + node.id + ")"));
+                }
+            });
+            $("#node-input-config").val(NODE.config);
+            this.editor = RED.editor.createEditor({
+                id: 'node-input-sql-editor',
+                mode: 'ace/mode/sql',
+                value: $("#node-input-sql").val(),
+                globals: {
+                    msg: true,
+                    context: true,
+                    RED: true,
+                    util: true,
+                    flow: true,
+                    global: true,
+                    console: true,
+                    Buffer: true,
+                    setTimeout: true,
+                    clearTimeout: true,
+                    setInterval: true,
+                    clearInterval: true
+                }
+            });
+            this.editor.focus();
+        },
+        oneditsave: function () {
+            var annot = this.editor.getSession().getAnnotations();
+            this.noerr = 0;
+            $("#node-input-noerr").val(0);
+            for (var k = 0; k < annot.length; k++) {
+                if (annot[k].type === "error") {
+                    $("#node-input-noerr").val(annot.length);
+                    this.noerr = annot.length;
+                }
+            }
+            $("#node-input-sql").val(this.editor.getValue());
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditcancel: function () {
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditresize: function (size) {
+            var rows = $("#dialog-form>div:not(.node-text-editor-row)");
+            var height = $("#dialog-form").height();
+            for (var i = 0; i < rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            var editorRow = $("#dialog-form>div.node-text-editor-row");
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+            $(".node-text-editor").css("height", height + "px");
+            this.editor.resize();
+        }
+    });
+</script>
+
+
+

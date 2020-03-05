@@ -403,7 +403,7 @@
     var stDevice={};
 
     RED.nodes.registerType('device-profile', {
-            category: "SmartThings",
+            category: "Samsung Automation-Studio",
             paletteLabel: "Device Profile",
             color: "rgb(168,168,168)",
             defaults: {
@@ -468,7 +468,7 @@
     });
 
     RED.nodes.registerType('installed-device', {
-        category: "SmartThings",
+        category: "Samsung Automation-Studio",
         paletteLabel: "My Device",
         color: "rgb(231,147,173)",
         defaults: {
@@ -623,7 +623,7 @@
     });
 
     RED.nodes.registerType('automation', {
-        category: 'SmartThings',
+        category: 'Samsung Automation-Studio',
         color: "rgb(80, 196, 253)",
         defaults: {
             name: {value: "", required: true},
@@ -1055,7 +1055,7 @@
 
         DeviceNode.prototype = {
             color: "rgb(170, 75, 205)",
-            category: "SmartThings",
+            category: "Samsung Automation-Studio",
             defaults: {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
                 name: {required: true},
                 deviceId: {value: "", required: true},

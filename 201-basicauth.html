@@ -1,0 +1,54 @@
+<script type="text/x-red" data-template-name="basic-auth">
+  <div class="form-row">
+    <label for="node-input-realm"><i class="fa fa-globe"></i> Realm</label>
+    <input type="text" id="node-input-realm">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
+    <input type="text" id="node-input-username" autocomplete="off">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-password"><i class="fa fa-key"></i> Password</label>
+    <input type="password" id="node-input-password"  autocomplete="off">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="basic-auth">
+<p>Basic Authentication</p>
+<p>this node providing basic access authentication for the <b>Http request</b> node</p>
+<h3>Properties</h3>
+<dl class="message-properties">
+    <dt>Realm</dt>
+        <dd>the client-visible realm for authentication.</dd>
+    <dt>Username</dt>
+        <dd>the configured username for authentication.</dd>
+    <dt>Password</dt>
+        <dd>the configured password for authentication.</dd>
+</dl>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType("basic-auth", {
+        category: "Samsung Automation-Studio",
+        inputs: 1,
+        outputs: 1,
+        defaults: {
+            realm: {value: ""}
+        },
+        credentials: {
+            username: {type: "text", required: true},
+            password: {type: "password", required: true}
+        },
+        label: function() {
+            return this.realm.trim() || "Basic Auth";
+        },
+        labelStyle: function() {
+            return this.realm.trim() ? "node_label_italic" : "";
+        },
+        paletteLabel: "Basic Auth",
+        color: "#931567",
+        icon: "credentials.png"
+    });
+</script>

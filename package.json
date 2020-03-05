@@ -2,15 +2,36 @@
     "name": "node-red-contrib-samsung-automation-studio-nodes",
     "version": "1.0.0",
     "description": "Samsung Automation Studio Nodes for node-red contribution",
-    "keywords": [ "node-red" ],
+    "keywords": [
+        "node-red","SamsungAutomationStudio"
+    ],
     "node-red": {
         "nodes": {
-            "device-profile": "SamsungAutomationStudio.js",
-            "installed-device": "SamsungAutomationStudio.js",
-            "automation": "SamsungAutomationStudio.js",
-            "event-device": "SamsungAutomationStudio.js",
-            "status-device": "SamsungAutomationStudio.js",
-            "command-device": "SamsungAutomationStudio.js"
+            "device-profile": "101-SamsungAutomationStudio.js",
+            "installed-device": "101-SamsungAutomationStudio.js",
+            "automation": "101-SamsungAutomationStudio.js",
+            "event-device": "101-SamsungAutomationStudio.js",
+            "status-device": "101-SamsungAutomationStudio.js",
+            "command-device": "101-SamsungAutomationStudio.js",
+            "bixby in": "102-Bixby.js",
+            "bixby out": "102-Bixby.js",
+            "basic-auth": "201-basicauth.js",
+            "aws-config": "301-AWS.js",
+            "aws-sdk": "301-AWS.js",
+            "db-config": "302-DB.js",
+            "db-query": "302-DB.js"
         }
+    },
+    "dependencies": {
+        "aws-sdk": "^2.633.0",
+        "body-parser": "^1.19.0",
+        "cookie-parser": "^1.4.4",
+        "cors": "^2.8.5",
+        "http-signature": "^1.3.2",
+        "is-utf8": "^0.2.1",
+        "multer": "^1.4.2",
+        "mustache": "^4.0.0",
+        "on-headers": "^1.0.2",
+        "request": "^2.88.2"
     }
 }

@@ -1,0 +1,304 @@
+<!--
+  Copyright JS Foundation and other contributors, http://js.foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<script type="text/x-red" data-template-name="bixby in">
+    <div class="form-row">
+        <label for="node-input-method"><i class="fa fa-tasks"></i> <span data-i18n="httpin.label.method"></span></label>
+        <select type="text" id="node-input-method" style="width:70%;">
+        <option value="get">GET</option>
+        <option value="post">POST</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-url"><i class="fa fa-globe"></i> <span data-i18n="httpin.label.url"></span></label>
+        <input id="node-input-url" type="text" placeholder="url">
+    </div>
+    <div class="form-row">
+        <label for="node-input-copyurl"></label>
+        <div style="display: inline-block; position: relative; width: 70%; height: 20.0114px;">
+            <div style="position: absolute; left: 0px; right: 40px;">
+                <input type="text" id="node-input-copyurl" readonly="true" style="width:100%"></input>
+            </div>
+            <a id="export-clipboard" class="editor-button" style="position: absolute; right: 0px; top: 0px;">
+                <i class="fa fa-copy"></i>
+            </a>
+        </div>
+    </div>
+    <div class="form-row node-input-params-container-row">
+        <ol id="node-input-params-container"></ol>
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="bixby in">
+    <p>Creates an end-point for creating bixby capsules.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Method <span class="property-type">required</span></dt>
+        <dd>The HTTP method to access the endpoint, such as POST or GET.</dd>
+        <dt>URL <span class="property-type">required</span></dt>
+        <dd>The URL of the remote-endpoint. <a href="https://bixbydevelopers.com/dev/docs/reference/type/endpoints.action-endpoints.action-endpoint.remote-endpoint" target="_blank">more...</a></dd>
+        <dt>action.collect <span class="property-type">optional</span></dt>
+        <dd>
+            <p>Specifies zero, one, or more inputs to be evaluated before executing the action. Keep in mind that the order of inputs in the block is the order in which they are evaluated.</p>
+            <p><code>input</code> <span class="property-type">object</span></p>
+            <p>Specifies an input that is collected for executing an action</p>
+            <p><a href="https://bixbydevelopers.com/dev/docs/reference/type/action.collect" target="_blank">more...</a></p>
+        </dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>input <span class="property-type">object</span></dt>
+        <dd><code>msg.input['%name%']</code> contains an object of any query string parameters.
+            Otherwise, contains the body of the HTTP request.</dd>
+    </dl>
+
+</script>
+
+<script type="text/x-red" data-template-name="bixby out">
+    <div class="form-row">
+        <p><code>Output(msg.results)</code></p>
+    </div>
+
+</script>
+<script type="text/x-red" data-help-name="bixby out">
+    <p>Bixby output node sends 200 response back to requests.</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt>msg.results</dt>
+        <dd>output JSON object</dd>
+    </dl>
+</script>
+
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('bixby in', {
+            category: 'Samsung Automation-Studio',
+            color: "rgb(96,166,255)",
+            defaults: {
+                method: {value: "get", required: true},
+                url: {value:"",
+                    required:true,
+                    validate:function(url){
+                        return RED.flows.validateUrl(this)
+                    }
+                },
+                urlDate:{value:""},
+                isUniqueUrl:{value:false},
+                bixbyin: {value: {}}
+            },
+            inputs: 0,
+            outputs: 1,
+            align: "center",
+            icon: "bixby.png",
+            label: function () {
+                if (this.url) {
+                    var root = RED.settings.httpNodeRoot;
+                    if (root.slice(-1) != "/") {
+                        root = root + "/";
+                    }
+                    if (this.url.charAt(0) == "/") {
+                        root += this.url.slice(1);
+                    } else {
+                        root += this.url;
+                    }
+                    return "[" + this.method + "] " + root;
+                } else {
+                    return "Bixby input";
+                }
+            },
+            paletteLabel: function () {
+                return "Bixby input";
+            },
+            labelStyle: function () {
+                return "";
+            },
+            oneditprepare: function () {
+                var NODE=this;
+                var $inputUrl = $('#node-input-url')
+                var $inputMethod = $('#node-input-method')
+
+                var root = RED.settings.httpNodeRoot;
+                if (root.slice(-1) == "/") {
+                    root = root.slice(0, -1);
+                }
+                if (root == "") {
+                } else {
+                    $("#node-input-path").html(root);
+                }
+
+                function resizeRule(rule) 
+                    var newWidth = rule.width();
+                    rule.find('.red-ui-typedInput').typedInput("width", (newWidth - 15) / 2);
+                }
+
+                var paramList = $("#node-input-params-container").css('min-height', '150px').css('min-width', '450px').editableList({
+                    addItem: function (container, i, param) {
+                        var row = $('<div/>').appendTo(container);
+                        $(row).append('<code>input(<input type="text" class="node-input-params-value" style="width:60%!important;" value="' + (param.v ? param.v : "") + '"/>)</code>');
+                        resizeRule(container);
+                    },
+                    resizeItem: resizeRule,
+                    removable: true
+                });
+                if (this.bixbyin) {
+                    for (var key in this.bixbyin) {
+                        if (this.bixbyin.hasOwnProperty(key)) {
+                            paramList.editableList('addItem', {h: key, v: this.bixbyin[key]});
+                        }
+                    }
+                }
+
+                RED.popover.create({
+                    target: $('#export-clipboard'),
+                    content: 'copied',
+                    trigger: 'click',
+                    direction: 'right',
+                    delay: {show: 750, hide: 100}
+                });
+                var copyurl = window.location.origin + $inputUrl.val()
+                if (copyurl == undefined || copyurl == "") {
+                    $("#node-input-copyurl").val(window.location.origin);
+                } else {
+                    $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
+                }
+
+                var urlTooLongPop = RED.popover.create({
+                    target: $inputUrl,
+                    content: '100 characters limit',
+                    direction: 'left',
+                    delay: {show: 750, hide: 3000}
+                });
+                var duplicateUrlPop = RED.popover.create({
+                    target: $inputUrl,
+                    content: 'duplicated url',
+                    direction: 'left',
+                    delay: {show: 750, hide: 3000}
+                });
+
+                var validateUrl = function(){
+                    var url = $inputUrl.val()||""
+                    url=url.replace(/[^a-zA-Z0-9\-\_\/]/gi,'')
+                    url=url.replace(/[\/]{2,}/gi,'/')
+                    if(url.charAt(0)!='/'){
+                        url='/'+url
+                    }
+                    if(url.length>100){
+                        url=url.substring(0,100)
+                        urlTooLongPop.open(3000)
+                    }
+
+                    var method=$inputMethod.val()
+                    if(RED.flows.isDuplicateEndpoint({method:method, url:url, id:NODE.id})){
+                        duplicateUrlPop.open()
+                        $inputUrl.addClass('input-error')
+                    }else{
+                        duplicateUrlPop.close()
+                        $inputUrl.removeClass('input-error')
+                    }
+
+                    $inputUrl.val(url)
+                    $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
+                }
+                $inputMethod.on('change',validateUrl)
+                $inputMethod.on("mouseout", function () {
+                    duplicateUrlPop.close(2000);
+                });
+                $inputUrl.on("keyup", validateUrl);
+                $inputUrl.on("focusin", validateUrl);
+                $inputUrl.on("focusout", function () {
+                    duplicateUrlPop.close();
+                    urlTooLongPop.close();
+                });
+
+                //if safari, hide clipboard button
+                if (!document.queryCommandSupported("copy")) {
+                    $("#node-input-copyurl").parent().closest('div').css('right', '0px');
+                    $("#export-clipboard").hide();
+                } else {
+                    $("#node-input-copyurl").parent().closest('div').css('right', '40px');
+                    $("#export-clipboard").show();
+                    $("#export-clipboard").on("click", function () {
+                        RED.clipboard.copyText($("#node-input-copyurl").val());
+                    });
+                }
+            },
+            oneditsave: function () {
+                let bixbyList = $("#node-input-params-container").editableList('items');
+                let NODE = this;
+                var $inputUrl = $('#node-input-url')
+                var $inputMethod = $('#node-input-method')
+
+                NODE.bixbyin = {};
+                bixbyList.each(function (i) {
+                    let key = $(this).find(".node-input-params-value").val();
+                    NODE.bixbyin[key] = key;
+                });
+
+                if(NODE.url != $inputUrl.val().trim() || NODE.method != $inputMethod.val().trim()){
+                    NODE.urlDate = new Date().getTime()
+                    NODE.url = $inputUrl.val().trim()
+                    NODE.method = $inputMethod.val().trim()
+
+                    RED.flows.updateEndpoint(NODE)
+                    NODE.isUniqueUrl=RED.flows.isUniqueEndpoint(NODE)
+                }
+            },
+            oneditresize: function (size) {
+                var rows = $("#dialog-form>div:not(.node-input-params-container-row)");
+                var height = size.height;
+                for (var i = 0; i < rows.size(); i++) {
+                    height -= $(rows[i]).outerHeight(true);
+                }
+                var editorRow = $("#dialog-form>div.node-input-params-container-row");
+                height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+
+                $("#node-input-params-container").editableList('height', height);
+                this.url = $("#node-input-url").val().trim();
+                this.copyurl = $("#node-input-copyurl").val().trim();
+            }
+        });
+
+        RED.nodes.registerType('bixby out', {
+            category: 'Samsung Automation-Studio',
+            color: "rgb(50,143,255)",
+            defaults: {
+                property: {value:"output", required:true, validate: RED.validators.typedInput("propertyType")},
+                propertyType: { value:"msg" },
+                statusCode: {value: 200, validate: RED.validators.number(true)},
+            },
+            inputs: 1,
+            outputs: 0,
+            align: "center",
+            icon: "bixby.png",
+            label: function () {
+                return "Bixby output"
+            },
+            paletteLabel: function () {
+                return "Bixby output";
+            },
+            labelStyle: function () {
+                return "";
+            },
+            oneditprepare: function () {
+                $("#node-input-property").typedInput({default:this.propertyType||'msg',types:['msg','flow','global']});
+            },
+            oneditsave: function () {
+            },
+            oneditresize: function (size) {
+            }
+        });
+    })();
+</script>
