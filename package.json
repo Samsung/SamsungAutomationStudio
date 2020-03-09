@@ -7,12 +7,12 @@
     ],
     "node-red": {
         "nodes": {
-            "device-profile": "101-SamsungAutomationStudio.js",
-            "installed-device": "101-SamsungAutomationStudio.js",
-            "automation": "101-SamsungAutomationStudio.js",
-            "event-device": "101-SamsungAutomationStudio.js",
-            "status-device": "101-SamsungAutomationStudio.js",
-            "command-device": "101-SamsungAutomationStudio.js",
+            "device-profile": "101-SmartThings.js",
+            "installed-device": "101-SmartThings.js",
+            "automation": "101-SmartThings.js",
+            "event-device": "101-SmartThings.js",
+            "status-device": "101-SmartThings.js",
+            "command-device": "101-SmartThings.js",
             "bixby in": "102-Bixby.js",
             "bixby out": "102-Bixby.js",
             "basic-auth": "201-basicauth.js",
