@@ -43,6 +43,15 @@
 </script>
 <script type="text/x-red" data-template-name="installed-device">
     <div class="form-tips" style="margin-bottom:10px;"><b>Note:</b> create token on the SmartThings <b><a href="https://account.smartthings.com/tokens" target="_blank">personal access token page</a></b></div>
+
+    <div class="form-row">
+        <label for="node-input-name">name</span></label>
+        <input type="text" id="node-input-name" disabled>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name">label</label>
+        <input type="text" id="node-input-label" disabled>
+    </div>
     <div class="form-row">
         <label for="node-input-stAccessToken">Personal Access Token</label>
         <input type="text" id="node-input-stAccessToken">
@@ -402,7 +411,7 @@
     const ST_AUTOMATION = 'automation';
     var stDevice={};
 
-    RED.nodes.registerType('device-profile', {
+    RED.nodes.registerType(ST_DEVICE_PROFILE, {
             category: "Samsung Automation-Studio",
             paletteLabel: "Device Profile",
             color: "rgb(168,168,168)",
@@ -467,7 +476,7 @@
             }
     });
 
-    RED.nodes.registerType('installed-device', {
+    RED.nodes.registerType(ST_MY_DEVICE, {
         category: "Samsung Automation-Studio",
         paletteLabel: "My Device",
         color: "rgb(231,147,173)",
@@ -491,8 +500,8 @@
         },
         oneditprepare: function () {
             var NODE = this;
-            // $("#node-input-name").val(NODE.name);
-            // $("#node-input-label").val(NODE.label);
+            $("#node-input-name").val(NODE.name);
+            $("#node-input-label").val(NODE.label);
             if(NODE.credentials && NODE.credentials.stAccessToken){
                 $("#node-input-stAccessToken").val(NODE.credentials.stAccessToken);
             }else{
@@ -503,7 +512,7 @@
                 .css('min-height', '400px')
                 .css('min-width', '150px')
                 .editableList({
-                    header: $("<div>").append('hi this is header'),
+                    header: $("<div>").append("Installed SmartThings device list"),
                     addButton: "search",
                     addItem: function(row, index, data) {
                     },
@@ -586,8 +595,8 @@
                 })
             }
 
-            $("#my-device-list-div a.editor-button").off('click');
-            $("#my-device-list-div a.editor-button").on('click', function (evt) {
+            $("#my-device-list-div > div > a.red-ui-button").off('click');
+            $("#my-device-list-div > div > a.red-ui-button").on('click', function (evt) {
                 var token = $('#node-input-stAccessToken').val();
                 evt.preventDefault();
                 SmartThingsApi.getDeviceList(token, addItems, getItemsFail);
@@ -606,11 +615,6 @@
                     RED.notify('<p>' + NODE._("SmartThings.error.duplicate-Id") + '</p>', "error");
                 }
             });
-            /* 해당 노드 수정 시 기존 사용 Node는?
-            for (var i = 0; i < node.users.length; i++) {
-                var user = node.users[i];
-                user.deviceIdEventActive = false;
-            }*/
             NODE.name = $('#node-input-name').val();
             NODE.label = $('#node-input-label').val();
             NODE.credentials.stAccessToken = $("#node-input-stAccessToken").val();
@@ -622,7 +626,7 @@
         }
     });
 
-    RED.nodes.registerType('automation', {
+    RED.nodes.registerType(ST_AUTOMATION, {
         category: 'Samsung Automation-Studio',
         color: "rgb(80, 196, 253)",
         defaults: {
@@ -630,10 +634,7 @@
             method:{value:'post'},
             url: {
                 value: "",
-                required: true,
-                validate: function (url) {
-                    return RED.flows.validateUrl(this)
-                }
+                required: true
             },
             urlDate:{value:""},
             isUniqueUrl:{value:false},
@@ -670,8 +671,9 @@
 
             RED.popover.create({
                 target: $('#export-clipboard'),
-                content: NODE._("SmartThings.automation.copied"),
+                content: 'copied',
                 trigger: 'click',
+                autoClose: 2000,
                 direction: 'right',
                 delay: {show: 750, hide: 2000}
             });
@@ -682,19 +684,6 @@
                 $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
             }
 
-            var urlTooLongPop = RED.popover.create({
-                target: $inputUrl,
-                content: '100 characters limit',
-                direction: 'left',
-                // delay: {show: 750, hide: 2000}
-            });
-            var duplicateUrlPop = RED.popover.create({
-                target: $inputUrl,
-                content: 'duplicated url',
-                direction: 'left',
-                delay: {show: 750, hide: 3000}
-            });
-
             var validateUrl = function(){
                 var url = $inputUrl.val()||""
                 url=url.replace(/[^a-zA-Z0-9\-\_\/]/gi,'')
@@ -702,29 +691,11 @@
                 if(url.charAt(0)!='/'){
                     url='/'+url
                 }
-                if(url.length>100){
-                    url=url.substring(0,100)
-                    urlTooLongPop.open(3000)
-                }
-
-                var method='post'
-                if(RED.flows.isDuplicateEndpoint({method:method, url:url, id:NODE.id})){
-                    duplicateUrlPop.open()
-                    $inputUrl.addClass('input-error')
-                }else{
-                    duplicateUrlPop.close()
-                    $inputUrl.removeClass('input-error')
-                }
-
                 $inputUrl.val(url)
                 $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
             }
             $inputUrl.on("keyup", validateUrl);
             $inputUrl.on("focusin", validateUrl);
-            $inputUrl.on("focusout", function () {
-                duplicateUrlPop.close();
-                urlTooLongPop.close();
-            });
 
             //if safari, hide clipboard button
             if (!document.queryCommandSupported("copy")) {
@@ -745,9 +716,6 @@
             if(NODE.url != $("#node-input-url").val().trim()){
                 NODE.urlDate = new Date().getTime()
                 NODE.url = $("#node-input-url").val().trim()
-
-                RED.flows.updateEndpoint(NODE)
-                NODE.isUniqueUrl=RED.flows.isUniqueEndpoint(NODE)
             }
         }
     });
@@ -770,21 +738,28 @@
             -.form객체의 이벤트정의
             -.그리드 add시 row에 유형별 input생성
         */
-        function ThingCommon(formObj, node) {
+        function DeviceNodeEventHandler(formObj, node) {
             var THING = this;
             THING.node = node;
-            THING.type = node.type;       //노드의 타입
-            THING.form = formObj; //json형태의 jquery 폼객체
-            THING.deviceInfo = $("#node-input-deviceId option:selected").data('device');
-            THING.initCapabilitySelect();
+            THING.type = node.type;
+            THING.form = formObj;
+            THING.target = (node.type == ST_COMMAND_DEVICE) ? "cmd" : "attr"
+
+            var selectedDevice = $("#node-input-deviceId option:selected").data('device')
+
+            THING.initDeviceIdSelect()
+            THING.initCapabilitySelect()
+            THING.initAttributeSelect()
+            THING.initAttributeContainer()
+
             THING.form.deviceId.on("mouseover", function () {
-                THING.form.deviceId.off("change");
+                THING.form.deviceId.off("change")
                 THING.form.deviceId.on("change", function () {
                     console.log('form deviceId:change')
                     THING.initCapabilitySelect()
                     THING.initAttributeSelect()
-                    THING.attributeEvent()
-                });
+                    THING.initAttributeContainer()
+                })
             })
 
             THING.form.capabilitySelect.on("mouseover", function () {
@@ -792,34 +767,50 @@
                 THING.form.capabilitySelect.on("change", function () {
                     $("#node-input-capability").val($("#node-input-capability-select").find('option:selected').val());
                     THING.initAttributeSelect()
-                    THING.attributeEvent()
+                    THING.initAttributeContainer()
                 });
             });
 
             THING.form.capabilityAttr.on("mouseover", function () {
                 THING.form.capabilityAttr.off("change");
                 THING.form.capabilityAttr.on("change", function () {
-                    THING.attributeEvent();
+                    THING.initAttributeContainer();
                 });
             });
         }
 
-        ThingCommon.prototype = {
+        DeviceNodeEventHandler.prototype = {
+            initDeviceIdSelect : function () {
+                $("#node-input-deviceId").html('')
+                var deviceList = []
+
+                deviceList = RED.nodes.filterNodes({type:ST_DEVICE_PROFILE})
+                if(this.type != ST_EVENT_DEVICE){
+                    deviceList.concat(RED.nodes.filterNodes({type:ST_MY_DEVICE}))
+                }
+                deviceList.filter(function(node){
+                    if(node.name && node.device && node.device.capabilities ){
+                        return Object.values(node.device.capabilities).some(function(capability){
+                            return capability[this.target]
+                        })
+                    }else{
+                        return false;
+                    }
+                }).forEach(function(node){
+                    if (this.type == ST_DEVICE_PROFILE) {
+                        $("#node-input-deviceId").prepend($("<option></option>").val(node.id).data('device',node.device).text(node.name + ":" + node.capability));
+                    }
+                    if (this.type == ST_MY_DEVICE ) {
+                        $("#node-input-deviceId").append($("<option></option>").val(node.id).data('device',node.device).text("(My)"+node.label));
+                    }
+                })
+
+                // $("#node-input-deviceId").val(NODE.deviceId)
+            },
             //type값에 따른 페이지 초기화 함수
-            initContainer: function (data) {
+            initAttributeContainer: function() {
                 this.form.outputCount.val("{}")
                 this.form.container.editableList('empty')
-                if(data){
-                    this.form.container.editableList('addItem',data)
-                }
-            },
-            attributeEvent: function() {
-                //EVENT Device 노드 특성상 한개의 attribute 만 rule 에 추가할 수 있음
-                if (this.type == ST_EVENT_DEVICE) {
-                    $("#attr-list-container").editableList('empty')
-                    this.form.outputCount.val("{}")
-                }
-                this.initContainer()
             },
             //deviceid 선택시 해당 section 정보를 셋팅한다.
             initCapabilitySelect: function () {
@@ -829,9 +820,12 @@
 
                 var device = this.form.deviceId.find("option:selected").data('device');
 
-                if(device){
-                    for(var capability in device.capabilities){
-                        this.form.capabilitySelect.append($("<option></option>").val(capability).text(capability));
+                if(device && device.capabilities){
+
+                    for(var capaName in device.capabilities){
+                        if(device.capabilities[capaName][this.target]){
+                            this.form.capabilitySelect.append($("<option></option>").val(capaName).text(capaName));
+                        }
                     }
                     capaSelect.removeClass("input-error");
                     if(capaSelect.find('option').length<=1){
@@ -842,11 +836,8 @@
 
                     capaSelect.find('option:first').attr("selected",true);
                     capaInput.val(capaSelect.find('option:selected').val());
-
-                    var selectedCapability =  capaSelect.find('option:selected').val();
-                    this.initAttributeSelect(selectedCapability);
                 } else {
-                    //선택한device셀렉트박스 값이 없으면 하부내역을 초기화한다.
+                    //선택한 device셀렉트 값이 없으면 하부내역을 초기화한다.
                     this.form.deviceId.addClass("input-error");
                     capaInput.addClass("input-error");
                     capaInput.val("");
@@ -857,7 +848,7 @@
                 this.form.capabilityAttr.html('');
 
                 if(!selectedCapability){
-                    selectedCapability = this.form.capabilitySelect.find("option:selected").val();
+                    selectedCapability = this.form.capabilitySelect.val();
                 }
 
                 //capability의 attributes 및 commands 정보 조회
@@ -1088,27 +1079,8 @@
             },
             oneditprepare: function () {
                 var NODE = this;
-                var target = (NODE.type == ST_COMMAND_DEVICE) ? "cmd" : "attr";
-                $("#node-input-deviceId").html('')
-                NODE.deviceList = []
-
-                NODE.deviceList = RED.nodes.filterNodes({type:ST_DEVICE_PROFILE})
-                if(NODE.type != ST_EVENT_DEVICE){
-                    NODE.deviceList.concat(RED.nodes.filterNodes({type:ST_MY_DEVICE}))
-                }
-                NODE.deviceList.filter(function(node){
-                    return node.name && node.device && node.device.capabilities && node.device.capabilities[target]
-                }).forEach(function(node){
-                    if (node.type == ST_DEVICE_PROFILE) {
-                        $("#node-input-deviceId").prepend($("<option></option>").val(node.id).data('device',node.device).text(node.name + ":" + node.capability));
-                    }
-                    if (node.type == ST_MY_DEVICE ) {
-                        $("#node-input-deviceId").append($("<option></option>").val(node.id).data('device',node.device).text("(My)"+node.label));
-                    }
-                })
-
-                $("#node-input-deviceId").val(NODE.deviceId);
-                NODE.deviceInfo = $("#node-input-deviceId option:selected").data('device');
+                var target = (NODE.type == ST_COMMAND_DEVICE) ? "cmd" : "attr"
+                NODE.target = target
 
                 $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
                     addItem: function (container, idx, opt) {
@@ -1367,6 +1339,7 @@
                     if (data.isInit) break;
                     $("#attr-list-container").editableList('addItem', {r: data, i: i});
                 }
+
                 var formObj = {
                     deviceId: $("#node-input-deviceId"),
                     eqtype: $("#node-input-eqtype"),
@@ -1375,16 +1348,16 @@
                     capabilityAttr: $("#node-input-capability-attr"),
                     containerRow: ((NODE.type == ST_COMMAND_DEVICE) ? $(".actuator-container-row") : $(".sensor-container-row")),
                     container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container")),
+                    outputCount: $("#node-input-outputs"),
+                    containerRowData : ((NODE.type == ST_COMMAND_DEVICE) ? NODE.sensorCapaDs : NODE.sensorAttrDs)
                     // sensorContainerRow: $(".sensor-container-row"),
                     // actuatorContainerRow: $(".actuator-container-row"),
                     // sensorCapabilityContainer: $("#cmd-list-container"),
                     // sensorAttrContainer: $("#attr-list-container"),
-                    outputCount: $("#node-input-outputs"),
-                    containerRowData : ((NODE.type == ST_COMMAND_DEVICE) ? NODE.sensorCapaDs : NODE.sensorAttrDs)
                 };
 
                 //capability관련 component 초기화해주는 객체생성
-                var eventHandler = new ThingCommon(this.type.toLowerCase(), formObj, NODE);
+                var eventHandler = new DeviceNodeEventHandler(formObj, NODE);
                 var outputCount = $("#node-input-outputs").val("{}");
             },
             /*편집 대화 상자 완료처리시 호출*/
