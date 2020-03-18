@@ -624,94 +624,26 @@ module.exports = function (RED) {
                         sendDebug("[error] " + err.errCd + ", " + err.errMsg);
                     });
                 } else {
+                    sendDebug("[flow] Action:" + NODE.name + "("+confName+")");
+                    //multiple : true 기능 지원 으로 (해당 deviceid의 모든 기기를 동시에 제어)
+                    var confName = RED.nodes.getNode(NODE.deviceId).name;
+                    var multipleCmd = [];
+
+                    var targetInfoArr=[];
                     if(isAutomation){
-                        sendDebug("[flow] Action:" + NODE.name + "("+confName+")");
-                        //multiple : true 기능 지원 으로 (해당 deviceid의 모든 기기를 동시에 제어)
-                        var confName = RED.nodes.getNode(NODE.deviceId).name;
-                        var targetInfoArr = evt.installedApp.config[confName];
-                        var commandArr = [];
-                        var multiplueCmd = [];
-                        //TEST noAutomation
-
-                        for (var idx = 0; idx < targetInfoArr.length; idx++) {
-                            targetInfo = targetInfoArr[idx].deviceConfig;
-                            param.deviceId = targetInfo.deviceId;
-                            commandArr = [];
-                            for (var i = 0; i < NODE.sensorCapaDs.length; i++) {
-                                var rule = NODE.sensorCapaDs[i];
-                                var tCmd = rule.col2;
-                                var cmd = {"component": targetInfo.componentId, "capability": rule.col1, "command": tCmd};
-                                cmd.arguments = [];
-                                var argument = {};
-                                if (rule.argType != undefined) {
-                                    var argType = JSON.parse(rule.argType);
-                                    var keys = Object.keys(argType);
-                                    var types;
-                                    if (rule.types != undefined) {
-                                        types = JSON.parse(rule.types);
-                                    }
-                                    if (keys.length > 0) {//command 명령어가 존재한다면({}가 아니라면)
-                                        var tmp;
-                                        var tempIdx = 0;
-                                        for (var j = 0; j < keys.length; j++) {
-                                            argument = {};
-                                            //typeinput 값이 존재하고 데이터 유형이 object인 경우
-                                            if (types != undefined && types[keys[j]].hasOwnProperty("prop")) {
-                                                var propKeys = Object.keys(types[keys[j]].prop);
-
-                                                for (var k = 0; k < propKeys.length; k++, tempIdx++) {
-                                                    tmp = rule["col" + (tempIdx + 3)];
-                                                    if (rule["col" + (tempIdx + 3) + "_vt"] == "num") {
-                                                        tmp = Number(tmp);
-                                                    }
-                                                    argument[propKeys[k]] = tmp;
-                                                }
-                                            } else {
-                                                tmp = rule["col" + (tempIdx + 3)];
-                                                if (rule["col" + (tempIdx + 3) + "_vt"] == "num") {
-                                                    tmp = Number(tmp);
-                                                }
-                                                argument[keys[j]] = tmp;
-                                                tempIdx++
-                                            }
-                                            cmd.arguments.push(argument);
-                                        }
-                                    }
-                                }
-                                commandArr.push(cmd);
-                            }
-                            if (commandArr.length > 0) {
-                                multiplueCmd.push(OneApi.executeDeviceCommands(param, {"commands": commandArr}, authToken));
-                            }
-                        }
-                        if (multiplueCmd.length > 0) {
-                            Promise.all(multiplueCmd).then(function (data) {
-                                RED.util.setMessageProperty(msg, 'payload', "command execute success");
-                                onward.push(msg);
-                                NODE.send(onward);
-
-                            }).catch(function (err) {
-                                sendDebug("[error] " + err.errCd + ", " + err.errMsg);
-                            });
-                        } else {
-                            RED.util.setMessageProperty(msg, 'payload', "command is empty");
-                            onward.push(msg);
-                            NODE.send(onward);
-                        }
+                        targetInfoArr = evt.installedApp.config[confName];
                     }else{
-                        sendDebug("[flow] SmartThings Device Direct Action:" + NODE.name + "("+confName+")");
-                        //multiple : true 기능 지원 으로 (해당 deviceid의 모든 기기를 동시에 제어)
-                        var confName = RED.nodes.getNode(NODE.deviceId).name;
-                        var commandArr = [];
-                        var multiplueCmd = [];
+                        targetInfoArr=[{deviceConfig:{componentId:"main"}}]
+                    }
 
-                        commandArr = [];
+                    for (var idx = 0; idx < targetInfoArr.length; idx++) {
+                        targetInfo = targetInfoArr[idx].deviceConfig;
+                        // param.deviceId = targetInfo.deviceId;
+                        var commandArr = [];
                         for (var i = 0; i < NODE.sensorCapaDs.length; i++) {
                             var rule = NODE.sensorCapaDs[i];
                             var tCmd = rule.col2;
-                            
-                            //TEST noAutomation TODO: set component name
-                            var cmd = {"component": "main", "capability": rule.col1, "command": tCmd};
+                            var cmd = {"component": targetInfo.componentId || "main", "capability": rule.col1, "command": tCmd};
                             cmd.arguments = [];
                             var argument = {};
                             if (rule.argType != undefined) {
@@ -727,7 +659,7 @@ module.exports = function (RED) {
                                     for (var j = 0; j < keys.length; j++) {
                                         //typeinput 값이 존재하고 데이터 유형이 object인 경우
                                         if (types != undefined && types[keys[j]].hasOwnProperty("prop")) {
-                                            var argument = {};
+                                            argument = {};
 
                                             var propKeys = Object.keys(types[keys[j]].prop);
 
@@ -753,22 +685,21 @@ module.exports = function (RED) {
                             commandArr.push(cmd);
                         }
                         if (commandArr.length > 0) {
-                            multiplueCmd.push(OneApi.executeDeviceCommands(param, {"commands": commandArr}, authToken));
+                            multipleCmd.push(OneApi.executeDeviceCommands(param, {"commands": commandArr}, authToken));
                         }
-                        if (multiplueCmd.length > 0) {
-                            Promise.all(multiplueCmd).then(function (data) {
-                                RED.util.setMessageProperty(msg, 'payload', "command execute success");
-                                onward.push(msg);
-                                NODE.send(onward);
-
-                            }).catch(function (err) {
-                                sendDebug("[error] " + err.errCd + ", " + err.errMsg);
-                            });
-                        } else {
-                            RED.util.setMessageProperty(msg, 'payload', "command is empty");
+                    }
+                    if (multipleCmd.length > 0) {
+                        Promise.all(multipleCmd).then(function (data) {
+                            RED.util.setMessageProperty(msg, 'payload', "command execute success");
                             onward.push(msg);
                             NODE.send(onward);
-                        }
+                        }).catch(function (err) {
+                            sendDebug("[error] " + err.errCd + ", " + err.errMsg);
+                        });
+                    } else {
+                        RED.util.setMessageProperty(msg, 'payload', "command is empty");
+                        onward.push(msg);
+                        NODE.send(onward);
                     }
                 }
             } catch (err) {
