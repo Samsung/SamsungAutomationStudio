@@ -139,7 +139,7 @@
                     $("#node-input-path").html(root);
                 }
 
-                function resizeRule(rule) 
+                function resizeRule(rule) {
                     var newWidth = rule.width();
                     rule.find('.red-ui-typedInput').typedInput("width", (newWidth - 15) / 2);
                 }
@@ -166,6 +166,7 @@
                     content: 'copied',
                     trigger: 'click',
                     direction: 'right',
+                    autoClose: 1500,
                     delay: {show: 750, hide: 100}
                 });
                 var copyurl = window.location.origin + $inputUrl.val()
@@ -175,18 +176,6 @@
                     $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
                 }
 
-                var urlTooLongPop = RED.popover.create({
-                    target: $inputUrl,
-                    content: '100 characters limit',
-                    direction: 'left',
-                    delay: {show: 750, hide: 3000}
-                });
-                var duplicateUrlPop = RED.popover.create({
-                    target: $inputUrl,
-                    content: 'duplicated url',
-                    direction: 'left',
-                    delay: {show: 750, hide: 3000}
-                });
 
                 var validateUrl = function(){
                     var url = $inputUrl.val()||""
@@ -195,33 +184,12 @@
                     if(url.charAt(0)!='/'){
                         url='/'+url
                     }
-                    if(url.length>100){
-                        url=url.substring(0,100)
-                        urlTooLongPop.open(3000)
-                    }
-
-                    var method=$inputMethod.val()
-                    if(RED.flows.isDuplicateEndpoint({method:method, url:url, id:NODE.id})){
-                        duplicateUrlPop.open()
-                        $inputUrl.addClass('input-error')
-                    }else{
-                        duplicateUrlPop.close()
-                        $inputUrl.removeClass('input-error')
-                    }
 
                     $inputUrl.val(url)
                     $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
                 }
-                $inputMethod.on('change',validateUrl)
-                $inputMethod.on("mouseout", function () {
-                    duplicateUrlPop.close(2000);
-                });
                 $inputUrl.on("keyup", validateUrl);
                 $inputUrl.on("focusin", validateUrl);
-                $inputUrl.on("focusout", function () {
-                    duplicateUrlPop.close();
-                    urlTooLongPop.close();
-                });
 
                 //if safari, hide clipboard button
                 if (!document.queryCommandSupported("copy")) {
@@ -251,9 +219,6 @@
                     NODE.urlDate = new Date().getTime()
                     NODE.url = $inputUrl.val().trim()
                     NODE.method = $inputMethod.val().trim()
-
-                    RED.flows.updateEndpoint(NODE)
-                    NODE.isUniqueUrl=RED.flows.isUniqueEndpoint(NODE)
                 }
             },
             oneditresize: function (size) {
