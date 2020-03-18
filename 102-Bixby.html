@@ -90,10 +90,7 @@
             defaults: {
                 method: {value: "get", required: true},
                 url: {value:"",
-                    required:true,
-                    validate:function(url){
-                        return RED.flows.validateUrl(this)
-                    }
+                    required:true
                 },
                 urlDate:{value:""},
                 isUniqueUrl:{value:false},
