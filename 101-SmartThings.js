@@ -569,8 +569,8 @@ module.exports = function (RED) {
                 if (NODE.eqtype == 'event') {
                     sendDebug("[flow] Event:" + NODE.name + "("+confName+")");
                     var opCheck = false;
-                    for (var i = 0; i < NODE.sensorAttrDs.length; i++) {
-                        var rule = NODE.sensorAttrDs[i];
+                    for (var idx = 0; idx < NODE.sensorAttrDs.length; idx++) {
+                        var rule = NODE.sensorAttrDs[idx];
                         var attrHierarchy = rule.hidden1.split("|");
                         var val = fromEvent.value;
 
@@ -578,7 +578,7 @@ module.exports = function (RED) {
                         if (rule.col3 == '' || rule.col3 == undefined) rule.col3 = "\'\'";
                         opCheck = operators[rule.col2](val, rule.col3);
                         if (opCheck) {
-                            RED.util.setMessageProperty(msg, 'payload', attrHierarchy[0] + " check success[" + i + "]");
+                            RED.util.setMessageProperty(msg, 'payload', attrHierarchy[0] + "=\""+val+"\" check success[" + idx + "]");
                             onward.push(msg);
                         } else {
                             onward.push(null);
@@ -595,7 +595,7 @@ module.exports = function (RED) {
                         var deviceStates = data;
                         var opCheck = false;
 
-                        NODE.sensorAttrDs.forEach((rule)=>{
+                        NODE.sensorAttrDs.forEach((rule,idx)=>{
                             var attrHierarchy = rule.hidden1.split("|");
                             var val = deviceStates['components'][targetInfo.componentId||'main'][NODE.capability][attrHierarchy[0]];
 
@@ -607,7 +607,7 @@ module.exports = function (RED) {
                             }
                             opCheck = operators[rule.col2](val, rule.col3);
                             if (opCheck) {
-                                RED.util.setMessageProperty(msg, 'payload', attrHierarchy[0] + " check success[" + i + "]");
+                                RED.util.setMessageProperty(msg, 'payload', attrHierarchy[0] + "=\""+val+"\" check success[" + idx + "]");
                                 onward.push(msg);
                             } else {
                                 onward.push(null);
@@ -638,7 +638,6 @@ module.exports = function (RED) {
 
                     for (var idx = 0; idx < targetInfoArr.length; idx++) {
                         targetInfo = targetInfoArr[idx].deviceConfig;
-                        // param.deviceId = targetInfo.deviceId;
                         var commandArr = [];
                         for (var i = 0; i < NODE.sensorCapaDs.length; i++) {
                             var rule = NODE.sensorCapaDs[i];
