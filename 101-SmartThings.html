@@ -512,7 +512,7 @@
                 .css('min-height', '400px')
                 .css('min-width', '150px')
                 .editableList({
-                    header: $("<div>").append("Installed SmartThings device list"),
+                    // header: $("<div>").append("Installed SmartThings device list"),
                     addButton: "search",
                     addItem: function(row, index, data) {
                     },
@@ -729,7 +729,7 @@
             {v: "lte", t: "<="},
             {v: "gt", t: ">"},
             {v: "gte", t: ">="}
-        ];
+        ]
 
         /*
          Node Editor창을 열었을때 초기화되는 함수로 Node내에 동작하는 기능함수들이
@@ -747,10 +747,10 @@
 
             var selectedDevice = $("#node-input-deviceId option:selected").data('device')
 
-            THING.initDeviceIdSelect()
-            THING.initCapabilitySelect()
-            THING.initAttributeSelect()
-            THING.initAttributeContainer()
+            THING.initDeviceIdSelect(node.deviceId)
+            THING.initCapabilitySelect(node.capability)
+            THING.initAttributeSelect(node.attribute)
+            THING.initAttributeContainer(node)
 
             THING.form.deviceId.on("mouseover", function () {
                 THING.form.deviceId.off("change")
@@ -763,57 +763,79 @@
             })
 
             THING.form.capabilitySelect.on("mouseover", function () {
-                THING.form.capabilitySelect.off("change");
+                THING.form.capabilitySelect.off("change")
                 THING.form.capabilitySelect.on("change", function () {
-                    $("#node-input-capability").val($("#node-input-capability-select").find('option:selected').val());
+                    $("#node-input-capability").val($("#node-input-capability-select").find('option:selected').val())
                     THING.initAttributeSelect()
                     THING.initAttributeContainer()
-                });
-            });
+                })
+            })
 
             THING.form.capabilityAttr.on("mouseover", function () {
-                THING.form.capabilityAttr.off("change");
+                THING.form.capabilityAttr.off("change")
                 THING.form.capabilityAttr.on("change", function () {
-                    THING.initAttributeContainer();
-                });
-            });
+                    THING.initAttributeContainer()
+                })
+            })
         }
 
         DeviceNodeEventHandler.prototype = {
-            initDeviceIdSelect : function () {
-                $("#node-input-deviceId").html('')
-                var deviceList = []
-
-                deviceList = RED.nodes.filterNodes({type:ST_DEVICE_PROFILE})
+            initDeviceIdSelect : function (initDeviceId) {
+                this.form.deviceId.html('')
+                var deviceNodeList = []
+                deviceNodeList = RED.nodes.filterNodes({type:ST_DEVICE_PROFILE})
                 if(this.type != ST_EVENT_DEVICE){
-                    deviceList.concat(RED.nodes.filterNodes({type:ST_MY_DEVICE}))
+                    deviceNodeList = deviceNodeList.concat(RED.nodes.filterNodes({type:ST_MY_DEVICE}))
                 }
-                deviceList.filter(function(node){
+                var target = this.target
+                deviceNodeList.filter(function(node){
                     if(node.name && node.device && node.device.capabilities ){
                         return Object.values(node.device.capabilities).some(function(capability){
-                            return capability[this.target]
+                            return capability[target]
                         })
-                    }else{
-                        return false;
+                    } else{
+                        return false
                     }
                 }).forEach(function(node){
-                    if (this.type == ST_DEVICE_PROFILE) {
-                        $("#node-input-deviceId").prepend($("<option></option>").val(node.id).data('device',node.device).text(node.name + ":" + node.capability));
-                    }
-                    if (this.type == ST_MY_DEVICE ) {
-                        $("#node-input-deviceId").append($("<option></option>").val(node.id).data('device',node.device).text("(My)"+node.label));
+                    if (node.type == ST_DEVICE_PROFILE) {
+                        $('#node-input-deviceId').prepend($("<option></option>").val(node.id).data('device',node.device).text(node.name + ":" + node.capability))
+                    }else if (node.type == ST_MY_DEVICE) {
+                        $('#node-input-deviceId').append($("<option></option>").val(node.id).data('device',node.device).text("(My)"+node.label))
                     }
                 })
 
-                // $("#node-input-deviceId").val(NODE.deviceId)
+                if(initDeviceId){
+                    this.form.deviceId.val(initDeviceId)
+                }
             },
             //type값에 따른 페이지 초기화 함수
-            initAttributeContainer: function() {
+            initAttributeContainer: function(node) {
                 this.form.outputCount.val("{}")
                 this.form.container.editableList('empty')
+
+                if(node){
+                    if(node.sensorCapaDs && node.sensorCapaDs.length){
+                        for (var i = 0; i < node.sensorCapaDs.length; i++) {
+                            var data = this.node.sensorCapaDs[i];
+                            /*초기화 배열값으로인해 루프를 수행하지않기위해 isInit값을 추가하였다.
+                            내용이없는 로우가 추가되는 현상 발생
+                            */
+                            if (data.isInit) break;
+                            $("#cmd-list-container").editableList('addItem', {r: data, i: i});
+                        }
+                    }
+
+                    if(node.sensorAttrDs && node.sensorAttrDs.length){
+                        for (var i = 0; i < this.node.sensorAttrDs.length; i++) {
+                            var data = this.node.sensorAttrDs[i];
+                            if (data.isInit) break;
+                            $("#attr-list-container").editableList('addItem', {r: data, i: i});
+                        }
+                    }
+                }
             },
             //deviceid 선택시 해당 section 정보를 셋팅한다.
-            initCapabilitySelect: function () {
+            initCapabilitySelect: function (initCapability) {
                 this.form.capabilitySelect.html('')
                 var capaSelect = this.form.capabilitySelect;
                 var capaInput = this.form.capability;
@@ -823,7 +845,7 @@
                 if(device && device.capabilities){
 
                     for(var capaName in device.capabilities){
-                        if(device.capabilities[capaName][this.target]){
+                        if(device.capabilities[capaName] && device.capabilities[capaName][this.target]){
                             this.form.capabilitySelect.append($("<option></option>").val(capaName).text(capaName));
                         }
                     }
@@ -842,41 +864,53 @@
                     capaInput.addClass("input-error");
                     capaInput.val("");
                 }
+
+                if(initCapability){
+                    this.form.capabilitySelect.val(initCapability)
+                    capaInput.val(initCapability);
+                }
             },
             //capability attr 셀렉트박스구성
-            initAttributeSelect: function (selectedCapability) {
+            initAttributeSelect: function (initAttribute) {
                 this.form.capabilityAttr.html('');
 
-                if(!selectedCapability){
-                    selectedCapability = this.form.capabilitySelect.val();
-                }
+                var selectedDevice = this.form.deviceId.find("option:selected").data('device');
+                var selectedCapability = this.form.capabilitySelect.find("option:selected").val();
+                var target = this.target
 
                 //capability의 attributes 및 commands 정보 조회
                 this.capabilitiesAttr = profiles.getCapability(selectedCapability);
-
-                if (this.type == ST_EVENT_DEVICE || this.type == ST_STATUS_DEVICE) {
-                    for (var i in this.capabilitiesAttr.attr) {
-                        for (var attr in this.capabilitiesAttr.attr[i]) {
-                            this.form.capabilityAttr.append($("<option></option>").val(attr + "|" + this.capabilitiesAttr.attr[i][attr]).text(attr));
+                if(this.capabilitiesAttr){
+                    if ( this.type == ST_EVENT_DEVICE || this.type == ST_STATUS_DEVICE) {
+                        for (var i in this.capabilitiesAttr.attr) {
+                            for (var attr in this.capabilitiesAttr.attr[i]) {
+                                this.form.capabilityAttr.append($("<option></option>").val(attr + "|" + this.capabilitiesAttr.attr[i][attr]).text(attr));
+                            }
                         }
-                    }
-                } else {
-                    for (var i in this.capabilitiesAttr.cmd) {
-                        for (var cmd in this.capabilitiesAttr.cmd[i]) {
-                            if (typeof this.capabilitiesAttr.cmd[i][cmd] == 'object') {
-                                this.form.capabilityAttr.append($("<option></option>").val(cmd).text(cmd).attr("arg", JSON.stringify(this.capabilitiesAttr.cmd[i][cmd])));
-                            } else {
-                                this.form.capabilityAttr.append($("<option></option>").val(cmd + "|" + this.capabilitiesAttr.cmd[i][cmd]).text(cmd));
+                    } else {
+                        for (var i in this.capabilitiesAttr.cmd) {
+                            for (var cmd in this.capabilitiesAttr.cmd[i]) {
+                                if (typeof this.capabilitiesAttr.cmd[i][cmd] == 'object') {
+                                    this.form.capabilityAttr.append($("<option></option>").val(cmd).text(cmd).attr("arg", JSON.stringify(this.capabilitiesAttr.cmd[i][cmd])));
+                                } else {
+                                    this.form.capabilityAttr.append($("<option></option>").val(cmd + "|" + this.capabilitiesAttr.cmd[i][cmd]).text(cmd));
+                                }
                             }
                         }
                     }
                 }
+
                 if(this.form.capabilityAttr.find('option').length<=1){
                     this.form.capabilityAttr.attr('readonly',true);
                     this.form.capabilityAttr.attr('disabled',true);
                 }else{
                     this.form.capabilityAttr.attr('readonly',false);
                     this.form.capabilityAttr.attr('disabled',false);
+                }
+                if(initAttribute){
+                    if(this.form.capabilityAttr.find('option:contains('+initAttribute+')').length>0){
+                        this.form.capabilityAttr.find('option:contains('+initAttribute+')').attr('selected',true)
+                    }
                 }
             },
             //ArgType값으로 row input을 구성한다.
@@ -983,15 +1017,17 @@
                         this.makeArgTypeAppend(row, argType, inputNm);
                     }
 
+                    $(row).parent().data('types',reArgType)
+
                     //생성된 typeinput 의 속성에 필요한값들을 추가한다.
                     row.find("select,.red-ui-typedInput-container").css("margin-left", "5px")
                     row.find("select,.red-ui-typedInput-container").each(function (idx, element) {
                         var typeObj = $(element).find(".red-ui-typedInput");
                         typeObj.addClass("field" + (idx + 3));
 
-                        if ($(element)[0].tagName != 'SELECT') typeObj.data("types", JSON.stringify(reArgType));
+                        if ($(element)[0].tagName != 'SELECT') typeObj.data('types', JSON.stringify(reArgType));
                         else $(element).addClass("field" + (idx + 3));
-                    });
+                    })
                 }
             },
             //output관련 공통
@@ -1021,7 +1057,7 @@
                     //만약 줄바꿈이 된다면 input의 크기를 좀더 여유있게 설정한다.
                     if (container.height() > 50) {
                         typeField.each(function (idx, ele) {
-                            if (container.find('br').length == 0) $(ele).parent().parent().before('</br>');
+                            // if (container.find('br').length == 0) $(ele).parent().parent().before('</br>');
                             $(ele).typedInput("width", contWidth - standardWidth);
                         });
 
@@ -1084,6 +1120,9 @@
 
                 $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
                     addItem: function (container, idx, opt) {
+                        //opt.r==data
+                        //opt.i==idx
+
                         var isDuplicate = false;
 
                         //capability추가시 중복된 값이 존재하면 추가시키지 않는다.
@@ -1095,7 +1134,7 @@
                                     || $("#node-input-capability-attr").val() == "") {
                                     isDuplicate = true;
                                 }
-                            });
+                            })
                         }
 
                         //attribute 셀렉트박스에 데이터가 없으면 attr은 추가시키지 않는다.
@@ -1210,7 +1249,7 @@
                         }
 
                         var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
-                        var row2 = $('<div/>', {style: "padding-top: 5px; padding-left: 200px;"}).appendTo(container);
+
                         var field1 = $('<input/>', {
                             class: "field1",
                             style: "width:35%; margin-right:5px;",
@@ -1226,6 +1265,8 @@
                         for (var d in operators) {
                             field2.append($("<option></option>").val(operators[d].v).text(/^switch/.test(operators[d].t) ? NODE._(operators[d].t) : operators[d].t));
                         }
+
+                        var row2 = $('<div/>', {style: "padding-top: 5px; padding-left: 200px;"}).appendTo(container);
                         var btwnValueField = $('<input/>', {
                             class: "node-input-rule-btwn-value",
                             type: "text",
@@ -1298,6 +1339,7 @@
                                 } else {
                                     $(element).val(rule["col" + (idx + 3)]);
                                 }
+
                             });
                         }
 
@@ -1324,21 +1366,6 @@
                     sortable: true,
                     removable: true
                 });
-
-                for (var i = 0; i < this.sensorCapaDs.length; i++) {
-                    var data = this.sensorCapaDs[i];
-                    /*초기화 배열값으로인해 루프를 수행하지않기위해 isInit값을 추가하였다.
-                    내용이없는 로우가 추가되는 현상 발생
-                    */
-                    if (data.isInit) break;
-                    $("#cmd-list-container").editableList('addItem', {r: data, i: i});
-                }
-
-                for (var i = 0; i < this.sensorAttrDs.length; i++) {
-                    var data = this.sensorAttrDs[i];
-                    if (data.isInit) break;
-                    $("#attr-list-container").editableList('addItem', {r: data, i: i});
-                }
 
                 var formObj = {
                     deviceId: $("#node-input-deviceId"),
@@ -1372,18 +1399,19 @@
                     r.col2 = $(this).find(".field2").text();
                     r.hidden2 = $(this).find(".hidden2").val();
                     r.argType = JSON.stringify($(this).data("argType"));
+                    r.types=JSON.stringify($(this).data("types"));
 
                     //argType별로 생성된 input의 값을 가져온다.
-                    $(this).find("select,input").not(":lt(1)").not("input[type='hidden']").each(function (idx, element) {
-                        if ($(element).attr("class")) {
-                            if ($(element).is('[class~="red-ui-typedInput"]')) {
+                    $(this).find("select,input[class~=red-ui-typedInput]").each(function (idx, element) {
+                        // if ($(element).attr("class")) {
+                            if ( $(element).is('[class~="red-ui-typedInput"]')) {
                                 r["col" + (idx + 3)] = $(element).typedInput('value');
                                 r["col" + (idx + 3) + "_vt"] = $(element).typedInput('type');
-                                r["types"] = $(element).data('types');
-                            } else {
-                                r["col" + (idx + 3)] = $(element).val();
-                            }
-                        }
+                                // r["types"] = $(element).data('types');
+                             } else {
+                                 r["col" + (idx + 3)] = $(element).val();
+                             }
+                        // }
                     });
                     NODE.sensorCapaDs.push(r);
                 });

@@ -15,7 +15,7 @@
  **/
 module.exports = function (RED) {
     "use strict";
-
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
     var os = require('os');
     var bodyParser = require("body-parser");
     var cors = require('cors');
@@ -640,9 +640,6 @@ module.exports = function (RED) {
                             for (var i = 0; i < NODE.sensorCapaDs.length; i++) {
                                 var rule = NODE.sensorCapaDs[i];
                                 var tCmd = rule.col2;
-                                if (tCmd == "setHue" || tCmd == "setSaturation") {
-                                    tCmd = "setColor";
-                                }
                                 var cmd = {"component": targetInfo.componentId, "capability": rule.col1, "command": tCmd};
                                 cmd.arguments = [];
                                 var argument = {};
@@ -712,9 +709,7 @@ module.exports = function (RED) {
                         for (var i = 0; i < NODE.sensorCapaDs.length; i++) {
                             var rule = NODE.sensorCapaDs[i];
                             var tCmd = rule.col2;
-                            if (tCmd == "setHue" || tCmd == "setSaturation") {
-                                tCmd = "setColor";
-                            }
+                            
                             //TEST noAutomation TODO: set component name
                             var cmd = {"component": "main", "capability": rule.col1, "command": tCmd};
                             cmd.arguments = [];
@@ -730,9 +725,10 @@ module.exports = function (RED) {
                                     var tmp;
                                     var tempIdx = 0;
                                     for (var j = 0; j < keys.length; j++) {
-                                        argument = {};
                                         //typeinput 값이 존재하고 데이터 유형이 object인 경우
                                         if (types != undefined && types[keys[j]].hasOwnProperty("prop")) {
+                                            var argument = {};
+
                                             var propKeys = Object.keys(types[keys[j]].prop);
 
                                             for (var k = 0; k < propKeys.length; k++, tempIdx++) {
@@ -742,15 +738,15 @@ module.exports = function (RED) {
                                                 }
                                                 argument[propKeys[k]] = tmp;
                                             }
+                                            cmd.arguments.push(argument);
                                         } else {
                                             tmp = rule["col" + (tempIdx + 3)];
                                             if (rule["col" + (tempIdx + 3) + "_vt"] == "num") {
                                                 tmp = Number(tmp);
                                             }
-                                            argument[keys[j]] = tmp;
                                             tempIdx++
+                                            cmd.arguments.push(tmp);
                                         }
-                                        cmd.arguments.push(argument);
                                     }
                                 }
                             }
