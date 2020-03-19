@@ -20,8 +20,8 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-capability">Capability</label>
-        <select type="text" id="node-input-capability" style="width: 70%;"></select>
+        <label for="node-input-capabilityId">Capability</label>
+        <select type="text" id="node-input-capabilityId" style="width: 70%;"></select>
     </div>
 </script>
 <script type="text/x-red" data-help-name="device-profile">
@@ -308,8 +308,7 @@
                 url: "https://api.smartthings.com/v1/devices",
                 headers: {
                     Authorization: 'Bearer ' + token
-                },
-
+                }
             }).done(function (devices, textStatus, xhr) {
                 done(token,devices.items);
             }).fail(function (e) {
@@ -339,7 +338,10 @@
             }else{
                 _attr_capabilities=capa
             }
-            _capabilities[capa.id]=capa
+
+            if(capa.status === 'live' || capa.status === 'proposed') {
+                _capabilities[capa.id]=capa
+            }
         })
 
         // var _argTypes={"ActivityState":{"type":"enum","enum":["active","inactive"]},"LightingMode":{"type":"enum","enum":["reading","writing","computer","night"]},"HvacMode":{"type":"enum","enum":["auto","cool","dry","coolClean","dryClean","fanOnly","heat","heatClean","notSupported"]},"AirQuality":{"type":"integer","minimum":0,"maximum":100},"AlertState":{"type":"enum","enum":["both","off","siren","strobe"]},"MuteState":{"type":"enum","enum":["muted","unmuted"]},"Volume":{"type":"integer","minimum":0,"maximum":100},"Battery":{"type":"integer","minimum":0,"maximum":100},"BmiMeasurement":{"type":"number"},"BodyWeightMeasurement":{"type":"number"},"ButtonState":{"type":"enum","enum":["pushed","held","double","pushed_2x","pushed_3x","pushed_4x","pushed_5x","pushed_6x","down","down_2x","down_3x","down_4x","down_5x","down_6x","down_hold","up","up_2x","up_3x","up_4x","up_5x","up_6x","up_hold"]},"PositiveInteger":{"type":"integer","minimum":0},"ButtonStateArray":{"type":"array","item":"ButtonState"},"CarbonDioxide":{"type":"integer","minimum":0,"maximum":1000000},"CarbonMonoxideState":{"type":"enum","enum":["clear","detected","tested"]},"CarbonMonoxideLevel":{"type":"number","minimum":0,"maximum":1000000},"String":{"type":"string","maxLength":255},"PositiveNumber":{"type":"number","minimum":0},"Hue":{"type":"number"},"Saturation":{"type":"number"},"Hex":{"type":"string","maxLength":7},"Level":{"type":"integer"},"Switch":{"type":"string","maxLength":3},"COLOR_MAP":{"type":"object","prop":{"hue":"Hue","saturation":"Saturation","hex":"Hex","level":"Level","switch":"Switch"}},"ColorTemperature":{"type":"integer","minimum":1,"maximum":30000},"ContactState":{"type":"enum","enum":["closed","open"]},"DishwasherMode":{"type":"enum","enum":["auto","quick","rinse","dry"]},"MachineState":{"type":"enum","enum":["pause","run","stop"]},"MachineStateArray":{"type":"array","item":"MachineState"},"DishwasherJobState":{"type":"enum","enum":["airwash","cooling","drying","finish","preDrain","prewash","rinse","spin","unknown","wash","wrinklePrevent"]},"Iso8601Date":{"type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"},"Door":{"type":"enum","enum":["closed","closing","open","opening","unknown"]},"DryerMode":{"type":"enum","enum":["regular","lowHeat","highHeat"]},"DryerJobState":{"type":"enum","enum":["cooling","delayWash","drying","finished","none","weightSensing","wrinklePrevent"]},"Energy":{"type":"number"},"EquivalentCarbonDioxideMeasurement":{"type":"number","minimum":0,"maximum":1000000},"FilterStatus":{"type":"enum","enum":["normal","replace"]},"FormaldehydeLevel":{"type":"number","minimum":0,"maximum":1000000},"Illuminance":{"type":"number","minimum":0,"maximum":100000},"InfraredLevel":{"type":"number","minimum":0,"maximum":100},"LockState":{"type":"enum","enum":["locked","unknown","unlocked","unlockedwithtimeout"]},"MediaSource":{"type":"enum","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]},"MediaSourceArray":{"type":"array","item":"MediaSource"},"PlaybackRepeatMode":{"type":"enum","enum":["all","off","one"]},"PlaybackShuffle":{"type":"enum","enum":["disabled","enabled"]},"PlaybackStatus":{"type":"enum","enum":["pause","play","stop","fastforward","rewind"]},"MediaPlaybackCommands":{"type":"enum","enum":["pause","play","stop","fastForward","rewind"]},"MediaPlaybackCommandsArray":{"type":"array","item":"MediaPlaybackCommands"},"OvenMode":{"type":"enum","enum":["heating","grill","warming","defrosting"]},"MachineState2":{"type":"enum","enum":["ready","running","paused"]},"SupportedMachineStates":{"type":"enum","enum":["ready","running","paused"]},"SupportedMachineStatesArray":{"type":"array","item":"SupportedMachineStates"},"OvenJobState":{"type":"enum","enum":["cleaning","cooking","cooling","draining","preheat","ready","rinsing"]},"Progress":{"type":"integer","minimum":0,"maximum":100},"MachineState3":{"type":"enum","enum":["stop"]},"Power":{"type":"number"},"PowerSource":{"type":"enum","enum":["battery","dc","mains","unknown"]},"PresenceState":{"type":"enum","enum":["present","notpresent"]},"RapidCooling":{"type":"enum","enum":["off","on"]},"TemperatureValue":{"type":"number","minimum":-460,"maximum":10000},"Humidity":{"type":"number","minimum":0,"maximum":100},"RobotCleanerCleaningMode":{"type":"enum","enum":["auto","part","repeat","manual","stop","map"]},"RobotCleanerCleaningMode2":{"type":"enum","enum":["auto","part","repeat","manual","stop"]},"RobotCleanerMovement":{"type":"enum","enum":["homing","idle","charging","alarm","powerOff","reserve","point","after","cleaning"]},"RobotCleanerTurboMode":{"type":"enum","enum":["on","off","silence"]},"Lqi":{"type":"integer","minimum":0,"maximum":255},"Rssi":{"type":"number","minimum":-200,"maximum":0},"Smoke":{"type":"enum","enum":["clear","detected","tested"]},"Sound":{"type":"enum","enum":["detected","notdetected"]},"Level2":{"type":"integer","minimum":0,"maximum":100},"SwitchState":{"type":"enum","enum":["on","off"]},"Tamper":{"type":"enum","enum":["clear","detected"]},"ThermostatFanMode":{"type":"enum","enum":["auto","circulate","followschedule","on"]},"ThermostatFanModeArray":{"type":"array","item":"ThermostatFanMode"},"ThermostatMode":{"type":"enum","enum":["auto","cool","eco","rushhour","emergencyheat","heat","off"]},"ThermostatModeArray":{"type":"array","item":"ThermostatMode"},"ThermostatOperatingState":{"type":"enum","enum":["cooling","fanonly","heating","idle","pendingcool","pendingheat","venteconomizer"]},"TvocLevel":{"type":"number","minimum":0,"maximum":1000000},"UltravioletIndex":{"type":"number","minimum":0,"maximum":255},"Valve":{"type":"enum","enum":["closed","open"]},"Number":{"type":"number"},"WasherMode":{"type":"enum","enum":["regular","heavy","rinse","spinDry"]},"WasherJobState":{"type":"enum","enum":["airWash","cooling","delayWash","drying","finish","none","preWash","rinse","spin","wash","weightSensing","wrinklePrevent"]},"MoistureState":{"type":"enum","enum":["dry","wet"]},"OpenableState":{"type":"enum","enum":["closed","closing","open","opening","partiallyopen","unknown"]}};
@@ -399,19 +401,11 @@
         }
 
         this.getCapability = function (cp) {
-            return _capabilities[cp]
+            return _capabilities[cp]||{}
         }
 
         this.getAllCapabilities = function () {
-            if(liveCapabilities === undefined){
-                liveCapabilities = {};
-                for(var capa in _capabilities){
-                    if(_capabilities[capa].status === 'live' || _capabilities[capa].status === 'proposed'){
-                        liveCapabilities[capa] = _capabilities[capa];
-                    }
-                }
-            }
-            return liveCapabilities;
+            return _capabilities;
         };
     }
     var validateAutomationNext = function (id) {
@@ -441,63 +435,32 @@
             paletteLabel: "Device Profile",
             color: "rgb(168,168,168)",
             defaults: {
-                name: {
-                    value: "", required: true,
-                    validate: function (v) {
-                        var NODE = this;
-                        var result = true;
-                        RED.nodes.eachNode(function (cNode) {
-                            if (cNode.type == 'device-profile' && cNode.id != NODE.id && cNode.name == NODE.name) {
-                                result = false;
-                            }
-                        })
-                        return result
-                    }
-                },
-                capability: {value: "", required: true},
-                device:{}
+                name: {value: "", required: true},
+                capabilityId: {value: "", required: true}
             },
             inputs: 0,
             outputs: 0,
             icon: "deviceprofile.png",
             label: function () {
                 if (this.name) {
-                    return this.name + ":" + this.capability;
+                    return this.name + ":" + this.capabilityId;
                 } else {
                     return "Device Profile";
                 }
             },
             oneditprepare: function () {
                 var NODE = this;
-                $("#node-input-capability").empty();
-                $("#node-input-capability").append($("<option></option>").val("").text(""));
+                $("#node-input-capabilityId").empty();
+                $("#node-input-capabilityId").append($("<option></option>").val("").text(""));
                 Object.keys(profiles.getAllCapabilities())
                     .forEach(function(capability){
-                        $("#node-input-capability").append($("<option></option>").val(capability).text(capability));
+                        $("<option></option>").val(capability).text(capability).appendTo(("#node-input-capabilityId"))
                     })
-
-                $("#node-input-name").val(NODE.name);
-                $("#node-input-capability").val(NODE.capability);
+                $("#node-input-capabilityId").val(NODE.capabilityId);
             },
             oneditsave: function () {
                 var NODE = this;
-                var nodeName = $("#node-input-name").val();
-                RED.nodes.eachNode(function (n) {
-                    if (nodeName != "" && n.type == 'device-profile' && n.id != NODE.id && n.name == nodeName) {
-                        RED.notify('<p>' + NODE._("SmartThings.error.duplicate-Id") + '</p>', "error");
-                    }
-                });
-                NODE.name = $("#node-input-name").val();
-                NODE.capability = $("#node-input-capability").val();
-                var device = {
-                    type : NODE.type,
-                    name : $("#node-input-name").val(),
-                    capability : $("#node-input-capability").val(),
-                    capabilities : {}
-                }
-                var capabilityId = $("#node-input-capability").val();
-                device.capabilities[capabilityId] = profiles.getCapability(capabilityId);
-                NODE.device = device;
+                NODE.capability = profiles.getCapability(NODE.capabilityId)
             }
     });
 
@@ -525,8 +488,6 @@
         },
         oneditprepare: function () {
             var NODE = this;
-            $("#node-input-name").val(NODE.name);
-            $("#node-input-label").val(NODE.label);
             if(NODE.credentials && NODE.credentials.stAccessToken){
                 $("#node-input-stAccessToken").val(NODE.credentials.stAccessToken);
             }else{
@@ -537,9 +498,39 @@
                 .css('min-height', '400px')
                 .css('min-width', '150px')
                 .editableList({
-                    // header: $("<div>").append("Installed SmartThings device list"),
-                    addButton: "search",
+                    addButton: "Get Device List",
                     addItem: function(row, index, data) {
+
+                        var device = data || {};
+
+
+                        row.data('device', device);
+                        $('<div>').text(device.label).css('font-weight','bold').appendTo(row);
+
+                        var capabilityIds = [];
+                        if(Array.isArray(device.components)){
+                            device.components.forEach(function(component){
+                                if(Array.isArray(component.capabilities)){
+                                    component.capabilities.forEach(function(capability){
+                                        capabilityIds.push(capability.id);
+                                    });
+                                }
+                            });
+                        }
+                        $('<div>').text(capabilityIds.join(", ")).appendTo(row);
+
+                        var selectButton = $('<a/>', {href: "#", class: "red-ui-editableList-item-remove editor-button editor-button-small"}).appendTo(row);
+                        selectButton.text('select');
+                        selectButton.on('click',function(){
+                            $('#my-device-list-container .history-stack-selected').removeClass('history-stack-selected');
+                            // row.addClass('history-stack-selected');
+                            // li.addClass('history-stack-selected');
+                            // $(this).addClass('history-stack-selected');
+                            var device = row.data('device');
+                            $('#node-input-name').val(device.name);
+                            $('#node-input-label').val(device.label);
+                            NODE.device = device;
+                        })
                     },
                     resizeItem: function (container) {
                     },
@@ -550,60 +541,7 @@
                     sortable: true,
                     removable: false
                 });
-            var addItem = function(accessToken,device){
-                var device = device || {};
-                var li = $('<li>').appendTo($('#my-device-list-container'));
-                var row = $('<div/>').addClass("red-ui-editableList-item-content device-row").appendTo(li);
-                $('<i class="red-ui-editableList-item-handle fa fa-bars"></i>').appendTo(li);
-                li.addClass("red-ui-editableList-item-sortable");
-                var deviceData = {
-                    type: NODE.type,
-                    token: accessToken,
-                    name: device.name,
-                    label: device.label,
-                    deviceId : device.deviceId,
-                    components: device.components,
-                    capabilities: {}
-                }
-                var capabilityIds = [];
-                if(Array.isArray(device.components)){
-                    device.components.forEach(function(component){
-                        if(Array.isArray(component.capabilities)){
-                            component.capabilities.forEach(function(capability){
-                                deviceData.capabilities[capability.id] = profiles.getCapability(capability.id);
-                                capabilityIds.push(capability.id);
-                            });
-                        }
-                    });
-                }
-                row.data('device', deviceData);
-                $('<div>').text(device.label).appendTo(row);
-                $('<div>').text(capabilityIds.join(", ")).appendTo(row);
-                var selectButton = $('<a/>', {href: "#", class: "red-ui-editableList-item-remove editor-button editor-button-small"}).appendTo(row);
-                selectButton.data('device',deviceData)
-                selectButton.text('select');
-                // $('<i/>', {class: "fa fa-remove"}).appendTo(selectButton);
-                selectButton.on('click',function(){
-                    $('#my-device-list-container .history-stack-selected').removeClass('history-stack-selected');
-                    row.addClass('history-stack-selected');
-                    li.addClass('history-stack-selected');
 
-                    $(this).addClass('history-stack-selected');
-                    var device = $(this).data('device');
-                    $('#node-input-name').val(device.name);
-                    $('#node-input-label').val(device.label);
-                    NODE.device = device;
-                })
-            }
-            var addItems = function (token,list) {
-                if(list){
-                    $('#my-device-list-container').empty();
-                    for (var i in list) {
-                        var device = list[i] || {};
-                        addItem(token,device)
-                    }
-                }
-            }
             var getItemsFail = function(err){
                 var failMsg = document.createElement('span');
                 failMsg.setAttribute('id','getDeviceListErrMsg');
@@ -622,14 +560,26 @@
 
             $("#my-device-list-div > div > a.red-ui-button").off('click');
             $("#my-device-list-div > div > a.red-ui-button").on('click', function (evt) {
-                var token = $('#node-input-stAccessToken').val();
                 evt.preventDefault();
+
+                var token = $('#node-input-stAccessToken').val();
+                var addItems = function (token,list) {
+                    if(list && Array.isArray(list)){
+                        list.sort(function(a,b){
+                            return (a.label>b.label)?1:(a.label==b.label)?0:-1
+                        })
+                        $('#my-device-list-container').empty()
+                        list.forEach(function(device){
+                            $('#my-device-list-container').editableList('addItem',device)
+                        })
+                    }
+                }
                 SmartThingsApi.getDeviceList(token, addItems, getItemsFail);
             })
             if(NODE.credentials.stAccessToken && (NODE.deviceList==undefined || NODE.deviceList.length == 0)){
-                SmartThingsApi.getDeviceList(NODE.credentials.stAccessToken, addItems, getItemsFail);
+                // SmartThingsApi.getDeviceList(NODE.credentials.stAccessToken, addItems, getItemsFail);
             }else{
-                addItems(NODE.deviceList);
+                // addItems(NODE.deviceList);
             }
         },
         oneditsave: function () {
