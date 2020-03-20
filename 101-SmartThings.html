@@ -310,7 +310,7 @@
                     Authorization: 'Bearer ' + token
                 }
             }).done(function (devices, textStatus, xhr) {
-                done(token,devices.items);
+                done(devices.items);
             }).fail(function (e) {
                 fail(e);
             });
@@ -481,18 +481,13 @@
         icon: "mydevice.png",
         label: function () {
             if (this.label) {
-                return "My Device:"+this.label;
+                return "My Device:" +this.label
             } else {
-                return "My Device";
+                return "My Device"
             }
         },
         oneditprepare: function () {
             var NODE = this;
-            if(NODE.credentials && NODE.credentials.stAccessToken){
-                $("#node-input-stAccessToken").val(NODE.credentials.stAccessToken);
-            }else{
-                $("#node-input-stAccessToken").val('')
-            }
 
             $("#my-device-list-container")
                 .css('min-height', '400px')
@@ -543,6 +538,7 @@
                 });
 
             var getItemsFail = function(err){
+                $('#node-input-stAccessToken').addClass('input-error')
                 var failMsg = document.createElement('span');
                 failMsg.setAttribute('id','getDeviceListErrMsg');
                 failMsg.style.color='red';
@@ -558,46 +554,35 @@
                 })
             }
 
+            var addItems = function (list) {
+                if(list && Array.isArray(list)){
+                    list.sort(function(a,b){
+                        return (a.label>b.label)?1:(a.label==b.label)?0:-1
+                    })
+                    $('#my-device-list-container').empty()
+                    list.forEach(function(device){
+                        $('#my-device-list-container').editableList('addItem',device)
+                    })
+                }
+            }
+            var getItemsSuccess= function(list){
+                $('#node-input-stAccessToken').removeClass('input-error')
+                NODE.deviceList = list
+                addItems(list)
+            }
             $("#my-device-list-div > div > a.red-ui-button").off('click');
             $("#my-device-list-div > div > a.red-ui-button").on('click', function (evt) {
                 evt.preventDefault();
-
                 var token = $('#node-input-stAccessToken').val();
-                var addItems = function (token,list) {
-                    if(list && Array.isArray(list)){
-                        list.sort(function(a,b){
-                            return (a.label>b.label)?1:(a.label==b.label)?0:-1
-                        })
-                        $('#my-device-list-container').empty()
-                        list.forEach(function(device){
-                            $('#my-device-list-container').editableList('addItem',device)
-                        })
-                    }
-                }
-                SmartThingsApi.getDeviceList(token, addItems, getItemsFail);
+                SmartThingsApi.getDeviceList(token, getItemsSuccess, getItemsFail);
             })
-            if(NODE.credentials.stAccessToken && (NODE.deviceList==undefined || NODE.deviceList.length == 0)){
-                // SmartThingsApi.getDeviceList(NODE.credentials.stAccessToken, addItems, getItemsFail);
-            }else{
-                // addItems(NODE.deviceList);
+            if(NODE.deviceList && NODE.deviceList.length > 0){
+                addItems(NODE.deviceList)
+            }else if(NODE.credentials.stAccessToken){
+                SmartThingsApi.getDeviceList(NODE.credentials.stAccessToken, getItemsSuccess, getItemsFail)
             }
         },
         oneditsave: function () {
-            var NODE = this;
-            var cname = $("#node-input-name").val();
-            RED.nodes.eachNode(function (n) {
-                if (cname != "" && n.type == 'installed-device' && n.id != NODE.id && n.name == cname) {
-                    RED.notify('<p>' + NODE._("SmartThings.error.duplicate-Id") + '</p>', "error");
-                }
-            });
-            NODE.name = $('#node-input-name').val();
-            NODE.label = $('#node-input-label').val();
-            NODE.credentials.stAccessToken = $("#node-input-stAccessToken").val();
-            NODE.deviceList = [];
-            var list1 = $("#my-device-list-container").editableList('items');
-            list1.each(function(i,row){
-                NODE.deviceList.push(row.data('device'));
-            })
         }
     });
 
