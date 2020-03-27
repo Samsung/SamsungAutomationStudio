@@ -15,6 +15,14 @@
  **/
 module.exports = function (RED) {
     "use strict";
+
+    const ST_EVENT_DEVICE = "event-device";
+    const ST_STATUS_DEVICE = "status-device";
+    const ST_COMMAND_DEVICE = "command-device";
+    const ST_DEVICE_PROFILE = 'device-profile';
+    const ST_MY_DEVICE = 'installed-device';
+    const ST_AUTOMATION = 'automation';
+
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
     var os = require('os');
     var bodyParser = require("body-parser");
@@ -35,7 +43,9 @@ module.exports = function (RED) {
         "lt": "<",
         "lte": "<=",
         "gt": ">",
-        "gte": ">="
+        "gte": ">=",
+        "in":"in",
+        "nin":"nin"
     };
 
     var operators = {
@@ -56,6 +66,12 @@ module.exports = function (RED) {
         },
         'gte': function (a, b) {
             return a >= b;
+        },
+        'in': function(v,arr){
+            return v in arr
+        },
+        'nin': function(v,arr){
+            return !(v in arr)
         }
     };
 
@@ -167,20 +183,20 @@ module.exports = function (RED) {
         while (queue.length > 0) {
             var curID = queue.shift();
             var nodeInfo = allnodes[curID];
-            if (/^(event|status|command)-device$/g.test(nodeInfo.type) && allnodes[nodeInfo.deviceId] && allnodes[nodeInfo.deviceId].type === 'device-profile') {
+            if (/^(event|status|command)-device$/g.test(nodeInfo.type) && allnodes[nodeInfo.deviceId] && allnodes[nodeInfo.deviceId].type === ST_DEVICE_PROFILE) {
                 if (nodeInfo.deviceId in checkSet) {  // 이미 추가된 경우
                     //skip
                 } else if(nodeInfo.deviceId && nodeInfo.deviceId !='') {
                     usedDeviceConfig.push(nodeInfo.deviceId); /* Config id 저장*/
                     checkSet[nodeInfo.deviceId] = true;
-                    if (nodeInfo.eqtype == "event") {
+                    if (nodeInfo.type == ST_EVENT_DEVICE) {
                         Eventattribute = nodeInfo.attribute;
                     }
                 }
-                if(nodeInfo.type == 'event-device' && eventDeviceConfig.indexOf(nodeInfo.deviceId)<0) {
+                if(nodeInfo.type == ST_EVENT_DEVICE && eventDeviceConfig.indexOf(nodeInfo.deviceId)<0) {
                     eventDeviceConfig.push(nodeInfo.deviceId);
                 }
-                if(nodeInfo.type == 'command-device' && actionDeviceConfig.indexOf(nodeInfo.deviceId)<0) {
+                if(nodeInfo.type == ST_COMMAND_DEVICE && actionDeviceConfig.indexOf(nodeInfo.deviceId)<0) {
                     actionDeviceConfig.push(nodeInfo.deviceId);
                 }
             }
@@ -443,28 +459,19 @@ module.exports = function (RED) {
             });
         });
     }
-    RED.nodes.registerType("automation", Automation);
+    RED.nodes.registerType(ST_AUTOMATION, Automation);
 
     function DeviceConfigNode(n) {
         RED.nodes.createNode(this, n);
-        this.name = n.name;
-        this.capability = n.capability;
+        this.device=n.device
     }
-    RED.nodes.registerType("device-profile", DeviceConfigNode);
+    RED.nodes.registerType(ST_DEVICE_PROFILE, DeviceConfigNode);
 
     function installedDeviceConfigNode(n) {
-        RED.nodes.createNode(this, n);
-        this.name = n.name;
-        this.capability = n.capability;
-
-        this.stAccessToken = n.stAccessToken;
-        if(n.device){
-            this.stDeviceId = n.device.deviceId;
-            this.device = n.device;
-        }
-
+        RED.nodes.createNode(this, n)
+        this.device = n.device
     }
-    RED.nodes.registerType("installed-device", installedDeviceConfigNode,{credentials:{
+    RED.nodes.registerType(ST_MY_DEVICE, installedDeviceConfigNode,{credentials:{
             stAccessToken:{type:'text', required:true}
         }});
 
@@ -474,20 +481,18 @@ module.exports = function (RED) {
             RED.comms.publish("debug", {"msg": message});
         }
 
-        RED.nodes.createNode(this, n);
+        RED.nodes.createNode(this, n)
+        this.deviceNodeId = n.deviceNodeId
+        this.deviceId = n.deviceId
+        this.capabilityId = n.capabilityId
+        this.attributeId = n. attributeId
+        this.sensorCapaDs = n.sensorCapaDs || []
+        this.rules = n.rules || []
 
-        this.type = n.type;
-        this.name = n.name;
-        this.eqtype = n.eqtype;
-        this.capability = n.capability;
-
-        this.sensorCapaDs = n.sensorCapaDs || [];
-        this.sensorAttrDs = n.sensorAttrDs || [];
-        if(n.deviceId===''){
-            this.warn('Deivce Node error: deviceId is undefined');
-            return;
+        if(n.deviceNodeId===''){
+            this.warn('Deivce Node error: deviceNodeId is undefined')
+            return
         }
-        this.deviceId = n.deviceId;
 
         //validation 체크 capability로우는 빈값이 없어야한다.
         var NODE = this;
@@ -518,15 +523,15 @@ module.exports = function (RED) {
                 }
             }
 
-            for (var i = 0; i < this.sensorAttrDs.length; i++) {
-                var rule = this.sensorAttrDs[i];
-                // [==,!=] 이외에는 모두 숫자형식의 데이터이다.
-                if (rule.col2 != 'eq' && rule.col2 != 'neq') {
-                    if (isNaN(Number(rule.col3))) {
-                        throw new Error("Row[" + i + "] - Not a number");
-                    }
-                }
-            }
+            // for (var i = 0; i < this.sensorAttrDs.length; i++) {
+            //     var rule = this.sensorAttrDs[i];
+            //     // [==,!=] 이외에는 모두 숫자형식의 데이터이다.
+            //     if (rule.col2 != 'eq' && rule.col2 != 'neq') {
+            //         if (isNaN(Number(rule.col3))) {
+            //             throw new Error("Row[" + i + "] - Not a number");
+            //         }
+            //     }
+            // }
         } catch (e) {
             this.error(RED._("SmartThings.error.invalid-input", {error: e.message}));
             valid = false;
@@ -540,7 +545,7 @@ module.exports = function (RED) {
             var onward = [];
             try {
                 var param = {};
-                var confName = RED.nodes.getNode(NODE.deviceId).name;
+                var confName = RED.nodes.getNode(NODE.deviceNodeId).name;
                 let flowContext = NODE.context().flow.get('evt');
                 if (flowContext == undefined) {
                     // throw new Error("Context Data is null");
@@ -553,10 +558,10 @@ module.exports = function (RED) {
                 param.deviceId = "";
                 var isAutomation=true;
 
-                if (RED.nodes.getNode(NODE.deviceId).type==='installed-device'){
+                if (RED.nodes.getNode(NODE.deviceNodeId).type == ST_MY_DEVICE){
                     isAutomation=false;
-                    authToken = RED.nodes.getNode(NODE.deviceId).credentials.stAccessToken;
-                    param.deviceId = RED.nodes.getNode(NODE.deviceId).stDeviceId;
+                    authToken = RED.nodes.getNode(NODE.deviceNodeId).credentials.stAccessToken;
+                    param.deviceId = NODE.deviceId
                 }else{
                     isAutomation=true;
                     evt = flowContext.eventData;
@@ -566,11 +571,11 @@ module.exports = function (RED) {
                     param.deviceId = targetInfo.deviceId;
                 }
 
-                if (NODE.eqtype == 'event') {
+                if (NODE.type == ST_EVENT_DEVICE) {
                     sendDebug("[flow] Event:" + NODE.name + "("+confName+")");
                     var opCheck = false;
-                    for (var idx = 0; idx < NODE.sensorAttrDs.length; idx++) {
-                        var rule = NODE.sensorAttrDs[idx];
+                    for (var idx = 0; idx < NODE.rules.length; idx++) {
+                        var rule = NODE.rules[idx];
                         var attrHierarchy = rule.hidden1.split("|");
                         var val = fromEvent.value;
 
@@ -584,38 +589,36 @@ module.exports = function (RED) {
                             onward.push(null);
                         }
                     }
-                    if (NODE.sensorAttrDs.length == 0) {
+                    if (NODE.rules.length == 0) {
                         RED.util.setMessageProperty(msg, 'payload', JSON.stringify(fromEvent));
                         onward.push(msg);
                     }
                     NODE.send(onward);
-                } else if (NODE.eqtype == 'status') {
+                } else if (NODE.type == ST_STATUS_DEVICE) {
                     OneApi.getDeviceStates(param, authToken).then(function (data) {
                         sendDebug("[flow] Condition:" + NODE.name + "("+confName+")");
-                        var deviceStates = data;
+                        var deviceStatus = data;
                         var opCheck = false;
 
-                        NODE.sensorAttrDs.forEach((rule,idx)=>{
-                            var attrHierarchy = rule.hidden1.split("|");
-                            var val = deviceStates['components'][targetInfo.componentId||'main'][NODE.capability][attrHierarchy[0]];
+                        NODE.rules.forEach((rule,idx)=>{
+                            var attributeValue = deviceStatus.components[targetInfo.componentId||'main'][NODE.capabilityId][NODE.attributeId].value;
 
-                            if (typeof val == 'object'){
-                                val = val.value;
+                            if (rule.value == '' || rule.value == undefined){
+                                rule.value = "\'\'"
                             }
-                            if (rule.col3 == '' || rule.col3 == undefined){
-                                rule.col3 = "\'\'";
-                            }
-                            opCheck = operators[rule.col2](val, rule.col3);
+                            opCheck = operators[rule.operator](rule.value, attributeValue)
                             if (opCheck) {
-                                RED.util.setMessageProperty(msg, 'payload', attrHierarchy[0] + "=\""+val+"\" check success[" + idx + "]");
+                                // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port success")
+                                RED.util.setMessageProperty(msg, 'payload', attributeValue)
                                 onward.push(msg);
                             } else {
+                                // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port fail")
                                 onward.push(null);
                             }
                         })
 
-                        if (NODE.sensorAttrDs.length == 0) {
-                            RED.util.setMessageProperty(msg, 'payload', JSON.stringify(data));
+                        if (NODE.rules.length == 0) {
+                            RED.util.setMessageProperty(msg, 'payload', data);
                             onward.push(msg);
                         }
                         NODE.send(onward);
@@ -626,7 +629,7 @@ module.exports = function (RED) {
                 } else {
                     sendDebug("[flow] Action:" + NODE.name + "("+confName+")");
                     //multiple : true 기능 지원 으로 (해당 deviceid의 모든 기기를 동시에 제어)
-                    var confName = RED.nodes.getNode(NODE.deviceId).name;
+                    var confName = RED.nodes.getNode(NODE.deviceNodeId).name;
                     var multipleCmd = [];
 
                     var targetInfoArr=[];
@@ -707,8 +710,8 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("event-device", ThingNode);
-    RED.nodes.registerType("status-device", ThingNode);
-    RED.nodes.registerType("command-device", ThingNode);
+    RED.nodes.registerType(ST_EVENT_DEVICE, ThingNode);
+    RED.nodes.registerType(ST_STATUS_DEVICE, ThingNode);
+    RED.nodes.registerType(ST_COMMAND_DEVICE, ThingNode);
 
 }

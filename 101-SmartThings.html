@@ -155,14 +155,13 @@
     <hr align="middle" />
     <div class="form-row">
         <label for="node-input-capabilityId"><i class="fa fa-asterisk"></i> Capability</label>
-        <input type="hidden" id="node-input-capabilityId" readonly="true" style="width:50%;"/>
-        <select id="node-input-capability-select" style="width:50%;"/>
+        <select id="node-input-capabilityId" style="width:50%;"/>
     </div>
     <div class="form-row">
-        <label for="node-input-capabilityId"> <i class="fa fa-sun-o"></i>
+        <label for="node-input-capabilityId"><i class="fa fa-sun-o"></i>
             <span class="sensor-container-row"> Attribute</span>
         </label>
-        <select style="width:50%" id="node-input-attribute" class="form-row"/>
+        <select style="width:50%" id="node-input-attributeId" class="form-row"/>
     </div>
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
@@ -209,14 +208,16 @@
     <hr align="middle" />
     <div class="form-row">
         <label for="node-input-capabilityId"><i class="fa fa-asterisk"></i> Capability</label>
-        <input type="hidden" id="node-input-capabilityId" readonly="true" style="width:50%;"/>
-        <select id="node-input-capability-select" style="width:50%;"/>
+        <select id="node-input-capabilityId" style="width:50%;"/>
     </div>
     <div class="form-row">
         <label for="node-input-capability"> <i class="fa fa-sun-o"></i>
             <span class="sensor-container-row"> Attribute</span>
         </label>
-        <select style="width:50%" id="node-input-attribute" class="form-row"/>
+        <select style="width:50%" id="node-input-attributeId" class="form-row"/>
+        <a id="attribute-info" class="editor-button" style="margin-left: 10px;cursor: default;">
+            <i class="fa fa-info"></i>
+        </a>
     </div>
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
@@ -259,18 +260,18 @@
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
         <select type="text"  id="node-input-deviceNodeId" style="width:50%"></select>
+        <input type="hidden" id="node-input-deviceId">
     </div>
     <hr align="middle" />
     <div class="form-row">
         <label for="node-input-capabilityId"><i class="fa fa-asterisk"></i> Capability</label>
-        <input type="hidden" id="node-input-capabilityId" readonly="true" style="width:50%;"/>
-        <select id="node-input-capability-select" style="width:50%;"/>
+        <select id="node-input-capabilityId" style="width:50%;"/>
     </div>
     <div class="form-row">
         <label for="node-input-capabilityId"> <i class="fa fa-sun-o"></i>
             <span class="actuator-container-row"> Command</span>
         </label>
-        <select style="width:50%" id="node-input-attribute" class="form-row"/>
+        <select style="width:50%" id="node-input-attributeId" class="form-row"/>
     </div>
     <div class="form-row actuator-container-row">
         <ol id="cmd-list-container"></ol>
@@ -481,9 +482,8 @@
         oneditsave: function () {
             var NODE = this;
             NODE.device = {}
-            NODE.device.capabilities = {}
-            NODE.device.capabilities[NODE.capabilityId] = profiles.getCapability(NODE.capabilityId)
-            // NODE.capability = profiles.getCapability(NODE.capabilityId)
+            NODE.device.capabilities = []
+            NODE.device.capabilities.push(NODE.capabilityId)
         }
     });
 
@@ -516,26 +516,26 @@
                 .css('min-height', '400px')
                 .css('min-width', '150px')
                 .editableList({
-                    addButton: "Get Device List",
+                    addButton: "GET SmartThings Device List",
                     addItem: function (row, index, data) {
                         var device = data || {};
 
                         row.data('device', device);
                         $('<div>').text(device.label).css('font-weight', 'bold').appendTo(row);
 
-                        var capabilityIds = [];
-                        device.capabilities = {}
+                        // var capabilityIds = [];
+                        device.capabilities = []
                         if (Array.isArray(device.components)) {
                             device.components.forEach(function (component) {
                                 if (Array.isArray(component.capabilities)) {
                                     component.capabilities.forEach(function (capability) {
-                                        device.capabilities[capability.id] = profiles.getCapability(capability.id)
-                                        capabilityIds.push(capability.id)
+                                        device.capabilities.push(capability.id)
+                                        // capabilityIds.push(capability.id)
                                     })
                                 }
                             })
                         }
-                        $('<div>').text(capabilityIds.join(", ")).appendTo(row);
+                        $('<div>').text(device.capabilities.join(", ")).appendTo(row);
 
                         var selectButton = $('<a/>', {href: "#", class: "red-ui-editableList-item-remove editor-button editor-button-small"}).appendTo(row);
                         selectButton.text('select')
@@ -628,7 +628,7 @@
                 required: true
             },
             urlDate: {value: ""},
-            isUniqueUrl: {value: false},
+            // isUniqueUrl: {value: false},
             eqtype: {
                 value: "", validate: function (v) {
                     return validateAutomationNext(this.id);
@@ -757,32 +757,33 @@
         var selectedDevice = $("#node-input-deviceNodeId option:selected").data('device')
 
         THING.initDeviceNodeSelect(node.deviceNodeId)
-        THING.initCapabilitySelect(node.capability)
-        THING.initAttributeSelect(node.attribute)
+        THING.initCapabilitySelect(node.capabilityId)
+        THING.initAttributeSelect(node.attributeId)
         THING.initAttributeContainer(node)
 
         THING.form.deviceNodeId.on("mouseover", function () {
             THING.form.deviceNodeId.off("change")
             THING.form.deviceNodeId.on("change", function () {
-                console.log('form deviceId:change')
                 THING.initCapabilitySelect()
                 THING.initAttributeSelect()
+                THING.node.attributeInfoPopover.refreshContent()
                 THING.initAttributeContainer()
             })
         })
 
-        THING.form.capabilitySelect.on("mouseover", function () {
-            THING.form.capabilitySelect.off("change")
-            THING.form.capabilitySelect.on("change", function () {
-                $("#node-input-capabilityId").val($("#node-input-capability-select").find('option:selected').val())
+        THING.form.capabilityId.on("mouseover", function () {
+            THING.form.capabilityId.off("change")
+            THING.form.capabilityId.on("change", function () {
                 THING.initAttributeSelect()
+                THING.node.attributeInfoPopover.refreshContent()
                 THING.initAttributeContainer()
             })
         })
 
-        THING.form.capabilityAttr.on("mouseover", function () {
-            THING.form.capabilityAttr.off("change")
-            THING.form.capabilityAttr.on("change", function () {
+        THING.form.attributeId.on("mouseover", function () {
+            THING.form.attributeId.off("change")
+            THING.form.attributeId.on("change", function () {
+                THING.node.attributeInfoPopover.refreshContent()
                 THING.initAttributeContainer()
             })
         })
@@ -790,7 +791,8 @@
 
     DeviceNodeEventHandler.prototype = {
         initDeviceNodeSelect: function (initDeviceNodeId) {
-            this.form.deviceNodeId.html('')
+            var deviceNodeIdSelect = this.form.deviceNodeId
+            deviceNodeIdSelect.html('')
             var deviceNodeList = []
             deviceNodeList = RED.nodes.filterNodes({z: this.node.z, type: ST_DEVICE_PROFILE})
             if (this.type != ST_EVENT_DEVICE) {
@@ -799,22 +801,75 @@
             var target = this.target
             deviceNodeList.filter(function (node) {
                 if (node.name && node.device && node.device.capabilities) {
-                    return Object.values(node.device.capabilities).some(function (capability) {
-                        return capability[target]
+                    return node.device.capabilities.some(function (capabilityId) {
+                        var capability = profiles.getCapability(capabilityId)
+                        return capability && capability.hasOwnProperty(target)
                     })
                 } else {
                     return false
                 }
             }).forEach(function (node) {
                 if (node.type == ST_DEVICE_PROFILE) {
-                    $('#node-input-deviceNodeId').prepend($("<option></option>").val(node.id).data('device', node.device).text(node.name + ":" + node.capability))
+                    deviceNodeIdSelect.prepend($("<option></option>").val(node.id).data('device', node.device).text(node.name + ":" + node.capability))
                 } else if (node.type == ST_MY_DEVICE) {
-                    $('#node-input-deviceNodeId').append($("<option></option>").val(node.id).data('device', node.device).text("(My)" + node.label))
+                    deviceNodeIdSelect.append($("<option></option>").val(node.id).data('device', node.device).text("(My)" + node.label))
                 }
             })
 
-            if (initDeviceNodeId) {
-                this.form.deviceNodeId.val(initDeviceNodeId)
+
+        },
+        //deviceid 선택시 해당 section 정보를 셋팅한다.
+        initCapabilitySelect: function (initCapabilityId) {
+            var capabilityIdSelect = this.form.capabilityId;
+            capabilityIdSelect.html('')
+            var device = this.form.deviceNodeId.find('option:selected').data('device')
+
+            if (device && device.capabilities) {
+                device.capabilities.forEach(function(capabilityId){
+                    capabilityIdSelect.append($("<option></option>").val(capabilityId).text(capabilityId))
+                })
+
+                capabilityIdSelect.removeClass("input-error")
+                if (capabilityIdSelect.find('option').length <= 1) {
+                    capabilityIdSelect.attr('disabled', true)
+                } else {
+                    capabilityIdSelect.attr('disabled', false)
+                }
+
+                capabilityIdSelect.find('option:first').attr("selected", true)
+            } else {
+                this.form.deviceNodeId.addClass("input-error")
+            }
+
+            if (initCapabilityId) {
+                capabilityIdSelect.val(initCapabilityId)
+            }
+        },
+        //capability attr 셀렉트박스구성
+        initAttributeSelect: function (initAttributeId) {
+            var attributeIdSelect = this.form.attributeId
+            attributeIdSelect.html('');
+
+            var selectedCapabilityId = this.form.capabilityId.find("option:selected").val();
+
+            //capability의 attributes 및 commands 정보 조회
+            var capability = profiles.getCapability(selectedCapabilityId);
+            if (capability && capability[this.target]) {
+                Object.keys(capability[this.target]).forEach(function (attributeId) {
+                    attributeIdSelect.append($("<option></option>").val(attributeId).text(attributeId));
+                })
+            }
+
+            if (attributeIdSelect.find('option').length <= 1) {
+                attributeIdSelect.attr('disabled', true)
+                attributeIdSelect.attr('readonly', true)
+            } else {
+                attributeIdSelect.attr('readonly', false)
+                attributeIdSelect.attr('disabled', false)
+            }
+            if (initAttributeId) {
+                attributeIdSelect.val(initAttributeId)
+                this.node.attributeInfoPopover.refreshContent()
             }
         },
         //type값에 따른 페이지 초기화 함수
@@ -833,102 +888,17 @@
                     }
                 }
 
-                if (node.sensorAttrDs && node.sensorAttrDs.length) {
-                    for (var i = 0; i < this.node.sensorAttrDs.length; i++) {
-                        var data = this.node.sensorAttrDs[i];
+                if (node.rules && node.rules.length) {
+                    for (var i = 0; i < this.node.rules.length; i++) {
+                        var data = this.node.rules[i];
                         if (data.isInit) break;
                         this.form.container.editableList('addItem', data);
                     }
                 }
             }
 
-            if(this.form.container.editableList('items').length==0){
+            if(this.form.attributeId.val() && this.form.container.editableList('items').length==0){
                 this.form.container.editableList('addItem')
-            }
-        },
-        //deviceid 선택시 해당 section 정보를 셋팅한다.
-        initCapabilitySelect: function (initCapabilityId) {
-            this.form.capabilitySelect.html('')
-            var capaSelect = this.form.capabilitySelect;
-            var capaInput = this.form.capabilityId;
-
-            var device = this.form.deviceNodeId.find('option:selected').data('device')
-
-            if (device && device.capabilities) {
-                for (var capabilityId in device.capabilities) {
-                    if (device.capabilities[capabilityId] && device.capabilities[capabilityId][this.target]) {
-                        this.form.capabilitySelect.append($("<option></option>").val(capabilityId).text(capabilityId));
-                    }
-                }
-                capaSelect.removeClass("input-error")
-                if (capaSelect.find('option').length <= 1) {
-                    capaSelect.attr('disabled', true)
-                } else {
-                    capaSelect.attr('disabled', false)
-                }
-
-                capaSelect.find('option:first').attr("selected", true)
-                capaInput.val(capaSelect.find('option:selected').val())
-            } else {
-                //선택한 device셀렉트 값이 없으면 하부내역을 초기화한다.
-                this.form.deviceNodeId.addClass("input-error")
-                capaInput.addClass("input-error")
-                capaInput.val("")
-            }
-
-            if (initCapabilityId) {
-                this.form.capabilitySelect.val(initCapabilityId)
-                capaInput.val(initCapabilityId);
-            }
-        },
-        //capability attr 셀렉트박스구성
-        initAttributeSelect: function (initPropertyId) {
-            this.form.capabilityAttr.html('');
-
-            var sDevice = this.form.deviceNodeId.find("option:selected").data('device');
-            var selectedCapabilityId = this.form.capabilitySelect.find("option:selected").val();
-            var target = this.target
-
-            //capability의 attributes 및 commands 정보 조회
-            this.capabilitiesAttr = profiles.getCapability(selectedCapabilityId)
-            var capability = profiles.getCapability(selectedCapabilityId);
-            if (capability && capability[this.target]) {
-                var capabilityAttr = this.form.capabilityAttr;
-                Object.keys(capability[this.target]).forEach(function (propertyId) {
-                    capabilityAttr.append($("<option></option>").val(propertyId).text(propertyId));
-                })
-            }
-            // if(this.capabilitiesAttr){
-            //     if ( this.type == ST_EVENT_DEVICE || this.type == ST_STATUS_DEVICE) {
-            //         for (var i in this.capabilitiesAttr.attr) {
-            //             for (var attr in this.capabilitiesAttr.attr[i]) {
-            //                 this.form.capabilityAttr.append($("<option></option>").val(attr + "|" + this.capabilitiesAttr.attr[i][attr]).text(attr));
-            //             }
-            //         }
-            //     } else {
-            //         for (var i in this.capabilitiesAttr.cmd) {
-            //             for (var cmd in this.capabilitiesAttr.cmd[i]) {
-            //                 if (typeof this.capabilitiesAttr.cmd[i][cmd] == 'object') {
-            //                     this.form.capabilityAttr.append($("<option></option>").val(cmd).text(cmd).attr("arg", JSON.stringify(this.capabilitiesAttr.cmd[i][cmd])));
-            //                 } else {
-            //                     this.form.capabilityAttr.append($("<option></option>").val(cmd + "|" + this.capabilitiesAttr.cmd[i][cmd]).text(cmd));
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
-
-            if (this.form.capabilityAttr.find('option').length <= 1) {
-                this.form.capabilityAttr.attr('readonly', true);
-                this.form.capabilityAttr.attr('disabled', true);
-            } else {
-                this.form.capabilityAttr.attr('readonly', false);
-                this.form.capabilityAttr.attr('disabled', false);
-            }
-            if (initPropertyId) {
-                if (this.form.capabilityAttr.find('option:contains(' + initPropertyId + ')').length > 0) {
-                    this.form.capabilityAttr.find('option:contains(' + initPropertyId + ')').attr('selected', true)
-                }
             }
         },
         //ArgType값으로 row input을 구성한다.
@@ -1055,7 +1025,7 @@
 
             if (this.type == ST_COMMAND_DEVICE) {
                 //input의 크기를 가변적으로 하기위해 기준을 command attribute 셀렉트 박스로 잡았다.
-                var standardWidth = $("#node-input-attribute").width();
+                var standardWidth = $("#node-input-attributeId").width();
 
                 //기본 인풋박스의 크기를 정해놓은후
                 typeField.each(function (idx, ele) {
@@ -1107,6 +1077,27 @@
             var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
             NODE.target = target
 
+            var attrInfo = $('<pre></pre>').css('background-color','#333').html(JSON.stringify(profiles.getAttribute('formaldehydeMeasurement','formaldehydeLevel'),null,'  '))
+            this.attributeInfoPopover = RED.popover.create({
+                target: $('#attribute-info'),
+                content: attrInfo,
+                trigger: 'hover',
+                // autoClose: 2000,
+                direction: 'right',
+                delay: {show:10}
+            });
+            this.attributeInfoPopover.refreshContent = function(){
+                var capabilityId = $('#node-input-capabilityId').val()
+                var attributeId = $('#node-input-attributeId').val()
+                if(capabilityId && attributeId){
+                    var attribute = profiles.getAttribute(capabilityId,attributeId)
+                    if(attribute){
+                        var _content = $('<pre></pre>').css('background-color','#333').html(JSON.stringify({[attributeId]:attribute.properties.value},null,'  '))
+                        this.setContent(_content)
+                    }
+                }
+            }
+
             $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
                 addItem: function (container, idx, opt) {
                     //opt.r==data
@@ -1119,15 +1110,15 @@
                         var list = $("#cmd-list-container").editableList('items');
                         list.each(function () {
                             if ((($(this).find(".field1").text() == $("#node-input-capabilityId").val())
-                                && ($(this).find(".field2").text() == $("#node-input-attribute option:selected").text()))
-                                || $("#node-input-attribute").val() == "") {
+                                && ($(this).find(".field2").text() == $("#node-input-attributeId option:selected").text()))
+                                || $("#node-input-attributeId").val() == "") {
                                 isDuplicate = true;
                             }
                         })
                     }
 
                     //attribute 셀렉트박스에 데이터가 없으면 attr은 추가시키지 않는다.
-                    if ($("#node-input-attribute option").length == 0) isDuplicate = true;
+                    if ($("#node-input-attributeId option").length == 0) isDuplicate = true;
 
                     if (isDuplicate) {
                         $(container).parent().remove();
@@ -1146,8 +1137,8 @@
                     var hidden2 = $('<input>', {type: "hidden", class: "hidden2"}).appendTo(row);
 
                     span1.text($("#node-input-capabilityId").val());
-                    span2.text($("#node-input-attribute option:selected").text());
-                    hidden2.val($("#node-input-attribute").val());
+                    span2.text($("#node-input-attributeId option:selected").text());
+                    hidden2.val($("#node-input-attributeId").val());
 
                     //rule 데이터가 존재한다면 저장한값으로 리스트를 보여준다.
                     if (typeof rule.col1 != "undefined") {
@@ -1180,8 +1171,8 @@
                         });
 
                     } else {
-                        if ($("#node-input-attribute option:selected").attr("arg") != undefined) {
-                            var argType = JSON.parse($("#node-input-attribute option:selected").attr("arg"));
+                        if ($("#node-input-attributeId option:selected").attr("arg") != undefined) {
+                            var argType = JSON.parse($("#node-input-attributeId option:selected").attr("arg"));
                             $(row).parent().data("argType", argType);
                             var argTypeLen = Object.keys(argType).length;
 
@@ -1203,7 +1194,6 @@
                         if ($("#cmd-list-container").editableList('items').length > 1) {
                             $("#cmd-list-container").find(".outputSpan").remove();
                         }
-                        outputCount.val('{"0":0}');
                     }
 
                 },
@@ -1225,73 +1215,81 @@
                     //     data._i = Math.floor((0x99999 - 0x10000) * Math.random()).toString(16);
                     // }
 
-                    var capabilityId = $("#node-input-capability-select option:selected").val()
-                    var capability = profiles.getCapability(capabilityId)
-                    var attributeId = $("#node-input-attribute option:selected").val()
+                    var capabilityId = $("#node-input-capabilityId option:selected").val()
+                    var attributeId = $("#node-input-attributeId option:selected").val()
                     var attribute = profiles.getAttribute(capabilityId, attributeId)
 
-                    var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
+                    if(attribute){
+                        var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
 
-                    var field1 = $('<input/>', {
-                        class: "attrId",
-                        style: "width:auto; margin-right:5px;",
-                        type: "text",
-                        readonly: "true"
-                    }).appendTo(row).val(attributeId)
-                    var field2 = $('<select/>', {
-                        class: "attrOperator",
-                        style: "width:auto; margin-right: 5px; text-align: center;"
-                    }).appendTo(row)
-                    if (operator[attribute.properties.value.type]) {
-                        operator[attribute.properties.value.type].forEach(function (op) {
-                            field2.append($("<option></option>").val(op.v).text(op.t))
-                        })
-                    }
-                    //attribute properties.value
-                    var field3;
-                    if (attribute.properties.value.type == 'array') {
-                        field3 = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
-                        attribute.properties.value.items.enum.forEach(function (value) {
-                            field3.append($("<option></option>").val(value).text(value))
-                        })
-                    } else if (attribute.properties.value.enum) {
-                        field3 = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
+                        var attributeIdField = $('<input/>', {
+                            class: "attrId",
+                            style: "width:auto; margin-right:5px;",
+                            type: "text",
+                            readonly: "true"
+                        }).appendTo(row).val(attributeId)
+                        var operatorField = $('<select/>', {
+                            class: "attrOperator",
+                            style: "width:auto; margin-right: 5px; text-align: center;"
+                        }).appendTo(row)
+                        if (operator[attribute.properties.value.type]) {
+                            operator[attribute.properties.value.type].forEach(function (op) {
+                                operatorField.append($("<option></option>").val(op.v).text(op.t))
+                            })
+                        }
+                        //attribute properties.value
+                        var valueField;
+                        if (attribute.properties.value.type == 'array') {
+                            valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
+                            attribute.properties.value.items.enum.forEach(function (value) {
+                                valueField.append($("<option></option>").val(value).text(value))
+                            })
+                        } else if (attribute.properties.value.enum) {
+                            valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
 
-                        attribute.properties.value.enum.forEach(function (value) {
-                            field3.append($("<option></option>").val(value).text(value))
-                        })
-                    } else {
-                        field3 = $("<input/>",{style: "width:auto;margin-right:5px;"}).appendTo(row)
-
-                        var valueType = attribute.properties.value.type
-                        if (valueType == 'integer' || valueType == 'number') {
-                            field3.typedInput({default: "num", types: ["num"]})
+                            attribute.properties.value.enum.forEach(function (value) {
+                                valueField.append($("<option></option>").val(value).text(value))
+                            })
                         } else {
-                            field3.typedInput({default: "str", types: ["str"]})
+                            valueField = $("<input/>",{style: "width:auto;margin-right:5px;"}).appendTo(row)
+
+                            var valueType = attribute.properties.value.type
+                            if (valueType == 'integer' || valueType == 'number') {
+                                valueField.typedInput({default: "num", types: ["num"]})
+                            } else {
+                                valueField.typedInput({default: "str", types: ["str"]})
+                            }
                         }
-                    }
-                    field3.attr('valueType', attribute.properties.value.type)
-                    field3.addClass('attrValue')
+                        valueField.attr('valueType', attribute.properties.value.type)
+                        valueField.addClass('attrValue')
 
-                    //'unit' always has string enum
-                    var field4
-                    if (attribute.properties.unit && attribute.properties.unit.enum) {
-                        field4 = $("<select/>", {class: 'attrUnit', style: "width:auto;margin-right:5px;"}).appendTo(row);
-                        attribute.properties.unit.enum.forEach(function (value) {
-                            field4.append($('<option>').val(value).text(value))
-                        })
-                        if (attribute.properties.unit.default) {
-                            field4.val(attribute.properties.unit.default)
+                        //'unit' always has string enum
+                        var unitField
+                        if (attribute.properties.unit && attribute.properties.unit.enum) {
+                            unitField = $("<select/>", {class: 'attrUnit', style: "width:auto;margin-right:5px;"}).appendTo(row);
+                            attribute.properties.unit.enum.forEach(function (value) {
+                                unitField.append($('<option>').val(value).text(value))
+                            })
+                            if (attribute.properties.unit.default) {
+                                unitField.val(attribute.properties.unit.default)
+                            }
                         }
-                    }
 
-                    var finalspan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
-                    finalspan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
+                        var finalspan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
+                        finalspan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
 
-                    if(data){
-                        data.operator && field2.val(data.operator)
-                        data.value && field3.val(data.value)
-                        data.unit && field4 && field4.val(data.unit)
+                        if(data){
+                            data.operator && operatorField.val(data.operator)
+                            if(data.value){
+                                if(valueField.prop('tagName')== 'INPUT'){
+                                    valueField.typedInput('value',data.value)
+                                }else{
+                                    valueField.val(data.value)
+                                }
+                            }
+                            data.value && valueField.find('.attrValue').val(data.value)
+                            data.unit && unitField && unitField.val(data.unit)
+                        }
                     }
                 },
                 resizeItem: function (container) {
@@ -1308,21 +1306,19 @@
             var formObj = {
                 deviceNodeId: $("#node-input-deviceNodeId"),
                 capabilityId: $("#node-input-capabilityId"),
-                capabilitySelect: $("#node-input-capability-select"),
-                capabilityAttr: $("#node-input-attribute"),
-                // containerRow: ((NODE.type == ST_COMMAND_DEVICE) ? $(".actuator-container-row") : $(".sensor-container-row")),
+                attributeId: $("#node-input-attributeId"),
                 container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container")),
-                // containerRowData: ((NODE.type == ST_COMMAND_DEVICE) ? NODE.sensorCapaDs : NODE.sensorAttrDs)
-            };
+                attributeInfoPopover: this.attributeInfoPopover
+            }
 
-            var eventHandler = new DeviceNodeEventHandler(formObj, NODE);
+            var eventHandler = new DeviceNodeEventHandler(formObj, NODE)
         },
         /*편집 대화 상자 완료처리시 호출*/
         oneditsave: function () {
             var NODE = this;
             NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId||''
-            var list1 = $("#cmd-list-container").editableList('items');
-            NODE.sensorCapaDs = [];
+            var list1 = $("#cmd-list-container").editableList('items')
+            NODE.sensorCapaDs = []
             list1.each(function (idx, item) {
                 var rule = {};
                 rule.attrId = item.find(".attrId").val();
@@ -1332,10 +1328,10 @@
                 rule.unit = item.find(".attrValue").val();
 
                 NODE.sensorCapaDs.push(rule);
-            });
+            })
 
             var list2 = $("#attr-list-container").editableList('items');
-            NODE.sensorAttrDs = [];
+            NODE.rules = [];
             list2.each(function (idx, item) {
                 var rule = {};
                 rule.attrId = item.find(".attrId").val();
@@ -1344,10 +1340,10 @@
                 rule.valueType = item.find(".attrValue").attr('valueType');
                 rule.unit = item.find(".attrValue").text();
 
-                NODE.sensorAttrDs.push(rule);
+                NODE.rules.push(rule);
             });
 
-            this.outputs=list1.length||list2.length
+            this.outputs=list1.length||list2.length||1
         },
         //editor height 변화에 따라 attr-container의 height를 조정한다.
         oneditresize: function (size) {
@@ -1406,13 +1402,13 @@
                     return !!val && isValidDevice
                 }
             },
-            device: {value: {}},
+            // device: {value: {}},
             deviceId:{value:""},
             componentID:{vlaue:""},
             capabilityId: {value: "", required: true},
             attributeId: {value: "",required: true},
             sensorCapaDs: {value: [{isInit: true,col1: "",col2: "",hidden2: "",col3: "",argType: ""}]},//초기화용 배열임을 판단하기위해 isInit값 추가
-            sensorAttrDs: {value: [{isInit: true,col1: "",hidden1: "",col2: "",col3: "",col4: "",col5: "",col6: ""}]},
+            rules: {value: [{isInit: true,col1: "",hidden1: "",col2: "",col3: "",col4: "",col5: "",col6: ""}]},
             outputs:{value:1}
         }
         this.defaults = defaultsConfig
