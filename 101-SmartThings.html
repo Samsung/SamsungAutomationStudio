@@ -328,6 +328,10 @@
 <script type="text/javascript">
     function Profiles() {
         var liveCapabilities;
+        /*
+        * capability ver.2020.03.30
+        * https://smartthings.developer.samsung.com/docs/api-ref/capabilities.html
+        */
         var _raw_capabilities=[{"id":"accelerationSensor","version":1,"name":"Acceleration Sensor","status":"live","attributes":{"acceleration":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ActivityState","type":"string","enum":["active","inactive"]}},"required":["value"]}}},"commands":{}},{"id":"activityLightingMode","version":1,"name":"Activity Lighting Mode","status":"proposed","attributes":{"lightingMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["reading","writing","computer","night"]}},"required":["value"]}}},"commands":{"setLightingMode":{"arguments":[{"name":"lightingMode","schema":{"type":"string","enum":["reading","writing","computer","night"]},"required":true}]}}},{"id":"airConditionerMode","version":1,"name":"Air Conditioner Mode","status":"proposed","attributes":{"airConditionerMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"HvacMode","type":"string","enum":["auto","cool","dry","coolClean","dryClean","fanOnly","heat","heatClean","notSupported"]}},"required":["value"]}}},"commands":{"setAirConditionerMode":{"arguments":[{"name":"mode","schema":{"title":"HvacMode","type":"string","enum":["auto","cool","dry","coolClean","dryClean","fanOnly","heat","heatClean","notSupported"]},"required":true}]}}},{"id":"airQualitySensor","version":1,"name":"Air Quality Sensor","status":"live","attributes":{"airQuality":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["CAQI"],"default":"CAQI"}},"required":["value"]}}},"commands":{}},{"id":"alarm","version":1,"name":"Alarm","status":"live","attributes":{"alarm":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"AlertState","type":"string","enum":["both","off","siren","strobe"]}},"required":["value"]}}},"commands":{"both":{"arguments":[]},"off":{"arguments":[]},"siren":{"arguments":[]},"strobe":{"arguments":[]}}},{"id":"audioMute","version":1,"name":"Audio Mute","status":"live","attributes":{"mute":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MuteState","type":"string","enum":["muted","unmuted"]}},"required":["value"]}}},"commands":{"setMute":{"arguments":[{"name":"state","schema":{"title":"MuteState","type":"string","enum":["muted","unmuted"]},"required":true}]},"mute":{"arguments":[]},"unmute":{"arguments":[]}}},{"id":"audioVolume","version":1,"name":"Audio Volume","status":"proposed","attributes":{"volume":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setVolume":{"arguments":[{"name":"volume","schema":{"type":"integer","minimum":0,"maximum":100},"required":true}]},"volumeUp":{"arguments":[]},"volumeDown":{"arguments":[]}}},{"id":"battery","version":1,"name":"Battery","status":"live","attributes":{"battery":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{}},{"id":"bodyMassIndexMeasurement","version":1,"name":"Body Mass Index Measurement","status":"proposed","attributes":{"bmiMeasurement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["kg/m^2"],"default":"kg/m^2"}},"required":["value"]}}},"commands":{}},{"id":"bodyWeightMeasurement","version":1,"name":"Body Weight Measurement","status":"proposed","attributes":{"bodyWeightMeasurement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["kg","lbs","斤"],"default":"kg"}},"required":["value","unit"]}}},"commands":{}},{"id":"button","version":1,"name":"Button","status":"live","attributes":{"button":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ButtonState","type":"string","enum":["pushed","held","double","pushed_2x","pushed_3x","pushed_4x","pushed_5x","pushed_6x","down","down_2x","down_3x","down_4x","down_5x","down_6x","down_hold","up","up_2x","up_3x","up_4x","up_5x","up_6x","up_hold"]}},"required":["value"]}},"numberOfButtons":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}},"supportedButtonValues":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"ButtonState","type":"string","enum":["pushed","held","double","pushed_2x","pushed_3x","pushed_4x","pushed_5x","pushed_6x","down","down_2x","down_3x","down_4x","down_5x","down_6x","down_hold","up","up_2x","up_3x","up_4x","up_5x","up_6x","up_hold"]}}}}}},"commands":{}},{"id":"carbonDioxideMeasurement","version":1,"name":"Carbon Dioxide Measurement","status":"live","attributes":{"carbonDioxide":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value"]}}},"commands":{}},{"id":"carbonMonoxideDetector","version":1,"name":"Carbon Monoxide Detector","status":"live","attributes":{"carbonMonoxide":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"CarbonMonoxideState","type":"string","enum":["clear","detected","tested"]}},"required":["value"]}}},"commands":{}},{"id":"carbonMonoxideMeasurement","version":1,"name":"Carbon Monoxide Measurement","status":"proposed","attributes":{"carbonMonoxideLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value","unit"]}}},"commands":{}},{"id":"colorControl","version":1,"name":"Color Control","status":"live","attributes":{"color":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"String","type":"string","maxLength":255}}}},"hue":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveNumber","type":"number","minimum":0}}}},"saturation":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveNumber","type":"number","minimum":0}}}}},"commands":{"setColor":{"arguments":[{"name":"color","schema":{"title":"COLOR_MAP","type":"object","additionalProperties":false,"properties":{"hue":{"type":"number"},"saturation":{"type":"number"},"hex":{"type":"string","maxLength":7},"level":{"type":"integer"},"switch":{"type":"string","maxLength":3}}},"required":true}]},"setHue":{"arguments":[{"name":"hue","schema":{"title":"PositiveNumber","type":"number","minimum":0},"required":true}]},"setSaturation":{"arguments":[{"name":"saturation","schema":{"title":"PositiveNumber","type":"number","minimum":0},"required":true}]}}},{"id":"colorTemperature","version":1,"name":"Color Temperature","status":"live","attributes":{"colorTemperature":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":1,"maximum":30000},"unit":{"type":"string","enum":["K"],"default":"K"}},"required":["value"]}}},"commands":{"setColorTemperature":{"arguments":[{"name":"temperature","schema":{"type":"integer","minimum":1,"maximum":30000},"required":true}]}}},{"id":"contactSensor","version":1,"name":"Contact Sensor","status":"live","attributes":{"contact":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ContactState","type":"string","enum":["closed","open"]}},"required":["value"]}}},"commands":{}},{"id":"dishwasherMode","version":1,"name":"Dishwasher Mode","status":"proposed","attributes":{"dishwasherMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DishwasherMode","type":"string","enum":["auto","quick","rinse","dry"]}},"required":["value"]}}},"commands":{"setDishwasherMode":{"arguments":[{"name":"mode","schema":{"title":"DishwasherMode","type":"string","enum":["auto","quick","rinse","dry"]},"required":true}]}}},{"id":"dishwasherOperatingState","version":1,"name":"Dishwasher Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}}}},"required":["value"]}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}},"required":["value"]}},"dishwasherJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DishwasherJobState","type":"string","enum":["airwash","cooling","drying","finish","preDrain","prewash","rinse","spin","unknown","wash","wrinklePrevent"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"DishwasherJobState","type":"string","enum":["airwash","cooling","drying","finish","preDrain","prewash","rinse","spin","unknown","wash","wrinklePrevent"]}}}}},"required":["value"]}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"required":true}]}}},{"id":"doorControl","version":1,"name":"Door Control","status":"live","attributes":{"door":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["closed","closing","open","opening","unknown"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["closed","closing","open","opening","unknown"]}}}}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]}}},{"id":"dryerMode","version":1,"name":"Dryer Mode","status":"proposed","attributes":{"dryerMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DryerMode","type":"string","enum":["regular","lowHeat","highHeat"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"DryerMode","type":"string","enum":["regular","lowHeat","highHeat"]}}}}},"required":["value"]}}},"commands":{"setDryerMode":{"arguments":[{"name":"mode","schema":{"title":"DryerMode","type":"string","enum":["regular","lowHeat","highHeat"]},"required":true}]}}},{"id":"dryerOperatingState","version":1,"name":"Dryer Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}}}},"required":["value"]}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}},"required":["value"]}},"dryerJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DryerJobState","type":"string","enum":["cooling","delayWash","drying","finished","none","weightSensing","wrinklePrevent"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"DryerJobState","type":"string","enum":["cooling","delayWash","drying","finished","none","weightSensing","wrinklePrevent"]}}}}},"required":["value"]}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"required":true}]}}},{"id":"dustSensor","version":1,"name":"Dust Sensor","status":"live","attributes":{"fineDustLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0},"unit":{"type":"string","enum":["μg/m^3"],"default":"μg/m^3"}},"required":["value"]}},"dustLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0},"unit":{"type":"string","enum":["μg/m^3"],"default":"μg/m^3"}},"required":["value"]}}},"commands":{}},{"id":"energyMeter","version":1,"name":"Energy Meter","status":"live","attributes":{"energy":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["kWh"],"default":"kWh"}},"required":["value"]}}},"commands":{}},{"id":"equivalentCarbonDioxideMeasurement","version":1,"name":"Equivalent Carbon Dioxide Measurement","status":"live","attributes":{"equivalentCarbonDioxideMeasurement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value"]}}},"commands":{}},{"id":"fanSpeed","version":1,"name":"Fan Speed","status":"proposed","attributes":{"fanSpeed":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}}},"commands":{"setFanSpeed":{"arguments":[{"name":"speed","schema":{"title":"PositiveInteger","type":"integer","minimum":0},"required":true}]}}},{"id":"filterStatus","version":1,"name":"Filter Status","status":"proposed","attributes":{"filterStatus":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["normal","replace"]}},"required":["value"]}}},"commands":{}},{"id":"formaldehydeMeasurement","version":1,"name":"Formaldehyde Measurement","status":"live","attributes":{"formaldehydeLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm","mg/m^3"],"default":"ppm"}},"required":["value","unit"]}}},"commands":{}},{"id":"garageDoorControl","version":1,"name":"Garage Door Control","status":"deprecated","attributes":{"door":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["closed","closing","open","opening","unknown"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["closed","closing","open","opening","unknown"]}}}}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]}}},{"id":"illuminanceMeasurement","version":1,"name":"Illuminance Measurement","status":"live","attributes":{"illuminance":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":100000},"unit":{"type":"string","enum":["lux"],"default":"lux"}},"required":["value"]}}},"commands":{}},{"id":"infraredLevel","version":1,"name":"Infrared Level","status":"live","attributes":{"infraredLevel":{"schema":{"title":"Percent","type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setInfraredLevel":{"arguments":[{"name":"level","schema":{"type":"number","minimum":0,"maximum":100},"required":true}]}}},{"id":"lock","version":1,"name":"Lock","status":"live","attributes":{"lock":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"LockState","type":"string","enum":["locked","unknown","unlocked","unlocked with timeout"]},"data":{"type":"object","additionalProperties":false,"properties":{"method":{"type":"string","enum":["manual","keypad","auto","command","rfid","fingerprint","bluetooth"]},"codeId":{"type":"string"},"timeout":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}}}},"required":["value"]}}},"commands":{"lock":{"arguments":[]},"unlock":{"arguments":[]}}},{"id":"mediaInputSource","version":1,"name":"Media Input Source","status":"proposed","attributes":{"inputSource":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MediaSource","type":"string","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]}},"required":["value"]}},"supportedInputSources":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MediaSource","type":"string","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]}}},"required":["value"]}}},"commands":{"setInputSource":{"arguments":[{"name":"mode","schema":{"title":"MediaSource","type":"string","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]},"required":true}]}}},{"id":"mediaPlaybackRepeat","version":1,"name":"Media Playback Repeat","status":"proposed","attributes":{"playbackRepeatMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["all","off","one"]}},"required":["value"]}}},"commands":{"setPlaybackRepeatMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["all","off","one"]},"required":true}]}}},{"id":"mediaPlaybackShuffle","version":1,"name":"Media Playback Shuffle","status":"proposed","attributes":{"playbackShuffle":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["disabled","enabled"]}},"required":["value"]}}},"commands":{"setPlaybackShuffle":{"arguments":[{"name":"shuffle","schema":{"type":"string","enum":["disabled","enabled"]},"required":true}]}}},{"id":"mediaPlayback","version":1,"name":"Media Playback","status":"proposed","attributes":{"playbackStatus":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["pause","play","stop","fast forward","rewind"]}}}},"supportedPlaybackCommands":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MediaPlaybackCommands","type":"string","enum":["pause","play","stop","fastForward","rewind"]}}}}}},"commands":{"setPlaybackStatus":{"arguments":[{"name":"status","schema":{"type":"string","enum":["pause","play","stop","fast forward","rewind"]},"required":true}]},"play":{"arguments":[]},"pause":{"arguments":[]},"stop":{"arguments":[]},"fastForward":{"arguments":[]},"rewind":{"arguments":[]}}},{"id":"motionSensor","version":1,"name":"Motion Sensor","status":"live","attributes":{"motion":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ActivityState","type":"string","enum":["active","inactive"]}},"required":["value"]}}},"commands":{}},{"id":"odorSensor","version":1,"name":"Odor Sensor","status":"proposed","attributes":{"odorLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}}},"commands":{}},{"id":"ovenMode","version":1,"name":"Oven Mode","status":"proposed","attributes":{"ovenMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["heating","grill","warming","defrosting"]},"constraints":{"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["heating","grill","warming","defrosting"]}}}}}},"required":["value"]}}},"commands":{"setOvenMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["heating","grill","warming","defrosting"]},"required":true}]}}},{"id":"ovenOperatingState","version":1,"name":"Oven Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["ready","running","paused"]}}}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"type":"string","enum":["ready","running","paused"]}}}}},"ovenJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["cleaning","cooking","cooling","draining","preheat","ready","rinsing"]}}}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}},"operationTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}}}},"progress":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"type":"string","enum":["stop"]},"required":true}]},"stop":{"arguments":[]}}},{"id":"ovenSetpoint","version":1,"name":"Oven Setpoint","status":"proposed","attributes":{"ovenSetpoint":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}}},"commands":{"setOvenSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"PositiveInteger","type":"integer","minimum":0},"required":true}]}}},{"id":"powerMeter","version":1,"name":"Power Meter","status":"live","attributes":{"power":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["W"],"default":"W"}},"required":["value"]}}},"commands":{}},{"id":"powerSource","version":1,"name":"Power Source","status":"live","attributes":{"powerSource":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["battery","dc","mains","unknown"]}},"required":["value"]}}},"commands":{}},{"id":"presenceSensor","version":1,"name":"Presence Sensor","status":"live","attributes":{"presence":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PresenceState","type":"string","enum":["present","not present"]}},"required":["value"]}}},"commands":{}},{"id":"rapidCooling","version":1,"name":"Rapid Cooling","status":"proposed","attributes":{"rapidCooling":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["off","on"]}},"required":["value"]}}},"commands":{"setRapidCooling":{"arguments":[{"name":"rapidCooling","schema":{"type":"string","enum":["off","on"]},"required":true}]}}},{"id":"refrigerationSetpoint","version":1,"name":"Refrigeration Setpoint","status":"proposed","attributes":{"refrigerationSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{"setRefrigerationSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"required":true}]}}},{"id":"relativeHumidityMeasurement","version":1,"name":"Relative Humidity Measurement","status":"live","attributes":{"humidity":{"schema":{"title":"Percent","type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{}},{"id":"robotCleanerCleaningMode","version":1,"name":"Robot Cleaner Cleaning Mode","status":"proposed","attributes":{"robotCleanerCleaningMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["auto","part","repeat","manual","stop","map"]}},"required":["value"]}}},"commands":{"setRobotCleanerCleaningMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["auto","part","repeat","manual","stop"]},"required":true}]}}},{"id":"robotCleanerMovement","version":1,"name":"Robot Cleaner Movement","status":"proposed","attributes":{"robotCleanerMovement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["homing","idle","charging","alarm","powerOff","reserve","point","after","cleaning"]}},"required":["value"]}}},"commands":{"setRobotCleanerMovement":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["homing","idle","charging","alarm","powerOff","reserve","point","after","cleaning"]},"required":true}]}}},{"id":"robotCleanerTurboMode","version":1,"name":"Robot Cleaner Turbo Mode","status":"proposed","attributes":{"robotCleanerTurboMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["on","off","silence"]}},"required":["value"]}}},"commands":{"setRobotCleanerTurboMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["on","off","silence"]},"required":true}]}}},{"id":"signalStrength","version":1,"name":"Signal Strength","status":"live","attributes":{"lqi":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":255}},"required":["value"]}},"rssi":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":-200,"maximum":0},"unit":{"type":"string","enum":["dBm"],"default":"dBm"}},"required":["value"]}}},"commands":{}},{"id":"smokeDetector","version":1,"name":"Smoke Detector","status":"live","attributes":{"smoke":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["clear","detected","tested"]}},"required":["value"]}}},"commands":{}},{"id":"soundSensor","version":1,"name":"Sound Sensor","status":"live","attributes":{"sound":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["detected","not detected"]}},"required":["value"]}}},"commands":{}},{"id":"switchLevel","version":1,"name":"Switch Level","status":"live","attributes":{"level":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setLevel":{"arguments":[{"name":"level","schema":{"type":"integer","minimum":0,"maximum":100},"required":true},{"name":"rate","schema":{"title":"PositiveInteger","type":"integer","minimum":0},"required":false}]}}},{"id":"switch","version":1,"name":"Switch","status":"live","attributes":{"switch":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"SwitchState","type":"string","enum":["on","off"]}},"required":["value"]}}},"commands":{"off":{"arguments":[]},"on":{"arguments":[]}}},{"id":"tamperAlert","version":1,"name":"Tamper Alert","status":"live","attributes":{"tamper":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["clear","detected"]}},"required":["value"]}}},"commands":{}},{"id":"temperatureMeasurement","version":1,"name":"Temperature Measurement","status":"live","attributes":{"temperature":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]}},"required":["value","unit"]}}},"commands":{}},{"id":"thermostatCoolingSetpoint","version":1,"name":"Thermostat Cooling Setpoint","status":"live","attributes":{"coolingSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{"setCoolingSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"required":true}]}}},{"id":"thermostatFanMode","version":1,"name":"Thermostat Fan Mode","status":"live","attributes":{"thermostatFanMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ThermostatFanMode","type":"string","enum":["auto","circulate","followschedule","on"]}},"required":["value"]}},"supportedThermostatFanModes":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"ThermostatFanMode","type":"string","enum":["auto","circulate","followschedule","on"]}}}}}},"commands":{"fanAuto":{"arguments":[]},"fanCirculate":{"arguments":[]},"fanOn":{"arguments":[]},"setThermostatFanMode":{"arguments":[{"name":"mode","schema":{"title":"ThermostatFanMode","type":"string","enum":["auto","circulate","followschedule","on"]},"required":true}]}}},{"id":"thermostatHeatingSetpoint","version":1,"name":"Thermostat Heating Setpoint","status":"live","attributes":{"heatingSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{"setHeatingSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"required":true}]}}},{"id":"thermostatMode","version":1,"name":"Thermostat Mode","status":"live","attributes":{"thermostatMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ThermostatMode","type":"string","enum":["auto","cool","eco","rush hour","emergency heat","heat","off"]}},"required":["value"]}},"supportedThermostatModes":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"ThermostatMode","type":"string","enum":["auto","cool","eco","rush hour","emergency heat","heat","off"]}}}}}},"commands":{"auto":{"arguments":[]},"cool":{"arguments":[]},"emergencyHeat":{"arguments":[]},"heat":{"arguments":[]},"off":{"arguments":[]},"setThermostatMode":{"arguments":[{"name":"mode","schema":{"title":"ThermostatMode","type":"string","enum":["auto","cool","eco","rush hour","emergency heat","heat","off"]},"required":true}]}}},{"id":"thermostatOperatingState","version":1,"name":"Thermostat Operating State","status":"live","attributes":{"thermostatOperatingState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ThermostatOperatingState","type":"string","enum":["cooling","fan only","heating","idle","pending cool","pending heat","vent economizer"]},"constraints":{"title":"EnumConstraint","properties":{"values":{"type":"array"}}}},"required":["value"]}}},"commands":{}},{"id":"thermostatSetpoint","version":1,"name":"Thermostat Setpoint","status":"deprecated","attributes":{"thermostatSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{}},{"id":"tone","version":1,"name":"Tone","status":"live","attributes":{},"commands":{"beep":{"arguments":[]}}},{"id":"tvChannel","version":1,"name":"Tv Channel","status":"proposed","attributes":{"tvChannel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"String","type":"string","maxLength":255}}}}},"commands":{"setTvChannel":{"arguments":[{"name":"channel","schema":{"title":"String","type":"string","maxLength":255},"required":true}]},"channelUp":{"arguments":[]},"channelDown":{"arguments":[]}}},{"id":"tvocMeasurement","version":1,"name":"Tvoc Measurement","status":"live","attributes":{"tvocLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value","unit"]}}},"commands":{}},{"id":"ultravioletIndex","version":1,"name":"Ultraviolet Index","status":"live","attributes":{"ultravioletIndex":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":255}},"required":["value"]}}},"commands":{}},{"id":"valve","version":1,"name":"Valve","status":"live","attributes":{"valve":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["closed","open"]}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]}}},{"id":"voltageMeasurement","version":1,"name":"Voltage Measurement","status":"live","attributes":{"voltage":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Number","type":"number"},"unit":{"type":"string","enum":["V"],"default":"V"}},"required":["value"]}}},"commands":{}},{"id":"washerMode","version":1,"name":"Washer Mode","status":"proposed","attributes":{"washerMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"WasherMode","type":"string","enum":["regular","heavy","rinse","spinDry"]}},"required":["value"]}}},"commands":{"setWasherMode":{"arguments":[{"name":"mode","schema":{"title":"WasherMode","type":"string","enum":["regular","heavy","rinse","spinDry"]},"required":true}]}}},{"id":"washerOperatingState","version":1,"name":"Washer Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}},"required":["value"]}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}}}},"washerJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["airWash","cooling","delayWash","drying","finish","none","preWash","rinse","spin","wash","weightSensing","wrinklePrevent"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["airWash","cooling","delayWash","drying","finish","none","preWash","rinse","spin","wash","weightSensing","wrinklePrevent"]}}}}},"required":["value"]}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"required":true}]}}},{"id":"waterSensor","version":1,"name":"Water Sensor","status":"live","attributes":{"water":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MoistureState","type":"string","enum":["dry","wet"]}},"required":["value"]}}},"commands":{}},{"id":"windowShade","version":1,"name":"Window Shade","status":"proposed","attributes":{"windowShade":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"OpenableState","type":"string","enum":["closed","closing","open","opening","partially open","unknown"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"OpenableState","type":"string","enum":["closed","closing","open","opening","partially open","unknown"]}}}}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]},"presetPosition":{"arguments":[]}}}]
         var _capabilities={}
         var _attr_capabilities={}
@@ -350,9 +354,6 @@
                 _capabilities[capa.id] = capa
             }
         })
-
-        // var _argTypes={"ActivityState":{"type":"enum","enum":["active","inactive"]},"LightingMode":{"type":"enum","enum":["reading","writing","computer","night"]},"HvacMode":{"type":"enum","enum":["auto","cool","dry","coolClean","dryClean","fanOnly","heat","heatClean","notSupported"]},"AirQuality":{"type":"integer","minimum":0,"maximum":100},"AlertState":{"type":"enum","enum":["both","off","siren","strobe"]},"MuteState":{"type":"enum","enum":["muted","unmuted"]},"Volume":{"type":"integer","minimum":0,"maximum":100},"Battery":{"type":"integer","minimum":0,"maximum":100},"BmiMeasurement":{"type":"number"},"BodyWeightMeasurement":{"type":"number"},"ButtonState":{"type":"enum","enum":["pushed","held","double","pushed_2x","pushed_3x","pushed_4x","pushed_5x","pushed_6x","down","down_2x","down_3x","down_4x","down_5x","down_6x","down_hold","up","up_2x","up_3x","up_4x","up_5x","up_6x","up_hold"]},"PositiveInteger":{"type":"integer","minimum":0},"ButtonStateArray":{"type":"array","item":"ButtonState"},"CarbonDioxide":{"type":"integer","minimum":0,"maximum":1000000},"CarbonMonoxideState":{"type":"enum","enum":["clear","detected","tested"]},"CarbonMonoxideLevel":{"type":"number","minimum":0,"maximum":1000000},"String":{"type":"string","maxLength":255},"PositiveNumber":{"type":"number","minimum":0},"Hue":{"type":"number"},"Saturation":{"type":"number"},"Hex":{"type":"string","maxLength":7},"Level":{"type":"integer"},"Switch":{"type":"string","maxLength":3},"COLOR_MAP":{"type":"object","prop":{"hue":"Hue","saturation":"Saturation","hex":"Hex","level":"Level","switch":"Switch"}},"ColorTemperature":{"type":"integer","minimum":1,"maximum":30000},"ContactState":{"type":"enum","enum":["closed","open"]},"DishwasherMode":{"type":"enum","enum":["auto","quick","rinse","dry"]},"MachineState":{"type":"enum","enum":["pause","run","stop"]},"MachineStateArray":{"type":"array","item":"MachineState"},"DishwasherJobState":{"type":"enum","enum":["airwash","cooling","drying","finish","preDrain","prewash","rinse","spin","unknown","wash","wrinklePrevent"]},"Iso8601Date":{"type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"},"Door":{"type":"enum","enum":["closed","closing","open","opening","unknown"]},"DryerMode":{"type":"enum","enum":["regular","lowHeat","highHeat"]},"DryerJobState":{"type":"enum","enum":["cooling","delayWash","drying","finished","none","weightSensing","wrinklePrevent"]},"Energy":{"type":"number"},"EquivalentCarbonDioxideMeasurement":{"type":"number","minimum":0,"maximum":1000000},"FilterStatus":{"type":"enum","enum":["normal","replace"]},"FormaldehydeLevel":{"type":"number","minimum":0,"maximum":1000000},"Illuminance":{"type":"number","minimum":0,"maximum":100000},"InfraredLevel":{"type":"number","minimum":0,"maximum":100},"LockState":{"type":"enum","enum":["locked","unknown","unlocked","unlockedwithtimeout"]},"MediaSource":{"type":"enum","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]},"MediaSourceArray":{"type":"array","item":"MediaSource"},"PlaybackRepeatMode":{"type":"enum","enum":["all","off","one"]},"PlaybackShuffle":{"type":"enum","enum":["disabled","enabled"]},"PlaybackStatus":{"type":"enum","enum":["pause","play","stop","fastforward","rewind"]},"MediaPlaybackCommands":{"type":"enum","enum":["pause","play","stop","fastForward","rewind"]},"MediaPlaybackCommandsArray":{"type":"array","item":"MediaPlaybackCommands"},"OvenMode":{"type":"enum","enum":["heating","grill","warming","defrosting"]},"MachineState2":{"type":"enum","enum":["ready","running","paused"]},"SupportedMachineStates":{"type":"enum","enum":["ready","running","paused"]},"SupportedMachineStatesArray":{"type":"array","item":"SupportedMachineStates"},"OvenJobState":{"type":"enum","enum":["cleaning","cooking","cooling","draining","preheat","ready","rinsing"]},"Progress":{"type":"integer","minimum":0,"maximum":100},"MachineState3":{"type":"enum","enum":["stop"]},"Power":{"type":"number"},"PowerSource":{"type":"enum","enum":["battery","dc","mains","unknown"]},"PresenceState":{"type":"enum","enum":["present","notpresent"]},"RapidCooling":{"type":"enum","enum":["off","on"]},"TemperatureValue":{"type":"number","minimum":-460,"maximum":10000},"Humidity":{"type":"number","minimum":0,"maximum":100},"RobotCleanerCleaningMode":{"type":"enum","enum":["auto","part","repeat","manual","stop","map"]},"RobotCleanerCleaningMode2":{"type":"enum","enum":["auto","part","repeat","manual","stop"]},"RobotCleanerMovement":{"type":"enum","enum":["homing","idle","charging","alarm","powerOff","reserve","point","after","cleaning"]},"RobotCleanerTurboMode":{"type":"enum","enum":["on","off","silence"]},"Lqi":{"type":"integer","minimum":0,"maximum":255},"Rssi":{"type":"number","minimum":-200,"maximum":0},"Smoke":{"type":"enum","enum":["clear","detected","tested"]},"Sound":{"type":"enum","enum":["detected","notdetected"]},"Level2":{"type":"integer","minimum":0,"maximum":100},"SwitchState":{"type":"enum","enum":["on","off"]},"Tamper":{"type":"enum","enum":["clear","detected"]},"ThermostatFanMode":{"type":"enum","enum":["auto","circulate","followschedule","on"]},"ThermostatFanModeArray":{"type":"array","item":"ThermostatFanMode"},"ThermostatMode":{"type":"enum","enum":["auto","cool","eco","rushhour","emergencyheat","heat","off"]},"ThermostatModeArray":{"type":"array","item":"ThermostatMode"},"ThermostatOperatingState":{"type":"enum","enum":["cooling","fanonly","heating","idle","pendingcool","pendingheat","venteconomizer"]},"TvocLevel":{"type":"number","minimum":0,"maximum":1000000},"UltravioletIndex":{"type":"number","minimum":0,"maximum":255},"Valve":{"type":"enum","enum":["closed","open"]},"Number":{"type":"number"},"WasherMode":{"type":"enum","enum":["regular","heavy","rinse","spinDry"]},"WasherJobState":{"type":"enum","enum":["airWash","cooling","delayWash","drying","finish","none","preWash","rinse","spin","wash","weightSensing","wrinklePrevent"]},"MoistureState":{"type":"enum","enum":["dry","wet"]},"OpenableState":{"type":"enum","enum":["closed","closing","open","opening","partiallyopen","unknown"]}};
-
         var _capabilityList = {cmd: [], attr: []};
 
         var _jsonclone = function (obj) {
@@ -399,16 +400,16 @@
             }
             return _capabilityList[target];
         };
-        this.getAttribute = function (capabilityId, attributeId) {
-            if (_capabilities[capabilityId] && _capabilities[capabilityId].attributes) {
+        this.getAttributeSchema = function (capabilityId, attributeId) {
+            if (_capabilities[capabilityId] && _capabilities[capabilityId].attributes &&  _capabilities[capabilityId].attributes[attributeId]) {
                 return _capabilities[capabilityId].attributes[attributeId].schema || {}
             } else {
                 return {}
             }
         }
-        this.getCommand = function (capabilityId, commandId) {
-            if (_capabilities[capabilityId] && _capabilities[capabilityId].commands) {
-                return _capabilities[capabilityId].commands[commandId] || {}
+        this.getCommandArguments = function (capabilityId, commandId) {
+            if (_capabilities[capabilityId] && _capabilities[capabilityId].commands && _capabilities[capabilityId].commands[commandId]) {
+                return _capabilities[capabilityId].commands[commandId].arguments || {}
             } else {
                 return {}
             }
@@ -754,8 +755,6 @@
         THING.form = formObj;
         THING.target = (node.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
 
-        var selectedDevice = $("#node-input-deviceNodeId option:selected").data('device')
-
         THING.initDeviceNodeSelect(node.deviceNodeId)
         THING.initCapabilitySelect(node.capabilityId)
         THING.initAttributeSelect(node.attributeId)
@@ -815,7 +814,9 @@
                     deviceNodeIdSelect.append($("<option></option>").val(node.id).data('device', node.device).text("(My)" + node.label))
                 }
             })
-
+            if (initDeviceNodeId) {
+                deviceNodeIdSelect.val(initDeviceNodeId)
+            }
 
         },
         //deviceid 선택시 해당 section 정보를 셋팅한다.
@@ -825,8 +826,12 @@
             var device = this.form.deviceNodeId.find('option:selected').data('device')
 
             if (device && device.capabilities) {
+                var target = this.node.target;
                 device.capabilities.forEach(function(capabilityId){
-                    capabilityIdSelect.append($("<option></option>").val(capabilityId).text(capabilityId))
+                    //TODO:SAVE
+                    if(profiles.getCapability(capabilityId).hasOwnProperty(target)){
+                        capabilityIdSelect.append($("<option></option>").val(capabilityId).text(capabilityId))
+                    }
                 })
 
                 capabilityIdSelect.removeClass("input-error")
@@ -1038,10 +1043,6 @@
                         // if (container.find('br').length == 0) $(ele).parent().parent().before('</br>');
                         $(ele).typedInput("width", contWidth - standardWidth);
                     });
-
-                    container.find("select").each(function (idx, ele) {
-                        $(ele).css("width", "30%");
-                    });
                 }
 
             } else {
@@ -1077,125 +1078,137 @@
             var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
             NODE.target = target
 
-            var attrInfo = $('<pre></pre>').css('background-color','#333').html(JSON.stringify(profiles.getAttribute('formaldehydeMeasurement','formaldehydeLevel'),null,'  '))
             this.attributeInfoPopover = RED.popover.create({
                 target: $('#attribute-info'),
-                content: attrInfo,
+                content: '',
                 trigger: 'hover',
                 // autoClose: 2000,
                 direction: 'right',
                 delay: {show:10}
-            });
+            })
             this.attributeInfoPopover.refreshContent = function(){
                 var capabilityId = $('#node-input-capabilityId').val()
                 var attributeId = $('#node-input-attributeId').val()
                 if(capabilityId && attributeId){
-                    var attribute = profiles.getAttribute(capabilityId,attributeId)
-                    if(attribute){
-                        var _content = $('<pre></pre>').css('background-color','#333').html(JSON.stringify({[attributeId]:attribute.properties.value},null,'  '))
-                        this.setContent(_content)
+                    if(target=='attributes'){
+                        var attribute = profiles.getAttributeSchema(capabilityId,attributeId)
+                        if(attribute){
+                            var _content = $('<pre></pre>').css('background-color','#333').html(JSON.stringify({[attributeId]:attribute.properties.value},null,'  '))
+                            this.setContent(_content)
+                        }
+                    }else{
+                        var command = profiles.getCommandArguments(capabilityId,attributeId)
+                        if(command){
+                            var _content = $('<pre></pre>').css('background-color','#333').html(JSON.stringify({[attributeId]:command.arguments},null,'  '))
+                            this.setContent(_content)
+                        }
                     }
                 }
             }
 
             $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
-                addItem: function (container, idx, opt) {
-                    //opt.r==data
-                    //opt.i==idx
-
+                addButton: false,
+                addItem: function (container, idx, data) {
                     var isDuplicate = false;
 
-                    //capability추가시 중복된 값이 존재하면 추가시키지 않는다.
-                    if (!opt.hasOwnProperty('r')) {
-                        var list = $("#cmd-list-container").editableList('items');
-                        list.each(function () {
-                            if ((($(this).find(".field1").text() == $("#node-input-capabilityId").val())
-                                && ($(this).find(".field2").text() == $("#node-input-attributeId option:selected").text()))
-                                || $("#node-input-attributeId").val() == "") {
-                                isDuplicate = true;
+                    //attribute 셀렉트박스에 데이터가 없으면 attr은 추가시키지 않는다.
+                    // if ($("#node-input-attributeId option").length == 0) isDuplicate = true;
+                    //
+                    // if (isDuplicate) {
+                    //     $(container).parent().remove();
+                    //     return false;
+                    // }
+
+                    var capabilityId = $("#node-input-capabilityId option:selected").val()
+                    var commandId = $("#node-input-attributeId option:selected").val()
+                    var arguments = profiles.getCommandArguments(capabilityId, commandId)
+
+                    if(arguments){}
+
+                    var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
+                    $('<span>', {class: "capaId"}).appendTo(row).text(capabilityId)
+                    $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row)
+                    $('<span>', {class: "cmdId"}).appendTo(row).text(commandId+'()')
+
+                    if(arguments.length > 0){
+                        arguments.forEach(function(arg){
+
+                            if (arg.schema.type == 'object') {
+                                if (arg.schema.properties){
+
+                                    Object.entries(arg.schema.properties).forEach(function ([propertyId,property]) {
+                                        var row2 = $('<div/>', {style: "height:auto;margin-left:auto;width:fit-content;"}).appendTo(row);
+                                        row2.text(propertyId+' : ')
+                                        valueField = $("<input/>",{style: "width:auto;margin-right:5px;",placeholder:holder}).appendTo(row2)
+                                        var valueType =property.type
+
+                                        if (valueType == 'integer' || valueType == 'number') {
+                                            valueField.typedInput({default: "num", types: ["num"]})
+                                        } else {
+                                            valueField.typedInput({default: "str", types: ["str"]})
+                                            // if(property.hasOwnProperty('maxLength')){
+                                            //     valueField.typedInput('validate',function(value){
+                                            //         return value && value.length <= property.maxLength
+                                            //     })
+                                            // }
+                                        }
+                                        valueField.attr('argName',propertyId)
+                                        valueField.attr('argType',property.type)
+                                        valueField.addClass('argValue')
+                                    })
+                                }
+                            }else {
+                                var row2 = $('<div/>', {style: "height:auto;margin-left:auto;width:fit-content;"}).appendTo(row);
+                                row2.text(arg.name+' : ')
+                                var valueField;
+                                if (arg.schema.enum) {
+                                    valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row2);
+
+                                    arg.schema.enum.forEach(function (value) {
+                                        valueField.append($("<option></option>").val(value).text(value))
+                                    })
+                                } else {
+                                    var holder = arg.schema.title || arg.name
+                                    if(arg.schema.hasOwnProperty('minimum') || arg.schema.hasOwnProperty('maximum')){
+                                        holder+='('
+                                        holder+=arg.schema.hasOwnProperty('minimum')?arg.schema.minimum:' '
+                                        holder+='~'
+                                        holder+=arg.schema.hasOwnProperty('maximum')?arg.schema.maximum:' '
+                                        holder+=')'
+                                    }
+
+                                    valueField = $("<input/>",{style: "width:auto;margin-right:5px;",placeholder:holder}).appendTo(row2)
+
+                                    var valueType =arg.schema.type
+                                    if (valueType == 'integer' || valueType == 'number') {
+                                        valueField.typedInput({default: "num", types: ["num"]})
+                                    } else {
+                                        valueField.typedInput({default: "str", types: ["str"]})
+                                    }
+                                }
+                                valueField.attr('argName',arg.name)
+                                valueField.attr('argType',arg.schema.type)
+                                valueField.addClass('argValue')
                             }
                         })
                     }
 
-                    //attribute 셀렉트박스에 데이터가 없으면 attr은 추가시키지 않는다.
-                    if ($("#node-input-attributeId option").length == 0) isDuplicate = true;
-
-                    if (isDuplicate) {
-                        $(container).parent().remove();
-                        return false;
+                    if(data && data.args){
+                        data.args.forEach(function(arg){
+                            var valueField = container.find('.argValue[argName='+arg.name+']')
+                            if(valueField.prop('tagName')== 'INPUT'){
+                                valueField.typedInput('value',arg.value)
+                            }else{
+                                valueField.val(arg.value)
+                            }
+                        })
                     }
 
-                    if (!opt.hasOwnProperty('r')) {
-                        opt.r = {};
-                    }
-
-                    var rule = opt.r;
-                    var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
-                    var span1 = $('<span>', {class: "field1"}).appendTo(row);
-                    var gt1 = $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row);
-                    var span2 = $('<span>', {class: "field2"}).appendTo(row);
-                    var hidden2 = $('<input>', {type: "hidden", class: "hidden2"}).appendTo(row);
-
-                    span1.text($("#node-input-capabilityId").val());
-                    span2.text($("#node-input-attributeId option:selected").text());
-                    hidden2.val($("#node-input-attributeId").val());
-
-                    //rule 데이터가 존재한다면 저장한값으로 리스트를 보여준다.
-                    if (typeof rule.col1 != "undefined") {
-                        span1.text(rule.col1);
-                        span2.text(rule.col2);
-                        hidden2.val(rule.hidden2);
-
-                        if (rule.argType != undefined) {
-                            var argType = JSON.parse(rule.argType);
-                            var argTypeLen = Object.keys(argType).length;
-                            $(row).parent().data("argType", argType);
-
-                            if (argTypeLen > 0) {
-                                eventHandler.makeCmdComponent(row, argType);
-                                eventHandler.resizeRule(container);
-                            } else {
-                                var field3 = $('<span>', {class: "field3"}).appendTo(row);
-                                field3.text("()");
-                                //input 개체없이 텍스트만 테이블에 표기했을경우 행의 높이가 작아지는 현상이있어 조정하였다.
-                                row.css({"height": "26px"});
-                            }
-                        }
-
-                        container.find("select,input").not(":lt(1)").not("input[type='hidden']").each(function (idx, element) {
-                            if ($(element).is('[class~="red-ui-typedInput"]')) {
-                                $(element).typedInput('value', rule["col" + (idx + 3)]);
-                            } else {
-                                $(element).val(rule["col" + (idx + 3)]);
-                            }
-                        });
-
-                    } else {
-                        if ($("#node-input-attributeId option:selected").attr("arg") != undefined) {
-                            var argType = JSON.parse($("#node-input-attributeId option:selected").attr("arg"));
-                            $(row).parent().data("argType", argType);
-                            var argTypeLen = Object.keys(argType).length;
-
-                            if (argTypeLen > 0) {
-                                //ArgType값으로 row input을 구성한다.
-                                eventHandler.makeCmdComponent(row, argType);
-                                eventHandler.resizeRule(container);
-                            } else {
-                                var field3 = $('<span>', {class: "field3"}).appendTo(row);
-                                field3.text("()");
-
-                                //input 개체없이 텍스트만 테이블에 표기했을경우 행의 높이가 작아지는 현상이있어 조정하였다.
-                                row.css({"height": "26px"});
-                            }
-                        }
-                    }
-
-                    if (this.type == ST_COMMAND_DEVICE) {//Device의 usage가 Action 일 경우는 output을 1개로 한다.
+                    // if (this.type == ST_COMMAND_DEVICE) {//Device의 usage가 Action 일 경우는 output을 1개로 한다.
                         if ($("#cmd-list-container").editableList('items').length > 1) {
                             $("#cmd-list-container").find(".outputSpan").remove();
                         }
-                    }
-
+                    // }
                 },
                 resizeItem: function (container) {
                     eventHandler.resizeRule(container);
@@ -1217,12 +1230,13 @@
 
                     var capabilityId = $("#node-input-capabilityId option:selected").val()
                     var attributeId = $("#node-input-attributeId option:selected").val()
-                    var attribute = profiles.getAttribute(capabilityId, attributeId)
+                    var attribute = profiles.getAttributeSchema(capabilityId, attributeId)
 
                     if(attribute){
                         var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
 
                         var attributeIdField = $('<input/>', {
+                            capaId:capabilityId,
                             class: "attrId",
                             style: "width:auto; margin-right:5px;",
                             type: "text",
@@ -1251,7 +1265,16 @@
                                 valueField.append($("<option></option>").val(value).text(value))
                             })
                         } else {
-                            valueField = $("<input/>",{style: "width:auto;margin-right:5px;"}).appendTo(row)
+                            var holder = attribute.properties.value.title || attributeId
+                            if( attribute.properties.value.hasOwnProperty('minimum') ||  attribute.properties.value.hasOwnProperty('maximum')){
+                                holder+='('
+                                holder+= attribute.properties.value.hasOwnProperty('minimum')? attribute.properties.value.minimum:' '
+                                holder+='~'
+                                holder+= attribute.properties.value.hasOwnProperty('maximum')? attribute.properties.value.maximum:' '
+                                holder+=')'
+                            }
+
+                            valueField = $("<input/>",{style: "width:auto;margin-right:5px;",placeholder:holder}).appendTo(row)
 
                             var valueType = attribute.properties.value.type
                             if (valueType == 'integer' || valueType == 'number') {
@@ -1293,7 +1316,7 @@
                     }
                 },
                 resizeItem: function (container) {
-                    eventHandler.resizeRule(container);
+                    // eventHandler.resizeRule(container);
                 },
                 removeItem: function (opt) {
                 },
@@ -1317,33 +1340,39 @@
         oneditsave: function () {
             var NODE = this;
             NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId||''
-            var list1 = $("#cmd-list-container").editableList('items')
-            NODE.sensorCapaDs = []
-            list1.each(function (idx, item) {
+
+            NODE.rules = [];
+
+            $("#cmd-list-container").editableList('items').each(function (idx, item) {
                 var rule = {};
+                rule.capaId=item.find('.capaId').val()
                 rule.attrId = item.find(".attrId").val();
                 rule.operator = item.find(".attrOperator").val();
-                rule.value = item.find(".attrValue").val();
-                rule.valueType = item.find(".attrValue").attr('valueType');
-                rule.unit = item.find(".attrValue").val();
+                rule.args=[];
+                item.find(".argValue").each(function(idx,_arg){
+                    var arg = {}
 
-                NODE.sensorCapaDs.push(rule);
+                    arg.name=$(_arg).attr('argName')
+                    arg.type=$(_arg).attr('argType')
+                    arg.value=$(_arg).val()
+                    rule.args.push(arg)
+                });
+                NODE.rules.push(rule)
             })
 
-            var list2 = $("#attr-list-container").editableList('items');
-            NODE.rules = [];
-            list2.each(function (idx, item) {
-                var rule = {};
-                rule.attrId = item.find(".attrId").val();
-                rule.operator = item.find(".attrOperator").val();
-                rule.value = item.find(".attrValue").val();
-                rule.valueType = item.find(".attrValue").attr('valueType');
-                rule.unit = item.find(".attrValue").text();
+            $("#attr-list-container").editableList('items').each(function (idx, item) {
+                var rule = {}
+                rule.capaId = item.find(".attrId").attr('capaId')
+                rule.attrId = item.find(".attrId").val()
+                rule.operator = item.find(".attrOperator").val()
+                rule.value = item.find(".attrValue").val()
+                rule.valueType = item.find(".attrValue").attr('valueType')
+                rule.unit = item.find(".attrUnit").val()
 
-                NODE.rules.push(rule);
-            });
+                NODE.rules.push(rule)
+            })
 
-            this.outputs=list1.length||list2.length||1
+            this.outputs=NODE.rules.length||1
         },
         //editor height 변화에 따라 attr-container의 height를 조정한다.
         oneditresize: function (size) {
@@ -1367,8 +1396,8 @@
                 height -= $(rows[i]).outerHeight(true);
             }
 
-            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
-            resizeContainer.editableList('height', height - 100);
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")))
+            resizeContainer.editableList('height', height - 100)
         }
     };
 
@@ -1407,7 +1436,7 @@
             componentID:{vlaue:""},
             capabilityId: {value: "", required: true},
             attributeId: {value: "",required: true},
-            sensorCapaDs: {value: [{isInit: true,col1: "",col2: "",hidden2: "",col3: "",argType: ""}]},//초기화용 배열임을 판단하기위해 isInit값 추가
+            // sensorCapaDs: {value: [{isInit: true,col1: "",col2: "",hidden2: "",col3: "",argType: ""}]},//초기화용 배열임을 판단하기위해 isInit값 추가
             rules: {value: [{isInit: true,col1: "",hidden1: "",col2: "",col3: "",col4: "",col5: "",col6: ""}]},
             outputs:{value:1}
         }
