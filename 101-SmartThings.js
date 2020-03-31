@@ -642,47 +642,30 @@ module.exports = function (RED) {
                     for (var idx = 0; idx < targetInfoArr.length; idx++) {
                         targetInfo = targetInfoArr[idx].deviceConfig;
                         var commandArr = [];
-                        for (var i = 0; i < NODE.sensorCapaDs.length; i++) {
-                            var rule = NODE.sensorCapaDs[i];
-                            var tCmd = rule.col2;
-                            var cmd = {"component": targetInfo.componentId || "main", "capability": rule.col1, "command": tCmd};
+                        for(var rule of NODE.rules){
+                            var cmd = {"component": targetInfo.componentId || "main", "capability": rule.capaId, "command": rule.attrId};
                             cmd.arguments = [];
-                            var argument = {};
-                            if (rule.argType != undefined) {
-                                var argType = JSON.parse(rule.argType);
-                                var keys = Object.keys(argType);
-                                var types;
-                                if (rule.types != undefined) {
-                                    types = JSON.parse(rule.types);
-                                }
-                                if (keys.length > 0) {//command 명령어가 존재한다면({}가 아니라면)
-                                    var tmp;
-                                    var tempIdx = 0;
-                                    for (var j = 0; j < keys.length; j++) {
-                                        //typeinput 값이 존재하고 데이터 유형이 object인 경우
-                                        if (types != undefined && types[keys[j]].hasOwnProperty("prop")) {
-                                            argument = {};
 
-                                            var propKeys = Object.keys(types[keys[j]].prop);
-
-                                            for (var k = 0; k < propKeys.length; k++, tempIdx++) {
-                                                tmp = rule["col" + (tempIdx + 3)];
-                                                if (rule["col" + (tempIdx + 3) + "_vt"] == "num") {
-                                                    tmp = Number(tmp);
-                                                }
-                                                argument[propKeys[k]] = tmp;
-                                            }
-                                            cmd.arguments.push(argument);
-                                        } else {
-                                            tmp = rule["col" + (tempIdx + 3)];
-                                            if (rule["col" + (tempIdx + 3) + "_vt"] == "num") {
-                                                tmp = Number(tmp);
-                                            }
-                                            tempIdx++
-                                            cmd.arguments.push(tmp);
-                                        }
+                            var argObj={}
+                            rule.args.forEach(arg=>{
+                                if(arg.type != 'object'){
+                                    if(arg.type=='integer'||arg.type=='number') {
+                                        cmd.arguments.push(Number(arg.value))
+                                    }else{
+                                        cmd.arguments.push(arg.value)
                                     }
+                                }else{
+                                    var argValue
+                                    if(arg.propType=='integer'||arg.propType=='number') {
+                                        argValue = Number(arg.value)
+                                    }else{
+                                        argValue = arg.value
+                                    }
+                                    argObj[arg.name]=argValue
                                 }
+                            })
+                            if(Object.keys(argObj).length>0){
+                                cmd.arguments.push(argObj)
                             }
                             commandArr.push(cmd);
                         }

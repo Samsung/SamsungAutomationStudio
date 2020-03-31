@@ -259,8 +259,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
-        <select type="text"  id="node-input-deviceNodeId" style="width:50%"></select>
-        <input type="hidden" id="node-input-deviceId">
+        <select type="text" id="node-input-deviceNodeId" style="width:50%"></select>
     </div>
     <hr align="middle" />
     <div class="form-row">
@@ -758,7 +757,7 @@
         THING.initDeviceNodeSelect(node.deviceNodeId)
         THING.initCapabilitySelect(node.capabilityId)
         THING.initAttributeSelect(node.attributeId)
-        THING.initAttributeContainer(node)
+        THING.initAttributeContainer(node.rules)
 
         THING.form.deviceNodeId.on("mouseover", function () {
             THING.form.deviceNodeId.off("change")
@@ -878,149 +877,19 @@
             }
         },
         //type값에 따른 페이지 초기화 함수
-        initAttributeContainer: function (node) {
+        initAttributeContainer: function (rules) {
             this.form.container.editableList('empty')
 
-            if (node) {
-                if (node.sensorCapaDs && node.sensorCapaDs.length) {
-                    for (var i = 0; i < node.sensorCapaDs.length; i++) {
-                        var data = this.node.sensorCapaDs[i];
-                        /*초기화 배열값으로인해 루프를 수행하지않기위해 isInit값을 추가하였다.
-                            내용이없는 로우가 추가되는 현상 발생
-                            */
-                        if (data.isInit) break;
-                        this.form.container.editableList('addItem', data);
-                    }
-                }
-
-                if (node.rules && node.rules.length) {
-                    for (var i = 0; i < this.node.rules.length; i++) {
-                        var data = this.node.rules[i];
-                        if (data.isInit) break;
-                        this.form.container.editableList('addItem', data);
-                    }
+            if (rules && rules.length) {
+                for (var i = 0; i < this.node.rules.length; i++) {
+                    var data = this.node.rules[i];
+                    if (data.isInit) break;
+                    this.form.container.editableList('addItem', data);
                 }
             }
 
             if(this.form.attributeId.val() && this.form.container.editableList('items').length==0){
                 this.form.container.editableList('addItem')
-            }
-        },
-        //ArgType값으로 row input을 구성한다.
-        makeArgTypeAppend: function (row, inputInfo, inputNm) {
-            var dataKey;
-            if (inputInfo.type == 'object') {
-                dataKey = 'prop';
-
-            } else if (inputInfo.type == 'enum') {
-                dataKey = 'enum';
-
-            } else if (inputInfo.type == 'array') {
-                dataKey = 'item';
-
-            } else if (inputInfo.type == 'number' || inputInfo.type == 'string' || inputInfo.type == 'integer') {
-                dataKey = '';
-
-                var inputOption;
-                if (inputNm != undefined) inputOption = {type: "text", title: inputNm, placeholder: inputNm};
-                else inputOption = {type: "text"};
-
-                if (inputInfo.type == 'number' || inputInfo.type == 'integer') {
-                    $("<input/>", inputOption).appendTo(row).typedInput({default: "num", types: ["num"]});
-                    //row.append(" "+inputInfo.unit);//enum 이 아닌 일반 문자열일경우의 unit값은 표기하지않는다.
-                    //range일경우의 숫자값 범위체크에 관련해서는 고민이 필요하다.
-                    if (inputInfo.range != undefined && inputInfo.range.length == 2) {
-                        var min = inputInfo.range[0];
-                        var max = inputInfo.range[1];
-                    }
-                } else {
-                    $("<input/>", inputOption).appendTo(row).typedInput({default: "str", types: ["str"]});
-                }
-
-            } else if (inputInfo.type == 'NO DEFINED') {
-                $("<input/>", {type: "text"}).appendTo(row).typedInput({default: "num", types: ["num"]});
-            }
-
-            if (dataKey != '') {
-                if (Array.isArray(inputInfo[dataKey])) {
-                    var select = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
-                    for (var idx in inputInfo[dataKey]) {
-                        select.append($("<option></option>").val(inputInfo[dataKey][idx]).text(inputInfo[dataKey][idx]));
-                    }
-                } else {//데이터가 object 형태이면 재귀호출한다.
-                    for (var i in inputInfo[dataKey]) {
-                        if (inputInfo[dataKey].hasOwnProperty('type')) {
-                            this.makeArgTypeAppend(row, inputInfo[dataKey]);
-                            break;
-                        }
-
-                        if (typeof inputInfo[dataKey][i].hasOwnProperty('type')) {
-                            this.makeArgTypeAppend(row, inputInfo[dataKey][i], i);
-                        }
-                    }
-                }
-            }
-        },
-        makeAttrComponent: function (row, obj) {
-            if (obj.val() != undefined && obj.val() != null) {
-                row.find("select,input").not(":lt(3)").remove();
-                row.find(".red-ui-typedInput-container").remove();
-                //attributes 및 commands 에서 사용하는 인자(arguments)의 타입 정보를 조회
-                var argType = profiles.getArgType(obj.val().split("|")[1]);
-
-                //임시로 2개의 인풋이 생기는 구조는 한개로 제한한다.
-                if (obj.val() == "color|ColorState") {
-                    var x = argType.prop;
-                    delete x.saturation
-                }
-                this.makeArgTypeAppend(row, argType);
-
-                row.find("select,input").not(":lt(3)").each(function (idx, element) {//생성된 input에 class명을 부여한다.
-                    $(element).addClass("field" + (idx + 3));
-                });
-
-                //string, enum 비교시에는 ==, != 만 표시되도록 한다.
-                var removeOperator = false;
-                var compareObj = row.find(".field3");
-                if (compareObj.length > 0) {
-                    if (compareObj.is("[class*='red-ui-typedInput']")) {
-                        if (compareObj.typedInput("type") == 'str') removeOperator = true;
-                    } else if (compareObj[0].tagName == 'SELECT') {
-                        removeOperator = true;
-                    }
-                    if (removeOperator) {
-                        $(".field2 option").not($(".field2 option[value*='eq']")).remove();
-                    }
-                }
-            }
-        },
-        makeCmdComponent: function (row, obj) {
-            if (obj != undefined && obj != null) {
-                //attributes 및 commands 에서 사용하는 인자(arguments)의 타입 정보를 조회
-                var argType;
-                var keyArr = Object.keys(obj);
-                var reArgType = {};
-
-                for (var i = 0; i < keyArr.length; i++) {
-                    argType = profiles.getArgType(obj[keyArr[i]]);
-                    reArgType[keyArr[i]] = argType;
-
-                    var inputNm;
-                    if (argType.type == 'number' || argType.type == 'string') inputNm = keyArr[i];
-                    this.makeArgTypeAppend(row, argType, inputNm);
-                }
-
-                $(row).parent().data('types', reArgType)
-
-                //생성된 typeinput 의 속성에 필요한값들을 추가한다.
-                row.find("select,.red-ui-typedInput-container").css("margin-left", "5px")
-                row.find("select,.red-ui-typedInput-container").each(function (idx, element) {
-                    var typeObj = $(element).find(".red-ui-typedInput");
-                    typeObj.addClass("field" + (idx + 3));
-
-                    if ($(element)[0].tagName != 'SELECT') typeObj.data('types', JSON.stringify(reArgType));
-                    else $(element).addClass("field" + (idx + 3));
-                })
             }
         },
         //typedInput의 width를 조정한다.
@@ -1109,16 +978,6 @@
             $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
                 addButton: false,
                 addItem: function (container, idx, data) {
-                    var isDuplicate = false;
-
-                    //attribute 셀렉트박스에 데이터가 없으면 attr은 추가시키지 않는다.
-                    // if ($("#node-input-attributeId option").length == 0) isDuplicate = true;
-                    //
-                    // if (isDuplicate) {
-                    //     $(container).parent().remove();
-                    //     return false;
-                    // }
-
                     var capabilityId = $("#node-input-capabilityId option:selected").val()
                     var commandId = $("#node-input-attributeId option:selected").val()
                     var arguments = profiles.getCommandArguments(capabilityId, commandId)
@@ -1128,11 +987,14 @@
                     var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
                     $('<span>', {class: "capaId"}).appendTo(row).text(capabilityId)
                     $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row)
-                    $('<span>', {class: "cmdId"}).appendTo(row).text(commandId+'()')
+                    $('<span>', {class: "attrId"}).appendTo(row).text(commandId)
+                    var argNames = arguments.map(function(arg){
+                        return arg.name
+                    }).join(', ')
+                    $('<span>').appendTo(row).text(' ( '+argNames+' )')
 
                     if(arguments.length > 0){
                         arguments.forEach(function(arg){
-
                             if (arg.schema.type == 'object') {
                                 if (arg.schema.properties){
 
@@ -1152,8 +1014,10 @@
                                             //     })
                                             // }
                                         }
-                                        valueField.attr('argName',propertyId)
-                                        valueField.attr('argType',property.type)
+                                        valueField.attr('argName',propertyId)//use propertyID as argument name for set value
+                                        valueField.attr('argType',arg.schema.type)
+                                        // valueField.attr('propId',propertyId)
+                                        valueField.attr('propType',property.type)
                                         valueField.addClass('argValue')
                                     })
                                 }
@@ -1223,11 +1087,6 @@
 
             $("#attr-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
                 addItem: function (container, idx, data) {
-
-                    // if (!data.hasOwnProperty('i')) {
-                    //     data._i = Math.floor((0x99999 - 0x10000) * Math.random()).toString(16);
-                    // }
-
                     var capabilityId = $("#node-input-capabilityId option:selected").val()
                     var attributeId = $("#node-input-attributeId option:selected").val()
                     var attribute = profiles.getAttributeSchema(capabilityId, attributeId)
@@ -1345,15 +1204,17 @@
 
             $("#cmd-list-container").editableList('items').each(function (idx, item) {
                 var rule = {};
-                rule.capaId=item.find('.capaId').val()
-                rule.attrId = item.find(".attrId").val();
-                rule.operator = item.find(".attrOperator").val();
+                rule.capaId = item.find('.capaId').text()
+                rule.attrId = item.find(".attrId").text();
                 rule.args=[];
                 item.find(".argValue").each(function(idx,_arg){
                     var arg = {}
 
                     arg.name=$(_arg).attr('argName')
                     arg.type=$(_arg).attr('argType')
+                    if($(_arg).attr('propType')){
+                        arg.propType = $(_arg).attr('propType')
+                    }
                     arg.value=$(_arg).val()
                     rule.args.push(arg)
                 });
@@ -1431,7 +1292,6 @@
                     return !!val && isValidDevice
                 }
             },
-            // device: {value: {}},
             deviceId:{value:""},
             componentID:{vlaue:""},
             capabilityId: {value: "", required: true},
