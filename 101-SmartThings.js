@@ -22,6 +22,7 @@ module.exports = function (RED) {
     const ST_DEVICE_PROFILE = 'device-profile';
     const ST_MY_DEVICE = 'installed-device';
     const ST_AUTOMATION = 'automation';
+    const ST_NODE_VERSION = 200330
 
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
     var os = require('os');
@@ -68,10 +69,10 @@ module.exports = function (RED) {
             return a >= b;
         },
         'in': function(v,arr){
-            return v in arr
+            return Array.isArray(arr) && arr.includes(v)
         },
         'nin': function(v,arr){
-            return !(v in arr)
+            return Array.isArray(arr) && !(arr.includes(v))
         }
     };
 
@@ -165,9 +166,10 @@ module.exports = function (RED) {
         });
 
         // 사용하는 config node id 저장
-        usedDeviceConfig = [];
-        eventDeviceConfig = [];
-        actionDeviceConfig = [];
+        usedDeviceConfig = []
+        eventDeviceConfig = []
+        actionDeviceConfig = []
+
         /* ---------------------------------------------------------------------------------- */
         /* queue 파라미터에 해당하는 연결 노드들에 대한 BFS 탐색을 처리한다.                       */
         /* Automation부터 wires를 따라 노드를 스캔하면서 Device 일 경우 해당 Deivce Config 저장   */
@@ -182,26 +184,26 @@ module.exports = function (RED) {
 
         while (queue.length > 0) {
             var curID = queue.shift();
-            var nodeInfo = allnodes[curID];
-            if (/^(event|status|command)-device$/g.test(nodeInfo.type) && allnodes[nodeInfo.deviceId] && allnodes[nodeInfo.deviceId].type === ST_DEVICE_PROFILE) {
-                if (nodeInfo.deviceId in checkSet) {  // 이미 추가된 경우
+            var node = allnodes[curID];
+            if (/^(event|status|command)-device$/g.test(node.type) && allnodes[node.deviceNodeId] && allnodes[node.deviceNodeId].type === ST_DEVICE_PROFILE) {
+                if (node.deviceNodeId in checkSet) {  // 이미 추가된 경우
                     //skip
-                } else if(nodeInfo.deviceId && nodeInfo.deviceId !='') {
-                    usedDeviceConfig.push(nodeInfo.deviceId); /* Config id 저장*/
-                    checkSet[nodeInfo.deviceId] = true;
-                    if (nodeInfo.type == ST_EVENT_DEVICE) {
-                        Eventattribute = nodeInfo.attribute;
+                } else if(node.deviceNodeId && node.deviceNodeId !='') {
+                    usedDeviceConfig.push(node.deviceNodeId); /* Config id 저장*/
+                    checkSet[node.deviceNodeId] = true;
+                    if (node.type == ST_EVENT_DEVICE) {
+                        Eventattribute = node.attributeId;
                     }
                 }
-                if(nodeInfo.type == ST_EVENT_DEVICE && eventDeviceConfig.indexOf(nodeInfo.deviceId)<0) {
-                    eventDeviceConfig.push(nodeInfo.deviceId);
+                if(node.type == ST_EVENT_DEVICE && eventDeviceConfig.indexOf(node.deviceNodeId)<0) {
+                    eventDeviceConfig.push(node.deviceNodeId);
                 }
-                if(nodeInfo.type == ST_COMMAND_DEVICE && actionDeviceConfig.indexOf(nodeInfo.deviceId)<0) {
-                    actionDeviceConfig.push(nodeInfo.deviceId);
+                if(node.type == ST_COMMAND_DEVICE && actionDeviceConfig.indexOf(node.deviceNodeId)<0) {
+                    actionDeviceConfig.push(node.deviceNodeId);
                 }
             }
             /* 해당 Node의 다음 연결 wires 정보로 탐색을 계속한다. */
-            var wires = nodeInfo.wires;
+            var wires = node.wires;
             for (var port in wires) {
                 for (var connectedNode in wires[port]) {
                     if (wires[port][connectedNode] in checkVisited) {
@@ -223,7 +225,7 @@ module.exports = function (RED) {
             var permissions = ['r'];
             if(eventDeviceConfig.indexOf(confNode.id)>-1) {
                 EventSectionID = confNode.name;
-                Eventcapability = confNode.capability;
+                Eventcapability = confNode.capabilityId;
             }
             if (actionDeviceConfig.indexOf(confNode.id)>-1) {
                 permissions.push('x');
@@ -234,11 +236,11 @@ module.exports = function (RED) {
                     {
                         id: confNode.name,
                         name: confNode.name,
-                        description: confNode.name + ":" + confNode.capability,
+                        description: confNode.name + ":" + confNode.capabilityId,
                         type: 'DEVICE',
                         required: true,
                         multiple: false,
-                        capabilities: [confNode.capability],
+                        capabilities: [confNode.capabilityId],
                         permissions: permissions
                     }
                 ]
@@ -661,7 +663,7 @@ module.exports = function (RED) {
                                     }else{
                                         argValue = arg.value
                                     }
-                                    argObj[arg.name]=argValue
+                                    argObj[arg.propId]=argValue
                                 }
                             })
                             if(Object.keys(argObj).length>0){

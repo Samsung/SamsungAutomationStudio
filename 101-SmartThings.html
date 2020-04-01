@@ -23,7 +23,6 @@
         <label for="node-input-capabilityId">Capability</label>
         <select type="text" id="node-input-capabilityId" style="width: 70%;"></select>
     </div>
-
 </script>
 <script type="text/x-red" data-help-name="device-profile">
     <p>This node represents an installed device. In this flow, You need to choose a device for automation.</p>
@@ -41,7 +40,6 @@
             </ul>
         </dd>
     </dl>
-
 </script>
 <script type="text/x-red" data-template-name="installed-device">
     <div class="form-tips" style="margin-bottom:10px;"><b>Note:</b> create token on the SmartThings <b><a href="https://account.smartthings.com/tokens" target="_blank">personal access token page</a></b></div>
@@ -61,7 +59,6 @@
     <div id="my-device-list-div" class="form-row sensor-container-row">
         <ol id="my-device-list-container"></ol>
     </div>
-
 </script>
 <script type="text/x-red" data-help-name="installed-device">
     <p>This node represents an your SmartThings device. You can control your SmartThings devices directly without even registering the Automation.</p>
@@ -88,7 +85,6 @@
             </ul>
         </dd>
     </dl>
-
 </script>
 <script type="text/x-red" data-template-name="automation">
     <div class="form-row">
@@ -115,7 +111,6 @@
         <textarea id="node-input-publickey" cols="60" rows="8"  style="margin: 0px; width: 354px; height: 174px;"></textarea>
     </div>
     <div class="form-tips"><b>Note:</b> How to get Public Key. See info box for details.</div>
-
 </script>
 <script type="text/x-red" data-help-name="automation">
     <p>This node represents the WebHook Endpoint of SmartApp. the Automation node handles lifecycle of SmartApp.</p>
@@ -194,6 +189,10 @@
         </dd>
      </dl>
 
+
+
+
+
 </script>
 
 <script type="text/x-red" data-template-name="status-device">
@@ -222,7 +221,6 @@
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
     </div>
-
 </script>
 <script type="text/x-red" data-help-name="status-device">
     <p>This node checks the state of the device.</p>
@@ -249,7 +247,6 @@
             </ul>
         </dd>
      </dl>
-
 </script>
 
 <script type="text/x-red" data-template-name="command-device">
@@ -302,7 +299,6 @@
             </ul>
         </dd>
      </dl>
-
 </script>
 <!-- Node Html End-->
 
@@ -331,76 +327,22 @@
         * capability ver.2020.03.30
         * https://smartthings.developer.samsung.com/docs/api-ref/capabilities.html
         */
-        var _raw_capabilities=[{"id":"accelerationSensor","version":1,"name":"Acceleration Sensor","status":"live","attributes":{"acceleration":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ActivityState","type":"string","enum":["active","inactive"]}},"required":["value"]}}},"commands":{}},{"id":"activityLightingMode","version":1,"name":"Activity Lighting Mode","status":"proposed","attributes":{"lightingMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["reading","writing","computer","night"]}},"required":["value"]}}},"commands":{"setLightingMode":{"arguments":[{"name":"lightingMode","schema":{"type":"string","enum":["reading","writing","computer","night"]},"required":true}]}}},{"id":"airConditionerMode","version":1,"name":"Air Conditioner Mode","status":"proposed","attributes":{"airConditionerMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"HvacMode","type":"string","enum":["auto","cool","dry","coolClean","dryClean","fanOnly","heat","heatClean","notSupported"]}},"required":["value"]}}},"commands":{"setAirConditionerMode":{"arguments":[{"name":"mode","schema":{"title":"HvacMode","type":"string","enum":["auto","cool","dry","coolClean","dryClean","fanOnly","heat","heatClean","notSupported"]},"required":true}]}}},{"id":"airQualitySensor","version":1,"name":"Air Quality Sensor","status":"live","attributes":{"airQuality":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["CAQI"],"default":"CAQI"}},"required":["value"]}}},"commands":{}},{"id":"alarm","version":1,"name":"Alarm","status":"live","attributes":{"alarm":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"AlertState","type":"string","enum":["both","off","siren","strobe"]}},"required":["value"]}}},"commands":{"both":{"arguments":[]},"off":{"arguments":[]},"siren":{"arguments":[]},"strobe":{"arguments":[]}}},{"id":"audioMute","version":1,"name":"Audio Mute","status":"live","attributes":{"mute":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MuteState","type":"string","enum":["muted","unmuted"]}},"required":["value"]}}},"commands":{"setMute":{"arguments":[{"name":"state","schema":{"title":"MuteState","type":"string","enum":["muted","unmuted"]},"required":true}]},"mute":{"arguments":[]},"unmute":{"arguments":[]}}},{"id":"audioVolume","version":1,"name":"Audio Volume","status":"proposed","attributes":{"volume":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setVolume":{"arguments":[{"name":"volume","schema":{"type":"integer","minimum":0,"maximum":100},"required":true}]},"volumeUp":{"arguments":[]},"volumeDown":{"arguments":[]}}},{"id":"battery","version":1,"name":"Battery","status":"live","attributes":{"battery":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{}},{"id":"bodyMassIndexMeasurement","version":1,"name":"Body Mass Index Measurement","status":"proposed","attributes":{"bmiMeasurement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["kg/m^2"],"default":"kg/m^2"}},"required":["value"]}}},"commands":{}},{"id":"bodyWeightMeasurement","version":1,"name":"Body Weight Measurement","status":"proposed","attributes":{"bodyWeightMeasurement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["kg","lbs","斤"],"default":"kg"}},"required":["value","unit"]}}},"commands":{}},{"id":"button","version":1,"name":"Button","status":"live","attributes":{"button":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ButtonState","type":"string","enum":["pushed","held","double","pushed_2x","pushed_3x","pushed_4x","pushed_5x","pushed_6x","down","down_2x","down_3x","down_4x","down_5x","down_6x","down_hold","up","up_2x","up_3x","up_4x","up_5x","up_6x","up_hold"]}},"required":["value"]}},"numberOfButtons":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}},"supportedButtonValues":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"ButtonState","type":"string","enum":["pushed","held","double","pushed_2x","pushed_3x","pushed_4x","pushed_5x","pushed_6x","down","down_2x","down_3x","down_4x","down_5x","down_6x","down_hold","up","up_2x","up_3x","up_4x","up_5x","up_6x","up_hold"]}}}}}},"commands":{}},{"id":"carbonDioxideMeasurement","version":1,"name":"Carbon Dioxide Measurement","status":"live","attributes":{"carbonDioxide":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value"]}}},"commands":{}},{"id":"carbonMonoxideDetector","version":1,"name":"Carbon Monoxide Detector","status":"live","attributes":{"carbonMonoxide":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"CarbonMonoxideState","type":"string","enum":["clear","detected","tested"]}},"required":["value"]}}},"commands":{}},{"id":"carbonMonoxideMeasurement","version":1,"name":"Carbon Monoxide Measurement","status":"proposed","attributes":{"carbonMonoxideLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value","unit"]}}},"commands":{}},{"id":"colorControl","version":1,"name":"Color Control","status":"live","attributes":{"color":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"String","type":"string","maxLength":255}}}},"hue":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveNumber","type":"number","minimum":0}}}},"saturation":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveNumber","type":"number","minimum":0}}}}},"commands":{"setColor":{"arguments":[{"name":"color","schema":{"title":"COLOR_MAP","type":"object","additionalProperties":false,"properties":{"hue":{"type":"number"},"saturation":{"type":"number"},"hex":{"type":"string","maxLength":7},"level":{"type":"integer"},"switch":{"type":"string","maxLength":3}}},"required":true}]},"setHue":{"arguments":[{"name":"hue","schema":{"title":"PositiveNumber","type":"number","minimum":0},"required":true}]},"setSaturation":{"arguments":[{"name":"saturation","schema":{"title":"PositiveNumber","type":"number","minimum":0},"required":true}]}}},{"id":"colorTemperature","version":1,"name":"Color Temperature","status":"live","attributes":{"colorTemperature":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":1,"maximum":30000},"unit":{"type":"string","enum":["K"],"default":"K"}},"required":["value"]}}},"commands":{"setColorTemperature":{"arguments":[{"name":"temperature","schema":{"type":"integer","minimum":1,"maximum":30000},"required":true}]}}},{"id":"contactSensor","version":1,"name":"Contact Sensor","status":"live","attributes":{"contact":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ContactState","type":"string","enum":["closed","open"]}},"required":["value"]}}},"commands":{}},{"id":"dishwasherMode","version":1,"name":"Dishwasher Mode","status":"proposed","attributes":{"dishwasherMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DishwasherMode","type":"string","enum":["auto","quick","rinse","dry"]}},"required":["value"]}}},"commands":{"setDishwasherMode":{"arguments":[{"name":"mode","schema":{"title":"DishwasherMode","type":"string","enum":["auto","quick","rinse","dry"]},"required":true}]}}},{"id":"dishwasherOperatingState","version":1,"name":"Dishwasher Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}}}},"required":["value"]}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}},"required":["value"]}},"dishwasherJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DishwasherJobState","type":"string","enum":["airwash","cooling","drying","finish","preDrain","prewash","rinse","spin","unknown","wash","wrinklePrevent"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"DishwasherJobState","type":"string","enum":["airwash","cooling","drying","finish","preDrain","prewash","rinse","spin","unknown","wash","wrinklePrevent"]}}}}},"required":["value"]}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"required":true}]}}},{"id":"doorControl","version":1,"name":"Door Control","status":"live","attributes":{"door":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["closed","closing","open","opening","unknown"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["closed","closing","open","opening","unknown"]}}}}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]}}},{"id":"dryerMode","version":1,"name":"Dryer Mode","status":"proposed","attributes":{"dryerMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DryerMode","type":"string","enum":["regular","lowHeat","highHeat"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"DryerMode","type":"string","enum":["regular","lowHeat","highHeat"]}}}}},"required":["value"]}}},"commands":{"setDryerMode":{"arguments":[{"name":"mode","schema":{"title":"DryerMode","type":"string","enum":["regular","lowHeat","highHeat"]},"required":true}]}}},{"id":"dryerOperatingState","version":1,"name":"Dryer Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}}}},"required":["value"]}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}},"required":["value"]}},"dryerJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DryerJobState","type":"string","enum":["cooling","delayWash","drying","finished","none","weightSensing","wrinklePrevent"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"DryerJobState","type":"string","enum":["cooling","delayWash","drying","finished","none","weightSensing","wrinklePrevent"]}}}}},"required":["value"]}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"required":true}]}}},{"id":"dustSensor","version":1,"name":"Dust Sensor","status":"live","attributes":{"fineDustLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0},"unit":{"type":"string","enum":["μg/m^3"],"default":"μg/m^3"}},"required":["value"]}},"dustLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0},"unit":{"type":"string","enum":["μg/m^3"],"default":"μg/m^3"}},"required":["value"]}}},"commands":{}},{"id":"energyMeter","version":1,"name":"Energy Meter","status":"live","attributes":{"energy":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["kWh"],"default":"kWh"}},"required":["value"]}}},"commands":{}},{"id":"equivalentCarbonDioxideMeasurement","version":1,"name":"Equivalent Carbon Dioxide Measurement","status":"live","attributes":{"equivalentCarbonDioxideMeasurement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value"]}}},"commands":{}},{"id":"fanSpeed","version":1,"name":"Fan Speed","status":"proposed","attributes":{"fanSpeed":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}}},"commands":{"setFanSpeed":{"arguments":[{"name":"speed","schema":{"title":"PositiveInteger","type":"integer","minimum":0},"required":true}]}}},{"id":"filterStatus","version":1,"name":"Filter Status","status":"proposed","attributes":{"filterStatus":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["normal","replace"]}},"required":["value"]}}},"commands":{}},{"id":"formaldehydeMeasurement","version":1,"name":"Formaldehyde Measurement","status":"live","attributes":{"formaldehydeLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm","mg/m^3"],"default":"ppm"}},"required":["value","unit"]}}},"commands":{}},{"id":"garageDoorControl","version":1,"name":"Garage Door Control","status":"deprecated","attributes":{"door":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["closed","closing","open","opening","unknown"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["closed","closing","open","opening","unknown"]}}}}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]}}},{"id":"illuminanceMeasurement","version":1,"name":"Illuminance Measurement","status":"live","attributes":{"illuminance":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":100000},"unit":{"type":"string","enum":["lux"],"default":"lux"}},"required":["value"]}}},"commands":{}},{"id":"infraredLevel","version":1,"name":"Infrared Level","status":"live","attributes":{"infraredLevel":{"schema":{"title":"Percent","type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setInfraredLevel":{"arguments":[{"name":"level","schema":{"type":"number","minimum":0,"maximum":100},"required":true}]}}},{"id":"lock","version":1,"name":"Lock","status":"live","attributes":{"lock":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"LockState","type":"string","enum":["locked","unknown","unlocked","unlocked with timeout"]},"data":{"type":"object","additionalProperties":false,"properties":{"method":{"type":"string","enum":["manual","keypad","auto","command","rfid","fingerprint","bluetooth"]},"codeId":{"type":"string"},"timeout":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}}}},"required":["value"]}}},"commands":{"lock":{"arguments":[]},"unlock":{"arguments":[]}}},{"id":"mediaInputSource","version":1,"name":"Media Input Source","status":"proposed","attributes":{"inputSource":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MediaSource","type":"string","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]}},"required":["value"]}},"supportedInputSources":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MediaSource","type":"string","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]}}},"required":["value"]}}},"commands":{"setInputSource":{"arguments":[{"name":"mode","schema":{"title":"MediaSource","type":"string","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]},"required":true}]}}},{"id":"mediaPlaybackRepeat","version":1,"name":"Media Playback Repeat","status":"proposed","attributes":{"playbackRepeatMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["all","off","one"]}},"required":["value"]}}},"commands":{"setPlaybackRepeatMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["all","off","one"]},"required":true}]}}},{"id":"mediaPlaybackShuffle","version":1,"name":"Media Playback Shuffle","status":"proposed","attributes":{"playbackShuffle":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["disabled","enabled"]}},"required":["value"]}}},"commands":{"setPlaybackShuffle":{"arguments":[{"name":"shuffle","schema":{"type":"string","enum":["disabled","enabled"]},"required":true}]}}},{"id":"mediaPlayback","version":1,"name":"Media Playback","status":"proposed","attributes":{"playbackStatus":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["pause","play","stop","fast forward","rewind"]}}}},"supportedPlaybackCommands":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MediaPlaybackCommands","type":"string","enum":["pause","play","stop","fastForward","rewind"]}}}}}},"commands":{"setPlaybackStatus":{"arguments":[{"name":"status","schema":{"type":"string","enum":["pause","play","stop","fast forward","rewind"]},"required":true}]},"play":{"arguments":[]},"pause":{"arguments":[]},"stop":{"arguments":[]},"fastForward":{"arguments":[]},"rewind":{"arguments":[]}}},{"id":"motionSensor","version":1,"name":"Motion Sensor","status":"live","attributes":{"motion":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ActivityState","type":"string","enum":["active","inactive"]}},"required":["value"]}}},"commands":{}},{"id":"odorSensor","version":1,"name":"Odor Sensor","status":"proposed","attributes":{"odorLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}}},"commands":{}},{"id":"ovenMode","version":1,"name":"Oven Mode","status":"proposed","attributes":{"ovenMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["heating","grill","warming","defrosting"]},"constraints":{"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["heating","grill","warming","defrosting"]}}}}}},"required":["value"]}}},"commands":{"setOvenMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["heating","grill","warming","defrosting"]},"required":true}]}}},{"id":"ovenOperatingState","version":1,"name":"Oven Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["ready","running","paused"]}}}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"type":"string","enum":["ready","running","paused"]}}}}},"ovenJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["cleaning","cooking","cooling","draining","preheat","ready","rinsing"]}}}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}},"operationTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}}}},"progress":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"type":"string","enum":["stop"]},"required":true}]},"stop":{"arguments":[]}}},{"id":"ovenSetpoint","version":1,"name":"Oven Setpoint","status":"proposed","attributes":{"ovenSetpoint":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}}},"commands":{"setOvenSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"PositiveInteger","type":"integer","minimum":0},"required":true}]}}},{"id":"powerMeter","version":1,"name":"Power Meter","status":"live","attributes":{"power":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["W"],"default":"W"}},"required":["value"]}}},"commands":{}},{"id":"powerSource","version":1,"name":"Power Source","status":"live","attributes":{"powerSource":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["battery","dc","mains","unknown"]}},"required":["value"]}}},"commands":{}},{"id":"presenceSensor","version":1,"name":"Presence Sensor","status":"live","attributes":{"presence":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PresenceState","type":"string","enum":["present","not present"]}},"required":["value"]}}},"commands":{}},{"id":"rapidCooling","version":1,"name":"Rapid Cooling","status":"proposed","attributes":{"rapidCooling":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["off","on"]}},"required":["value"]}}},"commands":{"setRapidCooling":{"arguments":[{"name":"rapidCooling","schema":{"type":"string","enum":["off","on"]},"required":true}]}}},{"id":"refrigerationSetpoint","version":1,"name":"Refrigeration Setpoint","status":"proposed","attributes":{"refrigerationSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{"setRefrigerationSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"required":true}]}}},{"id":"relativeHumidityMeasurement","version":1,"name":"Relative Humidity Measurement","status":"live","attributes":{"humidity":{"schema":{"title":"Percent","type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{}},{"id":"robotCleanerCleaningMode","version":1,"name":"Robot Cleaner Cleaning Mode","status":"proposed","attributes":{"robotCleanerCleaningMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["auto","part","repeat","manual","stop","map"]}},"required":["value"]}}},"commands":{"setRobotCleanerCleaningMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["auto","part","repeat","manual","stop"]},"required":true}]}}},{"id":"robotCleanerMovement","version":1,"name":"Robot Cleaner Movement","status":"proposed","attributes":{"robotCleanerMovement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["homing","idle","charging","alarm","powerOff","reserve","point","after","cleaning"]}},"required":["value"]}}},"commands":{"setRobotCleanerMovement":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["homing","idle","charging","alarm","powerOff","reserve","point","after","cleaning"]},"required":true}]}}},{"id":"robotCleanerTurboMode","version":1,"name":"Robot Cleaner Turbo Mode","status":"proposed","attributes":{"robotCleanerTurboMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["on","off","silence"]}},"required":["value"]}}},"commands":{"setRobotCleanerTurboMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["on","off","silence"]},"required":true}]}}},{"id":"signalStrength","version":1,"name":"Signal Strength","status":"live","attributes":{"lqi":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":255}},"required":["value"]}},"rssi":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":-200,"maximum":0},"unit":{"type":"string","enum":["dBm"],"default":"dBm"}},"required":["value"]}}},"commands":{}},{"id":"smokeDetector","version":1,"name":"Smoke Detector","status":"live","attributes":{"smoke":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["clear","detected","tested"]}},"required":["value"]}}},"commands":{}},{"id":"soundSensor","version":1,"name":"Sound Sensor","status":"live","attributes":{"sound":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["detected","not detected"]}},"required":["value"]}}},"commands":{}},{"id":"switchLevel","version":1,"name":"Switch Level","status":"live","attributes":{"level":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setLevel":{"arguments":[{"name":"level","schema":{"type":"integer","minimum":0,"maximum":100},"required":true},{"name":"rate","schema":{"title":"PositiveInteger","type":"integer","minimum":0},"required":false}]}}},{"id":"switch","version":1,"name":"Switch","status":"live","attributes":{"switch":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"SwitchState","type":"string","enum":["on","off"]}},"required":["value"]}}},"commands":{"off":{"arguments":[]},"on":{"arguments":[]}}},{"id":"tamperAlert","version":1,"name":"Tamper Alert","status":"live","attributes":{"tamper":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["clear","detected"]}},"required":["value"]}}},"commands":{}},{"id":"temperatureMeasurement","version":1,"name":"Temperature Measurement","status":"live","attributes":{"temperature":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]}},"required":["value","unit"]}}},"commands":{}},{"id":"thermostatCoolingSetpoint","version":1,"name":"Thermostat Cooling Setpoint","status":"live","attributes":{"coolingSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{"setCoolingSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"required":true}]}}},{"id":"thermostatFanMode","version":1,"name":"Thermostat Fan Mode","status":"live","attributes":{"thermostatFanMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ThermostatFanMode","type":"string","enum":["auto","circulate","followschedule","on"]}},"required":["value"]}},"supportedThermostatFanModes":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"ThermostatFanMode","type":"string","enum":["auto","circulate","followschedule","on"]}}}}}},"commands":{"fanAuto":{"arguments":[]},"fanCirculate":{"arguments":[]},"fanOn":{"arguments":[]},"setThermostatFanMode":{"arguments":[{"name":"mode","schema":{"title":"ThermostatFanMode","type":"string","enum":["auto","circulate","followschedule","on"]},"required":true}]}}},{"id":"thermostatHeatingSetpoint","version":1,"name":"Thermostat Heating Setpoint","status":"live","attributes":{"heatingSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{"setHeatingSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"required":true}]}}},{"id":"thermostatMode","version":1,"name":"Thermostat Mode","status":"live","attributes":{"thermostatMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ThermostatMode","type":"string","enum":["auto","cool","eco","rush hour","emergency heat","heat","off"]}},"required":["value"]}},"supportedThermostatModes":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"ThermostatMode","type":"string","enum":["auto","cool","eco","rush hour","emergency heat","heat","off"]}}}}}},"commands":{"auto":{"arguments":[]},"cool":{"arguments":[]},"emergencyHeat":{"arguments":[]},"heat":{"arguments":[]},"off":{"arguments":[]},"setThermostatMode":{"arguments":[{"name":"mode","schema":{"title":"ThermostatMode","type":"string","enum":["auto","cool","eco","rush hour","emergency heat","heat","off"]},"required":true}]}}},{"id":"thermostatOperatingState","version":1,"name":"Thermostat Operating State","status":"live","attributes":{"thermostatOperatingState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ThermostatOperatingState","type":"string","enum":["cooling","fan only","heating","idle","pending cool","pending heat","vent economizer"]},"constraints":{"title":"EnumConstraint","properties":{"values":{"type":"array"}}}},"required":["value"]}}},"commands":{}},{"id":"thermostatSetpoint","version":1,"name":"Thermostat Setpoint","status":"deprecated","attributes":{"thermostatSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{}},{"id":"tone","version":1,"name":"Tone","status":"live","attributes":{},"commands":{"beep":{"arguments":[]}}},{"id":"tvChannel","version":1,"name":"Tv Channel","status":"proposed","attributes":{"tvChannel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"String","type":"string","maxLength":255}}}}},"commands":{"setTvChannel":{"arguments":[{"name":"channel","schema":{"title":"String","type":"string","maxLength":255},"required":true}]},"channelUp":{"arguments":[]},"channelDown":{"arguments":[]}}},{"id":"tvocMeasurement","version":1,"name":"Tvoc Measurement","status":"live","attributes":{"tvocLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value","unit"]}}},"commands":{}},{"id":"ultravioletIndex","version":1,"name":"Ultraviolet Index","status":"live","attributes":{"ultravioletIndex":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":255}},"required":["value"]}}},"commands":{}},{"id":"valve","version":1,"name":"Valve","status":"live","attributes":{"valve":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["closed","open"]}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]}}},{"id":"voltageMeasurement","version":1,"name":"Voltage Measurement","status":"live","attributes":{"voltage":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Number","type":"number"},"unit":{"type":"string","enum":["V"],"default":"V"}},"required":["value"]}}},"commands":{}},{"id":"washerMode","version":1,"name":"Washer Mode","status":"proposed","attributes":{"washerMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"WasherMode","type":"string","enum":["regular","heavy","rinse","spinDry"]}},"required":["value"]}}},"commands":{"setWasherMode":{"arguments":[{"name":"mode","schema":{"title":"WasherMode","type":"string","enum":["regular","heavy","rinse","spinDry"]},"required":true}]}}},{"id":"washerOperatingState","version":1,"name":"Washer Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}},"required":["value"]}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}}}},"washerJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["airWash","cooling","delayWash","drying","finish","none","preWash","rinse","spin","wash","weightSensing","wrinklePrevent"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["airWash","cooling","delayWash","drying","finish","none","preWash","rinse","spin","wash","weightSensing","wrinklePrevent"]}}}}},"required":["value"]}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"required":true}]}}},{"id":"waterSensor","version":1,"name":"Water Sensor","status":"live","attributes":{"water":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MoistureState","type":"string","enum":["dry","wet"]}},"required":["value"]}}},"commands":{}},{"id":"windowShade","version":1,"name":"Window Shade","status":"proposed","attributes":{"windowShade":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"OpenableState","type":"string","enum":["closed","closing","open","opening","partially open","unknown"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"OpenableState","type":"string","enum":["closed","closing","open","opening","partially open","unknown"]}}}}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]},"presetPosition":{"arguments":[]}}}]
-        var _capabilities={}
-        var _attr_capabilities={}
-        var _cmd_capabilities={}
-        _raw_capabilities.forEach(function(capa){
-            if(capa.attributes){
-                if(Object.keys(capa.attributes).length>0){
-                    _attr_capabilities=capa
-                }else{
-                    delete capa.attributes
-                }
+        var _raw_capabilities = [{"id":"accelerationSensor","version":1,"name":"Acceleration Sensor","status":"live","attributes":{"acceleration":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ActivityState","type":"string","enum":["active","inactive"]}},"required":["value"]}}},"commands":{}},{"id":"activityLightingMode","version":1,"name":"Activity Lighting Mode","status":"proposed","attributes":{"lightingMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["reading","writing","computer","night"]}},"required":["value"]}}},"commands":{"setLightingMode":{"arguments":[{"name":"lightingMode","schema":{"type":"string","enum":["reading","writing","computer","night"]},"required":true}]}}},{"id":"airConditionerMode","version":1,"name":"Air Conditioner Mode","status":"proposed","attributes":{"airConditionerMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"HvacMode","type":"string","enum":["auto","cool","dry","coolClean","dryClean","fanOnly","heat","heatClean","notSupported"]}},"required":["value"]}}},"commands":{"setAirConditionerMode":{"arguments":[{"name":"mode","schema":{"title":"HvacMode","type":"string","enum":["auto","cool","dry","coolClean","dryClean","fanOnly","heat","heatClean","notSupported"]},"required":true}]}}},{"id":"airQualitySensor","version":1,"name":"Air Quality Sensor","status":"live","attributes":{"airQuality":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["CAQI"],"default":"CAQI"}},"required":["value"]}}},"commands":{}},{"id":"alarm","version":1,"name":"Alarm","status":"live","attributes":{"alarm":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"AlertState","type":"string","enum":["both","off","siren","strobe"]}},"required":["value"]}}},"commands":{"both":{"arguments":[]},"off":{"arguments":[]},"siren":{"arguments":[]},"strobe":{"arguments":[]}}},{"id":"audioMute","version":1,"name":"Audio Mute","status":"live","attributes":{"mute":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MuteState","type":"string","enum":["muted","unmuted"]}},"required":["value"]}}},"commands":{"setMute":{"arguments":[{"name":"state","schema":{"title":"MuteState","type":"string","enum":["muted","unmuted"]},"required":true}]},"mute":{"arguments":[]},"unmute":{"arguments":[]}}},{"id":"audioVolume","version":1,"name":"Audio Volume","status":"proposed","attributes":{"volume":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setVolume":{"arguments":[{"name":"volume","schema":{"type":"integer","minimum":0,"maximum":100},"required":true}]},"volumeUp":{"arguments":[]},"volumeDown":{"arguments":[]}}},{"id":"battery","version":1,"name":"Battery","status":"live","attributes":{"battery":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{}},{"id":"bodyMassIndexMeasurement","version":1,"name":"Body Mass Index Measurement","status":"proposed","attributes":{"bmiMeasurement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["kg/m^2"],"default":"kg/m^2"}},"required":["value"]}}},"commands":{}},{"id":"bodyWeightMeasurement","version":1,"name":"Body Weight Measurement","status":"proposed","attributes":{"bodyWeightMeasurement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["kg","lbs","斤"],"default":"kg"}},"required":["value","unit"]}}},"commands":{}},{"id":"button","version":1,"name":"Button","status":"live","attributes":{"button":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ButtonState","type":"string","enum":["pushed","held","double","pushed_2x","pushed_3x","pushed_4x","pushed_5x","pushed_6x","down","down_2x","down_3x","down_4x","down_5x","down_6x","down_hold","up","up_2x","up_3x","up_4x","up_5x","up_6x","up_hold"]}},"required":["value"]}},"numberOfButtons":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}},"supportedButtonValues":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"ButtonState","type":"string","enum":["pushed","held","double","pushed_2x","pushed_3x","pushed_4x","pushed_5x","pushed_6x","down","down_2x","down_3x","down_4x","down_5x","down_6x","down_hold","up","up_2x","up_3x","up_4x","up_5x","up_6x","up_hold"]}}}}}},"commands":{}},{"id":"carbonDioxideMeasurement","version":1,"name":"Carbon Dioxide Measurement","status":"live","attributes":{"carbonDioxide":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value"]}}},"commands":{}},{"id":"carbonMonoxideDetector","version":1,"name":"Carbon Monoxide Detector","status":"live","attributes":{"carbonMonoxide":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"CarbonMonoxideState","type":"string","enum":["clear","detected","tested"]}},"required":["value"]}}},"commands":{}},{"id":"carbonMonoxideMeasurement","version":1,"name":"Carbon Monoxide Measurement","status":"proposed","attributes":{"carbonMonoxideLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value","unit"]}}},"commands":{}},{"id":"colorControl","version":1,"name":"Color Control","status":"live","attributes":{"color":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"String","type":"string","maxLength":255}}}},"hue":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveNumber","type":"number","minimum":0}}}},"saturation":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveNumber","type":"number","minimum":0}}}}},"commands":{"setColor":{"arguments":[{"name":"color","schema":{"title":"COLOR_MAP","type":"object","additionalProperties":false,"properties":{"hue":{"type":"number"},"saturation":{"type":"number"},"hex":{"type":"string","maxLength":7},"level":{"type":"integer"},"switch":{"type":"string","maxLength":3}}},"required":true}]},"setHue":{"arguments":[{"name":"hue","schema":{"title":"PositiveNumber","type":"number","minimum":0},"required":true}]},"setSaturation":{"arguments":[{"name":"saturation","schema":{"title":"PositiveNumber","type":"number","minimum":0},"required":true}]}}},{"id":"colorTemperature","version":1,"name":"Color Temperature","status":"live","attributes":{"colorTemperature":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":1,"maximum":30000},"unit":{"type":"string","enum":["K"],"default":"K"}},"required":["value"]}}},"commands":{"setColorTemperature":{"arguments":[{"name":"temperature","schema":{"type":"integer","minimum":1,"maximum":30000},"required":true}]}}},{"id":"contactSensor","version":1,"name":"Contact Sensor","status":"live","attributes":{"contact":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ContactState","type":"string","enum":["closed","open"]}},"required":["value"]}}},"commands":{}},{"id":"dishwasherMode","version":1,"name":"Dishwasher Mode","status":"proposed","attributes":{"dishwasherMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DishwasherMode","type":"string","enum":["auto","quick","rinse","dry"]}},"required":["value"]}}},"commands":{"setDishwasherMode":{"arguments":[{"name":"mode","schema":{"title":"DishwasherMode","type":"string","enum":["auto","quick","rinse","dry"]},"required":true}]}}},{"id":"dishwasherOperatingState","version":1,"name":"Dishwasher Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}}}},"required":["value"]}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}},"required":["value"]}},"dishwasherJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DishwasherJobState","type":"string","enum":["airwash","cooling","drying","finish","preDrain","prewash","rinse","spin","unknown","wash","wrinklePrevent"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"DishwasherJobState","type":"string","enum":["airwash","cooling","drying","finish","preDrain","prewash","rinse","spin","unknown","wash","wrinklePrevent"]}}}}},"required":["value"]}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"required":true}]}}},{"id":"doorControl","version":1,"name":"Door Control","status":"live","attributes":{"door":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["closed","closing","open","opening","unknown"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["closed","closing","open","opening","unknown"]}}}}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]}}},{"id":"dryerMode","version":1,"name":"Dryer Mode","status":"proposed","attributes":{"dryerMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DryerMode","type":"string","enum":["regular","lowHeat","highHeat"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"DryerMode","type":"string","enum":["regular","lowHeat","highHeat"]}}}}},"required":["value"]}}},"commands":{"setDryerMode":{"arguments":[{"name":"mode","schema":{"title":"DryerMode","type":"string","enum":["regular","lowHeat","highHeat"]},"required":true}]}}},{"id":"dryerOperatingState","version":1,"name":"Dryer Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}}}},"required":["value"]}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}},"required":["value"]}},"dryerJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"DryerJobState","type":"string","enum":["cooling","delayWash","drying","finished","none","weightSensing","wrinklePrevent"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"DryerJobState","type":"string","enum":["cooling","delayWash","drying","finished","none","weightSensing","wrinklePrevent"]}}}}},"required":["value"]}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"required":true}]}}},{"id":"dustSensor","version":1,"name":"Dust Sensor","status":"live","attributes":{"fineDustLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0},"unit":{"type":"string","enum":["μg/m^3"],"default":"μg/m^3"}},"required":["value"]}},"dustLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0},"unit":{"type":"string","enum":["μg/m^3"],"default":"μg/m^3"}},"required":["value"]}}},"commands":{}},{"id":"energyMeter","version":1,"name":"Energy Meter","status":"live","attributes":{"energy":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["kWh"],"default":"kWh"}},"required":["value"]}}},"commands":{}},{"id":"equivalentCarbonDioxideMeasurement","version":1,"name":"Equivalent Carbon Dioxide Measurement","status":"live","attributes":{"equivalentCarbonDioxideMeasurement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value"]}}},"commands":{}},{"id":"fanSpeed","version":1,"name":"Fan Speed","status":"proposed","attributes":{"fanSpeed":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}}},"commands":{"setFanSpeed":{"arguments":[{"name":"speed","schema":{"title":"PositiveInteger","type":"integer","minimum":0},"required":true}]}}},{"id":"filterStatus","version":1,"name":"Filter Status","status":"proposed","attributes":{"filterStatus":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["normal","replace"]}},"required":["value"]}}},"commands":{}},{"id":"formaldehydeMeasurement","version":1,"name":"Formaldehyde Measurement","status":"live","attributes":{"formaldehydeLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm","mg/m^3"],"default":"ppm"}},"required":["value","unit"]}}},"commands":{}},{"id":"garageDoorControl","version":1,"name":"Garage Door Control","status":"deprecated","attributes":{"door":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["closed","closing","open","opening","unknown"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["closed","closing","open","opening","unknown"]}}}}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]}}},{"id":"illuminanceMeasurement","version":1,"name":"Illuminance Measurement","status":"live","attributes":{"illuminance":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":100000},"unit":{"type":"string","enum":["lux"],"default":"lux"}},"required":["value"]}}},"commands":{}},{"id":"infraredLevel","version":1,"name":"Infrared Level","status":"live","attributes":{"infraredLevel":{"schema":{"title":"Percent","type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setInfraredLevel":{"arguments":[{"name":"level","schema":{"type":"number","minimum":0,"maximum":100},"required":true}]}}},{"id":"lock","version":1,"name":"Lock","status":"live","attributes":{"lock":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"LockState","type":"string","enum":["locked","unknown","unlocked","unlocked with timeout"]},"data":{"type":"object","additionalProperties":false,"properties":{"method":{"type":"string","enum":["manual","keypad","auto","command","rfid","fingerprint","bluetooth"]},"codeId":{"type":"string"},"timeout":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}}}},"required":["value"]}}},"commands":{"lock":{"arguments":[]},"unlock":{"arguments":[]}}},{"id":"mediaInputSource","version":1,"name":"Media Input Source","status":"proposed","attributes":{"inputSource":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MediaSource","type":"string","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]}},"required":["value"]}},"supportedInputSources":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MediaSource","type":"string","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]}}},"required":["value"]}}},"commands":{"setInputSource":{"arguments":[{"name":"mode","schema":{"title":"MediaSource","type":"string","enum":["AM","CD","FM","HDMI","HDMI1","HDMI2","HDMI3","HDMI4","HDMI5","HDMI6","digitalTv","USB","YouTube","aux","bluetooth","digital","melon","wifi"]},"required":true}]}}},{"id":"mediaPlaybackRepeat","version":1,"name":"Media Playback Repeat","status":"proposed","attributes":{"playbackRepeatMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["all","off","one"]}},"required":["value"]}}},"commands":{"setPlaybackRepeatMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["all","off","one"]},"required":true}]}}},{"id":"mediaPlaybackShuffle","version":1,"name":"Media Playback Shuffle","status":"proposed","attributes":{"playbackShuffle":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["disabled","enabled"]}},"required":["value"]}}},"commands":{"setPlaybackShuffle":{"arguments":[{"name":"shuffle","schema":{"type":"string","enum":["disabled","enabled"]},"required":true}]}}},{"id":"mediaPlayback","version":1,"name":"Media Playback","status":"proposed","attributes":{"playbackStatus":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["pause","play","stop","fast forward","rewind"]}}}},"supportedPlaybackCommands":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MediaPlaybackCommands","type":"string","enum":["pause","play","stop","fastForward","rewind"]}}}}}},"commands":{"setPlaybackStatus":{"arguments":[{"name":"status","schema":{"type":"string","enum":["pause","play","stop","fast forward","rewind"]},"required":true}]},"play":{"arguments":[]},"pause":{"arguments":[]},"stop":{"arguments":[]},"fastForward":{"arguments":[]},"rewind":{"arguments":[]}}},{"id":"motionSensor","version":1,"name":"Motion Sensor","status":"live","attributes":{"motion":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ActivityState","type":"string","enum":["active","inactive"]}},"required":["value"]}}},"commands":{}},{"id":"odorSensor","version":1,"name":"Odor Sensor","status":"proposed","attributes":{"odorLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}}},"commands":{}},{"id":"ovenMode","version":1,"name":"Oven Mode","status":"proposed","attributes":{"ovenMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["heating","grill","warming","defrosting"]},"constraints":{"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["heating","grill","warming","defrosting"]}}}}}},"required":["value"]}}},"commands":{"setOvenMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["heating","grill","warming","defrosting"]},"required":true}]}}},{"id":"ovenOperatingState","version":1,"name":"Oven Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["ready","running","paused"]}}}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"type":"string","enum":["ready","running","paused"]}}}}},"ovenJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["cleaning","cooking","cooling","draining","preheat","ready","rinsing"]}}}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}},"operationTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}}}},"progress":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"type":"string","enum":["stop"]},"required":true}]},"stop":{"arguments":[]}}},{"id":"ovenSetpoint","version":1,"name":"Oven Setpoint","status":"proposed","attributes":{"ovenSetpoint":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PositiveInteger","type":"integer","minimum":0}},"required":["value"]}}},"commands":{"setOvenSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"PositiveInteger","type":"integer","minimum":0},"required":true}]}}},{"id":"powerMeter","version":1,"name":"Power Meter","status":"live","attributes":{"power":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number"},"unit":{"type":"string","enum":["W"],"default":"W"}},"required":["value"]}}},"commands":{}},{"id":"powerSource","version":1,"name":"Power Source","status":"live","attributes":{"powerSource":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["battery","dc","mains","unknown"]}},"required":["value"]}}},"commands":{}},{"id":"presenceSensor","version":1,"name":"Presence Sensor","status":"live","attributes":{"presence":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"PresenceState","type":"string","enum":["present","not present"]}},"required":["value"]}}},"commands":{}},{"id":"rapidCooling","version":1,"name":"Rapid Cooling","status":"proposed","attributes":{"rapidCooling":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["off","on"]}},"required":["value"]}}},"commands":{"setRapidCooling":{"arguments":[{"name":"rapidCooling","schema":{"type":"string","enum":["off","on"]},"required":true}]}}},{"id":"refrigerationSetpoint","version":1,"name":"Refrigeration Setpoint","status":"proposed","attributes":{"refrigerationSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{"setRefrigerationSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"required":true}]}}},{"id":"relativeHumidityMeasurement","version":1,"name":"Relative Humidity Measurement","status":"live","attributes":{"humidity":{"schema":{"title":"Percent","type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{}},{"id":"robotCleanerCleaningMode","version":1,"name":"Robot Cleaner Cleaning Mode","status":"proposed","attributes":{"robotCleanerCleaningMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["auto","part","repeat","manual","stop","map"]}},"required":["value"]}}},"commands":{"setRobotCleanerCleaningMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["auto","part","repeat","manual","stop"]},"required":true}]}}},{"id":"robotCleanerMovement","version":1,"name":"Robot Cleaner Movement","status":"proposed","attributes":{"robotCleanerMovement":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["homing","idle","charging","alarm","powerOff","reserve","point","after","cleaning"]}},"required":["value"]}}},"commands":{"setRobotCleanerMovement":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["homing","idle","charging","alarm","powerOff","reserve","point","after","cleaning"]},"required":true}]}}},{"id":"robotCleanerTurboMode","version":1,"name":"Robot Cleaner Turbo Mode","status":"proposed","attributes":{"robotCleanerTurboMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["on","off","silence"]}},"required":["value"]}}},"commands":{"setRobotCleanerTurboMode":{"arguments":[{"name":"mode","schema":{"type":"string","enum":["on","off","silence"]},"required":true}]}}},{"id":"signalStrength","version":1,"name":"Signal Strength","status":"live","attributes":{"lqi":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":255}},"required":["value"]}},"rssi":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":-200,"maximum":0},"unit":{"type":"string","enum":["dBm"],"default":"dBm"}},"required":["value"]}}},"commands":{}},{"id":"smokeDetector","version":1,"name":"Smoke Detector","status":"live","attributes":{"smoke":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["clear","detected","tested"]}},"required":["value"]}}},"commands":{}},{"id":"soundSensor","version":1,"name":"Sound Sensor","status":"live","attributes":{"sound":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["detected","not detected"]}},"required":["value"]}}},"commands":{}},{"id":"switchLevel","version":1,"name":"Switch Level","status":"live","attributes":{"level":{"schema":{"title":"IntegerPercent","type":"object","additionalProperties":false,"properties":{"value":{"type":"integer","minimum":0,"maximum":100},"unit":{"type":"string","enum":["%"],"default":"%"}},"required":["value"]}}},"commands":{"setLevel":{"arguments":[{"name":"level","schema":{"type":"integer","minimum":0,"maximum":100},"required":true},{"name":"rate","schema":{"title":"PositiveInteger","type":"integer","minimum":0},"required":false}]}}},{"id":"switch","version":1,"name":"Switch","status":"live","attributes":{"switch":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"SwitchState","type":"string","enum":["on","off"]}},"required":["value"]}}},"commands":{"off":{"arguments":[]},"on":{"arguments":[]}}},{"id":"tamperAlert","version":1,"name":"Tamper Alert","status":"live","attributes":{"tamper":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["clear","detected"]}},"required":["value"]}}},"commands":{}},{"id":"temperatureMeasurement","version":1,"name":"Temperature Measurement","status":"live","attributes":{"temperature":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]}},"required":["value","unit"]}}},"commands":{}},{"id":"thermostatCoolingSetpoint","version":1,"name":"Thermostat Cooling Setpoint","status":"live","attributes":{"coolingSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{"setCoolingSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"required":true}]}}},{"id":"thermostatFanMode","version":1,"name":"Thermostat Fan Mode","status":"live","attributes":{"thermostatFanMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ThermostatFanMode","type":"string","enum":["auto","circulate","followschedule","on"]}},"required":["value"]}},"supportedThermostatFanModes":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"ThermostatFanMode","type":"string","enum":["auto","circulate","followschedule","on"]}}}}}},"commands":{"fanAuto":{"arguments":[]},"fanCirculate":{"arguments":[]},"fanOn":{"arguments":[]},"setThermostatFanMode":{"arguments":[{"name":"mode","schema":{"title":"ThermostatFanMode","type":"string","enum":["auto","circulate","followschedule","on"]},"required":true}]}}},{"id":"thermostatHeatingSetpoint","version":1,"name":"Thermostat Heating Setpoint","status":"live","attributes":{"heatingSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{"setHeatingSetpoint":{"arguments":[{"name":"setpoint","schema":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"required":true}]}}},{"id":"thermostatMode","version":1,"name":"Thermostat Mode","status":"live","attributes":{"thermostatMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ThermostatMode","type":"string","enum":["auto","cool","eco","rush hour","emergency heat","heat","off"]}},"required":["value"]}},"supportedThermostatModes":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"ThermostatMode","type":"string","enum":["auto","cool","eco","rush hour","emergency heat","heat","off"]}}}}}},"commands":{"auto":{"arguments":[]},"cool":{"arguments":[]},"emergencyHeat":{"arguments":[]},"heat":{"arguments":[]},"off":{"arguments":[]},"setThermostatMode":{"arguments":[{"name":"mode","schema":{"title":"ThermostatMode","type":"string","enum":["auto","cool","eco","rush hour","emergency heat","heat","off"]},"required":true}]}}},{"id":"thermostatOperatingState","version":1,"name":"Thermostat Operating State","status":"live","attributes":{"thermostatOperatingState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"ThermostatOperatingState","type":"string","enum":["cooling","fan only","heating","idle","pending cool","pending heat","vent economizer"]},"constraints":{"title":"EnumConstraint","properties":{"values":{"type":"array"}}}},"required":["value"]}}},"commands":{}},{"id":"thermostatSetpoint","version":1,"name":"Thermostat Setpoint","status":"deprecated","attributes":{"thermostatSetpoint":{"schema":{"title":"Temperature","type":"object","additionalProperties":false,"properties":{"value":{"title":"TemperatureValue","type":"number","minimum":-460,"maximum":10000},"unit":{"title":"TemperatureUnit","type":"string","enum":["F","C"]},"constraints":{"title":"NumberConstraint","type":"object","additionalProperties":false,"properties":{"min":{"type":"number"},"max":{"type":"number"}}}},"required":["value","unit"]}}},"commands":{}},{"id":"tone","version":1,"name":"Tone","status":"live","attributes":{},"commands":{"beep":{"arguments":[]}}},{"id":"tvChannel","version":1,"name":"Tv Channel","status":"proposed","attributes":{"tvChannel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"String","type":"string","maxLength":255}}}}},"commands":{"setTvChannel":{"arguments":[{"name":"channel","schema":{"title":"String","type":"string","maxLength":255},"required":true}]},"channelUp":{"arguments":[]},"channelDown":{"arguments":[]}}},{"id":"tvocMeasurement","version":1,"name":"Tvoc Measurement","status":"live","attributes":{"tvocLevel":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":1000000},"unit":{"type":"string","enum":["ppm"],"default":"ppm"}},"required":["value","unit"]}}},"commands":{}},{"id":"ultravioletIndex","version":1,"name":"Ultraviolet Index","status":"live","attributes":{"ultravioletIndex":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"number","minimum":0,"maximum":255}},"required":["value"]}}},"commands":{}},{"id":"valve","version":1,"name":"Valve","status":"live","attributes":{"valve":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["closed","open"]}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]}}},{"id":"voltageMeasurement","version":1,"name":"Voltage Measurement","status":"live","attributes":{"voltage":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Number","type":"number"},"unit":{"type":"string","enum":["V"],"default":"V"}},"required":["value"]}}},"commands":{}},{"id":"washerMode","version":1,"name":"Washer Mode","status":"proposed","attributes":{"washerMode":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"WasherMode","type":"string","enum":["regular","heavy","rinse","spinDry"]}},"required":["value"]}}},"commands":{"setWasherMode":{"arguments":[{"name":"mode","schema":{"title":"WasherMode","type":"string","enum":["regular","heavy","rinse","spinDry"]},"required":true}]}}},{"id":"washerOperatingState","version":1,"name":"Washer Operating State","status":"proposed","attributes":{"machineState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}},"required":["value"]}},"supportedMachineStates":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"array","items":{"title":"MachineState","type":"string","enum":["pause","run","stop"]}}}}},"washerJobState":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"type":"string","enum":["airWash","cooling","delayWash","drying","finish","none","preWash","rinse","spin","wash","weightSensing","wrinklePrevent"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"type":"string","enum":["airWash","cooling","delayWash","drying","finish","none","preWash","rinse","spin","wash","weightSensing","wrinklePrevent"]}}}}},"required":["value"]}},"completionTime":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"Iso8601Date","type":"string","pattern":"^(?:[1-9]\\d{3}-?(?:(?:0[1-9]|1[0-2])-?(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-?(?:29|30)|(?:0[13578]|1[02])-?31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-?02-?29)T(?:[01]\\d|2[0-3]):?[0-5]\\d:?[0-5]\\d(?:\\.\\d{3})?(?:Z|[+-][01]\\d(?::?[0-5]\\d)?)$"}},"required":["value"]}}},"commands":{"setMachineState":{"arguments":[{"name":"state","schema":{"title":"MachineState","type":"string","enum":["pause","run","stop"]},"required":true}]}}},{"id":"waterSensor","version":1,"name":"Water Sensor","status":"live","attributes":{"water":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"MoistureState","type":"string","enum":["dry","wet"]}},"required":["value"]}}},"commands":{}},{"id":"windowShade","version":1,"name":"Window Shade","status":"proposed","attributes":{"windowShade":{"schema":{"type":"object","additionalProperties":false,"properties":{"value":{"title":"OpenableState","type":"string","enum":["closed","closing","open","opening","partially open","unknown"]},"constraints":{"type":"object","additionalProperties":false,"properties":{"values":{"type":"array","items":{"title":"OpenableState","type":"string","enum":["closed","closing","open","opening","partially open","unknown"]}}}}},"required":["value"]}}},"commands":{"close":{"arguments":[]},"open":{"arguments":[]},"presetPosition":{"arguments":[]}}}]
+        var _capabilities = {}
+        _raw_capabilities.forEach(function (capa) {
+            if (capa.attributes && Object.keys(capa.attributes).length == 0) {
+                delete capa.attributes
             }
             if (capa.commands && Object.keys(capa.commands).length == 0) {
                 delete capa.commands
-            } else {
-                _attr_capabilities = capa
             }
-
             if (capa.status === 'live' || capa.status === 'proposed') {
                 _capabilities[capa.id] = capa
             }
         })
-        var _capabilityList = {cmd: [], attr: []};
 
-        var _jsonclone = function (obj) {
-            try {
-                return JSON.parse(JSON.stringify(obj))
-            } catch (err) {
-                console.log(err)
-                return {}
-            }
-        }
-
-        var _setUnitItem = function (obj, types) {
-            for (key in obj) {
-                if (typeof (obj[key]) === "object") {
-                    _setUnitItem(obj[key], types);
-                } else {
-                    if (types[obj[key]]) {
-                        obj[key] = types[obj[key]];
-                    }
-                }
-            }
-        };
-
-        this.getArgType = function (type) {
-            var types = _jsonclone(_argTypes[type]);
-            _setUnitItem(types, _argTypes);
-            return types;
-        };
-        this.getCmdCapabilities = function () {
-            this.getCapabilityList('cmd')
-        }
-        this.getAttrCapabilities = function () {
-            this.getCapabilityList('attr')
-        }
-        this.getCapabilityList = function (target) {
-            // var target = isAction ? "cmd" : "attr";
-            if (_capabilityList[target].length != 0) {
-                return _capabilityList[target];
-            }
-            for (cpName in _capabilities) {
-                if (_capabilities[cpName].hasOwnProperty(target)) {
-                    _capabilityList[target].push(cpName);
-                }
-            }
-            return _capabilityList[target];
-        };
         this.getAttributeSchema = function (capabilityId, attributeId) {
-            if (_capabilities[capabilityId] && _capabilities[capabilityId].attributes &&  _capabilities[capabilityId].attributes[attributeId]) {
+            if (_capabilities[capabilityId] && _capabilities[capabilityId].attributes && _capabilities[capabilityId].attributes[attributeId]) {
                 return _capabilities[capabilityId].attributes[attributeId].schema || {}
             } else {
                 return {}
@@ -413,12 +355,6 @@
                 return {}
             }
         }
-        this.getAttrCapabilities = function () {
-            return _attr_capabilities
-        }
-        this.getCmdsCapabilities = function () {
-            return _cmd_capabilities
-        }
 
         this.getCapability = function (cp) {
             return _capabilities[cp] || {}
@@ -427,6 +363,50 @@
         this.getAllCapabilities = function () {
             return _capabilities;
         };
+
+        var _jsonclone = function (obj) {
+            try {
+                return JSON.parse(JSON.stringify(obj))
+            } catch (err) {
+                console.log(err)
+                return {}
+            }
+        }
+        // var _capabilityList = {cmd: [], attr: []};
+        // var _setUnitItem = function (obj, types) {
+        //     for (key in obj) {
+        //         if (typeof (obj[key]) === "object") {
+        //             _setUnitItem(obj[key], types);
+        //         } else {
+        //             if (types[obj[key]]) {
+        //                 obj[key] = types[obj[key]];
+        //             }
+        //         }
+        //     }
+        // };
+        // this.getArgType = function (type) {
+        //     var types = _jsonclone(_argTypes[type]);
+        //     _setUnitItem(types, _argTypes);
+        //     return types;
+        // };
+        // this.getCmdCapabilities = function () {
+        //     this.getCapabilityList('cmd')
+        // }
+        // this.getAttrCapabilities = function () {
+        //     this.getCapabilityList('attr')
+        // }
+        // this.getCapabilityList = function (target) {
+        //     // var target = isAction ? "cmd" : "attr";
+        //     if (_capabilityList[target].length != 0) {
+        //         return _capabilityList[target];
+        //     }
+        //     for (cpName in _capabilities) {
+        //         if (_capabilities[cpName].hasOwnProperty(target)) {
+        //             _capabilityList[target].push(cpName);
+        //         }
+        //     }
+        //     return _capabilityList[target];
+        // };
     }
 
     var validateAutomationNext = function (id) {
@@ -449,6 +429,7 @@
     const ST_DEVICE_PROFILE = 'device-profile';
     const ST_MY_DEVICE = 'installed-device';
     const ST_AUTOMATION = 'automation';
+    const ST_NODE_VERSION = 200330
     var stDevice = {};
 
     RED.nodes.registerType(ST_DEVICE_PROFILE, {
@@ -457,6 +438,7 @@
         color: "rgb(168,168,168)",
         defaults: {
             name: {value: "", required: true},
+            device:{},
             capabilityId: {value: "", required: true}
         },
         inputs: 0,
@@ -478,12 +460,6 @@
                     $("<option></option>").val(capability).text(capability).appendTo(("#node-input-capabilityId"))
                 })
             $("#node-input-capabilityId").val(NODE.capabilityId);
-        },
-        oneditsave: function () {
-            var NODE = this;
-            NODE.device = {}
-            NODE.device.capabilities = []
-            NODE.device.capabilities.push(NODE.capabilityId)
         }
     });
 
@@ -738,7 +714,6 @@
             {v: "gte", t: ">="}
         ]
     }
-    var operators = []
 
     /*
          Node Editor창을 열었을때 초기화되는 함수로 Node내에 동작하는 기능함수들이
@@ -764,7 +739,6 @@
             THING.form.deviceNodeId.on("change", function () {
                 THING.initCapabilitySelect()
                 THING.initAttributeSelect()
-                THING.node.attributeInfoPopover.refreshContent()
                 THING.initAttributeContainer()
             })
         })
@@ -773,7 +747,6 @@
             THING.form.capabilityId.off("change")
             THING.form.capabilityId.on("change", function () {
                 THING.initAttributeSelect()
-                THING.node.attributeInfoPopover.refreshContent()
                 THING.initAttributeContainer()
             })
         })
@@ -781,7 +754,6 @@
         THING.form.attributeId.on("mouseover", function () {
             THING.form.attributeId.off("change")
             THING.form.attributeId.on("change", function () {
-                THING.node.attributeInfoPopover.refreshContent()
                 THING.initAttributeContainer()
             })
         })
@@ -793,6 +765,9 @@
             deviceNodeIdSelect.html('')
             var deviceNodeList = []
             deviceNodeList = RED.nodes.filterNodes({z: this.node.z, type: ST_DEVICE_PROFILE})
+            deviceNodeList.map(function(node){
+                    node.device={capabilities:[node.capabilityId]}
+            })
             if (this.type != ST_EVENT_DEVICE) {
                 deviceNodeList = deviceNodeList.concat(RED.nodes.filterNodes({z: this.node.z, type: ST_MY_DEVICE}))
             }
@@ -808,7 +783,7 @@
                 }
             }).forEach(function (node) {
                 if (node.type == ST_DEVICE_PROFILE) {
-                    deviceNodeIdSelect.prepend($("<option></option>").val(node.id).data('device', node.device).text(node.name + ":" + node.capability))
+                    deviceNodeIdSelect.prepend($("<option></option>").val(node.id).data('device', node.device).text(node.name + ":" + node.capabilityId))
                 } else if (node.type == ST_MY_DEVICE) {
                     deviceNodeIdSelect.append($("<option></option>").val(node.id).data('device', node.device).text("(My)" + node.label))
                 }
@@ -826,9 +801,9 @@
 
             if (device && device.capabilities) {
                 var target = this.node.target;
-                device.capabilities.forEach(function(capabilityId){
+                device.capabilities.forEach(function (capabilityId) {
                     //TODO:SAVE
-                    if(profiles.getCapability(capabilityId).hasOwnProperty(target)){
+                    if (profiles.getCapability(capabilityId).hasOwnProperty(target)) {
                         capabilityIdSelect.append($("<option></option>").val(capabilityId).text(capabilityId))
                     }
                 })
@@ -873,7 +848,6 @@
             }
             if (initAttributeId) {
                 attributeIdSelect.val(initAttributeId)
-                this.node.attributeInfoPopover.refreshContent()
             }
         },
         //type값에 따른 페이지 초기화 함수
@@ -888,7 +862,7 @@
                 }
             }
 
-            if(this.form.attributeId.val() && this.form.container.editableList('items').length==0){
+            if (this.form.attributeId.val() && this.form.container.editableList('items').length == 0) {
                 this.form.container.editableList('addItem')
             }
         },
@@ -928,6 +902,45 @@
         }
     };
 
+    //convert RGB value to HSL value
+    function rgbToHsl(hex) {
+        if (/^#[0-9a-f]{6}$/g.test(hex) == false) {
+            return {hue: 0, saturation: 0, lightness: 0}
+        }
+        var r = parseInt(hex.substring(1, 3), 16) / 255
+        var g = parseInt(hex.substring(3, 5), 16) / 255
+        var b = parseInt(hex.substring(5, 7), 16) / 255
+        var max = Math.max(r, g, b)
+        var min = Math.min(r, g, b)
+        var hue
+        if (max == min) {
+            hue = 0
+        } else if (r == max) {
+            hue = 0 + (g - b) / (max - min)
+        } else if (g == max) {
+            hue = 2 + (b - r) / (max - min)
+        } else {
+            hue = 4 + (r - g) / (max - min)
+        }
+        hue *= 60
+
+        var lightness = (max + min) / 2
+
+        var saturation
+        if (lightness == 0 || lightness == 1) {
+            saturation = 0
+        } else {
+            a1 = 2 * (max - lightness)
+            a2 = 1 - Math.abs(2 * lightness - 1)
+            saturation = a1 / a2
+        }
+
+        hue = Math.round(hue / 360 * 100)
+        saturation = Math.round(saturation * 100)
+        lightness = Math.round(lightness * 100)
+        return {hex: hex, hue: hue, saturation: saturation, lightness: lightness}
+    }
+
     DeviceNode.prototype = {
         color: "rgb(170, 75, 205)",
         category: "Samsung AutomationStudio",
@@ -947,33 +960,33 @@
             var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
             NODE.target = target
 
-            this.attributeInfoPopover = RED.popover.create({
-                target: $('#attribute-info'),
-                content: '',
-                trigger: 'hover',
-                // autoClose: 2000,
-                direction: 'right',
-                delay: {show:10}
-            })
-            this.attributeInfoPopover.refreshContent = function(){
-                var capabilityId = $('#node-input-capabilityId').val()
-                var attributeId = $('#node-input-attributeId').val()
-                if(capabilityId && attributeId){
-                    if(target=='attributes'){
-                        var attribute = profiles.getAttributeSchema(capabilityId,attributeId)
-                        if(attribute){
-                            var _content = $('<pre></pre>').css('background-color','#333').html(JSON.stringify({[attributeId]:attribute.properties.value},null,'  '))
-                            this.setContent(_content)
-                        }
-                    }else{
-                        var command = profiles.getCommandArguments(capabilityId,attributeId)
-                        if(command){
-                            var _content = $('<pre></pre>').css('background-color','#333').html(JSON.stringify({[attributeId]:command.arguments},null,'  '))
-                            this.setContent(_content)
-                        }
-                    }
-                }
-            }
+            // this.attributeInfoPopover = RED.popover.create({
+            //     target: $('#attribute-info'),
+            //     content: '',
+            //     trigger: 'hover',
+            //     // autoClose: 2000,
+            //     direction: 'right',
+            //     delay: {show: 10}
+            // })
+            // this.attributeInfoPopover.refreshContent = function () {
+            //     var capabilityId = $('#node-input-capabilityId').val()
+            //     var attributeId = $('#node-input-attributeId').val()
+            //     if (capabilityId && attributeId) {
+            //         if (target == 'attributes') {
+            //             var attribute = profiles.getAttributeSchema(capabilityId, attributeId)
+            //             if (attribute) {
+            //                 var _content = $('<pre></pre>').css('background-color', '#333').html(JSON.stringify({[attributeId]: attribute.properties.value}, null, '  '))
+            //                 this.setContent(_content)
+            //             }
+            //         } else {
+            //             var command = profiles.getCommandArguments(capabilityId, attributeId)
+            //             if (command) {
+            //                 var _content = $('<pre></pre>').css('background-color', '#333').html(JSON.stringify({[attributeId]: command.arguments}, null, '  '))
+            //                 this.setContent(_content)
+            //             }
+            //         }
+            //     }
+            // }
 
             $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
                 addButton: false,
@@ -982,48 +995,20 @@
                     var commandId = $("#node-input-attributeId option:selected").val()
                     var arguments = profiles.getCommandArguments(capabilityId, commandId)
 
-                    if(arguments){}
-
                     var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
                     $('<span>', {class: "capaId"}).appendTo(row).text(capabilityId)
                     $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row)
                     $('<span>', {class: "attrId"}).appendTo(row).text(commandId)
-                    var argNames = arguments.map(function(arg){
+                    var argNames = arguments.map(function (arg) {
                         return arg.name
                     }).join(', ')
-                    $('<span>').appendTo(row).text(' ( '+argNames+' )')
+                    $('<span>').appendTo(row).text(' ( ' + argNames + ' )')
 
-                    if(arguments.length > 0){
-                        arguments.forEach(function(arg){
-                            if (arg.schema.type == 'object') {
-                                if (arg.schema.properties){
-
-                                    Object.entries(arg.schema.properties).forEach(function ([propertyId,property]) {
-                                        var row2 = $('<div/>', {style: "height:auto;margin-left:auto;width:fit-content;"}).appendTo(row);
-                                        row2.text(propertyId+' : ')
-                                        valueField = $("<input/>",{style: "width:auto;margin-right:5px;",placeholder:holder}).appendTo(row2)
-                                        var valueType =property.type
-
-                                        if (valueType == 'integer' || valueType == 'number') {
-                                            valueField.typedInput({default: "num", types: ["num"]})
-                                        } else {
-                                            valueField.typedInput({default: "str", types: ["str"]})
-                                            // if(property.hasOwnProperty('maxLength')){
-                                            //     valueField.typedInput('validate',function(value){
-                                            //         return value && value.length <= property.maxLength
-                                            //     })
-                                            // }
-                                        }
-                                        valueField.attr('argName',propertyId)//use propertyID as argument name for set value
-                                        valueField.attr('argType',arg.schema.type)
-                                        // valueField.attr('propId',propertyId)
-                                        valueField.attr('propType',property.type)
-                                        valueField.addClass('argValue')
-                                    })
-                                }
-                            }else {
+                    if (arguments.length > 0) {
+                        arguments.forEach(function (arg) {
+                            if (arg.schema.type == 'string' || arg.schema.type == 'number' || arg.schema.type == 'integer') {
                                 var row2 = $('<div/>', {style: "height:auto;margin-left:auto;width:fit-content;"}).appendTo(row);
-                                row2.text(arg.name+' : ')
+                                row2.text(arg.name + ' : ')
                                 var valueField;
                                 if (arg.schema.enum) {
                                     valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row2);
@@ -1033,46 +1018,84 @@
                                     })
                                 } else {
                                     var holder = arg.schema.title || arg.name
-                                    if(arg.schema.hasOwnProperty('minimum') || arg.schema.hasOwnProperty('maximum')){
-                                        holder+='('
-                                        holder+=arg.schema.hasOwnProperty('minimum')?arg.schema.minimum:' '
-                                        holder+='~'
-                                        holder+=arg.schema.hasOwnProperty('maximum')?arg.schema.maximum:' '
-                                        holder+=')'
+                                    if (arg.schema.hasOwnProperty('minimum') || arg.schema.hasOwnProperty('maximum')) {
+                                        holder += '('
+                                        holder += arg.schema.hasOwnProperty('minimum') ? arg.schema.minimum : ' '
+                                        holder += '~'
+                                        holder += arg.schema.hasOwnProperty('maximum') ? arg.schema.maximum : ' '
+                                        holder += ')'
                                     }
 
-                                    valueField = $("<input/>",{style: "width:auto;margin-right:5px;",placeholder:holder}).appendTo(row2)
+                                    valueField = $("<input/>", {style: "width:auto;margin-right:5px;", placeholder: holder}).appendTo(row2)
 
-                                    var valueType =arg.schema.type
+                                    var valueType = arg.schema.type
                                     if (valueType == 'integer' || valueType == 'number') {
                                         valueField.typedInput({default: "num", types: ["num"]})
                                     } else {
                                         valueField.typedInput({default: "str", types: ["str"]})
                                     }
                                 }
-                                valueField.attr('argName',arg.name)
-                                valueField.attr('argType',arg.schema.type)
+                                valueField.attr('argName', arg.name)
+                                valueField.attr('argType', arg.schema.type)
                                 valueField.addClass('argValue')
+                            } else if (arg.schema.title == 'COLOR_MAP') {
+                                var row2 = $('<div/>', {style: "height:auto;margin-left:auto;width:fit-content;"}).appendTo(row);
+                                row2.text('color : ')
+                                var colorField = $("<input/>", {
+                                    argName: "color",
+                                    argType: "object",
+                                    propId: 'hex',
+                                    propType: 'string',
+                                    class: 'argValue',
+                                    type: 'color',
+                                    value: "#3366ff",
+                                    style: "width:150px;margin-right:5px;"
+                                }).appendTo(row2)
+                            } else if (arg.schema.type == 'object') {
+                                if (arg.schema.properties) {
+
+                                    Object.entries(arg.schema.properties).forEach(function ([propertyId, property]) {
+                                        var row2 = $('<div/>', {style: "height:auto;margin-left:auto;width:fit-content;"}).appendTo(row);
+                                        row2.text(propertyId + ' : ')
+                                        valueField = $("<input/>", {style: "width:auto;margin-right:5px;", placeholder: holder}).appendTo(row2)
+                                        var valueType = property.type
+
+                                        if (valueType == 'integer' || valueType == 'number') {
+                                            valueField.typedInput({default: "num", types: ["num"]})
+                                        } else {
+                                            valueField.typedInput({default: "str", types: ["str"]})
+                                        }
+                                        valueField.attr('argName', arg.name)//use propertyID as argument name for set value
+                                        valueField.attr('argType', arg.schema.type)
+                                        valueField.attr('propId', propertyId)
+                                        valueField.attr('propType', property.type)
+                                        valueField.addClass('argValue')
+                                    })
+                                }
                             }
                         })
                     }
 
-                    if(data && data.args){
-                        data.args.forEach(function(arg){
-                            var valueField = container.find('.argValue[argName='+arg.name+']')
-                            if(valueField.prop('tagName')== 'INPUT'){
-                                valueField.typedInput('value',arg.value)
+                    if (data && data.args) {
+                        data.args.forEach(function (arg) {
+                            var valueField
+                            if(arg.hasOwnProperty('propId')){
+                                valueField = container.find('.argValue[argName='+arg.name+'][propId='+arg.propId+']')
                             }else{
+                                valueField = container.find('.argValue[argName=' + arg.name + ']')
+                            }
+                            if (valueField.hasClass('red-ui-typedInput')) {
+                                valueField.typedInput('value', arg.value)
+                            } else {
                                 valueField.val(arg.value)
                             }
                         })
                     }
 
-                    // if (this.type == ST_COMMAND_DEVICE) {//Device의 usage가 Action 일 경우는 output을 1개로 한다.
-                        if ($("#cmd-list-container").editableList('items').length > 1) {
-                            $("#cmd-list-container").find(".outputSpan").remove();
-                        }
-                    // }
+                    if ($("#cmd-list-container").editableList('items').length > 1) {
+                        $("#cmd-list-container").find(".outputSpan").remove();
+                    }
+
                 },
                 resizeItem: function (container) {
                     eventHandler.resizeRule(container);
@@ -1091,91 +1114,83 @@
                     var attributeId = $("#node-input-attributeId option:selected").val()
                     var attribute = profiles.getAttributeSchema(capabilityId, attributeId)
 
-                    if(attribute){
-                        var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
+                    var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
 
-                        var attributeIdField = $('<input/>', {
-                            capaId:capabilityId,
-                            class: "attrId",
-                            style: "width:auto; margin-right:5px;",
-                            type: "text",
-                            readonly: "true"
-                        }).appendTo(row).val(attributeId)
-                        var operatorField = $('<select/>', {
-                            class: "attrOperator",
-                            style: "width:auto; margin-right: 5px; text-align: center;"
-                        }).appendTo(row)
-                        if (operator[attribute.properties.value.type]) {
-                            operator[attribute.properties.value.type].forEach(function (op) {
-                                operatorField.append($("<option></option>").val(op.v).text(op.t))
-                            })
+                    var attributeIdField = $('<input/>', {
+                        class: "attrId",
+                        capaId: capabilityId,
+                        style: "width:auto; margin-right:5px;max-width:35%",
+                        type: "text",
+                        readonly: "true"
+                    }).appendTo(row).val(attributeId)
+                    var operatorField = $('<select/>', {class: "attrOperator", style: "width:auto; margin-right: 5px; text-align: center;"}).appendTo(row)
+                    if (operator[attribute.properties.value.type]) {
+                        operator[attribute.properties.value.type].forEach(function (op) {
+                            operatorField.append($("<option></option>").val(op.v).text(op.t))
+                        })
+                    }
+                    //attribute properties.value
+                    var valueField;
+                    if (attribute.properties.value.type == 'array') {
+                        valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
+                        attribute.properties.value.items.enum.forEach(function (value) {
+                            valueField.append($("<option></option>").val(value).text(value))
+                        })
+                    } else if (attribute.properties.value.enum) {
+                        valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
+
+                        attribute.properties.value.enum.forEach(function (value) {
+                            valueField.append($("<option></option>").val(value).text(value))
+                        })
+                    } else {
+                        var holder = attribute.properties.value.title || attributeId
+                        if (attribute.properties.value.hasOwnProperty('minimum') || attribute.properties.value.hasOwnProperty('maximum')) {
+                            holder += '('
+                            holder += attribute.properties.value.hasOwnProperty('minimum') ? attribute.properties.value.minimum : ' '
+                            holder += '~'
+                            holder += attribute.properties.value.hasOwnProperty('maximum') ? attribute.properties.value.maximum : ' '
+                            holder += ')'
                         }
-                        //attribute properties.value
-                        var valueField;
-                        if (attribute.properties.value.type == 'array') {
-                            valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
-                            attribute.properties.value.items.enum.forEach(function (value) {
-                                valueField.append($("<option></option>").val(value).text(value))
-                            })
-                        } else if (attribute.properties.value.enum) {
-                            valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
 
-                            attribute.properties.value.enum.forEach(function (value) {
-                                valueField.append($("<option></option>").val(value).text(value))
-                            })
+                        valueField = $("<input/>", {style: "width:auto;margin-right:5px;", placeholder: holder}).appendTo(row)
+
+                        var valueType = attribute.properties.value.type
+                        if (valueType == 'integer' || valueType == 'number') {
+                            valueField.typedInput({default: "num", types: ["num"]})
                         } else {
-                            var holder = attribute.properties.value.title || attributeId
-                            if( attribute.properties.value.hasOwnProperty('minimum') ||  attribute.properties.value.hasOwnProperty('maximum')){
-                                holder+='('
-                                holder+= attribute.properties.value.hasOwnProperty('minimum')? attribute.properties.value.minimum:' '
-                                holder+='~'
-                                holder+= attribute.properties.value.hasOwnProperty('maximum')? attribute.properties.value.maximum:' '
-                                holder+=')'
-                            }
+                            valueField.typedInput({default: "str", types: ["str"]})
+                        }
+                    }
+                    valueField.attr('valueType', attribute.properties.value.type)
+                    valueField.addClass('attrValue')
 
-                            valueField = $("<input/>",{style: "width:auto;margin-right:5px;",placeholder:holder}).appendTo(row)
-
-                            var valueType = attribute.properties.value.type
-                            if (valueType == 'integer' || valueType == 'number') {
-                                valueField.typedInput({default: "num", types: ["num"]})
+                    //'unit' always has string enum
+                    var unitField
+                    if (attribute.properties.unit && attribute.properties.unit.enum) {
+                        unitField = $("<select/>", {class: 'attrUnit', style: "width:auto;margin-right:5px;"}).appendTo(row);
+                        attribute.properties.unit.enum.forEach(function (value) {
+                            unitField.append($('<option>').val(value).text(value))
+                        })
+                        if (attribute.properties.unit.default) {
+                            unitField.val(attribute.properties.unit.default)
+                        }
+                    }
+                    var portSpan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
+                    portSpan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
+                    if (data) {
+                        data.operator && operatorField.val(data.operator)
+                        if (data.value) {
+                            if (valueField.prop('tagName') == 'INPUT') {
+                                valueField.typedInput('value', data.value)
                             } else {
-                                valueField.typedInput({default: "str", types: ["str"]})
+                                valueField.val(data.value)
                             }
                         }
-                        valueField.attr('valueType', attribute.properties.value.type)
-                        valueField.addClass('attrValue')
-
-                        //'unit' always has string enum
-                        var unitField
-                        if (attribute.properties.unit && attribute.properties.unit.enum) {
-                            unitField = $("<select/>", {class: 'attrUnit', style: "width:auto;margin-right:5px;"}).appendTo(row);
-                            attribute.properties.unit.enum.forEach(function (value) {
-                                unitField.append($('<option>').val(value).text(value))
-                            })
-                            if (attribute.properties.unit.default) {
-                                unitField.val(attribute.properties.unit.default)
-                            }
-                        }
-
-                        var finalspan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
-                        finalspan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
-
-                        if(data){
-                            data.operator && operatorField.val(data.operator)
-                            if(data.value){
-                                if(valueField.prop('tagName')== 'INPUT'){
-                                    valueField.typedInput('value',data.value)
-                                }else{
-                                    valueField.val(data.value)
-                                }
-                            }
-                            data.value && valueField.find('.attrValue').val(data.value)
-                            data.unit && unitField && unitField.val(data.unit)
-                        }
+                        data.value && valueField.find('.attrValue').val(data.value)
+                        data.unit && unitField && unitField.val(data.unit)
                     }
                 },
                 resizeItem: function (container) {
-                    // eventHandler.resizeRule(container);
                 },
                 removeItem: function (opt) {
                 },
@@ -1198,7 +1213,7 @@
         /*편집 대화 상자 완료처리시 호출*/
         oneditsave: function () {
             var NODE = this;
-            NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId||''
+            NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId || ''
 
             NODE.rules = [];
 
@@ -1206,17 +1221,26 @@
                 var rule = {};
                 rule.capaId = item.find('.capaId').text()
                 rule.attrId = item.find(".attrId").text();
-                rule.args=[];
-                item.find(".argValue").each(function(idx,_arg){
+                rule.args = [];
+                item.find(".argValue").each(function (idx, _arg) {
                     var arg = {}
 
-                    arg.name=$(_arg).attr('argName')
-                    arg.type=$(_arg).attr('argType')
-                    if($(_arg).attr('propType')){
+                    arg.name = $(_arg).attr('argName')
+                    arg.type = $(_arg).attr('argType')
+                    arg.value = $(_arg).val()
+                    if ($(_arg).attr('propId')) {
+                        arg.propId = $(_arg).attr('propId')
+                    }
+                    if ($(_arg).attr('propType')) {
                         arg.propType = $(_arg).attr('propType')
                     }
-                    arg.value=$(_arg).val()
                     rule.args.push(arg)
+
+                    if (arg.name == 'color') {
+                        var hsl = rgbToHsl(arg.value)
+                        rule.args.push({name: 'color', type: 'object', propId: 'hue', propType: 'number', value: hsl.hue})
+                        rule.args.push({name: 'color', type: 'object', propId: 'saturation', propType: 'number', value: hsl.saturation})
+                    }
                 });
                 NODE.rules.push(rule)
             })
@@ -1233,7 +1257,7 @@
                 NODE.rules.push(rule)
             })
 
-            this.outputs=NODE.rules.length||1
+            this.outputs = NODE.rules.length || 1
         },
         //editor height 변화에 따라 attr-container의 height를 조정한다.
         oneditresize: function (size) {
@@ -1292,13 +1316,13 @@
                     return !!val && isValidDevice
                 }
             },
-            deviceId:{value:""},
-            componentID:{vlaue:""},
+            deviceId: {value: ""},
+            componentID: {value: ""},
             capabilityId: {value: "", required: true},
-            attributeId: {value: "",required: true},
-            // sensorCapaDs: {value: [{isInit: true,col1: "",col2: "",hidden2: "",col3: "",argType: ""}]},//초기화용 배열임을 판단하기위해 isInit값 추가
-            rules: {value: [{isInit: true,col1: "",hidden1: "",col2: "",col3: "",col4: "",col5: "",col6: ""}]},
-            outputs:{value:1}
+            attributeId: {value: "", required: true},
+            rules: {value: [{isInit: true, col1: "", hidden1: "", col2: "", col3: "", col4: "", col5: "", col6: ""}]},
+            ver: {value: ST_NODE_VERSION},
+            outputs: {value: 1}
         }
         this.defaults = defaultsConfig
     }
