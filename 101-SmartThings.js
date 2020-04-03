@@ -38,17 +38,6 @@ module.exports = function (RED) {
         next();
     }
 
-    var operator = {
-        "eq": "==",
-        "neq": "!=",
-        "lt": "<",
-        "lte": "<=",
-        "gt": ">",
-        "gte": ">=",
-        "in":"in",
-        "nin":"nin"
-    };
-
     var operators = {
         'eq': function (a, b) {
             return a == b;
@@ -76,9 +65,9 @@ module.exports = function (RED) {
         }
     };
 
-    var usedDeviceConfig = [];
-    var eventDeviceConfig = [];
-    var actionDeviceConfig = [];
+    var usedDeviceNodes = [];
+    var eventDeviceNodes = [];
+    var actionDeviceNodes = [];
     
     var OneApi = {
         executeDeleteSubscription: function (keyParam, token) {
@@ -154,7 +143,7 @@ module.exports = function (RED) {
         this.url = n.url;
         this.publickey = n.publickey;
 
-        var node = this;
+        var NODE = this;
 
         var EventSectionID;
         var Eventcapability;
@@ -166,9 +155,9 @@ module.exports = function (RED) {
         });
 
         // 사용하는 config node id 저장
-        usedDeviceConfig = []
-        eventDeviceConfig = []
-        actionDeviceConfig = []
+        usedDeviceNodes = []
+        eventDeviceNodes = []
+        actionDeviceNodes = []
 
         /* ---------------------------------------------------------------------------------- */
         /* queue 파라미터에 해당하는 연결 노드들에 대한 BFS 탐색을 처리한다.                       */
@@ -177,76 +166,114 @@ module.exports = function (RED) {
         var queue = [];
         queue.push(this.id);
 
-        var checkVisited = {};
-        checkVisited[this.id] = true;
+        // var checkVisited = {};
+        // checkVisited[this.id] = true;
 
-        var checkSet = {};
+        // var checkSet = {};
 
+        var visited = new Set([this.id])
+        var sectionConfig={}
+        var subscriptionDevices=[]
         while (queue.length > 0) {
             var curID = queue.shift();
             var node = allnodes[curID];
             if (/^(event|status|command)-device$/g.test(node.type) && allnodes[node.deviceNodeId] && allnodes[node.deviceNodeId].type === ST_DEVICE_PROFILE) {
-                if (node.deviceNodeId in checkSet) {  // 이미 추가된 경우
-                    //skip
-                } else if(node.deviceNodeId && node.deviceNodeId !='') {
-                    usedDeviceConfig.push(node.deviceNodeId); /* Config id 저장*/
-                    checkSet[node.deviceNodeId] = true;
-                    if (node.type == ST_EVENT_DEVICE) {
-                        Eventattribute = node.attributeId;
+                if(!sectionConfig.hasOwnProperty(node.deviceNodeId)){
+                    var deviceNode = allnodes[node.deviceNodeId]
+
+                    sectionConfig[deviceNode.id]={
+                        name: deviceNode.name,
+                        settings: [
+                            {
+                                id: deviceNode.id,
+                                name: deviceNode.name,
+                                description: deviceNode.name + ":" + deviceNode.capabilityId,
+                                type: 'DEVICE',
+                                required: true,
+                                multiple: false,
+                                capabilities: [deviceNode.capabilityId],
+                                permissions: ['r']
+                            }
+                        ]
                     }
                 }
-                if(node.type == ST_EVENT_DEVICE && eventDeviceConfig.indexOf(node.deviceNodeId)<0) {
-                    eventDeviceConfig.push(node.deviceNodeId);
+                if(node.type == ST_COMMAND_DEVICE && sectionConfig[node.deviceNodeId].settings[0].permissions.includes('x') == false) {
+                    sectionConfig[node.deviceNodeId].settings[0].permissions.push('x')
                 }
-                if(node.type == ST_COMMAND_DEVICE && actionDeviceConfig.indexOf(node.deviceNodeId)<0) {
-                    actionDeviceConfig.push(node.deviceNodeId);
+                if(node.type == ST_EVENT_DEVICE){
+                    subscriptionDevices.push({sectionId:node.deviceNodeId,capabilityId:node.capabilityId,attributeId:node.attributeId})
                 }
+                // if (node.deviceNodeId in checkSet) {  // 이미 추가된 경우
+                //     //skip
+                // } else if(node.deviceNodeId && node.deviceNodeId !== '') {
+                //     usedDeviceNodes.push(node.deviceNodeId)
+                //     checkSet[node.deviceNodeId] = true;
+                //     if (node.type == ST_EVENT_DEVICE) {
+                //         Eventattribute = node.attributeId;
+                //     }
+                // }
+                // if(node.type == ST_EVENT_DEVICE && eventDeviceNodes.indexOf(node.deviceNodeId)<0) {
+                //     eventDeviceNodes.push(node.deviceNodeId)
+                // }
+                // if(node.type == ST_COMMAND_DEVICE && actionDeviceNodes.indexOf(node.deviceNodeId)<0) {
+                //     actionDeviceNodes.push(node.deviceNodeId)
+                // }
             }
             /* 해당 Node의 다음 연결 wires 정보로 탐색을 계속한다. */
             var wires = node.wires;
-            for (var port in wires) {
-                for (var connectedNode in wires[port]) {
-                    if (wires[port][connectedNode] in checkVisited) {
-                        //skip
-                    } else {
-                        queue.push(wires[port][connectedNode]);
-                        checkVisited[wires[port][connectedNode]] = true;
+            node.wires.forEach(function(wire){
+                wire.forEach(function(nodeId){
+                    if(visited.has(nodeId) == false){
+                        visited.add(nodeId)
+                        queue.push(nodeId)
                     }
-                }
-            }
+                })
+            })
+            // for (var port in wires) {
+            //     for (var connectedNode in wires[port]) {
+            //         if (wires[port][connectedNode] in checkVisited) {
+            //             //skip
+            //         } else {
+            //             queue.push(wires[port][connectedNode]);
+            //             checkVisited[wires[port][connectedNode]] = true;
+            //         }
+            //     }
+            // }
         }
+        var sections = Object.values(sectionConfig)
         /* ---------------------------------------------------------------------------------- */
         /*  사용중인 page config 만 골라와서 배열에 JSON 형식으로 section 값을 할당한다 */
 
-        var PageValArr = [];
-        for (var i in usedDeviceConfig) {
-            var confNode = allnodes[usedDeviceConfig[i]];
-            // child 가 event 면 child 가 action 이면
-            var permissions = ['r'];
-            if(eventDeviceConfig.indexOf(confNode.id)>-1) {
-                EventSectionID = confNode.name;
-                Eventcapability = confNode.capabilityId;
-            }
-            if (actionDeviceConfig.indexOf(confNode.id)>-1) {
-                permissions.push('x');
-            }
-            var PageJson = {
-                name: confNode.name,
-                settings: [
-                    {
-                        id: confNode.name,
-                        name: confNode.name,
-                        description: confNode.name + ":" + confNode.capabilityId,
-                        type: 'DEVICE',
-                        required: true,
-                        multiple: false,
-                        capabilities: [confNode.capabilityId],
-                        permissions: permissions
-                    }
-                ]
-            };
-            PageValArr.push(PageJson);
-        }
+        // var sections = [];
+        // for (var i in usedDeviceNodes) {
+        //     var confNode = allnodes[usedDeviceNodes[i]];
+        //     // child 가 event 면 child 가 action 이면
+        //     var permissions = ['r'];
+        //     if(eventDeviceNodes.indexOf(confNode.id)>-1) {
+        //         EventSectionID = confNode.name;
+        //         Eventcapability = confNode.capabilityId;
+        //     }
+        //     if (actionDeviceNodes.indexOf(confNode.id)>-1) {
+        //         permissions.push('x');
+        //     }
+        //     var section = {
+        //         name: confNode.name,
+        //         settings: [
+        //             {
+        //                 id: confNode.name,
+        //                 name: confNode.name,
+        //                 description: confNode.name + ":" + confNode.capabilityId,
+        //                 type: 'DEVICE',
+        //                 required: true,
+        //                 multiple: false,
+        //                 capabilities: [confNode.capabilityId],
+        //                 permissions: permissions
+        //             }
+        //         ]
+        //     }
+        //     sections.push(section);
+        // }
+
         if (!n.url) {
             this.warn(RED._("SmartThings.error.missing-path"));
             return;
@@ -258,8 +285,6 @@ module.exports = function (RED) {
         }
 
         var automationPing = function (req, res) {
-            debugLog("[lifecycle] PING");
-
             var evt = req.body;
             if (!evt.pingData) {
                 var msg = "Required parameter doesn't exist";
@@ -271,9 +296,6 @@ module.exports = function (RED) {
         };
 
         var automationConfiguration = function (req, res) {
-            debugLog("[lifecycle] CONFIGURATION");
-
-            //console.log("CONFIGURATION");
             var evt = req.body;
             if (!evt.configurationData) {
                 var msg = "Required parameter doesn't exist";
@@ -282,68 +304,67 @@ module.exports = function (RED) {
                 return;
             }
 
-            var rtnObj = {};
+            var response = {};
             if (evt.configurationData.phase == "INITIALIZE") {
-                rtnObj.initialize = {
-                    id: "app_" + node.name.replace(/ /g, ''),  //공백제거
-                    name: node.name,
-                    description: node.name,
+                response.initialize = {
+                    id: "app_" + NODE.name.replace(/ /g, ''),  //공백제거
+                    name: NODE.name,
+                    description: NODE.name,
                     firstPageId: "1",
                     permissions: []
-                };
+                }
             } else if (evt.configurationData.phase == "PAGE") {
                 if (evt.configurationData.pageId !== "1") {
                     RES.error(res, 400, `Unsupported page id: ${evt.configurationData.pageId}`);
                     return;
                 }
-                rtnObj.page = {
+                response.page = {
                     pageId: '1',
-                    name: node.name,
+                    name: NODE.name,
                     nextPageId: null,
                     previousPageId: null,
                     complete: true,
-                    sections: PageValArr
+                    sections: sections
                 };
             } else {
                 RES.error(res, 400, `Unsupported phase: ${evt.configurationData.phase}`);
                 return;
             }
-            RES.ok(res, {statusCode: 200, configurationData: rtnObj});
+            RES.ok(res, {statusCode: 200, configurationData: response});
         };
 
         var automationInstall = function (req, res) {
-            debugLog("[lifecycle] INSTALL");
+            var evt = req.body
+            var installedAppId = evt.installData.installedApp.installedAppId
+            var authToken = evt.installData.authToken
 
-            var evt = req.body;
-            var installedAppId = evt.installData.installedApp.installedAppId;
-            var config = evt.installData.installedApp.config;
-            var authToken = evt.installData.authToken;
-            var EventID = config[EventSectionID][0];
-            var subRequest = {
-                sourceType: 'DEVICE',
-                device: {
-                    componentId: EventID.deviceConfig.componentId,
-                    deviceId: EventID.deviceConfig.deviceId,
-                    capability: Eventcapability,
-                    attribute: Eventattribute,
-                    stateChangeOnly: true,
-                    subscriptionName: `${Eventattribute}_subscription`,
-                    value: "*"
+            subscriptionDevices.forEach((eventDevice)=>{
+                var sectionInfo = evt.installData.installedApp.config[eventDevice.sectionId]
+                var subRequest = {
+                    sourceType: 'DEVICE',
+                    device: {
+                        deviceId: sectionInfo.deviceConfig.deviceId,
+                        componentId: sectionInfo.deviceConfig.componentId,
+                        capability: eventDevice.capabilityId,
+                        attribute: eventDevice.attributeId,
+                        stateChangeOnly: true,
+                        subscriptionName: `${Eventattribute}_subscription`,
+                        value: "*"
+                    }
                 }
-            };
-            /* executeCreateSubscription 처리 */
-            var keyParam = {};
-            keyParam['installedAppId'] = installedAppId;
-            OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
-                debugLog("Create Subscription : " + JSON.stringify(data))
-            }).catch(function (err) {
-                console.log("[error] " + err.errCd + ", " + err.errMsg);
-            });
-            RES.ok(res, {statusCode: 200, installData: {}});
-        };
+                var keyParam = {}
+                keyParam.installedAppId = installedAppId
+
+                OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
+                    debugLog("Create Subscription : " + JSON.stringify(data))
+                }).catch(function (err) {
+                    console.log("[error] " + err.errCd + ", " + err.errMsg);
+                })
+            })
+            RES.ok(res, {statusCode: 200, installData: {}})
+        }
 
         var automationUpdate = function (req, res) {
-            debugLog("[lifecycle] UPDATE");
             var evt = req.body;
             var installedAppId = evt.updateData.installedApp.installedAppId;
             var config = evt.updateData.installedApp.config;
@@ -352,8 +373,8 @@ module.exports = function (RED) {
             var subRequest = {
                 sourceType: 'DEVICE',
                 device: {
-                    componentId: EventID.deviceConfig.componentId,
                     deviceId: EventID.deviceConfig.deviceId,
+                    componentId: EventID.deviceConfig.componentId,
                     capability: Eventcapability,
                     attribute: Eventattribute,
                     stateChangeOnly: true,
@@ -377,19 +398,23 @@ module.exports = function (RED) {
         };
 
         var automationUninstall = function (req, res) {
-            debugLog("[lifecycle] UNINSTALL");
             RES.ok(res, {statusCode: 200, uninstallData: {}});
         };
 
         var automationEvent = function (req, res) {
-            debugLog("[lifecycle] EVENT");
             RES.ok(res, {statusCode: 200, eventData: {}});
-            node.context().flow.set('evt', req.body);
-            node.send({payload: req.body});
+            NODE.context().flow.set('evt', req.body);
+            NODE.send({payload: req.body});
         };
 
+        var confirmation = function (req,res){
+            console.log(req)
+
+            RES.ok(res, {statusCode: 200, targetUrl: "target_url"});
+        }
         var routingMap = {
             "PING": automationPing,
+            "CONFIRMATION": confirmation,
             "CONFIGURATION": automationConfiguration,
             "INSTALL": automationInstall,
             "UPDATE": automationUpdate,
@@ -398,27 +423,28 @@ module.exports = function (RED) {
         };
 
         this.errorHandler = function (err, req, res, next) {
-            node.error(err);
+            NODE.error(err);
             RES.error(res, 500, "Internal Server Errror");
         };
 
         this.callback = function (req, res) {
             var msgid = RED.util.generateId();
-            var handleRequest = routingMap[req.body.lifecycle];
-            if (!handleRequest) {
+            var handler = routingMap[req.body.lifecycle];
+            if (!handler) {
                 var msg = "No matched lifecycle";
                 debugLog("[error] " + msg);
                 RES.error(res, 400, msg);
             } else {
-                handleRequest(req, res);
+                debugLog('[lifecycle] '+req.body.lifecycle)
+                handler(req, res);
             }
         };
 
         function verifySignature(req) {
             try {
                 let publickey;
-                if (node.publickey) {
-                    publickey = node.publickey.replace(/\\r\\n/g, "").replace(/\\n/g, "");
+                if (NODE.publickey) {
+                    publickey = NODE.publickey.replace(/\\r\\n/g, "").replace(/\\n/g, "");
                     publickey = publickey.replace("-----BEGIN PUBLIC KEY-----", "-----BEGIN PUBLIC KEY-----\n");
                     publickey = publickey.replace("-----END PUBLIC KEY-----", "\n-----END PUBLIC KEY-----\n");
                     publickey = publickey.replace(/\\n/g, os.EOL);
@@ -446,12 +472,12 @@ module.exports = function (RED) {
         };
         function debugLog(log) {
             try {
-                RED.comms.publish("debug", {id: node.id, z: node.z, name: node.name, topic: "Automation", msg: log});
+                RED.comms.publish("debug", {id: NODE.id, z: NODE.z, name: NODE.name, topic: "Automation", msg: log});
             } catch (err) {
                 console.error(err);
             }
         }
-        RED.httpNode.post(this.url, nextHandler, httpMiddleware, corsHandler, nextHandler, jsonParser, nextHandler, nextHandler, nextHandler, this.callback, this.errorHandler);
+        RED.httpNode.post(this.url, nextHandler, httpMiddleware, corsHandler, nextHandler, jsonParser, nextHandler, this.callback, this.errorHandler);
         this.on("close", function () {
             var node = this;
             RED.httpNode._router.stack.forEach(function (route, i, routes) {
@@ -473,6 +499,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n)
         this.device = n.device
     }
+
     RED.nodes.registerType(ST_MY_DEVICE, installedDeviceConfigNode,{credentials:{
             stAccessToken:{type:'text', required:true}
         }});
@@ -496,52 +523,7 @@ module.exports = function (RED) {
             return
         }
 
-        //validation 체크 capability로우는 빈값이 없어야한다.
         var NODE = this;
-        var valid = true;
-
-        try {
-            for (var i = 0; i < this.sensorCapaDs.length; i++) {
-                var rule = this.sensorCapaDs[i];
-                for (var key in rule) {
-                    if (rule[key].trim() == '') {
-                        throw new Error("Row[" + i + "] - Not a empty");
-                    }
-                }
-
-                if (rule.argType != undefined) {
-                    var argType = JSON.parse(rule.argType);
-                    var keys = Object.keys(argType);
-
-                    if (keys.length > 0) {//command 명령어가 존재한다면({}가 아니라면)
-                        for (var j = 0; j < keys.length; j++) {
-                            if (rule["col" + (j + 3) + "_vt"] == "num") {
-                                if (isNaN(Number(rule["col" + (j + 3)]))) {
-                                    throw new Error("Row[" + i + "] - Not a number");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // for (var i = 0; i < this.sensorAttrDs.length; i++) {
-            //     var rule = this.sensorAttrDs[i];
-            //     // [==,!=] 이외에는 모두 숫자형식의 데이터이다.
-            //     if (rule.col2 != 'eq' && rule.col2 != 'neq') {
-            //         if (isNaN(Number(rule.col3))) {
-            //             throw new Error("Row[" + i + "] - Not a number");
-            //         }
-            //     }
-            // }
-        } catch (e) {
-            this.error(RED._("SmartThings.error.invalid-input", {error: e.message}));
-            valid = false;
-        }
-
-        if (!valid) {
-            return;
-        }
 
         this.on('input', function (msg) {
             var onward = [];
@@ -574,21 +556,21 @@ module.exports = function (RED) {
                 }
 
                 if (NODE.type == ST_EVENT_DEVICE) {
-                    sendDebug("[flow] Event:" + NODE.name + "("+confName+")");
+                    sendDebug("[flow] Event:" + NODE.name + "("+confName+")")
                     var opCheck = false;
                     for (var idx = 0; idx < NODE.rules.length; idx++) {
-                        var rule = NODE.rules[idx];
-                        var attrHierarchy = rule.hidden1.split("|");
-                        var val = fromEvent.value;
+                        var rule = NODE.rules[idx]
+                        var attrHierarchy = rule.hidden1.split("|")
+                        var val = fromEvent.value
 
                         if (typeof val == 'object') val = val.value;
-                        if (rule.col3 == '' || rule.col3 == undefined) rule.col3 = "\'\'";
-                        opCheck = operators[rule.col2](val, rule.col3);
+                        if (rule.value == '' || rule.value == undefined) rule.value = "\'\'"
+                        opCheck = operators[rule.operator](val, rule.value);
                         if (opCheck) {
-                            RED.util.setMessageProperty(msg, 'payload', attrHierarchy[0] + "=\""+val+"\" check success[" + idx + "]");
-                            onward.push(msg);
+                            RED.util.setMessageProperty(msg, 'payload', attrHierarchy[0] + "=\""+val+"\" check success[" + idx + "]")
+                            onward.push(msg)
                         } else {
-                            onward.push(null);
+                            onward.push(null)
                         }
                     }
                     if (NODE.rules.length == 0) {
@@ -608,7 +590,12 @@ module.exports = function (RED) {
                             if (rule.value == '' || rule.value == undefined){
                                 rule.value = "\'\'"
                             }
-                            opCheck = operators[rule.operator](rule.value, attributeValue)
+                            if(rule.valueType == 'Iso8601Date'){
+                                opCheck = operators[rule.operator](new Date(rule.value), new Date(attributeValue))
+                            }else{
+                                opCheck = operators[rule.operator](rule.value, attributeValue)
+
+                            }
                             if (opCheck) {
                                 // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port success")
                                 RED.util.setMessageProperty(msg, 'payload', attributeValue)
