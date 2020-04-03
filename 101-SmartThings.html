@@ -13,7 +13,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!-- Node Html -->
 <script type="text/x-red" data-template-name="device-profile">
     <div class="form-row">
         <label for="node-input-name">Name</label>
@@ -188,11 +187,6 @@
             </ul>
         </dd>
      </dl>
-
-
-
-
-
 </script>
 
 <script type="text/x-red" data-template-name="status-device">
@@ -214,9 +208,9 @@
             <span class="sensor-container-row"> Attribute</span>
         </label>
         <select style="width:50%" id="node-input-attributeId" class="form-row"/>
-        <a id="attribute-info" class="editor-button" style="margin-left: 10px;cursor: default;">
-            <i class="fa fa-info"></i>
-        </a>
+<!--        <a id="attribute-info" class="editor-button" style="margin-left: 10px;cursor: default;">-->
+<!--            <i class="fa fa-info"></i>-->
+<!--        </a>-->
     </div>
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
@@ -372,41 +366,6 @@
                 return {}
             }
         }
-        // var _capabilityList = {cmd: [], attr: []};
-        // var _setUnitItem = function (obj, types) {
-        //     for (key in obj) {
-        //         if (typeof (obj[key]) === "object") {
-        //             _setUnitItem(obj[key], types);
-        //         } else {
-        //             if (types[obj[key]]) {
-        //                 obj[key] = types[obj[key]];
-        //             }
-        //         }
-        //     }
-        // };
-        // this.getArgType = function (type) {
-        //     var types = _jsonclone(_argTypes[type]);
-        //     _setUnitItem(types, _argTypes);
-        //     return types;
-        // };
-        // this.getCmdCapabilities = function () {
-        //     this.getCapabilityList('cmd')
-        // }
-        // this.getAttrCapabilities = function () {
-        //     this.getCapabilityList('attr')
-        // }
-        // this.getCapabilityList = function (target) {
-        //     // var target = isAction ? "cmd" : "attr";
-        //     if (_capabilityList[target].length != 0) {
-        //         return _capabilityList[target];
-        //     }
-        //     for (cpName in _capabilities) {
-        //         if (_capabilities[cpName].hasOwnProperty(target)) {
-        //             _capabilityList[target].push(cpName);
-        //         }
-        //     }
-        //     return _capabilityList[target];
-        // };
     }
 
     var validateAutomationNext = function (id) {
@@ -429,7 +388,7 @@
     const ST_DEVICE_PROFILE = 'device-profile';
     const ST_MY_DEVICE = 'installed-device';
     const ST_AUTOMATION = 'automation';
-    const ST_NODE_VERSION = 200330
+    // const ST_NODE_VERSION = 200330
     var stDevice = {};
 
     RED.nodes.registerType(ST_DEVICE_PROFILE, {
@@ -438,7 +397,6 @@
         color: "rgb(168,168,168)",
         defaults: {
             name: {value: "", required: true},
-            device:{},
             capabilityId: {value: "", required: true}
         },
         inputs: 0,
@@ -499,14 +457,12 @@
                         row.data('device', device);
                         $('<div>').text(device.label).css('font-weight', 'bold').appendTo(row);
 
-                        // var capabilityIds = [];
                         device.capabilities = []
                         if (Array.isArray(device.components)) {
                             device.components.forEach(function (component) {
                                 if (Array.isArray(component.capabilities)) {
                                     component.capabilities.forEach(function (capability) {
                                         device.capabilities.push(capability.id)
-                                        // capabilityIds.push(capability.id)
                                     })
                                 }
                             })
@@ -517,9 +473,6 @@
                         selectButton.text('select')
                         selectButton.on('click', function () {
                             $('#my-device-list-container .history-stack-selected').removeClass('history-stack-selected')
-                            // row.addClass('history-stack-selected')
-                            // li.addClass('history-stack-selected')
-                            // $(this).addClass('history-stack-selected')
                             var device = row.data('device');
                             $('#node-input-name').val(device.name);
                             $('#node-input-label').val(device.label);
@@ -687,17 +640,16 @@
         }
     });
 
-
     var operator = {
-        'string': [
+        string: [
             {v: "eq", t: "=="},
             {v: "neq", t: "!="}
         ],
-        'array': [
+        array: [
             {v: "in", t: "contains"},
             {v: "nin", t: "not contains"}
         ],
-        'integer': [
+        integer: [
             {v: "eq", t: "=="},
             {v: "neq", t: "!="},
             {v: "lt", t: "<"},
@@ -705,7 +657,15 @@
             {v: "gt", t: ">"},
             {v: "gte", t: ">="}
         ],
-        'number': [
+        number: [
+            {v: "eq", t: "=="},
+            {v: "neq", t: "!="},
+            {v: "lt", t: "<"},
+            {v: "lte", t: "<="},
+            {v: "gt", t: ">"},
+            {v: "gte", t: ">="}
+        ],
+        Iso8601Date: [
             {v: "eq", t: "=="},
             {v: "neq", t: "!="},
             {v: "lt", t: "<"},
@@ -715,13 +675,6 @@
         ]
     }
 
-    /*
-         Node Editor창을 열었을때 초기화되는 함수로 Node내에 동작하는 기능함수들이
-         정의되어있다.
-            -.Capability, argType등의 서버정보 조회
-            -.form객체의 이벤트정의
-            -.그리드 add시 row에 유형별 input생성
-        */
     function DeviceNodeEventHandler(formObj, node) {
         var THING = this;
         THING.node = node;
@@ -791,11 +744,10 @@
             if (initDeviceNodeId) {
                 deviceNodeIdSelect.val(initDeviceNodeId)
             }
-
         },
         //deviceid 선택시 해당 section 정보를 셋팅한다.
         initCapabilitySelect: function (initCapabilityId) {
-            var capabilityIdSelect = this.form.capabilityId;
+            var capabilityIdSelect = this.form.capabilityId
             capabilityIdSelect.html('')
             var device = this.form.deviceNodeId.find('option:selected').data('device')
 
@@ -960,34 +912,6 @@
             var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
             NODE.target = target
 
-            // this.attributeInfoPopover = RED.popover.create({
-            //     target: $('#attribute-info'),
-            //     content: '',
-            //     trigger: 'hover',
-            //     // autoClose: 2000,
-            //     direction: 'right',
-            //     delay: {show: 10}
-            // })
-            // this.attributeInfoPopover.refreshContent = function () {
-            //     var capabilityId = $('#node-input-capabilityId').val()
-            //     var attributeId = $('#node-input-attributeId').val()
-            //     if (capabilityId && attributeId) {
-            //         if (target == 'attributes') {
-            //             var attribute = profiles.getAttributeSchema(capabilityId, attributeId)
-            //             if (attribute) {
-            //                 var _content = $('<pre></pre>').css('background-color', '#333').html(JSON.stringify({[attributeId]: attribute.properties.value}, null, '  '))
-            //                 this.setContent(_content)
-            //             }
-            //         } else {
-            //             var command = profiles.getCommandArguments(capabilityId, attributeId)
-            //             if (command) {
-            //                 var _content = $('<pre></pre>').css('background-color', '#333').html(JSON.stringify({[attributeId]: command.arguments}, null, '  '))
-            //                 this.setContent(_content)
-            //             }
-            //         }
-            //     }
-            // }
-
             $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
                 addButton: false,
                 addItem: function (container, idx, data) {
@@ -995,7 +919,7 @@
                     var commandId = $("#node-input-attributeId option:selected").val()
                     var arguments = profiles.getCommandArguments(capabilityId, commandId)
 
-                    var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
+                    var row = $('<div/>', {style: "margin-left:10px;height: auto;"}).appendTo(container);
                     $('<span>', {class: "capaId"}).appendTo(row).text(capabilityId)
                     $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row)
                     $('<span>', {class: "attrId"}).appendTo(row).text(commandId)
@@ -1007,7 +931,7 @@
                     if (arguments.length > 0) {
                         arguments.forEach(function (arg) {
                             if (arg.schema.type == 'string' || arg.schema.type == 'number' || arg.schema.type == 'integer') {
-                                var row2 = $('<div/>', {style: "height:auto;margin-left:auto;width:fit-content;"}).appendTo(row);
+                                var row2 = $('<div/>', {style: "height:auto;margin:5px 5px 0px auto;width:fit-content;"}).appendTo(row);
                                 row2.text(arg.name + ' : ')
                                 var valueField;
                                 if (arg.schema.enum) {
@@ -1039,7 +963,7 @@
                                 valueField.attr('argType', arg.schema.type)
                                 valueField.addClass('argValue')
                             } else if (arg.schema.title == 'COLOR_MAP') {
-                                var row2 = $('<div/>', {style: "height:auto;margin-left:auto;width:fit-content;"}).appendTo(row);
+                                var row2 = $('<div/>', {style: "height:auto;margin-left:5px 5px 0px auto;width:fit-content;"}).appendTo(row);
                                 row2.text('color : ')
                                 var colorField = $("<input/>", {
                                     argName: "color",
@@ -1055,7 +979,7 @@
                                 if (arg.schema.properties) {
 
                                     Object.entries(arg.schema.properties).forEach(function ([propertyId, property]) {
-                                        var row2 = $('<div/>', {style: "height:auto;margin-left:auto;width:fit-content;"}).appendTo(row);
+                                        var row2 = $('<div/>', {style: "height:auto;margin:5px 5px 0px auto;width:fit-content;"}).appendTo(row);
                                         row2.text(propertyId + ' : ')
                                         valueField = $("<input/>", {style: "width:auto;margin-right:5px;", placeholder: holder}).appendTo(row2)
                                         var valueType = property.type
@@ -1104,8 +1028,8 @@
                 },
                 sortItems: function (rules) {
                 },
-                sortable: true,
-                removable: true
+                sortable: false,
+                removable: false
             });
 
             $("#attr-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
@@ -1124,6 +1048,9 @@
                         readonly: "true"
                     }).appendTo(row).val(attributeId)
                     var operatorField = $('<select/>', {class: "attrOperator", style: "width:auto; margin-right: 5px; text-align: center;"}).appendTo(row)
+                    if(attribute.properties.value.title=='Iso8601Date'){
+                        attribute.properties.value.type='Iso8601Date'
+                    }
                     if (operator[attribute.properties.value.type]) {
                         operator[attribute.properties.value.type].forEach(function (op) {
                             operatorField.append($("<option></option>").val(op.v).text(op.t))
@@ -1132,12 +1059,12 @@
                     //attribute properties.value
                     var valueField;
                     if (attribute.properties.value.type == 'array') {
-                        valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
+                        valueField = $("<select/>", {style: "max-width:45%;width:auto;margin-right:5px;"}).appendTo(row);
                         attribute.properties.value.items.enum.forEach(function (value) {
                             valueField.append($("<option></option>").val(value).text(value))
                         })
                     } else if (attribute.properties.value.enum) {
-                        valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row);
+                        valueField = $("<select/>", {style: "max-width:45%;width:auto;margin-right:5px;"}).appendTo(row);
 
                         attribute.properties.value.enum.forEach(function (value) {
                             valueField.append($("<option></option>").val(value).text(value))
@@ -1152,13 +1079,16 @@
                             holder += ')'
                         }
 
-                        valueField = $("<input/>", {style: "width:auto;margin-right:5px;", placeholder: holder}).appendTo(row)
+                        valueField = $("<input/>", {style: "max-width:45%;width:45%;margin-right:5px;", placeholder: holder}).appendTo(row)
 
                         var valueType = attribute.properties.value.type
                         if (valueType == 'integer' || valueType == 'number') {
                             valueField.typedInput({default: "num", types: ["num"]})
                         } else {
                             valueField.typedInput({default: "str", types: ["str"]})
+                        }
+                        if(valueType == 'Iso8601Date'){
+                            valueField.typedInput('value',new Date().toISOString().substr(0,19)+'Z')
                         }
                     }
                     valueField.attr('valueType', attribute.properties.value.type)
@@ -1167,7 +1097,7 @@
                     //'unit' always has string enum
                     var unitField
                     if (attribute.properties.unit && attribute.properties.unit.enum) {
-                        unitField = $("<select/>", {class: 'attrUnit', style: "width:auto;margin-right:5px;"}).appendTo(row);
+                        unitField = $("<select/>", {class: 'attrUnit', style: "max-width:45%;width:auto;margin-right:5px;"}).appendTo(row);
                         attribute.properties.unit.enum.forEach(function (value) {
                             unitField.append($('<option>').val(value).text(value))
                         })
@@ -1175,8 +1105,8 @@
                             unitField.val(attribute.properties.unit.default)
                         }
                     }
-                    var portSpan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
-                    portSpan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
+                    // var portSpan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
+                    // portSpan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
                     if (data) {
                         data.operator && operatorField.val(data.operator)
                         if (data.value) {
@@ -1284,7 +1214,7 @@
             height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")))
             resizeContainer.editableList('height', height - 100)
         }
-    };
+    }
 
     function DeviceNode(type) {
 
@@ -1321,7 +1251,6 @@
             capabilityId: {value: "", required: true},
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true, col1: "", hidden1: "", col2: "", col3: "", col4: "", col5: "", col6: ""}]},
-            ver: {value: ST_NODE_VERSION},
             outputs: {value: 1}
         }
         this.defaults = defaultsConfig
