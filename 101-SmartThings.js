@@ -22,6 +22,7 @@ module.exports = function (RED) {
     const ST_DEVICE_PROFILE = 'device-profile';
     const ST_MY_DEVICE = 'installed-device';
     const ST_AUTOMATION = 'automation';
+    const ST_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE,ST_DEVICE_PROFILE,ST_MY_DEVICE,ST_AUTOMATION];
     const ST_NODE_VERSION = 200330
 
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
@@ -68,7 +69,7 @@ module.exports = function (RED) {
     var usedDeviceNodes = [];
     var eventDeviceNodes = [];
     var actionDeviceNodes = [];
-    
+
     var OneApi = {
         executeDeleteSubscription: function (keyParam, token) {
             return new Promise(function (resolve, reject) {
@@ -126,32 +127,30 @@ module.exports = function (RED) {
 
     var RES = {
         ok: function (res, obj) {
-            console.log(`RES ok : ${JSON.stringify(obj)}`);
-            res.json(obj);
+            console.log(`RES ok : ${JSON.stringify(obj)}`)
+            res.json(obj)
         },
         error: function (res, status, msg) {
-            console.log(`RES error[${status}] : ${msg}`);
-            res.status(status).send(msg);
+            console.log(`RES error[${status}] : ${msg}`)
+            res.status(status).send(msg)
         }
-    };
+    }
 
     function Automation(n) {
-        RED.nodes.createNode(this, n);
-        this.id = n.id;
-        this.wires = n.wires;
-        this.name = n.name;
-        this.url = n.url;
-        this.publickey = n.publickey;
+        RED.nodes.createNode(this, n)
+        Object.assign(this,n)
+        stCompatibleCheck(this)
 
         var NODE = this;
 
-        var EventSectionID;
-        var Eventcapability;
         var Eventattribute;
-        //clone nodes information
         var allnodes = [];
         RED.nodes.eachNode(function (nn) {
-            allnodes[nn.id] = Object.assign({}, nn);
+            var node = Object.assign({}, nn);
+            if (/^(event|status|command)-device$/g.test(node.type)){
+                stCompatibleCheck(node)
+            }
+            allnodes[nn.id] = node
         });
 
         // 사용하는 config node id 저장
@@ -159,24 +158,16 @@ module.exports = function (RED) {
         eventDeviceNodes = []
         actionDeviceNodes = []
 
-        /* ---------------------------------------------------------------------------------- */
-        /* queue 파라미터에 해당하는 연결 노드들에 대한 BFS 탐색을 처리한다.                       */
-        /* Automation부터 wires를 따라 노드를 스캔하면서 Device 일 경우 해당 Deivce Config 저장   */
-        /* node visited 여부 확인 - loop, flow traverse 동안 중복 체크                          */
         var queue = [];
         queue.push(this.id);
-
-        // var checkVisited = {};
-        // checkVisited[this.id] = true;
-
-        // var checkSet = {};
 
         var visited = new Set([this.id])
         var sectionConfig={}
         var subscriptionDevices=[]
+
         while (queue.length > 0) {
-            var curID = queue.shift();
-            var node = allnodes[curID];
+            var currentId = queue.shift();
+            var node = allnodes[currentId];
             if (/^(event|status|command)-device$/g.test(node.type) && allnodes[node.deviceNodeId] && allnodes[node.deviceNodeId].type === ST_DEVICE_PROFILE) {
                 if(!sectionConfig.hasOwnProperty(node.deviceNodeId)){
                     var deviceNode = allnodes[node.deviceNodeId]
@@ -203,24 +194,8 @@ module.exports = function (RED) {
                 if(node.type == ST_EVENT_DEVICE){
                     subscriptionDevices.push({sectionId:node.deviceNodeId,capabilityId:node.capabilityId,attributeId:node.attributeId})
                 }
-                // if (node.deviceNodeId in checkSet) {  // 이미 추가된 경우
-                //     //skip
-                // } else if(node.deviceNodeId && node.deviceNodeId !== '') {
-                //     usedDeviceNodes.push(node.deviceNodeId)
-                //     checkSet[node.deviceNodeId] = true;
-                //     if (node.type == ST_EVENT_DEVICE) {
-                //         Eventattribute = node.attributeId;
-                //     }
-                // }
-                // if(node.type == ST_EVENT_DEVICE && eventDeviceNodes.indexOf(node.deviceNodeId)<0) {
-                //     eventDeviceNodes.push(node.deviceNodeId)
-                // }
-                // if(node.type == ST_COMMAND_DEVICE && actionDeviceNodes.indexOf(node.deviceNodeId)<0) {
-                //     actionDeviceNodes.push(node.deviceNodeId)
-                // }
             }
-            /* 해당 Node의 다음 연결 wires 정보로 탐색을 계속한다. */
-            var wires = node.wires;
+
             node.wires.forEach(function(wire){
                 wire.forEach(function(nodeId){
                     if(visited.has(nodeId) == false){
@@ -229,50 +204,8 @@ module.exports = function (RED) {
                     }
                 })
             })
-            // for (var port in wires) {
-            //     for (var connectedNode in wires[port]) {
-            //         if (wires[port][connectedNode] in checkVisited) {
-            //             //skip
-            //         } else {
-            //             queue.push(wires[port][connectedNode]);
-            //             checkVisited[wires[port][connectedNode]] = true;
-            //         }
-            //     }
-            // }
         }
         var sections = Object.values(sectionConfig)
-        /* ---------------------------------------------------------------------------------- */
-        /*  사용중인 page config 만 골라와서 배열에 JSON 형식으로 section 값을 할당한다 */
-
-        // var sections = [];
-        // for (var i in usedDeviceNodes) {
-        //     var confNode = allnodes[usedDeviceNodes[i]];
-        //     // child 가 event 면 child 가 action 이면
-        //     var permissions = ['r'];
-        //     if(eventDeviceNodes.indexOf(confNode.id)>-1) {
-        //         EventSectionID = confNode.name;
-        //         Eventcapability = confNode.capabilityId;
-        //     }
-        //     if (actionDeviceNodes.indexOf(confNode.id)>-1) {
-        //         permissions.push('x');
-        //     }
-        //     var section = {
-        //         name: confNode.name,
-        //         settings: [
-        //             {
-        //                 id: confNode.name,
-        //                 name: confNode.name,
-        //                 description: confNode.name + ":" + confNode.capabilityId,
-        //                 type: 'DEVICE',
-        //                 required: true,
-        //                 multiple: false,
-        //                 capabilities: [confNode.capabilityId],
-        //                 permissions: permissions
-        //             }
-        //         ]
-        //     }
-        //     sections.push(section);
-        // }
 
         if (!n.url) {
             this.warn(RED._("SmartThings.error.missing-path"));
@@ -283,160 +216,163 @@ module.exports = function (RED) {
         if (this.url[0] !== '/') {
             this.url = '/' + this.url;
         }
-
-        var automationPing = function (req, res) {
-            var evt = req.body;
-            if (!evt.pingData) {
-                var msg = "Required parameter doesn't exist";
-                debugLog("[error] " + msg);
-                RES.error(res, 400, msg);
-                return;
-            }
-            RES.ok(res, {statusCode: 200, pingData: {challenge: evt.pingData.challenge}});
-        };
-
-        var automationConfiguration = function (req, res) {
-            var evt = req.body;
-            if (!evt.configurationData) {
-                var msg = "Required parameter doesn't exist";
-                debugLog("[error] " + msg);
-                RES.error(res, 400, msg);
-                return;
-            }
-
-            var response = {};
-            if (evt.configurationData.phase == "INITIALIZE") {
-                response.initialize = {
-                    id: "app_" + NODE.name.replace(/ /g, ''),  //공백제거
-                    name: NODE.name,
-                    description: NODE.name,
-                    firstPageId: "1",
-                    permissions: []
-                }
-            } else if (evt.configurationData.phase == "PAGE") {
-                if (evt.configurationData.pageId !== "1") {
-                    RES.error(res, 400, `Unsupported page id: ${evt.configurationData.pageId}`);
-                    return;
-                }
-                response.page = {
-                    pageId: '1',
-                    name: NODE.name,
-                    nextPageId: null,
-                    previousPageId: null,
-                    complete: true,
-                    sections: sections
-                };
-            } else {
-                RES.error(res, 400, `Unsupported phase: ${evt.configurationData.phase}`);
-                return;
-            }
-            RES.ok(res, {statusCode: 200, configurationData: response});
-        };
-
-        var automationInstall = function (req, res) {
-            var evt = req.body
-            var installedAppId = evt.installData.installedApp.installedAppId
-            var authToken = evt.installData.authToken
-
-            subscriptionDevices.forEach((eventDevice)=>{
-                var sectionInfo = evt.installData.installedApp.config[eventDevice.sectionId]
-                var subRequest = {
-                    sourceType: 'DEVICE',
-                    device: {
-                        deviceId: sectionInfo.deviceConfig.deviceId,
-                        componentId: sectionInfo.deviceConfig.componentId,
-                        capability: eventDevice.capabilityId,
-                        attribute: eventDevice.attributeId,
-                        stateChangeOnly: true,
-                        subscriptionName: `${Eventattribute}_subscription`,
-                        value: "*"
-                    }
-                }
-                var keyParam = {}
-                keyParam.installedAppId = installedAppId
-
-                OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
-                    debugLog("Create Subscription : " + JSON.stringify(data))
-                }).catch(function (err) {
-                    console.log("[error] " + err.errCd + ", " + err.errMsg);
-                })
-            })
-            RES.ok(res, {statusCode: 200, installData: {}})
-        }
-
-        var automationUpdate = function (req, res) {
-            var evt = req.body;
-            var installedAppId = evt.updateData.installedApp.installedAppId;
-            var config = evt.updateData.installedApp.config;
-            var authToken = evt.updateData.authToken;
-            var EventID = config[EventSectionID][0];
-            var subRequest = {
-                sourceType: 'DEVICE',
-                device: {
-                    deviceId: EventID.deviceConfig.deviceId,
-                    componentId: EventID.deviceConfig.componentId,
-                    capability: Eventcapability,
-                    attribute: Eventattribute,
-                    stateChangeOnly: true,
-                    subscriptionName: `${Eventattribute}_subscription`,
-                    value: "*"
-                }
-            };
-
-            var keyParam = {};
-            keyParam['installedAppId'] = installedAppId;
-            /* executeDeleteSubscription 처리 */
-            OneApi.executeDeleteSubscription(keyParam, authToken).then(function (data) {
-                OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
-                }).catch(function (err) {
-                    console.log("Install errorCode : " + err.errCd + " message : " + err.errMsg);
-                });
-            }).catch(function (err) {
-                console.log("Delete errorCode : " + err.errCd + " message : " + err.errMsg);
-            });
-            RES.ok(res, {statusCode: 200, updateData: {}});
-        };
-
-        var automationUninstall = function (req, res) {
-            RES.ok(res, {statusCode: 200, uninstallData: {}});
-        };
-
-        var automationEvent = function (req, res) {
-            RES.ok(res, {statusCode: 200, eventData: {}});
-            NODE.context().flow.set('evt', req.body);
-            NODE.send({payload: req.body});
-        };
-
-        var confirmation = function (req,res){
-            console.log(req)
-
-            RES.ok(res, {statusCode: 200, targetUrl: "target_url"});
-        }
-        var routingMap = {
-            "PING": automationPing,
-            "CONFIRMATION": confirmation,
-            "CONFIGURATION": automationConfiguration,
-            "INSTALL": automationInstall,
-            "UPDATE": automationUpdate,
-            "UNINSTALL": automationUninstall,
-            "EVENT": automationEvent
-        };
-
         this.errorHandler = function (err, req, res, next) {
             NODE.error(err);
             RES.error(res, 500, "Internal Server Errror");
         };
 
-        this.callback = function (req, res) {
-            var msgid = RED.util.generateId();
-            var handler = routingMap[req.body.lifecycle];
-            if (!handler) {
-                var msg = "No matched lifecycle";
-                debugLog("[error] " + msg);
-                RES.error(res, 400, msg);
-            } else {
-                debugLog('[lifecycle] '+req.body.lifecycle)
-                handler(req, res);
+        this.lifecycleHandler = function (req, res) {
+            console.log('===========Automation Request BODY ==========')
+            console.dir(req.body,{depth:null})
+
+            switch(req.body.lifecycle){
+                case "PING":
+                    var evt = req.body;
+                    if (!evt.pingData) {
+                        var msg = "Required parameter doesn't exist";
+                        debugLog("[error] " + msg);
+                        RES.error(res, 400, msg);
+                        return;
+                    }
+                    RES.ok(res, {statusCode: 200, pingData: {challenge: evt.pingData.challenge}});
+                    break;
+
+                case "CONFIRMATION":
+                    RES.ok(res, {statusCode: 200, targetUrl: "target_url"});
+                    break;
+
+                case "CONFIGURATION":
+                    var evt = req.body;
+                    if (!evt.configurationData) {
+                        var msg = "Required parameter doesn't exist";
+                        debugLog("[error] " + msg);
+                        RES.error(res, 400, msg);
+                        return;
+                    }
+
+                    var response = {};
+                    if (evt.configurationData.phase == "INITIALIZE") {
+                        response.initialize = {
+                            id: "app_" + NODE.name.replace(/ /g, ''),  //공백제거
+                            name: NODE.name,
+                            description: NODE.name,
+                            firstPageId: "1",
+                            permissions: []
+                        }
+                    } else if (evt.configurationData.phase == "PAGE") {
+                        if (evt.configurationData.pageId !== "1") {
+                            RES.error(res, 400, `Unsupported page id: ${evt.configurationData.pageId}`);
+                            return;
+                        }
+                        response.page = {
+                            pageId: '1',
+                            name: NODE.name,
+                            nextPageId: null,
+                            previousPageId: null,
+                            complete: true,
+                            sections: sections
+                        };
+                    } else {
+                        RES.error(res, 400, `Unsupported phase: ${evt.configurationData.phase}`);
+                        return;
+                    }
+                    RES.ok(res, {statusCode: 200, configurationData: response});
+                    break;
+
+                case "INSTALL":
+                    var evt = req.body
+                    var installedAppId = evt.installData.installedApp.installedAppId
+                    var authToken = evt.installData.authToken
+
+                    console.log('subscription devices : '+subscriptionDevices)
+
+                    subscriptionDevices.forEach((subscription)=>{
+                        console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
+                        console.log(subscription)
+                        var sectionInfo = evt.installData.installedApp.config[subscription.sectionId][0]
+                        var subRequest = {
+                            sourceType: 'DEVICE',
+                            device: {
+                                deviceId: sectionInfo.deviceConfig.deviceId,
+                                componentId: sectionInfo.deviceConfig.componentId,
+                                capability: subscription.capabilityId,
+                                attribute: subscription.attributeId,
+                                stateChangeOnly: true,
+                                subscriptionName: subscription.name+'_'+subscription.capabilityId+'_'+subscription.attributeId+'_subscription',
+                                value: "*"
+                            }
+                        }
+
+                        var keyParam = {}
+                        keyParam.installedAppId = installedAppId
+
+                        OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
+                            debugLog("Create Subscription : " + JSON.stringify(data))
+                            console.log("Create Subscription : " + JSON.stringify(data))
+                        }).catch(function (err) {
+                            debugLog("[error] " + err.errCd + ", " + err.errMsg)
+                            console.log("[error] " + err.errCd + ", " + err.errMsg)
+                        })
+
+                    })
+                    RES.ok(res, {statusCode: 200, installData: {}})
+                    break;
+
+                case "UPDATE":
+                    var evt = req.body;
+                    var installedAppId = evt.updateData.installedApp.installedAppId;
+                    var authToken = evt.updateData.authToken;
+
+                    var keyParam = {installedAppId:installedAppId}
+
+                    OneApi.executeDeleteSubscription(keyParam, authToken).then(function (data) {
+                        subscriptionDevices.forEach(function(subscription){
+                            console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
+                            console.log(subscription)
+
+                            var sectionInfo = evt.updateData.installedApp.config[subscription.sectionId][0]
+                            var subRequest = {
+                                sourceType: 'DEVICE',
+                                device: {
+                                    deviceId: sectionInfo.deviceConfig.deviceId,
+                                    componentId: sectionInfo.deviceConfig.componentId,
+                                    capability: subscription.capabilityId,
+                                    attribute: subscription.attributeId,
+                                    stateChangeOnly: true,
+                                    subscriptionName: `${Eventattribute}_subscription`,
+                                    value: "*"
+                                }
+                            }
+                            var keyParam = {}
+                            keyParam.installedAppId = installedAppId
+                            OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
+                                debugLog("Update Subscription : " + JSON.stringify(data))
+                                console.log("Update Subscription : " + JSON.stringify(data))
+                            }).catch(function (err) {
+                                debugLog("Update Subscription Fail: " + JSON.stringify(data)+" / ("+err.errCd +")"+err.errMsg)
+                                console.log("Install errorCode : " + err.errCd + " message : " + err.errMsg);
+                            })
+                        })
+                    }).catch(function (err) {
+                        debugLog("Delete Subscription : " + installedAppId +" / ("+err.errCd +")"+err.errMsg)
+                        console.log("Delete errorCode : " + err.errCd + " message : " + err.errMsg);
+                        console.dir(err)
+                    });
+                    RES.ok(res, {statusCode: 200, updateData: {}});
+                    break;
+                case "UNINSTALL":
+                    RES.ok(res, {statusCode: 200, uninstallData: {}});
+                    break;
+                case "EVENT":
+                    RES.ok(res, {statusCode: 200, eventData: {}});
+                    NODE.context().flow.set('evt', req.body);
+                    NODE.send({payload: req.body});
+                    break;
+                default:
+                    var msg = "No matched lifecycle : "+req.body.lifecycle;
+                    debugLog("[error] " + msg);
+                    RES.error(res, 400, msg);
+                    break;
             }
         };
 
@@ -477,7 +413,7 @@ module.exports = function (RED) {
                 console.error(err);
             }
         }
-        RED.httpNode.post(this.url, nextHandler, httpMiddleware, corsHandler, nextHandler, jsonParser, nextHandler, this.callback, this.errorHandler);
+        RED.httpNode.post(this.url, nextHandler, httpMiddleware, corsHandler, nextHandler, jsonParser, nextHandler, this.lifecycleHandler, this.errorHandler);
         this.on("close", function () {
             var node = this;
             RED.httpNode._router.stack.forEach(function (route, i, routes) {
@@ -491,13 +427,15 @@ module.exports = function (RED) {
 
     function DeviceConfigNode(n) {
         RED.nodes.createNode(this, n);
-        this.device=n.device
+        Object.assign(this,n)
+        stCompatibleCheck(this)
     }
     RED.nodes.registerType(ST_DEVICE_PROFILE, DeviceConfigNode);
 
     function installedDeviceConfigNode(n) {
         RED.nodes.createNode(this, n)
-        this.device = n.device
+        Object.assign(this,n)
+        stCompatibleCheck(this)
     }
 
     RED.nodes.registerType(ST_MY_DEVICE, installedDeviceConfigNode,{credentials:{
@@ -505,18 +443,12 @@ module.exports = function (RED) {
         }});
 
     function ThingNode(n) {
-        function sendDebug(message) {
-            var msg = {};
-            RED.comms.publish("debug", {"msg": message});
-        }
+
 
         RED.nodes.createNode(this, n)
-        this.deviceNodeId = n.deviceNodeId
-        this.deviceId = n.deviceId
-        this.capabilityId = n.capabilityId
-        this.attributeId = n. attributeId
-        this.sensorCapaDs = n.sensorCapaDs || []
         this.rules = n.rules || []
+        Object.assign(this,n)
+        stCompatibleCheck(this)
 
         if(n.deviceNodeId===''){
             this.warn('Deivce Node error: deviceNodeId is undefined')
@@ -525,67 +457,73 @@ module.exports = function (RED) {
 
         var NODE = this;
 
+        function sendDebug(message) {
+            var msg = {};
+            RED.comms.publish("debug", {id:NODE.id,msg: message});
+        }
+
         this.on('input', function (msg) {
             var onward = [];
             try {
-                var param = {};
-                var confName = RED.nodes.getNode(NODE.deviceNodeId).name;
                 let flowContext = NODE.context().flow.get('evt');
                 if (flowContext == undefined) {
                     // throw new Error("Context Data is null");
                 }
-                //TEST noAutomation
-                var evt = {};
-                var fromEvent = {};
-                var targetInfo = ""
+
+                var deviceConfig = ""
                 var authToken = "";
+                var param = {};
                 param.deviceId = "";
                 var isAutomation=true;
 
                 if (RED.nodes.getNode(NODE.deviceNodeId).type == ST_MY_DEVICE){
                     isAutomation=false;
                     authToken = RED.nodes.getNode(NODE.deviceNodeId).credentials.stAccessToken;
-                    param.deviceId = NODE.deviceId
+                    param.deviceId = NODE.deviceId || RED.nodes.getNode(NODE.deviceNodeId).device.deviceId
                 }else{
                     isAutomation=true;
-                    evt = flowContext.eventData;
-                    fromEvent = evt.events[0].deviceEvent;
-                    targetInfo = evt.installedApp.config[confName][0].deviceConfig;//현재는 section 당 한개의 기기만으로 제한되어있음.[0]처리
-                    authToken = evt.authToken;
-                    param.deviceId = targetInfo.deviceId;
+                    deviceConfig = flowContext.eventData.installedApp.config[NODE.deviceNodeId][0].deviceConfig;//현재는 section 당 한개의 기기만으로 제한되어있음.[0]처리
+                    authToken = flowContext.eventData.authToken;
+                    param.deviceId = deviceConfig.deviceId;
                 }
 
                 if (NODE.type == ST_EVENT_DEVICE) {
-                    sendDebug("[flow] Event:" + NODE.name + "("+confName+")")
-                    var opCheck = false;
-                    for (var idx = 0; idx < NODE.rules.length; idx++) {
-                        var rule = NODE.rules[idx]
-                        var attrHierarchy = rule.hidden1.split("|")
-                        var val = fromEvent.value
+                    var resultMsg=[]
+                    sendDebug("[flow] Event:" + NODE.name + "("+NODE.deviceNodeId+")")
 
-                        if (typeof val == 'object') val = val.value;
-                        if (rule.value == '' || rule.value == undefined) rule.value = "\'\'"
-                        opCheck = operators[rule.operator](val, rule.value);
-                        if (opCheck) {
-                            RED.util.setMessageProperty(msg, 'payload', attrHierarchy[0] + "=\""+val+"\" check success[" + idx + "]")
-                            onward.push(msg)
-                        } else {
-                            onward.push(null)
+                    flowContext.eventData.events.forEach(function(event){
+                        var deviceEvent = event.deviceEvent
+                        if(deviceEvent && deviceEvent.deviceId == deviceConfig.deviceId && deviceEvent.componentId == deviceConfig.componentId ){
+                            resultMsg=[]
+                            NODE.rules.forEach(function(rule){
+                                var opCheck = false
+
+                                if(deviceEvent.capability == rule.capaId && deviceEvent.attribute == rule.attrId){
+                                    opCheck=operators[rule.operator](deviceEvent.value, rule.value)
+                                }
+
+                                if (opCheck) {
+                                    RED.util.setMessageProperty(msg, 'payload', deviceEvent)
+                                    resultMsg.push(msg)
+                                } else {
+                                    resultMsg.push(null)
+                                }
+                            })
                         }
-                    }
+                    })
                     if (NODE.rules.length == 0) {
-                        RED.util.setMessageProperty(msg, 'payload', JSON.stringify(fromEvent));
-                        onward.push(msg);
+                        RED.util.setMessageProperty(msg, 'payload', flowContext.eventData.events);
+                        resultMsg.push(msg);
                     }
-                    NODE.send(onward);
+                    NODE.send(resultMsg)
                 } else if (NODE.type == ST_STATUS_DEVICE) {
                     OneApi.getDeviceStates(param, authToken).then(function (data) {
-                        sendDebug("[flow] Condition:" + NODE.name + "("+confName+")");
+                        sendDebug("[flow] Status :" + NODE.name + "("+NODE.deviceNodeId+")");
                         var deviceStatus = data;
                         var opCheck = false;
 
                         NODE.rules.forEach((rule,idx)=>{
-                            var attributeValue = deviceStatus.components[targetInfo.componentId||'main'][NODE.capabilityId][NODE.attributeId].value;
+                            var attributeValue = deviceStatus.components[deviceConfig.componentId||'main'][NODE.capabilityId][NODE.attributeId].value;
 
                             if (rule.value == '' || rule.value == undefined){
                                 rule.value = "\'\'"
@@ -613,64 +551,51 @@ module.exports = function (RED) {
                         NODE.send(onward);
 
                     }).catch(function (err) {
+                        console.error(err)
                         sendDebug("[error] " + err.errCd + ", " + err.errMsg);
                     });
                 } else {
-                    sendDebug("[flow] Action:" + NODE.name + "("+confName+")");
-                    //multiple : true 기능 지원 으로 (해당 deviceid의 모든 기기를 동시에 제어)
-                    var confName = RED.nodes.getNode(NODE.deviceNodeId).name;
-                    var multipleCmd = [];
+                    sendDebug("[flow] Action:" + NODE.name + "("+NODE.deviceNodeId+")");
 
-                    var targetInfoArr=[];
-                    if(isAutomation){
-                        targetInfoArr = evt.installedApp.config[confName];
-                    }else{
-                        targetInfoArr=[{deviceConfig:{componentId:"main"}}]
-                    }
+                    var commandArr = [];
+                    var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main'
+                    for(var rule of NODE.rules){
+                        var cmd = {component: componentId || "main", capability: rule.capaId, command: rule.attrId}
+                        cmd.arguments = []
 
-                    for (var idx = 0; idx < targetInfoArr.length; idx++) {
-                        targetInfo = targetInfoArr[idx].deviceConfig;
-                        var commandArr = [];
-                        for(var rule of NODE.rules){
-                            var cmd = {"component": targetInfo.componentId || "main", "capability": rule.capaId, "command": rule.attrId};
-                            cmd.arguments = [];
-
-                            var argObj={}
-                            rule.args.forEach(arg=>{
-                                if(arg.type != 'object'){
-                                    if(arg.type=='integer'||arg.type=='number') {
-                                        cmd.arguments.push(Number(arg.value))
-                                    }else{
-                                        cmd.arguments.push(arg.value)
-                                    }
+                        var argObj={}
+                        rule.args.forEach(arg=>{
+                            if(arg.type != 'object'){
+                                if(arg.type=='integer'||arg.type=='number') {
+                                    cmd.arguments.push(Number(arg.value))
                                 }else{
-                                    var argValue
-                                    if(arg.propType=='integer'||arg.propType=='number') {
-                                        argValue = Number(arg.value)
-                                    }else{
-                                        argValue = arg.value
-                                    }
-                                    argObj[arg.propId]=argValue
+                                    cmd.arguments.push(arg.value)
                                 }
-                            })
-                            if(Object.keys(argObj).length>0){
-                                cmd.arguments.push(argObj)
+                            }else{
+                                var argValue
+                                if(arg.propType=='integer'||arg.propType=='number') {
+                                    argValue = Number(arg.value)
+                                }else{
+                                    argValue = arg.value
+                                }
+                                argObj[arg.propId]=argValue
                             }
-                            commandArr.push(cmd);
+                        })
+                        if(Object.keys(argObj).length>0){
+                            cmd.arguments.push(argObj)
                         }
-                        if (commandArr.length > 0) {
-                            multipleCmd.push(OneApi.executeDeviceCommands(param, {"commands": commandArr}, authToken));
-                        }
+                        commandArr.push(cmd);
                     }
-                    if (multipleCmd.length > 0) {
-                        Promise.all(multipleCmd).then(function (data) {
-                            RED.util.setMessageProperty(msg, 'payload', "command execute success");
+                    if (commandArr.length > 0) {
+                        OneApi.executeDeviceCommands(param, {commands: commandArr}, authToken).then(function (data) {
+                            RED.util.setMessageProperty(msg, 'payload', commandArr);
                             onward.push(msg);
                             NODE.send(onward);
                         }).catch(function (err) {
+                            console.error(err)
                             sendDebug("[error] " + err.errCd + ", " + err.errMsg);
-                        });
-                    } else {
+                        })
+                    }else {
                         RED.util.setMessageProperty(msg, 'payload', "command is empty");
                         onward.push(msg);
                         NODE.send(onward);
@@ -685,5 +610,70 @@ module.exports = function (RED) {
     RED.nodes.registerType(ST_EVENT_DEVICE, ThingNode);
     RED.nodes.registerType(ST_STATUS_DEVICE, ThingNode);
     RED.nodes.registerType(ST_COMMAND_DEVICE, ThingNode);
+    function stCompatibleCheck(node){
+        if(ST_NODES.includes(node.type) && (node.capability || (node.device && typeof node.device.capabilities == 'object'))) {
+            switch (node.type) {
+                case ST_DEVICE_PROFILE:
+                    node.capabilityId = node.capability
+                    delete node.capability
+                    delete node.device
+                    break;
+                case ST_MY_DEVICE:
+                    if(node.device){
+                        var capas = []
+                        node.device.components.forEach(component=>{
+                            component.capabilities.forEach(capability=>{
+                                capas.push(capability.id)
+                            })
+                        })
+                        node.device.capabilities = capas
+                    }
+                    break;
+                case ST_EVENT_DEVICE:
+                case ST_STATUS_DEVICE:
+                case ST_COMMAND_DEVICE:
+                    node.deviceNodeId=node.deviceId
+                    node.capabilityId=node.capability
+                    node.attributeId=node.attribute
+
+                    node.rules=[]
+                    if(node.sensorAttrDs && node.sensorAttrDs.length>0){
+                        for(var r of node.sensorAttrDs){
+                            var rule = {}
+                            rule.capaId=node.capabilityId
+                            rule.attrId=r.col1
+                            rule.operator=r.col2
+                            rule.value=r.col3
+                            rule.valueType=(r.col4=='num')?'integer':'string'
+                            node.rules.push(rule)
+                        }
+                    }
+                    if(node.sensorCapaDs && node.sensorCapaDs.length>0){
+                        for(var r of node.sensorCapaDs){
+                            var rule = {}
+                            rule.capaId=r.col1
+                            rule.attrId=r.col2
+                            rule.args=[]
+                            var typesObj = JSON.parse(r.argType)
+                            var idx = 0
+                            for(var argName in typesObj){
+                                var arg = {name:argName,type:typesObj[argName],value:r['col'+(3+idx)]}
+                                rule.args.push(arg)
+                                idx++
+                            }
+                            node.rules.push(rule)
+                        }
+                    }
+
+                    delete node.deviceId
+                    delete node.capability
+                    delete node.attribute
+                    delete node.sensorAttrDs
+                    delete node.sensorCapaDs
+
+                    break;
+            }
+        }
+    }
 
 }

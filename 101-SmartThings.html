@@ -134,7 +134,6 @@
     <p><b>How to get the Public Key</b></p>
     <p>When you create SmartApp on the SmartThing Cloud, you can get the Public Key. You can regist Automation on the SmartThings Developer Workspace.</p>
     <p><a href="https://smartthings.developer.samsung.com/docs/workspace/tutorials/create-an-automation.html#Register-the-Automation" target="_blank">more...</a></p>
-
 </script>
 
 <script type="text/x-red" data-template-name="event-device">
@@ -208,9 +207,6 @@
             <span class="sensor-container-row"> Attribute</span>
         </label>
         <select style="width:50%" id="node-input-attributeId" class="form-row"/>
-<!--        <a id="attribute-info" class="editor-button" style="margin-left: 10px;cursor: default;">-->
-<!--            <i class="fa fa-info"></i>-->
-<!--        </a>-->
     </div>
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
@@ -344,9 +340,9 @@
         }
         this.getCommandArguments = function (capabilityId, commandId) {
             if (_capabilities[capabilityId] && _capabilities[capabilityId].commands && _capabilities[capabilityId].commands[commandId]) {
-                return _capabilities[capabilityId].commands[commandId].arguments || {}
+                return _capabilities[capabilityId].commands[commandId].arguments || []
             } else {
-                return {}
+                return []
             }
         }
 
@@ -370,10 +366,10 @@
 
     var validateAutomationNext = function (id) {
         //Automation 뒤에는 on device(event) 만 올 수 있다 (input 1, 해당 input port 에 연결된 wires 도 하나)
-        var backLinks = RED.nodes.filterLinks({"source": {"id": id}});
-        if (backLinks.length != 1) return false;
-        if (backLinks[0].target["type"] !== "event-device") return false;
-        return true;
+        var backLinks = RED.nodes.filterLinks({"source": {"id": id}})
+        if (backLinks.length != 1) return false
+        if (backLinks[0].target["type"] !== "event-device") return false
+        return true
     }
 
     var profiles = new Profiles();
@@ -396,8 +392,10 @@
         paletteLabel: "Device Profile",
         color: "rgb(168,168,168)",
         defaults: {
+            bid: {value:''},
             name: {value: "", required: true},
-            capabilityId: {value: "", required: true}
+            capabilityId: {value: "", required: true},
+            capability:{value:''}
         },
         inputs: 0,
         outputs: 0,
@@ -410,7 +408,11 @@
             }
         },
         oneditprepare: function () {
-            var NODE = this;
+            var NODE = this
+            if(NODE.bid===''){
+                NODE.bid=NODE.id
+            }
+
             $("#node-input-capabilityId").empty();
             $("#node-input-capabilityId").append($("<option></option>").val("").text(""));
             Object.keys(profiles.getAllCapabilities())
@@ -426,9 +428,10 @@
         paletteLabel: "My Device",
         color: "rgb(231,147,173)",
         defaults: {
+            bid: {value:''},
             name: {value: "", required: true},
             label: {value: ""},
-            device: {}
+            device: {value:''}
         },
         credentials: {
             stAccessToken: {type: 'text', required: true}
@@ -445,6 +448,9 @@
         },
         oneditprepare: function () {
             var NODE = this;
+            if(NODE.bid===''){
+                NODE.bid=NODE.id
+            }
 
             $("#my-device-list-container")
                 .css('min-height', '400px')
@@ -452,10 +458,10 @@
                 .editableList({
                     addButton: "GET SmartThings Device List",
                     addItem: function (row, index, data) {
-                        var device = data || {};
+                        var device = data || {}
 
-                        row.data('device', device);
-                        $('<div>').text(device.label).css('font-weight', 'bold').appendTo(row);
+                        row.data('device', device)
+                        $('<div>').text(device.label).css('font-weight', 'bold').appendTo(row)
 
                         device.capabilities = []
                         if (Array.isArray(device.components)) {
@@ -467,16 +473,16 @@
                                 }
                             })
                         }
-                        $('<div>').text(device.capabilities.join(", ")).appendTo(row);
+                        $('<div>').text(device.capabilities.join(", ")).appendTo(row)
 
-                        var selectButton = $('<a/>', {href: "#", class: "red-ui-editableList-item-remove editor-button editor-button-small"}).appendTo(row);
+                        var selectButton = $('<a/>', {href: "#", class: "red-ui-editableList-item-remove editor-button editor-button-small"}).appendTo(row)
                         selectButton.text('select')
                         selectButton.on('click', function () {
                             $('#my-device-list-container .history-stack-selected').removeClass('history-stack-selected')
-                            var device = row.data('device');
-                            $('#node-input-name').val(device.name);
-                            $('#node-input-label').val(device.label);
-                            NODE.device = device;
+                            var device = row.data('device')
+                            $('#node-input-name').val(device.name)
+                            $('#node-input-label').val(device.label)
+                            NODE.device = device
                         })
                     },
                     resizeItem: function (container) {
@@ -681,6 +687,7 @@
         THING.type = node.type;
         THING.form = formObj;
         THING.target = (node.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
+        THING.initContainer()
 
         THING.initDeviceNodeSelect(node.deviceNodeId)
         THING.initCapabilitySelect(node.capabilityId)
@@ -741,7 +748,7 @@
                     deviceNodeIdSelect.append($("<option></option>").val(node.id).data('device', node.device).text("(My)" + node.label))
                 }
             })
-            if (initDeviceNodeId) {
+            if (initDeviceNodeId && deviceNodeIdSelect.find('option[value="'+initDeviceNodeId+'"]').length>0) {
                 deviceNodeIdSelect.val(initDeviceNodeId)
             }
         },
@@ -772,7 +779,7 @@
                 this.form.deviceNodeId.addClass("input-error")
             }
 
-            if (initCapabilityId) {
+            if (initCapabilityId && capabilityIdSelect.find('option[value="'+initCapabilityId+'"]').length>0) {
                 capabilityIdSelect.val(initCapabilityId)
             }
         },
@@ -798,9 +805,231 @@
                 attributeIdSelect.attr('readonly', false)
                 attributeIdSelect.attr('disabled', false)
             }
-            if (initAttributeId) {
+            if (initAttributeId && attributeIdSelect.find('option[value="'+initAttributeId+'"]').length>0) {
                 attributeIdSelect.val(initAttributeId)
             }
+        },
+        initContainer:function(){
+            $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
+                addButton: false,
+                addItem: function (container, idx, data) {
+                    var capabilityId = $("#node-input-capabilityId option:selected").val()
+                    var commandId = $("#node-input-attributeId option:selected").val()
+                    var arguments = profiles.getCommandArguments(capabilityId, commandId)
+
+                    var row = $('<div/>', {style: "margin-left:10px;height: auto;"}).appendTo(container);
+                    $('<span>', {class: "capaId"}).appendTo(row).text(capabilityId)
+                    $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row)
+                    $('<span>', {class: "attrId"}).appendTo(row).text(commandId)
+                    var argNames = arguments.map(function (arg) {
+                        return arg.name
+                    }).join(', ')
+                    $('<span>').appendTo(row).text(' ( ' + argNames + ' )')
+
+                    if (arguments.length > 0) {
+                        arguments.forEach(function (arg) {
+                            var row2 = $('<div/>', {style: "height:auto;margin:15px 5px 5px auto;width:fit-content;"}).appendTo(row)
+
+                            if (arg.schema.type == 'string' || arg.schema.type == 'number' || arg.schema.type == 'integer') {
+                                row2.text(arg.name + ' : ')
+                                var valueField;
+                                if (arg.schema.enum) {
+                                    valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row2);
+                                    arg.schema.enum.forEach(function (value) {
+                                        valueField.append($("<option></option>").val(value).text(value))
+                                    })
+                                } else {
+                                    var holder = arg.schema.title || arg.name
+                                    if (arg.schema.hasOwnProperty('minimum') || arg.schema.hasOwnProperty('maximum')) {
+                                        holder += '('
+                                        holder += arg.schema.hasOwnProperty('minimum') ? arg.schema.minimum : ' '
+                                        holder += '~'
+                                        holder += arg.schema.hasOwnProperty('maximum') ? arg.schema.maximum : ' '
+                                        holder += ')'
+                                    }
+
+                                    valueField = $("<input/>", {style: "width:auto;margin-right:5px;", placeholder: holder}).appendTo(row2)
+
+                                    var valueType = arg.schema.type
+                                    if (valueType == 'integer' || valueType == 'number') {
+                                        valueField.typedInput({default: "num", types: ["num"]})
+                                    } else {
+                                        valueField.typedInput({default: "str", types: ["str"]})
+                                    }
+                                    valueField.typedInput('width','200px')
+                                }
+                                valueField.attr('argName', arg.name)
+                                valueField.attr('argType', arg.schema.type)
+                                valueField.addClass('argValue')
+                            } else if (arg.schema.title == 'COLOR_MAP') {
+                                row2.text('color : ')
+                                var colorField = $("<input/>", {
+                                    argName: "color",
+                                    argType: "object",
+                                    propId: 'hex',
+                                    propType: 'string',
+                                    class: 'argValue',
+                                    type: 'color',
+                                    value: "#3366ff",
+                                    style: "width:200px;margin-right:5px;"
+                                }).appendTo(row2)
+                            } else if (arg.schema.type == 'object') {
+                                if (arg.schema.properties) {
+                                    Object.entries(arg.schema.properties).forEach(function ([propertyId, property]) {
+                                        row2.text(propertyId + ' : ')
+                                        valueField = $("<input/>", {style: "width:auto;margin-right:5px;", placeholder: holder}).appendTo(row2)
+                                        var valueType = property.type
+
+                                        if (valueType == 'integer' || valueType == 'number') {
+                                            valueField.typedInput({default: "num", types: ["num"]})
+                                        } else {
+                                            valueField.typedInput({default: "str", types: ["str"]})
+                                        }
+                                        valueField.attr('argName', arg.name)
+                                        valueField.attr('argType', arg.schema.type)
+                                        valueField.attr('propId', propertyId)
+                                        valueField.attr('propType', property.type)
+                                        valueField.addClass('argValue')
+                                    })
+                                }
+                            }
+                        })
+                    }
+
+                    if (data && data.args) {
+                        data.args.forEach(function (arg) {
+                            var valueField
+                            if(arg.hasOwnProperty('propId')){
+                                valueField = container.find('.argValue[argName='+arg.name+'][propId='+arg.propId+']')
+                            }else{
+                                valueField = container.find('.argValue[argName=' + arg.name + ']')
+                            }
+                            if (valueField.hasClass('red-ui-typedInput')) {
+                                valueField.typedInput('value', arg.value)
+                            } else {
+                                valueField.val(arg.value)
+                            }
+                        })
+                    }
+
+                    if ($("#cmd-list-container").editableList('items').length > 1) {
+                        $("#cmd-list-container").find(".outputSpan").remove();
+                    }
+
+                },
+                resizeItem: function (container) {
+                },
+                removeItem: function (opt) {
+                },
+                sortItems: function (rules) {
+                },
+                sortable: false,
+                removable: false
+            });
+
+            $("#attr-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
+                addItem: function (container, idx, data) {
+                    var capabilityId = $("#node-input-capabilityId option:selected").val()
+                    var attributeId = $("#node-input-attributeId option:selected").val()
+                    var attribute = profiles.getAttributeSchema(capabilityId, attributeId)
+
+                    var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
+
+                    var attributeIdField = $('<input/>', {
+                        class: "attrId ruleField",
+                        capaId: capabilityId,
+                        style: "width:auto; margin-right:5px;max-width:35%",
+                        type: "text",
+                        readonly: "true"
+                    }).appendTo(row).val(attributeId)
+                    var operatorField = $('<select/>', {class: "attrOperator ruleField", style: "width:auto; margin-right: 5px; text-align: center;"}).appendTo(row)
+                    if(attribute.properties.value.title=='Iso8601Date'){
+                        attribute.properties.value.type='Iso8601Date'
+                    }
+                    if (operator[attribute.properties.value.type]) {
+                        operator[attribute.properties.value.type].forEach(function (op) {
+                            operatorField.append($("<option></option>").val(op.v).text(op.t))
+                        })
+                    }
+                    //attribute properties.value
+                    var valueField;
+                    if (attribute.properties.value.type == 'array') {
+                        valueField = $("<select/>", {style: "width:40%;margin-right:5px;"}).appendTo(row);
+                        attribute.properties.value.items.enum.forEach(function (value) {
+                            valueField.append($("<option></option>").val(value).text(value))
+                        })
+                    } else if (attribute.properties.value.enum) {
+                        valueField = $("<select/>", {style: "width:40%;margin-right:5px;"}).appendTo(row);
+
+                        attribute.properties.value.enum.forEach(function (value) {
+                            valueField.append($("<option></option>").val(value).text(value))
+                        })
+                    } else {
+                        var holder = attribute.properties.value.title || attributeId
+                        if (attribute.properties.value.hasOwnProperty('minimum') || attribute.properties.value.hasOwnProperty('maximum')) {
+                            holder += '('
+                            holder += attribute.properties.value.hasOwnProperty('minimum') ? attribute.properties.value.minimum : ' '
+                            holder += '~'
+                            holder += attribute.properties.value.hasOwnProperty('maximum') ? attribute.properties.value.maximum : ' '
+                            holder += ')'
+                        }
+
+                        valueField = $("<input/>", {style: "margin-right:5px;", placeholder: holder}).appendTo(row)
+
+                        var valueType = attribute.properties.value.type
+                        if (valueType == 'integer' || valueType == 'number') {
+                            valueField.typedInput({default: "num", types: ["num"]})
+                        } else {
+                            valueField.typedInput({default: "str", types: ["str"]})
+                        }
+                        if(valueType == 'Iso8601Date'){
+                            valueField.typedInput('value',new Date().toISOString().substr(0,19)+'Z')
+                        }
+                        valueField.typedInput('width','40%')
+                    }
+                    valueField.attr('valueType', attribute.properties.value.type)
+                    valueField.addClass('attrValue ruleField')
+
+                    //'unit' always has string enum
+                    var unitField
+                    if (attribute.properties.unit && attribute.properties.unit.enum) {
+                        unitField = $("<select/>", {class: 'attrUnit ruleField', style: "width:auto;margin-right:5px;"}).appendTo(row);
+                        attribute.properties.unit.enum.forEach(function (value) {
+                            unitField.append($('<option>').val(value).text(value))
+                        })
+                        if (attribute.properties.unit.default) {
+                            unitField.val(attribute.properties.unit.default)
+                        }
+                    }
+
+                    if(container.find('.ruleField').length>3){
+                        container.find('.attrId').css('width','20%')
+                    }
+                    // var portSpan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
+                    // portSpan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
+                    if (data) {
+                        data.operator && operatorField.val(data.operator)
+                        if (data.value) {
+                            if (valueField.prop('tagName') == 'INPUT') {
+                                valueField.typedInput('value', data.value)
+                            } else {
+                                valueField.val(data.value)
+                            }
+                        }
+                        data.value && valueField.find('.attrValue').val(data.value)
+                        data.unit && unitField && unitField.val(data.unit)
+                    }
+                },
+                resizeItem: function (container) {
+
+                },
+                removeItem: function (opt) {
+                },
+                sortItems: function (rules) {
+                },
+                sortable: true,
+                removable: true
+            });
         },
         //type값에 따른 페이지 초기화 함수
         initAttributeContainer: function (rules) {
@@ -810,46 +1039,14 @@
                 for (var i = 0; i < this.node.rules.length; i++) {
                     var data = this.node.rules[i];
                     if (data.isInit) break;
-                    this.form.container.editableList('addItem', data);
+                    if(data.capaId == this.form.capabilityId.val() && data.attrId == this.form.attributeId.val()){
+                        this.form.container.editableList('addItem', data);
+                    }
                 }
             }
 
             if (this.form.attributeId.val() && this.form.container.editableList('items').length == 0) {
                 this.form.container.editableList('addItem')
-            }
-        },
-        //typedInput의 width를 조정한다.
-        resizeRule: function (container) {
-            var contWidth = container.width();
-            var typeField = container.find(".red-ui-typedInput");
-
-            if (this.type == ST_COMMAND_DEVICE) {
-                //input의 크기를 가변적으로 하기위해 기준을 command attribute 셀렉트 박스로 잡았다.
-                var standardWidth = $("#node-input-attributeId").width();
-
-                //기본 인풋박스의 크기를 정해놓은후
-                typeField.each(function (idx, ele) {
-                    $(ele).typedInput("width", contWidth - standardWidth - 70);
-                });
-
-                //만약 줄바꿈이 된다면 input의 크기를 좀더 여유있게 설정한다.
-                if (container.height() > 50) {
-                    typeField.each(function (idx, ele) {
-                        // if (container.find('br').length == 0) $(ele).parent().parent().before('</br>');
-                        $(ele).typedInput("width", contWidth - standardWidth);
-                    });
-                }
-
-            } else {
-                var field1 = container.find(".field1");
-                typeField.typedInput("width", field1.width() + 11);
-
-                //만약 줄바꿈이 된다면 selectbox의 크기를 좀더 적게 설정한다.
-                if (container.height() > 50) {
-                    container.find("select").each(function (idx, ele) {
-                        $(ele).css("width", "30%");
-                    });
-                }
             }
         }
     };
@@ -909,233 +1106,15 @@
         },
         oneditprepare: function () {
             var NODE = this;
+
             var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
             NODE.target = target
-
-            $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
-                addButton: false,
-                addItem: function (container, idx, data) {
-                    var capabilityId = $("#node-input-capabilityId option:selected").val()
-                    var commandId = $("#node-input-attributeId option:selected").val()
-                    var arguments = profiles.getCommandArguments(capabilityId, commandId)
-
-                    var row = $('<div/>', {style: "margin-left:10px;height: auto;"}).appendTo(container);
-                    $('<span>', {class: "capaId"}).appendTo(row).text(capabilityId)
-                    $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row)
-                    $('<span>', {class: "attrId"}).appendTo(row).text(commandId)
-                    var argNames = arguments.map(function (arg) {
-                        return arg.name
-                    }).join(', ')
-                    $('<span>').appendTo(row).text(' ( ' + argNames + ' )')
-
-                    if (arguments.length > 0) {
-                        arguments.forEach(function (arg) {
-                            if (arg.schema.type == 'string' || arg.schema.type == 'number' || arg.schema.type == 'integer') {
-                                var row2 = $('<div/>', {style: "height:auto;margin:5px 5px 0px auto;width:fit-content;"}).appendTo(row);
-                                row2.text(arg.name + ' : ')
-                                var valueField;
-                                if (arg.schema.enum) {
-                                    valueField = $("<select/>", {style: "width:auto;margin-right:5px;"}).appendTo(row2);
-
-                                    arg.schema.enum.forEach(function (value) {
-                                        valueField.append($("<option></option>").val(value).text(value))
-                                    })
-                                } else {
-                                    var holder = arg.schema.title || arg.name
-                                    if (arg.schema.hasOwnProperty('minimum') || arg.schema.hasOwnProperty('maximum')) {
-                                        holder += '('
-                                        holder += arg.schema.hasOwnProperty('minimum') ? arg.schema.minimum : ' '
-                                        holder += '~'
-                                        holder += arg.schema.hasOwnProperty('maximum') ? arg.schema.maximum : ' '
-                                        holder += ')'
-                                    }
-
-                                    valueField = $("<input/>", {style: "width:auto;margin-right:5px;", placeholder: holder}).appendTo(row2)
-
-                                    var valueType = arg.schema.type
-                                    if (valueType == 'integer' || valueType == 'number') {
-                                        valueField.typedInput({default: "num", types: ["num"]})
-                                    } else {
-                                        valueField.typedInput({default: "str", types: ["str"]})
-                                    }
-                                }
-                                valueField.attr('argName', arg.name)
-                                valueField.attr('argType', arg.schema.type)
-                                valueField.addClass('argValue')
-                            } else if (arg.schema.title == 'COLOR_MAP') {
-                                var row2 = $('<div/>', {style: "height:auto;margin-left:5px 5px 0px auto;width:fit-content;"}).appendTo(row);
-                                row2.text('color : ')
-                                var colorField = $("<input/>", {
-                                    argName: "color",
-                                    argType: "object",
-                                    propId: 'hex',
-                                    propType: 'string',
-                                    class: 'argValue',
-                                    type: 'color',
-                                    value: "#3366ff",
-                                    style: "width:150px;margin-right:5px;"
-                                }).appendTo(row2)
-                            } else if (arg.schema.type == 'object') {
-                                if (arg.schema.properties) {
-
-                                    Object.entries(arg.schema.properties).forEach(function ([propertyId, property]) {
-                                        var row2 = $('<div/>', {style: "height:auto;margin:5px 5px 0px auto;width:fit-content;"}).appendTo(row);
-                                        row2.text(propertyId + ' : ')
-                                        valueField = $("<input/>", {style: "width:auto;margin-right:5px;", placeholder: holder}).appendTo(row2)
-                                        var valueType = property.type
-
-                                        if (valueType == 'integer' || valueType == 'number') {
-                                            valueField.typedInput({default: "num", types: ["num"]})
-                                        } else {
-                                            valueField.typedInput({default: "str", types: ["str"]})
-                                        }
-                                        valueField.attr('argName', arg.name)//use propertyID as argument name for set value
-                                        valueField.attr('argType', arg.schema.type)
-                                        valueField.attr('propId', propertyId)
-                                        valueField.attr('propType', property.type)
-                                        valueField.addClass('argValue')
-                                    })
-                                }
-                            }
-                        })
-                    }
-
-                    if (data && data.args) {
-                        data.args.forEach(function (arg) {
-                            var valueField
-                            if(arg.hasOwnProperty('propId')){
-                                valueField = container.find('.argValue[argName='+arg.name+'][propId='+arg.propId+']')
-                            }else{
-                                valueField = container.find('.argValue[argName=' + arg.name + ']')
-                            }
-                            if (valueField.hasClass('red-ui-typedInput')) {
-                                valueField.typedInput('value', arg.value)
-                            } else {
-                                valueField.val(arg.value)
-                            }
-                        })
-                    }
-
-                    if ($("#cmd-list-container").editableList('items').length > 1) {
-                        $("#cmd-list-container").find(".outputSpan").remove();
-                    }
-
-                },
-                resizeItem: function (container) {
-                    eventHandler.resizeRule(container);
-                },
-                removeItem: function (opt) {
-                },
-                sortItems: function (rules) {
-                },
-                sortable: false,
-                removable: false
-            });
-
-            $("#attr-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
-                addItem: function (container, idx, data) {
-                    var capabilityId = $("#node-input-capabilityId option:selected").val()
-                    var attributeId = $("#node-input-attributeId option:selected").val()
-                    var attribute = profiles.getAttributeSchema(capabilityId, attributeId)
-
-                    var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
-
-                    var attributeIdField = $('<input/>', {
-                        class: "attrId",
-                        capaId: capabilityId,
-                        style: "width:auto; margin-right:5px;max-width:35%",
-                        type: "text",
-                        readonly: "true"
-                    }).appendTo(row).val(attributeId)
-                    var operatorField = $('<select/>', {class: "attrOperator", style: "width:auto; margin-right: 5px; text-align: center;"}).appendTo(row)
-                    if(attribute.properties.value.title=='Iso8601Date'){
-                        attribute.properties.value.type='Iso8601Date'
-                    }
-                    if (operator[attribute.properties.value.type]) {
-                        operator[attribute.properties.value.type].forEach(function (op) {
-                            operatorField.append($("<option></option>").val(op.v).text(op.t))
-                        })
-                    }
-                    //attribute properties.value
-                    var valueField;
-                    if (attribute.properties.value.type == 'array') {
-                        valueField = $("<select/>", {style: "max-width:45%;width:auto;margin-right:5px;"}).appendTo(row);
-                        attribute.properties.value.items.enum.forEach(function (value) {
-                            valueField.append($("<option></option>").val(value).text(value))
-                        })
-                    } else if (attribute.properties.value.enum) {
-                        valueField = $("<select/>", {style: "max-width:45%;width:auto;margin-right:5px;"}).appendTo(row);
-
-                        attribute.properties.value.enum.forEach(function (value) {
-                            valueField.append($("<option></option>").val(value).text(value))
-                        })
-                    } else {
-                        var holder = attribute.properties.value.title || attributeId
-                        if (attribute.properties.value.hasOwnProperty('minimum') || attribute.properties.value.hasOwnProperty('maximum')) {
-                            holder += '('
-                            holder += attribute.properties.value.hasOwnProperty('minimum') ? attribute.properties.value.minimum : ' '
-                            holder += '~'
-                            holder += attribute.properties.value.hasOwnProperty('maximum') ? attribute.properties.value.maximum : ' '
-                            holder += ')'
-                        }
-
-                        valueField = $("<input/>", {style: "max-width:45%;width:45%;margin-right:5px;", placeholder: holder}).appendTo(row)
-
-                        var valueType = attribute.properties.value.type
-                        if (valueType == 'integer' || valueType == 'number') {
-                            valueField.typedInput({default: "num", types: ["num"]})
-                        } else {
-                            valueField.typedInput({default: "str", types: ["str"]})
-                        }
-                        if(valueType == 'Iso8601Date'){
-                            valueField.typedInput('value',new Date().toISOString().substr(0,19)+'Z')
-                        }
-                    }
-                    valueField.attr('valueType', attribute.properties.value.type)
-                    valueField.addClass('attrValue')
-
-                    //'unit' always has string enum
-                    var unitField
-                    if (attribute.properties.unit && attribute.properties.unit.enum) {
-                        unitField = $("<select/>", {class: 'attrUnit', style: "max-width:45%;width:auto;margin-right:5px;"}).appendTo(row);
-                        attribute.properties.unit.enum.forEach(function (value) {
-                            unitField.append($('<option>').val(value).text(value))
-                        })
-                        if (attribute.properties.unit.default) {
-                            unitField.val(attribute.properties.unit.default)
-                        }
-                    }
-                    // var portSpan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
-                    // portSpan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
-                    if (data) {
-                        data.operator && operatorField.val(data.operator)
-                        if (data.value) {
-                            if (valueField.prop('tagName') == 'INPUT') {
-                                valueField.typedInput('value', data.value)
-                            } else {
-                                valueField.val(data.value)
-                            }
-                        }
-                        data.value && valueField.find('.attrValue').val(data.value)
-                        data.unit && unitField && unitField.val(data.unit)
-                    }
-                },
-                resizeItem: function (container) {
-                },
-                removeItem: function (opt) {
-                },
-                sortItems: function (rules) {
-                },
-                sortable: true,
-                removable: true
-            });
 
             var formObj = {
                 deviceNodeId: $("#node-input-deviceNodeId"),
                 capabilityId: $("#node-input-capabilityId"),
                 attributeId: $("#node-input-attributeId"),
                 container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container")),
-                attributeInfoPopover: this.attributeInfoPopover
             }
 
             var eventHandler = new DeviceNodeEventHandler(formObj, NODE)
@@ -1145,12 +1124,12 @@
             var NODE = this;
             NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId || ''
 
-            NODE.rules = [];
+            NODE.rules = []
 
             $("#cmd-list-container").editableList('items').each(function (idx, item) {
                 var rule = {};
                 rule.capaId = item.find('.capaId').text()
-                rule.attrId = item.find(".attrId").text();
+                rule.attrId = item.find(".attrId").text()
                 rule.args = [];
                 item.find(".argValue").each(function (idx, _arg) {
                     var arg = {}
@@ -1171,7 +1150,7 @@
                         rule.args.push({name: 'color', type: 'object', propId: 'hue', propType: 'number', value: hsl.hue})
                         rule.args.push({name: 'color', type: 'object', propId: 'saturation', propType: 'number', value: hsl.saturation})
                     }
-                });
+                })
                 NODE.rules.push(rule)
             })
 
@@ -1250,7 +1229,7 @@
             componentID: {value: ""},
             capabilityId: {value: "", required: true},
             attributeId: {value: "", required: true},
-            rules: {value: [{isInit: true, col1: "", hidden1: "", col2: "", col3: "", col4: "", col5: "", col6: ""}]},
+            rules: {value: [{isInit: true}]},
             outputs: {value: 1}
         }
         this.defaults = defaultsConfig
