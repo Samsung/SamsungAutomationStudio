@@ -528,8 +528,8 @@
                 NODE.deviceList = list
                 addItems(list)
             }
-            $("#my-device-list-div > div > a.red-ui-button").off('click');
-            $("#my-device-list-div > div > a.red-ui-button").on('click', function (evt) {
+            $('#my-device-list-div > div > a.editor-button,a.red-ui-button').off('click');
+            $('#my-device-list-div > div > a.editor-button,a.red-ui-button').on('click', function (evt) {
                 evt.preventDefault();
                 var token = $('#node-input-stAccessToken').val();
                 SmartThingsApi.getDeviceList(token, getItemsSuccess, getItemsFail);
