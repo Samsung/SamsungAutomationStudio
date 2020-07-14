@@ -378,24 +378,54 @@
 
 <!-- Node Script -->
 <script type="text/javascript">
+    const ST_NODES_CATEGORY = "Samsung AutomationStudio"
     const ST_EVENT_DEVICE = "event-device";
     const ST_STATUS_DEVICE = "status-device";
     const ST_COMMAND_DEVICE = "command-device";
     const ST_DEVICE_PROFILE = 'device-profile';
     const ST_MY_DEVICE = 'installed-device';
     const ST_AUTOMATION = 'automation';
+    const ST_DEVICE_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE]
     // const ST_NODE_VERSION = 200330
     var stDevice = {};
 
+    function STRefCheck(){
+        var map = {}
+        var workspaceId = RED.workspaces.active()
+        RED.nodes.filterNodes({z: workspaceId}).forEach(function(node){
+            if(node.type==ST_DEVICE_PROFILE || node.type == ST_MY_DEVICE){
+                if(node.id != node.profileId){
+                    //node는 순서대로 생성되기 때문에, 그 후에 profileId가 같은 node는 복사된 node.
+                    if(map.hasOwnProperty(node.profileId)){
+                        node.profileId=node.id
+                    }else{
+                        map[node.profileId]=node
+                    }
+                }
+            }
+        })
+
+        RED.nodes.filterNodes({z: workspaceId}).forEach(function(node){
+            if(ST_DEVICE_NODES.includes(node.type) && map.hasOwnProperty(node.deviceNodeId)){
+                node.deviceNodeId=map[node.deviceNodeId].id
+                RED.editor.validateNode(node)
+            }
+        })
+
+        for(var profId in map){
+            map[profId].profileId = map[profId].id
+        }
+        RED.view.redraw()
+    }
+
     RED.nodes.registerType(ST_DEVICE_PROFILE, {
-        category: "Samsung AutomationStudio",
+        category: ST_NODES_CATEGORY,
         paletteLabel: "Device Profile",
         color: "rgb(168,168,168)",
         defaults: {
-            bid: {value:''},
             name: {value: "", required: true},
             capabilityId: {value: "", required: true},
-            capability:{value:''}
+            profileId: {value:""}
         },
         inputs: 0,
         outputs: 0,
@@ -409,10 +439,6 @@
         },
         oneditprepare: function () {
             var NODE = this
-            if(NODE.bid===''){
-                NODE.bid=NODE.id
-            }
-
             $("#node-input-capabilityId").empty();
             $("#node-input-capabilityId").append($("<option></option>").val("").text(""));
             Object.keys(profiles.getAllCapabilities())
@@ -420,18 +446,36 @@
                     $("<option></option>").val(capability).text(capability).appendTo(("#node-input-capabilityId"))
                 })
             $("#node-input-capabilityId").val(NODE.capabilityId);
+
+            //profileId: DeviceNode 참조 backup ID
+            if(NODE.profileId==''){
+                NODE.profileId=NODE.id
+            }else if(NODE.profileId!=NODE.id){
+                 var hasBrokenRef = RED.nodes.filterNodes({z: NODE.z, type: NODE.type}).some(function(node){
+                     if(node.id == NODE.id){
+                         return true
+                     }
+                     if(node.id == NODE.profileId){
+                         NODE.profileId=NODE.id
+                         return false;
+                     }
+                 })
+                if(hasBrokenRef){
+                    STRefCheck()
+                }
+            }
         }
     });
 
     RED.nodes.registerType(ST_MY_DEVICE, {
-        category: "Samsung AutomationStudio",
+        category: ST_NODES_CATEGORY,
         paletteLabel: "My Device",
         color: "rgb(231,147,173)",
         defaults: {
-            bid: {value:''},
-            name: {value: "", required: true},
-            label: {value: ""},
-            device: {value:''}
+            name: {value: '', required: true},
+            label: {value: ''},
+            device: {value:''},
+            profileId: {value:''}
         },
         credentials: {
             stAccessToken: {type: 'text', required: true}
@@ -448,9 +492,6 @@
         },
         oneditprepare: function () {
             var NODE = this;
-            if(NODE.bid===''){
-                NODE.bid=NODE.id
-            }
 
             $("#my-device-list-container")
                 .css('min-height', '400px')
@@ -536,24 +577,41 @@
             })
             if (NODE.deviceList && NODE.deviceList.length > 0) {
                 addItems(NODE.deviceList)
-            } else if (NODE.credentials.stAccessToken) {
+            } else if (NODE.credentials && NODE.credentials.stAccessToken) {
                 SmartThingsApi.getDeviceList(NODE.credentials.stAccessToken, getItemsSuccess, getItemsFail)
             }
 
-            if (!NODE.credentials.stAccessToken) {
+            if (!NODE.credentials || !NODE.credentials.stAccessToken) {
                 NODE.device = {}
                 $('#node-input-name').val('')
                 $('#node-input-label').val('')
                 $('#my-device-list-container').empty()
             }
 
+            //profileId: DeviceNode 참조 backup ID
+            if(NODE.profileId==''){
+                NODE.profileId=NODE.id
+            }else if(NODE.profileId!=NODE.id){
+                var hasBrokenRef = RED.nodes.filterNodes({z: NODE.z, type: NODE.type}).some(function(node){
+                    if(node.id == NODE.id){
+                        return true
+                    }
+                    if(node.id == NODE.profileId){
+                        NODE.profileId=NODE.id
+                        return false;
+                    }
+                })
+                if(hasBrokenRef){
+                    STRefCheck()
+                }
+            }
         },
         oneditsave: function () {
         }
     });
 
     RED.nodes.registerType(ST_AUTOMATION, {
-        category: 'Samsung AutomationStudio',
+        category: ST_NODES_CATEGORY,
         color: "rgb(80, 196, 253)",
         defaults: {
             name: {value: "", required: true},
@@ -610,12 +668,12 @@
                 $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
             }
 
-            var validateUrl = function () {
-                var url = $inputUrl.val() || ""
-                url = url.replace(/[^a-zA-Z0-9\-\_\/]/gi, '')
-                url = url.replace(/[\/]{2,}/gi, '/')
-                if (url.charAt(0) != '/') {
-                    url = '/' + url
+            var validateUrl = function(){
+                var url = $inputUrl.val()||""
+                url=url.replace(/[^a-zA-Z0-9\-\_\/]/gi,'')
+                url=url.replace(/[\/]{2,}/gi,'/')
+                if(url.charAt(0)!='/'){
+                    url='/'+url
                 }
                 $inputUrl.val(url)
                 $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
@@ -748,8 +806,14 @@
                     deviceNodeIdSelect.append($("<option></option>").val(node.id).data('device', node.device).text("(My)" + node.label))
                 }
             })
-            if (initDeviceNodeId && deviceNodeIdSelect.find('option[value="'+initDeviceNodeId+'"]').length>0) {
-                deviceNodeIdSelect.val(initDeviceNodeId)
+            if (initDeviceNodeId){
+                if(deviceNodeIdSelect.find('option[value="'+initDeviceNodeId+'"]').length==0){
+                    STRefCheck()
+                    deviceNodeIdSelect.val(this.node.deviceNodeId)
+                    console.log('initDeviceNodeId : '+initDeviceNodeId+','+this.node.deviceNodeId)
+                } else if(deviceNodeIdSelect.find('option[value="'+initDeviceNodeId+'"]').length>0) {
+                    deviceNodeIdSelect.val(initDeviceNodeId)
+                }
             }
         },
         //deviceid 선택시 해당 section 정보를 셋팅한다.
@@ -933,16 +997,16 @@
                     var attributeId = $("#node-input-attributeId option:selected").val()
                     var attribute = profiles.getAttributeSchema(capabilityId, attributeId)
 
-                    var row = $('<div/>', {style: "height: auto;"}).appendTo(container);
+                    var row = $('<div/>', {style: "height: auto;margin:5px 0 5px 0;"}).appendTo(container);
 
                     var attributeIdField = $('<input/>', {
                         class: "attrId ruleField",
                         capaId: capabilityId,
-                        style: "width:auto; margin-right:5px;max-width:35%",
+                        style: "width:auto; margin-right:5px;max-width:30%",
                         type: "text",
                         readonly: "true"
                     }).appendTo(row).val(attributeId)
-                    var operatorField = $('<select/>', {class: "attrOperator ruleField", style: "width:auto; margin-right: 5px; text-align: center;"}).appendTo(row)
+                    var operatorField = $('<select/>', {class: "attrOperator ruleField", style: "width:auto; margin-right: 5px; text-align: center;max-width:25%"}).appendTo(row)
                     if(attribute.properties.value.title=='Iso8601Date'){
                         attribute.properties.value.type='Iso8601Date'
                     }
@@ -1005,8 +1069,6 @@
                     if(container.find('.ruleField').length>3){
                         container.find('.attrId').css('width','20%')
                     }
-                    // var portSpan = $('<span/>', {style: "float: right;margin-top: 6px;"}).appendTo(row);
-                    // portSpan.append(' &#8594; <span class="sensor-attr-output-index">' + (idx + 1) + '</span> ');
                     if (data) {
                         data.operator && operatorField.val(data.operator)
                         if (data.value) {
@@ -1021,7 +1083,6 @@
                     }
                 },
                 resizeItem: function (container) {
-
                 },
                 removeItem: function (opt) {
                 },
@@ -1092,7 +1153,7 @@
 
     DeviceNode.prototype = {
         color: "rgb(170, 75, 205)",
-        category: "Samsung AutomationStudio",
+        category: ST_NODES_CATEGORY,
         //defaults
         inputs: 1,
         outputs: 1,
@@ -1238,7 +1299,4 @@
     RED.nodes.registerType(ST_EVENT_DEVICE, new DeviceNode("event"));
     RED.nodes.registerType(ST_STATUS_DEVICE, new DeviceNode("status"));
     RED.nodes.registerType(ST_COMMAND_DEVICE, new DeviceNode("command"));
-
-    //@ sourceURL=device.node.js
 </script>
-<!-- Node Script End-->
