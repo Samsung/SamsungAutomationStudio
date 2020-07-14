@@ -1,4 +1,4 @@
-# Samsung Automation Studio node-red nodes
+# Samsung Automation Studio Node-RED nodes
 The Automation Studio Nodes allows you to integrate Samsung Bixby, SmartThings and 3rd party APIs.
 
 ## Install
@@ -7,10 +7,10 @@ Run the following command in you Node-RED user directory
 npm install node-red-contrib-samsung-automation-studio
 ```
 
-## get started
-install automation-studio nodes to your node-red 
+## Get started
+install automation-studio nodes to your Node-RED 
 ```bash
-cd {your node-red path}
+cd {your Node-RED path}
 
 npm install {'Samsung Automation Studio Nodes' path}
 ```
