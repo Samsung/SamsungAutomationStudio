@@ -22,7 +22,7 @@ npm install {'Samsung Automation Studio Nodes' path}
 ## Usage
 
 ## Authors
-[SAMSUNG ELECTRONICS CO.,LTD.](http://www.samsung.com/sec/)
+Samsung Automation Studio Team
 
 ## Samsung Automation Studio service
 
@@ -34,6 +34,6 @@ For further help, or general discussion, please contact [SAMSUNG ELECTRONICS CO.
 
 ## Copyright and license
 
-Copyright JS Foundation and other contributors, http://js.foundation under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0). 
+Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0). 
   
  
