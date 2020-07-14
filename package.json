@@ -1,25 +1,21 @@
 {
     "name": "node-red-contrib-samsung-automation-studio-nodes",
-    "version": "1.0.0",
-    "description": "Samsung Automation Studio Nodes for node-red contribution",
+    "version": "1.0.2",
+    "description": "Samsung Automation Studio Nodes for node-red",
     "keywords": [
-        "node-red","SamsungAutomationStudio"
+        "SmartThings","Bixby","node-red","Samsung Automation Studio"
     ],
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/Samsung/SamsungAutomationStudio"
+    },
     "node-red": {
         "nodes": {
-            "device-profile": "101-SmartThings.js",
-            "installed-device": "101-SmartThings.js",
-            "automation": "101-SmartThings.js",
-            "event-device": "101-SmartThings.js",
-            "status-device": "101-SmartThings.js",
-            "command-device": "101-SmartThings.js",
-            "bixby in": "102-Bixby.js",
-            "bixby out": "102-Bixby.js",
-            "basic-auth": "201-basicauth.js",
-            "aws-config": "301-AWS.js",
-            "aws-sdk": "301-AWS.js",
-            "db-config": "302-DB.js",
-            "db-query": "302-DB.js"
+            "SmartThings": "101-SmartThings.js",
+            "Bixby": "102-Bixby.js",
+            "Auth": "201-basicauth.js",
+            "AWS": "301-AWS.js",
+            "DB": "302-DB.js"
         }
     },
     "dependencies": {
@@ -35,3 +31,4 @@
         "request": "^2.88.2"
     }
 }
+
