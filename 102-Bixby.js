@@ -17,7 +17,6 @@
 module.exports = function(RED) {
     "use strict";
     var bodyParser = require("body-parser");
-    var multer = require("multer");
     var cookieParser = require("cookie-parser");
     var getBody = require('raw-body');
     var cors = require('cors');
@@ -26,7 +25,6 @@ module.exports = function(RED) {
     var onHeaders = require('on-headers');
     var typer = require('media-typer');
     var isUtf8 = require('is-utf8');
-    var hashSum = require("hash-sum");
 
     function rawBodyParser(req, res, next) {
         if (req.skipRawBodyParser) { next(); } // don't parse this if told to skip
