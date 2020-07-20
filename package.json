@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-samsung-automation-studio-nodes",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Samsung Automation Studio Nodes for Node-RED",
   "keywords": [
     "SmartThings",
@@ -35,7 +35,6 @@
     "proxy-agent": "~3.1.1",
     "request": "^2.88.2",
     "mysql": "~2.18.1",
-    "pg": "^8.3.0",
-    "proxy-agent": "~3.1.1"
+    "pg": "^8.3.0"
   }
 }

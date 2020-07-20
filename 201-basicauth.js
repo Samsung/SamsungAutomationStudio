@@ -94,7 +94,7 @@ module.exports = function (RED) {
         // Config data
         const realm = config.realm.trim();
 
-        debugLog(node);
+        // debugLog(node);
 
         const username = node.credentials.username;
         const password = node.credentials.password;
@@ -105,7 +105,7 @@ module.exports = function (RED) {
             password
         }
 
-        debugLog(user);
+        // debugLog(user);
 
         const getUser = (username) => {
             if (user.username === username) {
