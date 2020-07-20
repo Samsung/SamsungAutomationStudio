@@ -478,7 +478,7 @@ module.exports = function (RED) {
 
                 if (RED.nodes.getNode(NODE.deviceNodeId).type == ST_MY_DEVICE){
                     isAutomation=false;
-                    authToken = RED.nodes.getNode(NODE.deviceNodeId).credentials.stAccessToken;
+                    authToken = RED.nodes.getCredentials(NODE.deviceNodeId).stAccessToken;
                     param.deviceId = NODE.deviceId || RED.nodes.getNode(NODE.deviceNodeId).device.deviceId
                 }else{
                     isAutomation=true;

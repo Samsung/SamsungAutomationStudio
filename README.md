@@ -3,9 +3,14 @@ Samsung Automation Studio is to provide development tools and execution environm
 
 ## Install
 Run the following command in you Node-RED user directory 
+
 ```
 npm install node-red-contrib-samsung-automation-studio-nodes
 ```
+
+## Compatibility
+Node-RED version: v1.0.6  
+Node-RED version: v1.1.2
 
 ## Usage
 [How to use Bixby Nodes](https://sasm.developer.samsung.com/tutorials/article_2_4)  
@@ -18,5 +23,4 @@ npm install node-red-contrib-samsung-automation-studio-nodes
 For further help, or general discussion, please contact sasm.sec@samsung.com
 
 ## Copyright and license
-
 Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).

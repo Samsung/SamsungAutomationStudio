@@ -76,6 +76,7 @@ module.exports = function(RED) {
 		RED.nodes.eachNode(function (nn) {
 			if(node.configId==nn.id) {
 				node.config = nn;
+                node.config.credentials = RED.nodes.getCredentials(nn.id)
 			}
 		});
 		if(!node.config) {
