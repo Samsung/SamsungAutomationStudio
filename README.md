@@ -26,6 +26,7 @@ For further help, or general discussion, please contact sasm.sec@samsung.com
 Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Release Note
+1.0.8 : nodered.org, flows page compatibility fix  
 1.0.7 : Node-RED ver.1.1.2 compatibility bug fix  
 - Nodes credential access modify
 - Editor HTML template engine compatibility modify  

@@ -412,7 +412,7 @@
         RED.view.redraw()
     }
 
-    RED.nodes.registerType(ST_DEVICE_PROFILE, {
+    RED.nodes.registerType('device-profile', {
         category: ST_NODES_CATEGORY,
         paletteLabel: "Device Profile",
         color: "rgb(168,168,168)",
@@ -461,7 +461,7 @@
         }
     });
 
-    RED.nodes.registerType(ST_MY_DEVICE, {
+    RED.nodes.registerType('installed-device', {
         category: ST_NODES_CATEGORY,
         paletteLabel: "My Device",
         color: "rgb(231,147,173)",
@@ -604,7 +604,7 @@
         }
     });
 
-    RED.nodes.registerType(ST_AUTOMATION, {
+    RED.nodes.registerType('automation', {
         category: ST_NODES_CATEGORY,
         color: "rgb(80, 196, 253)",
         defaults: {
@@ -1145,14 +1145,34 @@
         return {hex: hex, hue: hue, saturation: saturation, lightness: lightness}
     }
 
-    DeviceNode.prototype = {
-        color: "rgb(170, 75, 205)",
+    RED.nodes.registerType('event-device',{
+        paletteLabel : "Event",
+        color : "rgb(113,179,145)",
+        icon : "st-event.png",
         category: ST_NODES_CATEGORY,
-        //defaults
+        defaults : {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
+            name: {required: true},
+            deviceNodeId: {
+                value: "", required: true,
+                validate: function (val) {
+                    var isValidDevice = false;
+                    RED.nodes.eachNode(function (node) {
+                        if (node.id == val) {
+                            isValidDevice = true
+                        }
+                    })
+                    return !!val && isValidDevice
+                }
+            },
+            deviceId: {value: ""},
+            componentID: {value: ""},
+            capabilityId: {value: "", required: true},
+            attributeId: {value: "", required: true},
+            rules: {value: [{isInit: true}]},
+            outputs: {value: 1}
+        },
         inputs: 1,
         outputs: 1,
-        paletteLabel: "Device Control",
-        icon: "Device.png",
         label: function () {
             return this.name || this.type;
         },
@@ -1222,6 +1242,10 @@
             })
 
             this.outputs = NODE.rules.length || 1
+
+            if($('#node-input-name').val()=='' && $('#node-input-attributeId').val()){
+                $('#node-input-name').attr('placeholder',$('#node-input-deviceNodeId').text()+' - '+$('#node-input-capabilityId').val())
+            }
         },
         //editor height 변화에 따라 attr-container의 height를 조정한다.
         oneditresize: function (size) {
@@ -1248,25 +1272,13 @@
             height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")))
             resizeContainer.editableList('height', height - 100)
         }
-    }
-
-    function DeviceNode(type) {
-
-        if (type === 'event') {
-            this.paletteLabel = "Event";
-            this.color = "rgb(113,179,145)";
-            this.icon = "st-event.png";
-        } else if (type === 'status') {
-            this.paletteLabel = "Status";
-            this.color = "rgb(119,197,191)";
-            this.icon = "st-status.png";
-        } else {
-            this.paletteLabel = "Command";
-            this.color = "rgb(255,198,109)";
-            this.icon = "st-command.png";
-        }
-
-        var defaultsConfig = {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
+    });
+    RED.nodes.registerType('status-device',{
+        paletteLabel : "Status",
+        color : "rgb(119,197,191)",
+        icon : "st-status.png",
+        category: ST_NODES_CATEGORY,
+        defaults : {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
             name: {required: true},
             deviceNodeId: {
                 value: "", required: true,
@@ -1286,11 +1298,235 @@
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},
             outputs: {value: 1}
-        }
-        this.defaults = defaultsConfig
-    }
+        },
+        inputs: 1,
+        outputs: 1,
+        label: function () {
+            return this.name || this.type;
+        },
+        labelStyle: function () {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function () {
+            var NODE = this;
 
-    RED.nodes.registerType(ST_EVENT_DEVICE, new DeviceNode("event"));
-    RED.nodes.registerType(ST_STATUS_DEVICE, new DeviceNode("status"));
-    RED.nodes.registerType(ST_COMMAND_DEVICE, new DeviceNode("command"));
+            var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
+            NODE.target = target
+
+            var formObj = {
+                deviceNodeId: $("#node-input-deviceNodeId"),
+                capabilityId: $("#node-input-capabilityId"),
+                attributeId: $("#node-input-attributeId"),
+                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container")),
+            }
+
+            var eventHandler = new DeviceNodeEventHandler(formObj, NODE)
+        },
+        /*편집 대화 상자 완료처리시 호출*/
+        oneditsave: function () {
+            var NODE = this;
+            NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId || ''
+
+            NODE.rules = []
+
+            $("#cmd-list-container").editableList('items').each(function (idx, item) {
+                var rule = {};
+                rule.capaId = item.find('.capaId').text()
+                rule.attrId = item.find(".attrId").text()
+                rule.args = [];
+                item.find(".argValue").each(function (idx, _arg) {
+                    var arg = {}
+
+                    arg.name = $(_arg).attr('argName')
+                    arg.type = $(_arg).attr('argType')
+                    arg.value = $(_arg).val()
+                    if ($(_arg).attr('propId')) {
+                        arg.propId = $(_arg).attr('propId')
+                    }
+                    if ($(_arg).attr('propType')) {
+                        arg.propType = $(_arg).attr('propType')
+                    }
+                    rule.args.push(arg)
+
+                    if (arg.name == 'color') {
+                        var hsl = rgbToHsl(arg.value)
+                        rule.args.push({name: 'color', type: 'object', propId: 'hue', propType: 'number', value: hsl.hue})
+                        rule.args.push({name: 'color', type: 'object', propId: 'saturation', propType: 'number', value: hsl.saturation})
+                    }
+                })
+                NODE.rules.push(rule)
+            })
+
+            $("#attr-list-container").editableList('items').each(function (idx, item) {
+                var rule = {}
+                rule.capaId = item.find(".attrId").attr('capaId')
+                rule.attrId = item.find(".attrId").val()
+                rule.operator = item.find(".attrOperator").val()
+                rule.value = item.find(".attrValue").val()
+                rule.valueType = item.find(".attrValue").attr('valueType')
+                rule.unit = item.find(".attrUnit").val()
+
+                NODE.rules.push(rule)
+            })
+
+            this.outputs = NODE.rules.length || 1
+
+            if($('#node-input-name').val()=='' && $('#node-input-attributeId').val()){
+                $('#node-input-name').attr('placeholder',$('#node-input-deviceNodeId').text()+' - '+$('#node-input-capabilityId').val())
+            }
+        },
+        //editor height 변화에 따라 attr-container의 height를 조정한다.
+        oneditresize: function (size) {
+            var rows;
+            var resizeContainer;
+            var editorRow;
+
+            if (this.type == ST_COMMAND_DEVICE) {
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.actuator-container-row");
+                resizeContainer = $("#cmd-list-container");
+            } else {
+                //event, sensor
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.sensor-container-row");
+                resizeContainer = $("#attr-list-container");
+            }
+
+            var height = size.height;
+            for (var i = 0; i < rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")))
+            resizeContainer.editableList('height', height - 100)
+        }
+    });
+    RED.nodes.registerType('command-device', {
+        paletteLabel: "Command",
+        color: "rgb(255,198,109)",
+        icon: "st-command.png",
+        category: ST_NODES_CATEGORY,
+        defaults : {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
+            name: {required: true},
+            deviceNodeId: {
+                value: "", required: true,
+                validate: function (val) {
+                    var isValidDevice = false;
+                    RED.nodes.eachNode(function (node) {
+                        if (node.id == val) {
+                            isValidDevice = true
+                        }
+                    })
+                    return !!val && isValidDevice
+                }
+            },
+            deviceId: {value: ""},
+            componentID: {value: ""},
+            capabilityId: {value: "", required: true},
+            attributeId: {value: "", required: true},
+            rules: {value: [{isInit: true}]},
+            outputs: {value: 1}
+        },
+        inputs: 1,
+        outputs: 1,
+        label: function () {
+            return this.name || this.type;
+        },
+        labelStyle: function () {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function () {
+            var NODE = this;
+
+            var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
+            NODE.target = target
+
+            var formObj = {
+                deviceNodeId: $("#node-input-deviceNodeId"),
+                capabilityId: $("#node-input-capabilityId"),
+                attributeId: $("#node-input-attributeId"),
+                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container")),
+            }
+
+            var eventHandler = new DeviceNodeEventHandler(formObj, NODE)
+        },
+        /*편집 대화 상자 완료처리시 호출*/
+        oneditsave: function () {
+            var NODE = this;
+            NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId || ''
+
+            NODE.rules = []
+
+            $("#cmd-list-container").editableList('items').each(function (idx, item) {
+                var rule = {};
+                rule.capaId = item.find('.capaId').text()
+                rule.attrId = item.find(".attrId").text()
+                rule.args = [];
+                item.find(".argValue").each(function (idx, _arg) {
+                    var arg = {}
+
+                    arg.name = $(_arg).attr('argName')
+                    arg.type = $(_arg).attr('argType')
+                    arg.value = $(_arg).val()
+                    if ($(_arg).attr('propId')) {
+                        arg.propId = $(_arg).attr('propId')
+                    }
+                    if ($(_arg).attr('propType')) {
+                        arg.propType = $(_arg).attr('propType')
+                    }
+                    rule.args.push(arg)
+
+                    if (arg.name == 'color') {
+                        var hsl = rgbToHsl(arg.value)
+                        rule.args.push({name: 'color', type: 'object', propId: 'hue', propType: 'number', value: hsl.hue})
+                        rule.args.push({name: 'color', type: 'object', propId: 'saturation', propType: 'number', value: hsl.saturation})
+                    }
+                })
+                NODE.rules.push(rule)
+            })
+
+            $("#attr-list-container").editableList('items').each(function (idx, item) {
+                var rule = {}
+                rule.capaId = item.find(".attrId").attr('capaId')
+                rule.attrId = item.find(".attrId").val()
+                rule.operator = item.find(".attrOperator").val()
+                rule.value = item.find(".attrValue").val()
+                rule.valueType = item.find(".attrValue").attr('valueType')
+                rule.unit = item.find(".attrUnit").val()
+
+                NODE.rules.push(rule)
+            })
+
+            this.outputs = NODE.rules.length || 1
+
+            if($('#node-input-name').val()=='' && $('#node-input-attributeId').val()){
+                $('#node-input-name').attr('placeholder',$('#node-input-deviceNodeId').text()+' - '+$('#node-input-capabilityId').val())
+            }
+        },
+        //editor height 변화에 따라 attr-container의 height를 조정한다.
+        oneditresize: function (size) {
+            var rows;
+            var resizeContainer;
+            var editorRow;
+
+            if (this.type == ST_COMMAND_DEVICE) {
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.actuator-container-row");
+                resizeContainer = $("#cmd-list-container");
+            } else {
+                //event, sensor
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.sensor-container-row");
+                resizeContainer = $("#attr-list-container");
+            }
+
+            var height = size.height;
+            for (var i = 0; i < rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")))
+            resizeContainer.editableList('height', height - 100)
+        }
+    });
 </script>
