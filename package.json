@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-samsung-automation-studio-nodes",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Samsung Automation Studio Nodes for Node-RED",
   "keywords": [
     "SmartThings",
@@ -23,7 +23,7 @@
     }
   },
   "dependencies": {
-    "aws-sdk": "^2.633.0",
+    "aws-sdk": "^2.732.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",

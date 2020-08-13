@@ -1404,9 +1404,9 @@
             }
 
             if (this.form.attributeId.val() && this.form.container.editableList('items').length == 0) {
-                // if(THING.node.type!=ST_STATUS_DEVICE){//test_code
+                if(THING.node.type!=ST_STATUS_DEVICE){//test_code
                     this.form.container.editableList('addItem')
-                // }
+                }
                 // this.form.container.editableList('addItem',{type:'empty',msg:'no condition, send whole device status response'})
             }
         }
