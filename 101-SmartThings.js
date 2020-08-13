@@ -63,7 +63,39 @@ module.exports = function (RED) {
         },
         'nin': function(v,arr){
             return Array.isArray(arr) && !(arr.includes(v))
-        }
+        },
+        'o_eq': function(v,obj){
+            if(typeof v != 'object'){
+                try{
+                    v=JSON.parse(v)
+                }catch(e){
+                    return false
+                }
+            }
+            if(obj==undefined || obj==null || typeof obj != 'object'){
+                return false
+            }
+            return Object.keys(v).every(k=>{
+                return obj.hasOwnProperty(k) && v[k] == obj[k]
+            })
+        },
+        'o_neq': function(v,obj){
+            if(typeof v != 'object'){
+                try{
+                    v=JSON.parse(v)
+                }catch(e){
+                    return false
+                }
+            }
+            if(typeof obj != 'object'){
+                return false
+            }
+
+            return Object.keys(v).every(k=>{
+                return obj.hasOwnProperty(k) && v[k] != obj[k]
+            })
+        },
+
     };
 
     var usedDeviceNodes = [];
@@ -168,10 +200,11 @@ module.exports = function (RED) {
         while (queue.length > 0) {
             var currentId = queue.shift();
             var node = allnodes[currentId];
+            node.capabilityId=node.capabilityId.split('_v')[0]
             if (/^(event|status|command)-device$/g.test(node.type) && allnodes[node.deviceNodeId] && allnodes[node.deviceNodeId].type === ST_DEVICE_PROFILE) {
                 if(!sectionConfig.hasOwnProperty(node.deviceNodeId)){
                     var deviceNode = allnodes[node.deviceNodeId]
-
+                    deviceNode.capabilityId = deviceNode.capabilityId.split('_v')[0]
                     sectionConfig[deviceNode.id]={
                         name: deviceNode.name,
                         settings: [
@@ -288,6 +321,7 @@ module.exports = function (RED) {
 
                     subscriptionDevices.forEach((subscription)=>{
                         console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
+                        subscription.capabilityId = subscription.capabilityId.split('_v')[0]
                         console.log(subscription)
                         var sectionInfo = evt.installData.installedApp.config[subscription.sectionId][0]
                         var subRequest = {
@@ -328,6 +362,7 @@ module.exports = function (RED) {
                     OneApi.executeDeleteSubscription(keyParam, authToken).then(function (data) {
                         subscriptionDevices.forEach(function(subscription){
                             console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
+                            subscription.capabilityId = subscription.capabilityId.split('_v')[0]
                             console.log(subscription)
 
                             var sectionInfo = evt.updateData.installedApp.config[subscription.sectionId][0]
@@ -459,7 +494,7 @@ module.exports = function (RED) {
 
         function sendDebug(message) {
             var msg = {};
-            RED.comms.publish("debug", {id:NODE.id,msg: message});
+            RED.comms.publish("debug", {topic:'debug',id:NODE.id,msg: message});
         }
 
         this.on('input', function (msg) {
@@ -497,9 +532,9 @@ module.exports = function (RED) {
                             resultMsg=[]
                             NODE.rules.forEach(function(rule){
                                 var opCheck = false
-
+                                rule.capaId=rule.capaId.split('_v')[0]
                                 if(deviceEvent.capability == rule.capaId && deviceEvent.attribute == rule.attrId){
-                                    opCheck=operators[rule.operator](deviceEvent.value, rule.value)
+                                    opCheck=operators[rule.operator](rule.value, deviceEvent.value)
                                 }
 
                                 if (opCheck) {
@@ -521,7 +556,7 @@ module.exports = function (RED) {
                         sendDebug("[SmartThings] Status :" + NODE.name);
                         var deviceStatus = data;
                         var opCheck = false;
-
+                        NODE.capabilityId = NODE.capabilityId.split('_v')[0]
                         NODE.rules.forEach((rule,idx)=>{
                             var attributeValue = deviceStatus.components[deviceConfig.componentId||'main'][NODE.capabilityId][NODE.attributeId].value;
 
@@ -560,6 +595,7 @@ module.exports = function (RED) {
                     var commandArr = [];
                     var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main'
                     for(var rule of NODE.rules){
+                        rule.capaId=rule.capaId.split('_v')[0]
                         var cmd = {component: componentId || "main", capability: rule.capaId, command: rule.attrId}
                         cmd.arguments = []
 
@@ -613,19 +649,24 @@ module.exports = function (RED) {
     RED.nodes.registerType(ST_STATUS_DEVICE, ThingNode);
     RED.nodes.registerType(ST_COMMAND_DEVICE, ThingNode);
     function stCompatibleCheck(node){
+        if(ST_NODES.includes(node.type) && node.capabilityId && node.capabilityId.indexOf('_v')===-1){
+            node.capabilityId+='_v1'
+        }
         if(ST_NODES.includes(node.type) && (node.capability || (node.device && typeof node.device.capabilities == 'object'))) {
             switch (node.type) {
                 case ST_DEVICE_PROFILE:
                     node.capabilityId = node.capability
+                    node.profileId = node.id
+
                     delete node.capability
                     delete node.device
                     break;
                 case ST_MY_DEVICE:
-                    if(node.device){
+                    if(node.device && node.device.components){
                         var capas = []
                         node.device.components.forEach(component=>{
                             component.capabilities.forEach(capability=>{
-                                capas.push(capability.id)
+                                capas.push(capability.id+'_v'+capability.version)
                             })
                         })
                         node.device.capabilities = capas
