@@ -871,31 +871,6 @@
                     })
                 }
             })
-            //custom capability check
-            // deviceNodeList.forEach(function(node){
-            //     if (node.name && node.device && node.device.capabilities) {
-            //         var prs = []
-            //         node.device.capabilities.filter(cp=>{
-            //             return profiles.hasCapability(cp.vid)===false && node.credentials && node.credentials.stAccessToken
-            //         }).forEach(cp=>{
-            //             node.device.isLoading=true
-            //             var pr = SmartThingsApi.getCapability(node.credentials.stAccessToken,cp.id,cp.version).promise()
-            //             prs.push(pr)
-            //         })
-            //         if(prs.length > 0 && initDeviceNodeId === node.id){
-            //             loadingImage.show()
-            //         }
-            //         Promise.allSettled(prs).finally(function(cps){
-            //             node.device.isLoading=false
-            //             if(deviceNodeIdSelect.val() === node.id){
-            //                 // loadingImage.hide()
-            //                 THING.initCapabilitySelect(THING.node.capabilityId)
-            //                 THING.initAttributeSelect(THING.node.attributeId)
-            //                 THING.initAttributeContainer(THING.node.rules)
-            //             }
-            //         })
-            //     }
-            // })
 
             var target = this.target
             var enableList = deviceNodeList.filter(node=>{
@@ -1036,6 +1011,7 @@
 
                     if (arguments.length > 0) {
                         arguments.forEach(function (arg) {
+
                             var row2 = $('<div/>', {style: "height:auto;margin:15px 5px 5px auto;width:100%;display:flex;align-items:center;justify-content:flex-end;"}).appendTo(row)
                             createValueField2(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'})
                         })
@@ -1175,80 +1151,15 @@
                 }
                 return operatorField
             }
-            function createValueField(valueProp,row){
-                var valueField=null
-                if (valueProp.type == 'array') {
-                    if(valueProp.items.enum){
-                        valueField = $("<select/>", {style: "width:40%;margin-right:5px;"}).appendTo(row)
-                        valueProp.items.enum.forEach(function (value) {
-                            valueField.append($("<option></option>").val(value).text(value))
-                        })
-                    }else if(valueProp.items.type){
-                        var holder = valueProp.title
-                        if (valueProp.hasOwnProperty('minimum') || valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('min')||valueProp.hasOwnProperty('max')) {
-                            holder += '('
-                            holder += valueProp.hasOwnProperty('minimum') ? valueProp.minimum : (valueProp.hasOwnProperty('min')?valueProp.min:' ')
-                            holder += '~'
-                            holder += valueProp.hasOwnProperty('maximum') ? valueProp.maximum : (valueProp.hasOwnProperty('max')?valueProp.max:' ')
-                            holder += ')'
-                        }
-
-                        valueField = $("<input/>", {style: "margin-right:5px;width:40%;",placeholder:holder}).appendTo(row)
-                        var valueType = valueProp.items.type
-                        if (valueType == 'integer' || valueType == 'number') {
-                            valueField.typedInput({default: "num", types: ["num"]})
-                        } else {
-                            valueField.typedInput({default: "str", types: ["str"]})
-                        }
-
-                    }
-
-                } else if (valueProp.enum) {
-                    valueField = $("<select/>", {style: "width:40%;margin-right:5px;"}).appendTo(row)
-
-                    valueProp.enum.forEach(function (value) {
-                        valueField.append($("<option></option>").val(value).text(value))
-                    })
-                }else if (valueProp.type == 'object') {
-                    var holder = valueProp.title || valueProp.type || ''
-                    valueField = $("<input/>", {style: "margin-right:5px;width:40%;", placeholder: holder}).appendTo(row)
-                    valueField.typedInput({default: "str", types: ["str"]})
-                }else if (valueProp.type == 'boolean') {
-                    valueField = $("<select/>", {style: "width:40%;margin-right:5px;"}).appendTo(row)
-                    valueField.append($("<option></option>").val('true').text('true'))
-                    valueField.append($("<option></option>").val('false').text('false'))
-                    if(valueProp.default){
-                        valueField.val(''+valueProp.default)
-                    }
-                } else {
-                    var holder = valueProp.title || $("#node-input-attributeId option:selected").val()
-                    if (valueProp.hasOwnProperty('minimum') || valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('min')||valueProp.hasOwnProperty('max')) {
-                        holder += '('
-                        holder += valueProp.hasOwnProperty('minimum') ? valueProp.minimum : (valueProp.hasOwnProperty('min')?valueProp.min:' ')
-                        holder += '~'
-                        holder += valueProp.hasOwnProperty('maximum') ? valueProp.maximum : (valueProp.hasOwnProperty('max')?valueProp.max:' ')
-                        holder += ')'
-                    }
-
-                    valueField = $("<input/>", {style: "margin-right:5px;", placeholder: holder}).appendTo(row)
-
-                    var valueType = valueProp.type
-                    if (valueType == 'integer' || valueType == 'number') {
-                        valueField.typedInput({default: "num", types: ["num"]})
-                    } else {
-                        valueField.typedInput({default: "str", types: ["str"]})
-                    }
-                    if(valueType == 'Iso8601Date'){
-                        valueField.typedInput('value',new Date().toISOString().substr(0,19)+'Z')
-                    }
-                    valueField.typedInput('width','40%')
-                }
-                valueField.attr('valueType', valueProp.type)
-                valueField.addClass('attrValue ruleField')
-                return valueField
-            }
-
             function createValueField2(valueProp,row,option){
+                if(valueProp.title=='Iso8601Date'){
+                    valueProp.type='Iso8601Date'
+                }else if(valueProp.title=='JsonObject'){
+                    valueProp.type='json'
+                }else if(valueProp.type==='object' && (!valueProp.hasOwnProperty('properties') && valueProp.title != 'COLOR_MAP' ) ){
+                    valueProp.type='json'
+                }
+
                 option=option || {}
                 if(option.rowName){
                     row.text(option.rowName + ' : ')
@@ -1364,6 +1275,12 @@
                     valueField.css('width',option.width||'40%')
                 }
                 valueField.data('data',Object.assign({valueType:valueProp.type},option))
+
+                valueField.attr('argName',option.valueName)
+                if(option.hasOwnProperty('propId')){
+                    valueField.attr('propId',option.propId)
+                }
+
                 if(Array.isArray(valueField)){
                     return valueField
                 }else{
@@ -1421,11 +1338,6 @@
         THING.form.deviceNodeId.on("mouseover", function () {
             THING.form.deviceNodeId.off("change")
             THING.form.deviceNodeId.on("change", function (e) {
-                // if(RED.nodes.node(e.target.value).device.isLoading){
-                //     loadingImage.show()
-                // }else{
-                //     loadingImage.hide()
-                // }
                 THING.initCapabilitySelect()
                 THING.initAttributeSelect()
                 THING.initAttributeContainer()

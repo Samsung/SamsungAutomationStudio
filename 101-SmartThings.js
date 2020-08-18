@@ -524,7 +524,7 @@ module.exports = function (RED) {
 
                 if (NODE.type == ST_EVENT_DEVICE) {
                     var resultMsg=[]
-                    sendDebug("[SmartThings] Event:" + NODE.name)
+                    NODE.warn("[SmartThings] Event:" + NODE.name)
 
                     flowContext.eventData.events.forEach(function(event){
                         var deviceEvent = event.deviceEvent
@@ -553,7 +553,7 @@ module.exports = function (RED) {
                     NODE.send(resultMsg)
                 } else if (NODE.type == ST_STATUS_DEVICE) {
                     OneApi.getDeviceStates(param, authToken).then(function (data) {
-                        sendDebug("[SmartThings] Status :" + NODE.name);
+                        NODE.warn("[SmartThings] Status :" + NODE.name);
                         var deviceStatus = data;
                         var opCheck = false;
                         NODE.capabilityId = NODE.capabilityId.split('_v')[0]
@@ -587,10 +587,10 @@ module.exports = function (RED) {
 
                     }).catch(function (err) {
                         console.error(err)
-                        sendDebug("[error] " + err.errCd + ", " + err.errMsg);
+                        NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                     });
                 } else {
-                    sendDebug("[SmartThings] Action:" + NODE.name);
+                    NODE.warn("[SmartThings] Action:" + NODE.name);
 
                     var commandArr = [];
                     var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main'
@@ -605,7 +605,10 @@ module.exports = function (RED) {
                                 arg.type = arg.type || ''
                                 if(arg.type.toLowerCase().indexOf('integer')>-1||arg.type.toLowerCase().indexOf('number')>-1) {
                                     cmd.arguments.push(Number(arg.value))
-                                }else{
+                                }else if(arg.type === 'json'){
+                                    cmd.arguments.push(JSON.parse(arg.value))
+                                }
+                                else{
                                     cmd.arguments.push(arg.value)
                                 }
                             }else{
@@ -631,7 +634,7 @@ module.exports = function (RED) {
                             NODE.send(onward);
                         }).catch(function (err) {
                             console.error(err)
-                            sendDebug("[error] " + err.errCd + ", " + err.errMsg);
+                            NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                         })
                     }else {
                         RED.util.setMessageProperty(msg, 'payload', "command is empty");
@@ -640,7 +643,8 @@ module.exports = function (RED) {
                     }
                 }
             } catch (err) {
-                NODE.warn(err);
+                var msg='Invalid property or argument value, '+err.message
+                NODE.error(msg);
             }
         });
     }
