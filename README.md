@@ -26,6 +26,7 @@ For further help, or general discussion, please contact sasm.sec@samsung.com
 Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Release Note
+- 1.0.14 : SmartThings Automation node authorization process modify
 - 1.0.13 : SmartThings device nodes logging modify
 - 1.0.11 : 
     - get custom capability spec. dynamically with SmartThings API

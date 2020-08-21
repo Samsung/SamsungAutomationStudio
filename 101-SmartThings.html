@@ -105,11 +105,6 @@
             </a>
         </div>
     </div>
-    <div class="form-row">
-        <label for="node-input-publickey"><i class="fa fa-th"></i> Public Key</label>
-        <textarea id="node-input-publickey" cols="60" rows="8"  style="margin: 0px; width: 354px; height: 174px;"></textarea>
-    </div>
-    <div class="form-tips"><b>Note:</b> How to get Public Key. See info box for details.</div>
 </script>
 <script type="text/x-red" data-help-name="automation">
     <p>This node represents the WebHook Endpoint of SmartApp. the Automation node handles lifecycle of SmartApp.</p>
@@ -122,18 +117,12 @@
         <dd>A Name for the WebHook endpoint.</dd>
         <dt>Endpoint <span class="property-type">required</span></dt>
         <dd>A Endpoint that should be invoked during execution.</dd>
-        <dt>Public Key <span class="property-type">required</span></dt>
-        <dd>The public half of an RSA key pair. Useful for verifying a Webhook execution request signature to ensure it came from SmartThings.</dd>
     </dl>
     <h3>Outputs</h3>
     <dl class="message-properties">
         <dt>[lifecyle] Event</dt>
         <dd>Next node is the Event node only.</dd>
     </dl>
-    <h3>Detail</h3>
-    <p><b>How to get the Public Key</b></p>
-    <p>When you create SmartApp on the SmartThing Cloud, you can get the Public Key. You can regist Automation on the SmartThings Developer Workspace.</p>
-    <p><a href="https://smartthings.developer.samsung.com/docs/workspace/tutorials/create-an-automation.html#Register-the-Automation" target="_blank">more...</a></p>
 </script>
 
 <script type="text/x-red" data-template-name="event-device">
@@ -299,8 +288,6 @@
                     Authorization: 'Bearer ' + token
                 }
             }).done(function (result, textStatus, xhr) {
-                // var prs = []
-
                 if(result.hasOwnProperty('items') && Array.isArray(result.items)){
                     result.items.forEach(device=>{
                         device.capabilities = []
@@ -314,14 +301,14 @@
                                     var pr = SmartThingsApi.getCapability(token,cp.id,cp.version)
                                         .then(spec=>{
                                             // cp['spec']=true
+
+                                            /*NPM SOURCE*/
                                             Object.assign(cp,spec)
                                             $('#my-device-list-container span.device-item-capability').attr('spec','true')
                                         }).fail(err=>{
                                             console.error(err)
                                             $('#my-device-list-container span.device-item-capability').attr('spec','false')
                                         })
-                                        // .promise()
-                                    // prs.push(pr)
                                 }
                             })
                         })
@@ -332,9 +319,7 @@
                         delete device['locationsId']
                     })
                 }
-                // Promise.allSettled(prs).then(()=>{
                 done(result.items);
-                // })
             }).fail(function (e) {
                 fail(e);
             });
@@ -679,6 +664,7 @@
             }
         },
         oneditsave: function () {
+            //NPM-SOURCE
             var NODE = this
             if(NODE.device && NODE.device.capabilities){
                 NODE.device.capabilities.forEach(cp=>{
@@ -708,8 +694,7 @@
                 value: "", validate: function (v) {
                     return validateAutomationNext(this.id);
                 }
-            },
-            publickey: {value: "---PUBLIC KEY---", required: true}
+            }
         },
         inputs: 0,
         outputs: 1,
@@ -1220,7 +1205,7 @@
                 } else if (valueProp.type == 'json') {
                     valueField = $("<input/>",{placeholder:'Json Object'})
                         .appendTo(row)
-                        .typedInput({default: "str", types: ["str"]})
+                        .typedInput({default: "json", types: ["json"]})
 
                 } else if (valueProp.type == 'Iso8601Date') {
                     var holder = ''
@@ -1451,7 +1436,11 @@
         /*편집 대화 상자 완료처리시 호출*/
         oneditsave: function () {
             var NODE = this;
-            NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId || ''
+            if($('#node-input-deviceNodeId').find('option:selected').length>0){
+                NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId || ''
+            }else{
+                NODE.deviceId = ''
+            }
 
             NODE.rules = []
 
@@ -1510,7 +1499,7 @@
                 }
             },
             deviceId: {value: ""},
-            componentID: {value: ""},
+            componentId: {value: ""},
             capabilityId: {value: "", required: true},
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},

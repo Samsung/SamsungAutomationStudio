@@ -30,9 +30,9 @@ module.exports = function (RED) {
     var bodyParser = require("body-parser");
     var cors = require('cors');
     var jsonParser = bodyParser.json();
-    var httpSignature = require('http-signature');
+    // var httpSignature = require('http-signature');
     var reqApi = require('./lib/oneapigateway');
-
+    var stAPI = require('./lib/SmartThingsAPI');
     var corsHandler = cors({origin: "*", methods: "POST"});
     RED.httpNode.options("*", corsHandler);
     var nextHandler = function (req, res, next) {
@@ -200,7 +200,9 @@ module.exports = function (RED) {
         while (queue.length > 0) {
             var currentId = queue.shift();
             var node = allnodes[currentId];
-            node.capabilityId=node.capabilityId.split('_v')[0]
+            if(node.hasOwnProperty('capabilityId')){
+                node.capabilityId = node.capabilityId.split('_v')[0]||''
+            }
             if (/^(event|status|command)-device$/g.test(node.type) && allnodes[node.deviceNodeId] && allnodes[node.deviceNodeId].type === ST_DEVICE_PROFILE) {
                 if(!sectionConfig.hasOwnProperty(node.deviceNodeId)){
                     var deviceNode = allnodes[node.deviceNodeId]
@@ -255,9 +257,10 @@ module.exports = function (RED) {
         };
 
         this.lifecycleHandler = function (req, res) {
-            console.log('===========Automation Request BODY ==========')
-            console.dir(req.body,{depth:null})
-
+            // console.log('===========Automation Request header / body ==========')
+            // console.dir(req.headers,{depth:null})
+            // console.dir(req.body,{depth:null})
+            // var authHeader = x509headerParse(req.headers.authorization);
             switch(req.body.lifecycle){
                 case "PING":
                     var evt = req.body;
@@ -271,9 +274,23 @@ module.exports = function (RED) {
                     break;
 
                 case "CONFIRMATION":
-                    RES.ok(res, {statusCode: 200, targetUrl: "target_url"});
-                    break;
+                    var data = req.body.confirmationData
+                    if( !!data === false || data.hasOwnProperty("confirmationUrl") === false){
+                        RES.error(res,400, {msg:"cannot find 'confirmationUrl'"})
+                    }
 
+                    stAPI.confirmUrl(data.confirmationUrl)
+                        .then(response=>{
+                            if([200,202].includes(response.statusCode)){
+                                RES.ok(res,{targetUrl:data.confirmationUrl})
+                            }else{
+                                RES.error(res,response.statusCode,response.statusMessage)
+                            }
+                        })
+                        .catch(error=>{
+                            RES.error(res,500,error)
+                        })
+                    break;
                 case "CONFIGURATION":
                     var evt = req.body;
                     if (!evt.configurationData) {
@@ -311,7 +328,6 @@ module.exports = function (RED) {
                     }
                     RES.ok(res, {statusCode: 200, configurationData: response});
                     break;
-
                 case "INSTALL":
                     var evt = req.body
                     var installedAppId = evt.installData.installedApp.installedAppId
@@ -411,20 +427,34 @@ module.exports = function (RED) {
             }
         };
 
-        function verifySignature(req) {
+        function x509headerParse(headerStr){
+            var result = {};
+
+            ['keyId','signature','headers','algorithm'].forEach(k=>{
+                if(headerStr.indexOf(k+'=')>-1){
+                    var v = headerStr.substr(headerStr.indexOf(k+'=')+k.length+2);
+                    v=v.substr(0,v.indexOf('"'));
+                    result[k]=v;
+                }
+            })
+            return result;
+        }
+
+        function verifySignature(req,auth) {
             try {
-                let publickey;
-                if (NODE.publickey) {
-                    publickey = NODE.publickey.replace(/\\r\\n/g, "").replace(/\\n/g, "");
-                    publickey = publickey.replace("-----BEGIN PUBLIC KEY-----", "-----BEGIN PUBLIC KEY-----\n");
-                    publickey = publickey.replace("-----END PUBLIC KEY-----", "\n-----END PUBLIC KEY-----\n");
-                    publickey = publickey.replace(/\\n/g, os.EOL);
-                }
-                publickey = Buffer.from(publickey, 'utf8');
-                let parsed = httpSignature.parseRequest(req);
-                if (!httpSignature.verifySignature(parsed, publickey)) {
-                    return false;
-                }
+                // let publickey;
+                // if (NODE.publickey) {
+                //     publickey = NODE.publickey.replace(/\\r\\n/g, "").replace(/\\n/g, "");
+                //     publickey = publickey.replace("-----BEGIN PUBLIC KEY-----", "-----BEGIN PUBLIC KEY-----\n");
+                //     publickey = publickey.replace("-----END PUBLIC KEY-----", "\n-----END PUBLIC KEY-----\n");
+                //     publickey = publickey.replace(/\\n/g, os.EOL);
+                // }
+                // publickey = Buffer.from(publickey, 'utf8');
+                // let parsed = httpSignature.parseRequest(req);
+                // if (!httpSignature.verifySignature(parsed, publickey)) {
+                //     return false;
+                // }
+
             } catch (error) {
                 debugLog("[error] " + JSON.stringify(error));
                 return false;
@@ -433,12 +463,27 @@ module.exports = function (RED) {
         }
 
         var httpMiddleware = function (req, res, next) {
-            if (req.body.lifecycle === "PING" || process.env.SKIP_SIGNATURE_CHECK || verifySignature(req)) {
-                next();
-            } else {
-                var msg = "Invalid Public Key in Automation Node";
-                debugLog("[error] " + msg);
-                RES.error(res, 401, msg);
+            // console.log('===========Automation Request header / body ==========')
+            // console.dir(req.headers,{depth:null})
+            // console.dir(req.body,{depth:null})
+
+            var authHeader = x509headerParse(req.headers.authorization);
+            if(['PING','CONFIRMATION'].includes(req.body.lifecycle)){
+                next()
+            }else{
+                stAPI.keyValidate(authHeader.keyId)
+                    .then(response=>{
+                        if([200,202].includes(response.statusCode)){
+                            next()
+                        }else{
+                            RES.error(res, response.statusCode, response.statusMessage);
+                        }
+                    })
+                    .catch(e=>{
+                        var msg = "Invalid keyId, internal server error";
+                        debugLog("[error] " + msg + e + e.msg);
+                        RES.error(res, 500, msg);
+                    })
             }
         };
         function debugLog(log) {
@@ -478,8 +523,6 @@ module.exports = function (RED) {
         }});
 
     function ThingNode(n) {
-
-
         RED.nodes.createNode(this, n)
         this.rules = n.rules || []
         Object.assign(this,n)
@@ -607,8 +650,7 @@ module.exports = function (RED) {
                                     cmd.arguments.push(Number(arg.value))
                                 }else if(arg.type === 'json'){
                                     cmd.arguments.push(JSON.parse(arg.value))
-                                }
-                                else{
+                                }else{
                                     cmd.arguments.push(arg.value)
                                 }
                             }else{
@@ -675,6 +717,7 @@ module.exports = function (RED) {
                         })
                         node.device.capabilities = capas
                     }
+                    node.profileId = node.id
                     break;
                 case ST_EVENT_DEVICE:
                 case ST_STATUS_DEVICE:
