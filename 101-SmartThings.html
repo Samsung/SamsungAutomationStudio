@@ -146,7 +146,6 @@
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
     </div>
-
 </script>
 <script type="text/x-red" data-help-name="event-device">
     <p>This node represents a change of device.</p>
@@ -199,6 +198,10 @@
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
     </div>
+    <div class="form-row" style="margin:20px 0px;">
+        <label for="node-input-attributeId"><i class="fa fa-align-right"></i> Log</label>
+        <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"> Logging device response
+    </div>
 </script>
 <script type="text/x-red" data-help-name="status-device">
     <p>This node checks the state of the device.</p>
@@ -248,7 +251,10 @@
     <div class="form-row actuator-container-row">
         <ol id="cmd-list-container"></ol>
     </div>
-
+    <div class="form-row" style="margin:20px 0px;">
+        <label for="node-input-attributeId"><i class="fa fa-align-right"></i> Log</label>
+        <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"> Logging device response
+    </div>
 </script>
 <script type="text/x-red" data-help-name="command-device">
     <p>This node can command to the device.</p>
@@ -1408,6 +1414,7 @@
             capabilityId: {value: "", required: true},
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},
+            logging: {value:false},
             outputs: {value: 1}
         },
         inputs: 1,
@@ -1503,6 +1510,7 @@
             capabilityId: {value: "", required: true},
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},
+            logging: {value:false},
             outputs: {value: 1}
         },
         inputs: 1,
@@ -1666,6 +1674,7 @@
             capabilityId: {value: "", required: true},
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},
+            logging: {value:false},
             outputs: {value: 1}
         },
         inputs: 1,

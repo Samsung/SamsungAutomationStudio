@@ -105,44 +105,44 @@ module.exports = function (RED) {
     var OneApi = {
         executeDeleteSubscription: function (keyParam, token) {
             return new Promise(function (resolve, reject) {
-                reqApi.callOneApi(null, "subscriptions", "executeDeleteSubscription", keyParam, undefined, undefined, token, function (body) {
+                reqApi.callOneApi("subscriptions", "executeDeleteSubscription", keyParam, undefined, undefined, token, function (body) {
                     try {
                         resolve(body);
                     } catch (e) {
                         reject(body);
                     }
                 });
-            });
+            },true);
         },
 
         executeCreateSubscription: function (keyParam, bodyParam, token) {
             return new Promise(function (resolve, reject) {
-                reqApi.callOneApi(null, "subscriptions", "executeCreateSubscription", keyParam, undefined, bodyParam, token, function (body) {
+                reqApi.callOneApi("subscriptions", "executeCreateSubscription", keyParam, undefined, bodyParam, token, function (body) {
                     try {
                         resolve(body);
                     } catch (e) {
                         reject(body);
                     }
                 });
-            });
+            },true);
         },
 
-        getDeviceStates: function (keyParam, token) {
+        getDeviceStates: function (keyParam, token, isLogging) {
             return new Promise(function (resolve, reject) {
-                reqApi.callOneApi(null, "device", "getDeviceStates", keyParam, undefined, undefined, token, function (data) {
+                reqApi.callOneApi("device", "getDeviceStates", keyParam, undefined, undefined, token, function (data) {
                     try {
                         resolve(data);
                     } catch (e) {
                         reject(data);
                     }
-                });
+                }, isLogging);
             });
 
         },
 
-        executeDeviceCommands: function (keyParam, bodyParam, token) {
+        executeDeviceCommands: function (keyParam, bodyParam, token, isLogging) {
             return new Promise(function (resolve, reject) {
-                reqApi.callOneApi(null, "device", "executeDeviceCommands", keyParam, undefined, bodyParam, token, function (data) {
+                reqApi.callOneApi("device", "executeDeviceCommands", keyParam, undefined, bodyParam, token,function (data) {
                     if (typeof data === 'object') {
                         if (data.hasOwnProperty("errMsg")) {
                             reject(data);
@@ -152,14 +152,14 @@ module.exports = function (RED) {
                     } else {
                         resolve(data);
                     }
-                });
+                }, isLogging);
             });
         }
     };
 
     var RES = {
         ok: function (res, obj) {
-            console.log(`RES ok : ${JSON.stringify(obj)}`)
+            // console.log(`RES ok : ${JSON.stringify(obj)}`)
             res.json(obj)
         },
         error: function (res, status, msg) {
@@ -406,7 +406,7 @@ module.exports = function (RED) {
                         })
                     }).catch(function (err) {
                         debugLog("Delete Subscription : " + installedAppId +" / ("+err.errCd +")"+err.errMsg)
-                        console.log("Delete errorCode : " + err.errCd + " message : " + err.errMsg);
+                        // console.log("Delete errorCode : " + err.errCd + " message : " + err.errMsg);
                         console.dir(err)
                     });
                     RES.ok(res, {statusCode: 200, updateData: {}});
@@ -438,28 +438,6 @@ module.exports = function (RED) {
                 }
             })
             return result;
-        }
-
-        function verifySignature(req,auth) {
-            try {
-                // let publickey;
-                // if (NODE.publickey) {
-                //     publickey = NODE.publickey.replace(/\\r\\n/g, "").replace(/\\n/g, "");
-                //     publickey = publickey.replace("-----BEGIN PUBLIC KEY-----", "-----BEGIN PUBLIC KEY-----\n");
-                //     publickey = publickey.replace("-----END PUBLIC KEY-----", "\n-----END PUBLIC KEY-----\n");
-                //     publickey = publickey.replace(/\\n/g, os.EOL);
-                // }
-                // publickey = Buffer.from(publickey, 'utf8');
-                // let parsed = httpSignature.parseRequest(req);
-                // if (!httpSignature.verifySignature(parsed, publickey)) {
-                //     return false;
-                // }
-
-            } catch (error) {
-                debugLog("[error] " + JSON.stringify(error));
-                return false;
-            }
-            return true;
         }
 
         var httpMiddleware = function (req, res, next) {
@@ -566,25 +544,25 @@ module.exports = function (RED) {
                 }
 
                 if (NODE.type == ST_EVENT_DEVICE) {
-                    var resultMsg=[]
-                    NODE.warn("[SmartThings] Event:" + NODE.name)
+                    var resultMsg=[];
+                    NODE.warn("[SmartThings] Event:" + NODE.name);
 
                     flowContext.eventData.events.forEach(function(event){
-                        var deviceEvent = event.deviceEvent
+                        var deviceEvent = event.deviceEvent;
                         if(deviceEvent && deviceEvent.deviceId == deviceConfig.deviceId && deviceEvent.componentId == deviceConfig.componentId ){
-                            resultMsg=[]
+                            resultMsg=[];
                             NODE.rules.forEach(function(rule){
-                                var opCheck = false
-                                rule.capaId=rule.capaId.split('_v')[0]
+                                var opCheck = false;
+                                rule.capaId=rule.capaId.split('_v')[0];
                                 if(deviceEvent.capability == rule.capaId && deviceEvent.attribute == rule.attrId){
-                                    opCheck=operators[rule.operator](rule.value, deviceEvent.value)
+                                    opCheck=operators[rule.operator](rule.value, deviceEvent.value);
                                 }
 
                                 if (opCheck) {
-                                    RED.util.setMessageProperty(msg, 'payload', deviceEvent)
-                                    resultMsg.push(msg)
+                                    RED.util.setMessageProperty(msg, 'payload', deviceEvent);
+                                    resultMsg.push(msg);
                                 } else {
-                                    resultMsg.push(null)
+                                    resultMsg.push(null);
                                 }
                             })
                         }
@@ -593,9 +571,9 @@ module.exports = function (RED) {
                         RED.util.setMessageProperty(msg, 'payload', flowContext.eventData.events);
                         resultMsg.push(msg);
                     }
-                    NODE.send(resultMsg)
+                    NODE.send(resultMsg);
                 } else if (NODE.type == ST_STATUS_DEVICE) {
-                    OneApi.getDeviceStates(param, authToken).then(function (data) {
+                    OneApi.getDeviceStates(param, authToken, NODE.logging).then(function (data) {
                         NODE.warn("[SmartThings] Status :" + NODE.name);
                         var deviceStatus = data;
                         var opCheck = false;
@@ -607,14 +585,13 @@ module.exports = function (RED) {
                                 rule.value = "\'\'"
                             }
                             if(rule.valueType == 'Iso8601Date'){
-                                opCheck = operators[rule.operator](new Date(rule.value), new Date(attributeValue))
+                                opCheck = operators[rule.operator](new Date(rule.value), new Date(attributeValue));
                             }else{
-                                opCheck = operators[rule.operator](rule.value, attributeValue)
-
+                                opCheck = operators[rule.operator](rule.value, attributeValue);
                             }
                             if (opCheck) {
                                 // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port success")
-                                RED.util.setMessageProperty(msg, 'payload', attributeValue)
+                                RED.util.setMessageProperty(msg, 'payload', attributeValue);
                                 onward.push(msg);
                             } else {
                                 // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port fail")
@@ -629,53 +606,53 @@ module.exports = function (RED) {
                         NODE.send(onward);
 
                     }).catch(function (err) {
-                        console.error(err)
+                        console.error(err);
                         NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                     });
                 } else {
                     NODE.warn("[SmartThings] Action:" + NODE.name);
 
                     var commandArr = [];
-                    var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main'
+                    var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main';
                     for(var rule of NODE.rules){
-                        rule.capaId=rule.capaId.split('_v')[0]
-                        var cmd = {component: componentId || "main", capability: rule.capaId, command: rule.attrId}
-                        cmd.arguments = []
+                        rule.capaId=rule.capaId.split('_v')[0];
+                        var cmd = {component: componentId || "main", capability: rule.capaId, command: rule.attrId};
+                        cmd.arguments = [];
 
-                        var argObj={}
+                        var argObj={};
                         rule.args.forEach(arg=>{
                             if(arg.type != 'object'){
-                                arg.type = arg.type || ''
+                                arg.type = arg.type || '';
                                 if(arg.type.toLowerCase().indexOf('integer')>-1||arg.type.toLowerCase().indexOf('number')>-1) {
-                                    cmd.arguments.push(Number(arg.value))
+                                    cmd.arguments.push(Number(arg.value));
                                 }else if(arg.type === 'json'){
-                                    cmd.arguments.push(JSON.parse(arg.value))
+                                    cmd.arguments.push(JSON.parse(arg.value));
                                 }else{
-                                    cmd.arguments.push(arg.value)
+                                    cmd.arguments.push(arg.value);
                                 }
                             }else{
-                                var argValue
-                                arg.propType=arg.propType || ''
+                                var argValue;
+                                arg.propType=arg.propType || '';
                                 if(arg.propType.toLowerCase().indexOf('integer')>-1||arg.propType.toLowerCase().indexOf('number')>-1) {
-                                    argValue = Number(arg.value)
+                                    argValue = Number(arg.value);
                                 }else{
-                                    argValue = arg.value
+                                    argValue = arg.value;
                                 }
-                                argObj[arg.propId]=argValue
+                                argObj[arg.propId]=argValue;
                             }
                         })
                         if(Object.keys(argObj).length>0){
-                            cmd.arguments.push(argObj)
+                            cmd.arguments.push(argObj);
                         }
                         commandArr.push(cmd);
                     }
                     if (commandArr.length > 0) {
-                        OneApi.executeDeviceCommands(param, {commands: commandArr}, authToken).then(function (data) {
+                        OneApi.executeDeviceCommands(param, {commands: commandArr}, authToken, NODE.logging).then(function (data) {
                             RED.util.setMessageProperty(msg, 'payload', commandArr);
                             onward.push(msg);
                             NODE.send(onward);
                         }).catch(function (err) {
-                            console.error(err)
+                            console.error(err);
                             NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                         })
                     }else {
