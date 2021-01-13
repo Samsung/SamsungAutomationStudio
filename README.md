@@ -11,6 +11,7 @@ npm install node-red-contrib-samsung-automation-studio-nodes
 ## Compatibility
 Node-RED version: v1.0.6  
 Node-RED version: v1.1.2
+Node-RED version: v1.2.2
 
 ## Usage
 [How to use Bixby Nodes](https://sasm.developer.samsung.com/tutorials/article_2_4)  
@@ -26,10 +27,13 @@ For further help, or general discussion, please contact sasm.sec@samsung.com
 Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Release Note
-- 1.0.14 : SmartThings Automation node authorization process modify
+- 1.0.16 : 
+    - Add 'slack-notification' node
+    - Add 'status-device', 'command-device' node device response logging option
+- 1.0.15 : SmartThings Automation node authorization process modify
 - 1.0.13 : SmartThings device nodes logging modify
 - 1.0.11 : 
-    - get custom capability spec. dynamically with SmartThings API
+    - Get custom capability spec. dynamically with SmartThings API
     - SmartThings Capability spec. update (2020.08.13)   
 - 1.0.8 : nodered.org, flows page compatibility fix  
 - 1.0.7 : Node-RED ver.1.1.2 compatibility bug fix  
