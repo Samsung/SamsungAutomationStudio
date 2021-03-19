@@ -105,6 +105,13 @@
             </a>
         </div>
     </div>
+    <div class="form-row" style="margin:20px 0px;">
+        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+        <div>
+            <input id="node-input-logging-editor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to debug window<br>
+            <input id="node-input-logging-console" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">log to system console
+        </div>
+    </div>
 </script>
 <script type="text/x-red" data-help-name="automation">
     <p>This node represents the WebHook Endpoint of SmartApp. the Automation node handles lifecycle of SmartApp.</p>
@@ -199,8 +206,12 @@
         <ol id="attr-list-container"></ol>
     </div>
     <div class="form-row" style="margin:20px 0px;">
-        <label for="node-input-attributeId"><i class="fa fa-align-right"></i> Log</label>
-        <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"> Logging device response
+        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+        <div>
+            <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"> Logging device response<br>
+            <input id="node-input-logging-editor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to debug window<br>
+            <input id="node-input-logging-console" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">log to system console
+        </div>
     </div>
 </script>
 <script type="text/x-red" data-help-name="status-device">
@@ -252,8 +263,12 @@
         <ol id="cmd-list-container"></ol>
     </div>
     <div class="form-row" style="margin:20px 0px;">
-        <label for="node-input-attributeId"><i class="fa fa-align-right"></i> Log</label>
-        <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"> Logging device response
+        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+        <div>
+            <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"> Logging device response<br>
+            <input id="node-input-logging-editor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to debug window<br>
+            <input id="node-input-logging-console" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">log to system console
+        </div>
     </div>
 </script>
 <script type="text/x-red" data-help-name="command-device">
