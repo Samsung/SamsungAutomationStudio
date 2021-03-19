@@ -13,15 +13,217 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
+<style>
+    .md_pat{
+        display:flex;
+        align-items:center;
+    }
+    .md_pat__input{
+        width:65%;
+    }
+    .md_header{
+        text-align:right;
+        padding:10px 15px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        background:#ebebeb;
+    }
+    .md_list{
+        min-height:30vh;
+        max-height:60vh;
+        overflow-y:scroll;
+        border: 1px solid #ddd;
+        /*border-radius: 5px;*/
+        padding: 5px;
+    }
+    .md_list__item{
+        padding:5px 5px 5px 10px;
+        cursor:pointer;
+        margin:5px 0px;
+        border-radius:10px;
+        display:none;
+    }
+    .md_list__location{
+        background:#ebebeb;
+        font-size:1rem;
+    }
+    .md_list__room{
+        background:#f7f7f7;
+        font-size:.9rem;
+    }
+    .md_list__device{
+        background:#ffffff;
+        font-size:.9rem;
+        font-weight:bold;
+        border:1px solid #aaaaaa;
+    }
+    .md_list__device__cmp{
+        padding-left:10px;
+        max-height:100px;
+        overflow-y:auto;
+        font-weight:bold;
+    }
+    .md_List__device__cps{
+        padding-left:20px;
+        font-weight:normal;
+    }
+
+    .md_list__item > input[type="checkbox"]{
+        margin:0px;
+        vertical-align:middle;
+    }
+    .md_list__item--close i{
+        transform: rotate(-90deg);
+    }
+    .md_list__item--close > div{
+        display:none;
+    }
+    .md_list__device.md_list__item--selected{
+        border:1px solid #3695dd;
+    }
+    .md_list__item--show{
+        display:block;
+    }
+
+    span.cp_type__option{
+        cursor:pointer;
+        margin-right:10px;
+        vertical-align: middle;
+    }
+    .node-input-label{
+        display:inline-block;
+        width:100px;
+    }
+    .dp_cp{
+        display:inline-block;
+        width:70%;
+    }
+    .dp_cp input,select{
+        width:100%;
+    }
+    .dp_cp :is(input,select){
+        width:90%;
+    }
+    .my_device__loation--close div{
+        display:none;
+    }
+    .my_Device__room--close div{
+        display:none;
+    }
+    .cp_type--standard .dp_cp__custom{
+        display:none;
+    }
+    .cp_type--custom .dp_cp__standard{
+        display:none;
+    }
+    .cp_type input[type="radio"]{
+        width:30px;
+    }
+
+    .dp_cp_spec{
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height:50vh;
+        overflow:auto;
+    }
+    .st_state{
+        cursor:pointer;
+        display:inline-block;
+        margin:5px;
+        vertical-align:middle;
+        width:19px;
+    }
+    .st_state i{
+        vertical-align:middle;
+    }
+    .st_state svg{
+        width:26px;
+        height:26px;
+        transform:rotate(-90deg);
+        vertical-align:middle;
+    }
+    .st_state:not(.st_state--loading) svg,.st_state.st_state--loading i{
+        display:none;
+    }
+    .st_state.st_state--loading svg,.st_state:not(.st_state--loading) i{
+        display:inline-block;
+        font-size:1.3rem;
+    }
+
+    .st_state i{color:red;}
+    .st_state--valid i{color:green;}
+
+    circle.st_state__back{
+        stroke-width:3;
+        stroke:lightgray;
+        fill:none;
+    }
+    circle.st_state__front{
+        stroke-width:4;
+        stroke-dasharray:56;
+        stroke-dashoffset:0;
+        stroke-linecap:round;
+        fill:none;
+        stroke:lightgray;
+    }
+    .st_state--loading circle.st_state__front{
+        stroke: #3695dd;
+        animation: st_loading 2.5s infinite;
+    }
+    .st_state--valid circle.st_state__front{
+        stroke:green;
+        animation:none;
+    }
+    @keyframes st_loading{
+        0%,100% {stroke-dashoffset:0;}
+        50% {stroke-dashoffset:-56;}
+        50.01% {stroke-dashoffset:56;}
+    }
+    .optgroup--hide{
+        display:none;
+    }
+</style>
+
 <script type="text/x-red" data-template-name="device-profile">
     <div class="form-row">
         <label for="node-input-name">Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" placeholder="default, '{capabilty ID}'">
     </div>
-    <div class="form-row">
-        <label for="node-input-capabilityId">Capability</label>
-        <select type="text" id="node-input-capabilityId" style="width: 70%;"></select>
+
+    <div class="form-row" style="display:flex;align-items:center">
+        <span for="node-input-capabilityId" class="node-input-label" style="width:100px;">Capability</span>
+        <span class="dp_cp">
+            <div class="cp_type">
+                <span class="cp_type__option">
+                    <input type="radio" name="cpType" value="standard" checked>Standard
+                </span>
+                <span class="cp_type__option">
+                    <input type="radio" name="cpType" value="custom" >Custom
+                </span>
+            </div>
+            <span class="dp_cp__custom">
+                <input type="text" list="stAccessToken_datalist" id="node-input-stAccessToken" placeholder="SmartThings AccessToken">
+                <span class="st_state" title="refresh">
+                    <svg>
+                        <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                        <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+                    </svg>
+                    <i class="fa fa-check" aria-hidden="true" id="node-input-stAccessToken-valid"></i>
+                </span>
+                <select id="node-input-capabilityId_custom" data-cptype="custom">
+                </select>
+            </span>
+            <span class="dp_cp__standard">
+                <select id="node-input-capabilityId_standard" data-cptype="standard"></select>
+            </span>
+        </span>
     </div>
+    <datalist id="stAccessToken_datalist"></datalist>
+    <div id="cp_spec__result" >
+        <span id="capabilities_refresh_result" style="padding:10px;"></span>
+    </div>
+    <pre class="dp_cp_spec"><code id="dp_cp_spec__code">select capability</code></pre>
 </script>
 <script type="text/x-red" data-help-name="device-profile">
     <p>This node represents an installed device. In this flow, You need to choose a device for automation.</p>
@@ -29,11 +231,13 @@
     <p>This node has a capability that represents device feature. You can find more information about <a href="https://smartthings.developer.samsung.com/docs/api-ref/capabilities.html" target="_blank">the Capabilities of SmartThings</a>.</p>
     <h3>Properties</h3>
     <dl class="message-properties">
-        <dt>Name<span class="property-type">required</span></dt>
+        <dt>Name</dt>
         <dd>The label of the Name assigned by the user. It's unique name in flow.</dd>
         <dt>Capability<span class="property-type">required</span></dt>
         <dd>
             <ul>
+                <li><b>'Standard'</b> Capability : Standard Capabilities are created and maintained by the SmartThings development team.</li>
+                <li><b>'Custom'</b> Capability : Custom capabilities are defined by the developer. A custom capability consists of a namespace and a capability name to uniquely identify it. 'device-profile' node get custom capability that is defined in your device using your SmartThings Personal AccessToken</li>
                 <li>The List of Capabilities provided by this Device.</li>
                 <li>Determine if this Device supports the specified capability name.</li>
             </ul>
@@ -41,23 +245,45 @@
     </dl>
 </script>
 <script type="text/x-red" data-template-name="installed-device">
-    <div class="form-tips" style="margin-bottom:10px;"><b>Note:</b> create token on the SmartThings <b><a href="https://account.smartthings.com/tokens" target="_blank">personal access token page</a></b></div>
+     <div class="form-tips" style="margin-bottom:10px;"><b>Note:</b> create token on the SmartThings <b><a href="https://account.smartthings.com/tokens" target="_blank">personal access token page</a></b></div>
 
     <div class="form-row">
-        <label for="node-input-name">name</span></label>
-        <input type="text" id="node-input-name" disabled>
+        <label for="node-input-name">Node Name</label>
+        <input type="text" id="node-input-name" placeholder="default, 'token:xxxxxxxx'">
     </div>
-    <div class="form-row">
-        <label for="node-input-name">label</label>
-        <input type="text" id="node-input-label" disabled>
+    <div class="form-row md_pat">
+        <label for="node-input-stAccessToken">Personal<br> Access Token</label>
+        <input type="text" class="md_pat__input" id="node-input-stAccessToken" list="stAccessToken_datalist" placeholder="SmartThings PAT">
+        <span class="st_state" title="refresh">
+            <svg>
+                <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+            </svg>
+            <i class="fa fa-check" aria-hidden="true" id="node-input-stAccessToken-valid"></i>
+        </span>
     </div>
-    <div class="form-row">
-        <label for="node-input-stAccessToken">Personal Access Token</label>
-        <input type="text" id="node-input-stAccessToken">
+    <div class="form-row"style="text-align:right">
+        <span id="my_device__result" style="padding:10px;"></span>
     </div>
+
+    <div class="md_container">
+        <div class="md_header">
+            <span class="md_header__cnt">0 devices, 0 selected</span>
+            <input id="md_header__search" class="md_header__search" type="search" placeholder="Device Search">
+        </div>
+
+        <div id="md_list" class="md_list">
+            <!-- <div class="my_device__loation my_device__loation--close"></div>
+            <div class="my_device__room my_device__room--close"></div>
+            <div class="my_device__device my_device__device--close"></div> -->
+        </div>
+    </div>
+    <!-- <div class="my_device_list" class="form-row my_device_list">
+    </div> -->
     <div id="my-device-list-div" class="form-row sensor-container-row">
         <ol id="my-device-list-container"></ol>
     </div>
+    <datalist id="stAccessToken_datalist"></datalist>
 </script>
 <script type="text/x-red" data-help-name="installed-device">
     <p>This node represents an your SmartThings device. You can control your SmartThings devices directly without even registering the Automation.</p>
@@ -135,13 +361,20 @@
 <script type="text/x-red" data-template-name="event-device">
     <div class="form-row" style="width:600px;">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name" style="width:50%">
+        <input type="text" id="node-input-name" placeholder="default, '{deviceName}'" style="width:50%">
     </div>
+    <input type="hidden" id="node-input-deviceNodeId">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
-        <select type="text"  id="node-input-deviceNodeId" style="width:50%"></select>
+        <select type="text" id="node-input-deviceId" style="width:50%"></select>
+        <span class="st_state" title="refresh">
+            <svg>
+                <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+            </svg>
+        </span>
     </div>
-    <hr align="middle" />
+    <hr align="middle"/>
     <div class="form-row">
         <label for="node-input-capabilityId"><i class="fa fa-asterisk"></i> Capability</label>
         <select id="node-input-capabilityId" style="width:50%;"></select>
@@ -184,11 +417,19 @@
 <script type="text/x-red" data-template-name="status-device">
     <div class="form-row" style="width:600px;">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name" style="width:50%">
+        <input type="text" id="node-input-name" placeholder="default, '{deviceName}'" style="width:50%">
     </div>
+    <input type="hidden" id="node-input-deviceNodeId">
+    <input type="hidden" id="node-input-componentId">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
-        <select type="text"  id="node-input-deviceNodeId" style="width:50%"></select>
+        <select type="text" id="node-input-deviceId" style="width:50%"></select>
+        <span class="st_state" title="refresh">
+            <svg>
+                <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+            </svg>
+        </span>
     </div>
     <hr align="middle" />
     <div class="form-row">
@@ -244,11 +485,19 @@
 <script type="text/x-red" data-template-name="command-device">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name" style="width:50%">
+        <input type="text" id="node-input-name" placeholder="default, '{attributeID}:{argValue}'" style="width:50%">
     </div>
+    <input type="hidden" id="node-input-deviceNodeId">
+    <input type="hidden" id="node-input-componentId">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
-        <select type="text" id="node-input-deviceNodeId" style="width:50%"></select>
+        <select type="text" id="node-input-deviceId" style="width:50%"></select>
+        <span class="st_state" title="refresh">
+            <svg>
+                <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+            </svg>
+        </span>
     </div>
     <hr align="middle" />
     <div class="form-row">
@@ -302,6 +551,34 @@
 <script type="text/javascript">
     // https://api.smartthings.com/v1/devices
     SmartThingsApi = {
+        getLocations: function(token){
+            return new Promise((resolve,reject)=>{
+                $.ajax({
+                    url: "https://api.smartthings.com/v1/locations",
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    }
+                }).then(resolve,reject)
+            });
+        },
+        getLocationsRooms: function(token,locationId){
+            return new Promise((resolve,reject)=> {
+                $.ajax({
+                    url: "https://api.smartthings.com/v1/locations/" + locationId + "/rooms", headers: {
+                        Authorization: 'Bearer ' + token
+                    }
+                }).then(resolve,reject)
+            });
+        },
+        getDevices: function (token) {
+            return new Promise((resolve,reject)=> {
+                $.ajax({
+                    url: "https://api.smartthings.com/v1/devices", headers: {
+                        Authorization: 'Bearer ' + token
+                    }
+                }).then(resolve,reject)
+            })
+        },
         getDeviceList: function (token, done, fail) {
             return $.ajax({
                 url: "https://api.smartthings.com/v1/devices",
@@ -437,6 +714,108 @@
                 return {}
             }
         }
+
+        let _pats={};
+        this.validatePAT=function(pat){
+            return SmartThingsApi.getCapability(pat,'switch',1);
+        }
+        this.addPAT = function(pat,isRefresh){
+            if(!pat){
+                delete _pats[pat];
+                return Promise.reject(null);
+            }
+            if(!_pats[pat]||isRefresh){
+                return this.validatePAT(pat).then(()=>{
+                    const PAT = {};
+                    const getLocationsPR = SmartThingsApi.getLocations(pat)
+                        .then(locationsResult=>{
+                            return Promise.allSettled(locationsResult.items
+                                .sort((l1,l2) => l1.name.localeCompare(l2.name))
+                                .map(location=>{
+                                    return SmartThingsApi.getLocationsRooms(pat, location.locationId)
+                                        .then(roomsResult => {
+                                            location.rooms=roomsResult.items;
+                                            location.rooms.sort((r1,r2)=> r1.name.localeCompare(r2.name))
+                                            location.rooms.push({locationId:location.locationId,roomId:'undefined',name:"'undefined'"});
+                                        })
+                                }))
+                                .then(()=>locationsResult.items)
+                        })
+                        .then(locations=>{
+                            PAT.locations=locations;
+                            return locations;
+                        })
+
+                    const getDevicesPR = SmartThingsApi.getDevices(pat)
+                        .then(devicesResult=>{
+                            return devicesResult.items
+                                .map(d=>{
+                                    return {
+                                        deviceId:d.deviceId,
+                                        name:d.label||d.name,
+                                        locationId:d.locationId,
+                                        roomId:d.roomId,
+                                        components:d.components
+                                    }
+                                })
+                        });
+
+                    getDevicesPR.then(devices=>{
+                        PAT.devices=devices;
+                        PAT.customCps = PAT.devices.map(d=>d.components).flat()
+                            .map(cmp=>cmp.capabilities).flat()
+                            .map(cp=> cp.id+'_v'+cp.version)
+                            .filter(cpId=>/\./.test(cpId))//only custom capabilities
+                            .filter((cpId,idx,arr)=>arr.indexOf(cpId)==idx)//remove duplicate items
+                            .sort();
+                        return devices;
+                    });
+
+                    const getUnknownCapabilities = getDevicesPR
+                        .then(devices=>{
+                            var prs = devices.map(d=>d.components).flat()
+                                .map(cmp=>cmp.capabilities).flat()
+                                .filter(cp=>!profiles.getCapability(cp.id+'_v'+cp.version))
+                                .map(cp=>SmartThingsApi.getCapability(pat,cp.id,cp.version))
+                            return Promise.allSettled(prs);
+                        });
+
+                    const addPATPromise=Promise.allSettled([getLocationsPR,getDevicesPR,getUnknownCapabilities])
+                        .then(result=>{
+                            if(PAT.devices){
+                                _pats[pat]=PAT;
+                                return Promise.resolve(PAT);
+                            }else{
+                                delete _pats[pat];
+                                return Promise.reject(result[1].value);
+                            }
+                        });
+                    _pats[pat]=addPATPromise;
+                    return addPATPromise;
+                }).catch(e=>{
+                    console.log('validate SmartThings AccessToken fail : '+e.statusText);
+                    delete _pats[pat];
+                    return Promise.reject(null);
+                })
+            }else if(_pats[pat]){
+                return Promise.resolve(_pats[pat]);
+            }
+        }
+        this.hasPat=(pat)=>{
+            return !!_pats[pat];
+        }
+        this.getPATs=()=>{
+            return _pats;
+        }
+        this.getPAT=(pat)=>{
+            if(_pats[pat] && typeof _pats[pat].then == 'function'){
+                return _pats[pat];
+            }else if(_pats[pat]){
+                return Promise.resolve(_pats[pat]);
+            }else{
+                return Promise.reject(undefined);
+            }
+        }
     }
 
     var validateAutomationNext = function (id) {
@@ -463,87 +842,227 @@
     const ST_MY_DEVICE = 'installed-device';
     const ST_AUTOMATION = 'automation';
     const ST_DEVICE_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE]
-    // const ST_NODE_VERSION = 200330
+    const ST_NODES=[ST_AUTOMATION,ST_DEVICE_PROFILE,ST_MY_DEVICE,ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE];
+    // const ST_NODE_VERSION = 20210318
     var stDevice = {};
 
-    function STRefCheck(){
-        var map = {}
-        var workspaceId = RED.workspaces.active()
-        RED.nodes.filterNodes({z: workspaceId}).forEach(function(node){
-            if(node.type==ST_DEVICE_PROFILE || node.type == ST_MY_DEVICE){
-                if(node.id != node.profileId){
-                    //node는 순서대로 생성되기 때문에, 그 후에 profileId가 같은 node는 복사된 node.
-                    if(map.hasOwnProperty(node.profileId)){
-                        node.profileId=node.id
-                    }else{
-                        map[node.profileId]=node
+    function STRefCheck() {
+
+        //import, broken reference fix
+        const workspaceId = RED.workspaces.active();
+        var hasBrokenRef = RED.nodes.filterNodes({z: workspaceId})
+            .filter(n => ST_NODES.includes(n.type) && n._def?.defaults?.hasOwnProperty('profileId'))
+            .some(n => n.id != n.profileId);
+        if (hasBrokenRef) {
+            var map = {}
+            RED.nodes.filterNodes({z: workspaceId})
+                .filter(n => ST_NODES.includes(n.type) && n._def?.defaults?.hasOwnProperty('profileId'))
+                .forEach(n => {
+                    if (!n.profileId) {
+                        n.profileId = n.id;
                     }
-                }
-            }
-        })
 
-        RED.nodes.filterNodes({z: workspaceId}).forEach(function(node){
-            if(ST_DEVICE_NODES.includes(node.type) && map.hasOwnProperty(node.deviceNodeId)){
-                node.deviceNodeId=map[node.deviceNodeId].id
-                RED.editor.validateNode(node)
-            }
-        })
+                    if (map.hasOwnProperty(n.profileId)) {
+                        n.profileId = n.id;
+                    } else {
+                        map[n.profileId] = n;
+                    }
+                })
 
-        for(var profId in map){
-            map[profId].profileId = map[profId].id
+            RED.nodes.filterNodes({z: workspaceId})
+                .filter(n => ST_DEVICE_NODES.includes(n.type) && map.hasOwnProperty(n.deviceNodeId))
+                .forEach(function (n) {
+                    n.deviceNodeId = map[n.deviceNodeId].id;
+                    RED.editor.validateNode(n);
+                })
+
+            for (var profId in map) {
+                map[profId].profileId = map[profId].id;
+            }
+            RED.view.redraw();
         }
-        RED.view.redraw()
+
+        //210318 STNode
+        RED.nodes.filterNodes({type:ST_MY_DEVICE})
+            .filter(n=> n.device && !n.devices)
+            .forEach(n=> n.devices=[n.device.deviceId]);
+
+        RED.nodes.filterNodes({z: workspaceId})
+            .filter(n=>ST_DEVICE_NODES.includes(n.type))
+            .filter(n=>n.deviceNodeId && !n.deviceId && RED.nodes.node(n.deviceNodeId))
+            .forEach(n=>{
+                const deviceNode = RED.nodes.node(n.deviceNodeId);
+                if(deviceNode.type===ST_DEVICE_PROFILE){
+                    n.deviceId=n.deviceNodeId;
+                }else if(deviceNode.type===ST_MY_DEVICE){
+                    n.deviceId=deviceNode.device?.deviceId||(deviceNode.devices?.lenght==1?deviceNode.devices[0]:'');
+                }
+            });
     }
 
+    function PATchangeEvent(PAT,initValue){
+        if(PAT && typeof PAT.then === 'function'){
+            document.querySelector('.st_state').className = 'st_state st_state--loading';
+            document.querySelector('.st_state').disabled=true;
+            PAT.then((_PAT)=>{PATchangeEvent(_PAT,initValue)});
+            return;
+        }
+        const cpCustomEl = document.querySelector('#node-input-capabilityId_custom');
+        const stStateEL = document.querySelector('.st_state');
+        stStateEL.classList.remove('st_state--loading');
+
+        if(PAT){
+            stStateEL.classList.add('st_state--valid');
+            cpCustomEl.disabled=false;
+            cpCustomEl.innerHTML = '';
+
+            PAT.customCps
+                .map(cpId=>cpId.slice(0,cpId.indexOf('.')))
+                .filter((namespace,idx,arr)=>arr.indexOf(namespace)===idx)
+                .sort()
+                .forEach(namespace=>{
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = namespace;
+                    cpCustomEl.append(optgroup);
+                })
+            PAT.customCps
+                .forEach(cpId=>{
+                    const option = document.createElement('option');
+                    option.value = cpId;
+                    const tempId = cpId.split('_v')[0];
+                    const tempVersion = cpId.split('_v')[1];
+                    option.innerText = (tempVersion==1)?tempId:cpId;
+                    const namespace = cpId.slice(0,cpId.indexOf('.'));
+                    const optgroup = cpCustomEl.querySelector(`optgroup[label="${namespace}"]`);
+                    optgroup.append(option);
+                })
+
+            if(initValue){
+                cpCustomEl.value = initValue;
+                cpCustomEl.dispatchEvent(new Event('change'));
+            }
+        }else{
+            stStateEL.classList.remove('st_state--valid');
+            cpCustomEl.disabled=true;
+            cpCustomEl.innerHTML = '';
+        }
+    }
     RED.nodes.registerType('device-profile', {
         category: ST_NODES_CATEGORY,
         paletteLabel: "Device Profile",
         color: "rgb(168,168,168)",
         defaults: {
-            name: {value: "", required: true},
+            name: {value: ""},
+            alias:{value:""},//'name' is null, set automatically with properties;
             capabilityId: {value: "", required: true},
-            profileId: {value:""}
+            profileId: {value:""},
+            cpType:{value:'standard'},
+            capabilityId_standard:{value:''},
+            capabilityId_custom:{value:''}
+        },
+        credentials: {
+            stAccessToken: {type: 'text'}
         },
         inputs: 0,
         outputs: 0,
         icon: "deviceprofile.png",
         label: function () {
-            if (this.name) {
-                return this.name + ":" + this.capabilityId;
-            } else {
-                return "Device Profile";
+            return this.name|| this.alias || "Device Profile";
+        },
+        oneditsave: function(){
+            this.cpType = document.querySelector('input[name="cpType"]:checked').value||"standard";
+            this.capabilityId = document.querySelector('#node-input-capabilityId_'+this.cpType).value;
+            if(this.capabilityId){
+                this.alias=this.capabilityId;
             }
         },
         oneditprepare: function () {
-            var NODE = this
-            $("#node-input-capabilityId").empty();
-            $("#node-input-capabilityId").append($("<option></option>").val("").text(""));
-            Object.values(profiles.getAllCapabilities())
-                .filter(function(cp){
-                    return !!cp._spec === false
-                })
-                .forEach(function (cp) {
-                    $("<option></option>").val(cp.vid).text((cp.version===1?cp.id:cp.vid)).appendTo(("#node-input-capabilityId"))
-                })
-            $("#node-input-capabilityId").val(NODE.capabilityId);
+            STRefCheck();
 
-            //profileId: DeviceNode 참조 backup ID
-            if(NODE.profileId==''){
-                NODE.profileId=NODE.id
-            }else if(NODE.profileId!=NODE.id){
-                 var hasBrokenRef = RED.nodes.filterNodes({z: NODE.z, type: NODE.type}).some(function(node){
-                     if(node.id == NODE.id){
-                         return true
-                     }
-                     if(node.id == NODE.profileId){
-                         NODE.profileId=NODE.id
-                         return false;
-                     }
-                 })
-                if(hasBrokenRef){
-                    STRefCheck()
+            var NODE = this
+            NODE.cpType=NODE.cpType||'standard';
+
+            var patDatalist = document.getElementById('stAccessToken_datalist');
+            const workspaceId = RED.workspaces.active();
+            RED.nodes.filterNodes({z:workspaceId})
+                .filter(n => (n.type==ST_DEVICE_PROFILE || n.type === ST_MY_DEVICE) && n.credentials?.stAccessToken)
+                .map(n=>n.credentials.stAccessToken)
+                .filter((pat,idx,arr)=>arr.indexOf(pat)==idx)
+                .forEach(function(pat){
+                    var option = document.createElement('option');
+                    option.setAttribute('value',pat);
+                    patDatalist.append(option);
+                })
+
+            //capabilityId_standard
+            const cpStandardEl = document.querySelector('#node-input-capabilityId_standard');
+            const liveGroupEl = document.createElement('optgroup');
+            liveGroupEl.label = 'live/proposed';
+            cpStandardEl.append(liveGroupEl)
+            Object.values(profiles.getAllCapabilities())
+                .filter( cp => !!cp._custom === false)
+                .sort((c1,c2)=>c1.vid.localeCompare(c2.vid))
+                .forEach((cp) => {
+                    const option = document.createElement('option');
+                    option.value = cp.vid;
+                    option.innerText = cp.vname||cp.name;
+
+                    if (cp.status === 'live' || cp.status === 'proposed') {
+                        liveGroupEl.append(option);
+                    } else {
+                        option.title = cp.status
+                        let groupEl = document.querySelector(`optgroup[label="${cp.status}"]`);
+                        if(!groupEl){
+                            groupEl = document.createElement('optgroup');
+                            groupEl.label = cp.status;
+                            groupEl.disabled = true;
+                            cpStandardEl.append(groupEl);
+                        }
+                        groupEl.append(option);
+                    }
+                })
+
+            document.querySelector('.dp_cp').addEventListener('click',e=>{
+                if(e.target.matches('.cp_type__option')||e.target.matches('input[name="cpType"]')){
+                    var target = e.target;
+                    if(e.target.matches('.cp_type__option')){
+                        target = e.target.querySelector('input[name="cpType"]');
+                        target.checked=true;
+                    }
+                    e.currentTarget.className = 'dp_cp cp_type--'+target.value;
+                    document.querySelector(`#node-input-capabilityId_${target.value}`).dispatchEvent(new Event('change'));
+                }
+            })
+
+            function changePAT(e,isRefresh){
+                const pat = document.querySelector('#node-input-stAccessToken').value
+                document.querySelector('.st_state').className = 'st_state st_state--loading';
+                profiles.addPAT(pat,isRefresh).then(PATchangeEvent,PATchangeEvent);
+            }
+            document.querySelector('#node-input-stAccessToken').addEventListener('change',changePAT);
+            document.querySelector('.st_state').addEventListener('click',(e)=>{changePAT(e,true)});
+
+
+            function changeCapabilitySelect(e){
+                const cp = profiles.getCapability(e.target.value);
+                const cpType = document.querySelector('input[name="cpType"]:checked').value;
+                if(cpType==e.target.dataset.cptype){
+                    if(cp){
+                        document.querySelector('#dp_cp_spec__code').innerText = JSON.stringify(cp,function(k,v){return ['vid','vname'].includes(k)?undefined:v},2);
+                    }else{
+                        document.querySelector('#dp_cp_spec__code').innerText = 'select capability';
+                    }
                 }
             }
+            document.querySelector('#node-input-capabilityId_custom').addEventListener('change',changeCapabilitySelect)
+            document.querySelector("#node-input-capabilityId_standard").addEventListener('change',changeCapabilitySelect)
+
+            //cp_type optino radio button
+            document.querySelector('.dp_cp').className = 'dp_cp cp_type--'+NODE.cpType;
+            document.querySelector('.cp_type input[type="radio"][value="'+NODE.cpType+'"]').checked=true;
+            profiles.getPAT(NODE.credentials?.stAccessToken).then(PAT=>{PATchangeEvent(PAT,NODE.capabilityId_custom || NODE.capabilityId)});
+            cpStandardEl.value = NODE.capabilityId_standard||NODE.capabilityId;
+            cpStandardEl.dispatchEvent(new Event('change'));
         }
     });
 
@@ -552,150 +1071,229 @@
         paletteLabel: "My Device",
         color: "rgb(231,147,173)",
         defaults: {
-            name: {value: '', required: true},
-            label: {value: ''},
+            name: {value: ''},
+            alias: {value: ''},
             device: {value:''},
+            devices: {value: null},
             profileId: {value:''}
         },
         credentials: {
-            stAccessToken: {type: 'text', required: true}
+            stAccessToken: {type: 'text', required: true, validate: (pat)=>profiles.hasPat(pat)}
         },
         inputs: 0,
         outputs: 0,
         icon: "mydevice.png",
         label: function () {
-            if (this.label) {
-                return "My Device:" + this.label
-            } else {
-                return "My Device"
+            return this.name|| this.alias || "My Device";
+        },
+        oneditsave: function () {
+            if(document.querySelectorAll('#md_list .md_list__device.md_list__item--selected').length>0){
+                this.devices = Array.from(document.querySelectorAll('#md_list .md_list__device.md_list__item--selected')).map(el=>el.dataset.deviceId);
+            }
+            if(document.querySelector('#node-input-stAccessToken').value){
+                this.alias=`token:${document.querySelector('#node-input-stAccessToken').value.slice(0,8)}`;
             }
         },
         oneditprepare: function () {
-            var NODE = this;
-
-            $("#my-device-list-container")
-                .css('min-height', '400px')
-                .css('min-width', '150px')
-                .editableList({
-                    addButton: "GET SmartThings Device List",
-                    addItem: function (row, index, data) {
-                        var device = data || {}
-
-                        row.data('device', device)
-                        $('<div class="device-item">').text(device.label).css('font-weight', 'bold').appendTo(row)
-
-                        var cpSpans=[]
-                        if (Array.isArray(device.capabilities)) {
-                            device.capabilities.sort((c1,c2)=>{
-                                return c1.id.localeCompare(c2.id)
-                            }).forEach((cp)=>{
-                                cpSpans.push(`<span title="${cp.vid}" vid="${cp.vid}" class="device-item-capability" spec="${profiles.hasCapability(cp.vid)||cp.spec}">${cp.id}</span>`)
-                            })
-                        }
-                        $('<div>').html(cpSpans.join(", ")).appendTo(row)
-
-                        var selectButton = $('<a/>', {href: "#", class: "red-ui-editableList-item-remove editor-button editor-button-small"}).appendTo(row)
-                        selectButton.text('select')
-                        selectButton.on('click', function () {
-                            $('#my-device-list-container .history-stack-selected').removeClass('history-stack-selected')
-                            var device = row.data('device')
-                            $('#node-input-name').val(device.name)
-                            $('#node-input-label').val(device.label)
-                            NODE.device = device
-                        })
-                    },
-                    resizeItem: function (container) {
-                    },
-                    removeItem: function (opt) {
-                    },
-                    sortItems: function (rules) {
-                    },
-                    sortable: true,
-                    removable: false
-                });
-
-            var getItemsFail = function (err) {
-                $('#node-input-stAccessToken').addClass('input-error')
-                var failMsg = document.createElement('span');
-                failMsg.setAttribute('id', 'getDeviceListErrMsg');
-                failMsg.style.color = 'red';
-                failMsg.style.paddingLeft = '10px';
-                failMsg.style.fontsize = '12px';
-                failMsg.style.fontWeight = 'bold';
-                failMsg.innerText = err.status + ', ' + err.statusText;
-
-                document.querySelector("#my-device-list-div > div > a").insertAdjacentElement('afterend', failMsg);
-                var duration = 3000;
-                $('#getDeviceListErrMsg').fadeOut(duration, function () {
-                    $(this).remove();
-                })
-            }
-
-            var addItems = function (list) {
-                if (list && Array.isArray(list)) {
-                    list.sort(function (a, b) {
-                        return (a.label > b.label) ? 1 : (a.label == b.label) ? 0 : -1
-                    })
-                    $('#my-device-list-container').empty()
-                    list.forEach(function (device) {
-                        $('#my-device-list-container').editableList('addItem', device)
-                    })
-                }
-            }
-            var getItemsSuccess = function (list) {
-                $('#node-input-stAccessToken').removeClass('input-error')
-                NODE.deviceList = list
-                addItems(list)
-            }
-            $('#my-device-list-div > div > a.editor-button,a.red-ui-button').off('click');
-            $('#my-device-list-div > div > a.editor-button,a.red-ui-button').on('click', function (evt) {
-                evt.preventDefault();
-                var token = $('#node-input-stAccessToken').val();
-                SmartThingsApi.getDeviceList(token, getItemsSuccess, getItemsFail);
-            })
-            if (NODE.deviceList && NODE.deviceList.length > 0) {
-                addItems(NODE.deviceList)
-            } else if (NODE.credentials && NODE.credentials.stAccessToken) {
-                SmartThingsApi.getDeviceList(NODE.credentials.stAccessToken, getItemsSuccess, getItemsFail);
-            }
-
-            if (!NODE.credentials || !NODE.credentials.stAccessToken) {
-                NODE.device = {}
-                $('#node-input-name').val('')
-                $('#node-input-label').val('')
-                $('#my-device-list-container').empty()
-            }
+            //oneditprepare : init Elements -> set EventListeners -> set values
+            const NODE = this;
 
             //profileId: DeviceNode 참조 backup ID
-            if(NODE.profileId==''){
-                NODE.profileId=NODE.id
-            }else if(NODE.profileId!=NODE.id){
-                var hasBrokenRef = RED.nodes.filterNodes({z: NODE.z, type: NODE.type}).some(function(node){
-                    if(node.id == NODE.id){
-                        return true
-                    }
-                    if(node.id == NODE.profileId){
-                        NODE.profileId=NODE.id
-                        return false;
-                    }
+            STRefCheck();
+
+            /*Element init*/
+            const patDatalist = document.getElementById('stAccessToken_datalist');
+            const workspaceId = RED.workspaces.active();
+            RED.nodes.filterNodes({z:workspaceId})
+                .filter(n=>(n.type==ST_DEVICE_PROFILE || n.type === ST_MY_DEVICE) && n.credentials?.stAccessToken)
+                .map(n=>n.credentials.stAccessToken)
+                .filter((pat,idx,arr)=>arr.indexOf(pat)==idx)
+                .forEach(function(pat){
+                    var option = document.createElement('option');
+                    option.setAttribute('value',pat);
+                    patDatalist.append(option);
                 })
-                if(hasBrokenRef){
-                    STRefCheck()
+
+            if(NODE.credentials?.stAccessToken){
+                const stateEl = document.querySelector('.st_state');
+                stateEl.classList.add('st_state--loading');
+                profiles.getPAT(NODE.credentials.stAccessToken)
+                    .then(PAT=>createMdList(PAT, NODE.devices))
+                    .then(()=>{
+                        stateEl.classList.add('st_state--valid');
+                        stateEl.classList.remove('st_state--loading');
+                    })
+                    .catch(()=>{
+                        stateEl.classList.remove('st_state--valid');
+                        stateEl.classList.remove('st_state--loading');
+                    })
+            }
+
+            function PATchangeEvent(e,isRefresh){
+                const pat = document.querySelector('#node-input-stAccessToken').value;
+                const stateEl = document.querySelector('.st_state');
+                stateEl.classList.add('st_state--loading');
+                profiles.addPAT(pat,isRefresh)
+                    .then(createMdList,createMdList)
+                    .then(()=>{
+                        stateEl.classList.add('st_state--valid');
+                        stateEl.classList.remove('st_state--loading');
+                    })
+                    .catch(()=>{
+                        stateEl.classList.remove('st_state--valid');
+                        stateEl.classList.remove('st_state--loading');
+                    })
+            }
+            document.querySelector('#node-input-stAccessToken').addEventListener('change',PATchangeEvent);
+            document.querySelector('.st_state').addEventListener('click',(e)=>{PATchangeEvent(e,true)});
+            document.querySelector('#md_list').addEventListener('click',e=>{
+                if(e.target.matches('.md_list__item')){
+                    e.target.classList.toggle('md_list__item--close');
+                }else if(e.target.matches('input[type="checkbox"]') || e.target.matches('.md_list__device__cmp') || e.target.matches('.md_List__device__cps')){
+                    const itemEl = e.target.parentElement;
+                    const isSelected = itemEl.classList.toggle('md_list__item--selected');
+                    itemEl.querySelector('input[type="checkbox"]').checked = isSelected;
+                    itemEl.querySelectorAll('.md_list__item--show')
+                        .forEach(el=>{
+                            el.classList.toggle('md_list__item--selected',isSelected)
+                            el.querySelector('input[type="checkbox"]').checked=isSelected;
+                        });
+
+                    refreshMdListStatus();
                 }
+            })
+
+            function createLocationEl(location){
+                const locationEl = document.querySelector('.md_list__location[data-location-id="'+location.locationId+'"]')||document.createElement('div');
+                Object.assign(locationEl.dataset, {locationId:location.locationId,name:location.name});
+                locationEl.className = `md_list__item md_list__location ${location.name==undefined?'md_list__item--unknown':''}`;
+                locationEl.innerHTML=`<input type="checkbox"> ${location.name} <i class="fa fa-angle-down"></i>`;
+                return locationEl;
             }
-        },
-        oneditsave: function () {
-            //NPM-SOURCE
-            var NODE = this
-            if(NODE.device && NODE.device.capabilities){
-                NODE.device.capabilities.forEach(cp=>{
-                    var capa = profiles.getCapability(cp.vid)
-                    if(capa && capa._spec){
-                        Object.assign(cp,capa)
+            function createRoomEl(room){
+                const roomEl = document.querySelector(`.md_list__room[data-location-id="${location.locationId}"][data-room-id="${room.roomId}"]`)|| document.createElement('div');
+                Object.assign(roomEl.dataset,{locationId:room.locationId,roomId:room.roomId,name:room.name});
+                roomEl.className = `md_list__item md_list__room ${room.name==undefined?'md_list__item--unknown':''}`;
+                roomEl.innerHTML=`<input type="checkbox"> ${room.name} <i class="fa fa-angle-down"></i>`;
+                return roomEl;
+            }
+            function createDeviceEl(device){
+                const deviceEl = document.createElement('div');
+                Object.assign(deviceEl.dataset,{locationId:device.locationId,roomId:device.roomId,deviceId:device.deviceId,name:device.name});
+                deviceEl.className= 'md_list__item md_list__device md_list__item--close md_list__item--show';
+                deviceEl.innerHTML=`<input type="checkbox" class="md_list__device__check" data-device-id="${device.deviceId}"> ${device.name} <i class="fa fa-angle-down"></i>`;
+
+                device.components.forEach(cmp=>{
+                    const cmpEl = document.createElement('div');
+                    cmpEl.className = 'md_list__device__cmp';
+                    cmpEl.innerText = cmp.id;
+                    deviceEl.append(cmpEl);
+
+                    if(cmp.capabilities){
+                        const cpEl = document.createElement('div');
+                        cpEl.className = 'md_List__device__cps';
+                        cpEl.innerText = cmp.capabilities.map(cp=> cp.version===1?cp.id:cp.vid).join(', ');
+                        deviceEl.append(cpEl);
                     }
                 })
+                return deviceEl;
             }
-            //device test
+            function createMdList(PAT,selectedDevices){
+                if(!PAT){return Promise.reject(null);}
+                document.querySelector('.st_state').classList.add('st_state--loading');
+                if(PAT && typeof PAT.then == 'function'){
+                    return PAT.then((_PAT)=>{createMdList(_PAT,selectedDevices)},createMdList);
+                }
+
+                const mdContainerEl = document.querySelector('#md_list');
+                if(PAT.devices){
+                    if(PAT.locations){
+                        PAT.locations.map(location=>{
+                            const locationEl = createLocationEl(location);
+                            mdContainerEl.append(locationEl);
+                            location.rooms.forEach(function(room,roomIdx){
+                                locationEl.append(createRoomEl(room));
+                            })
+                        })
+                    }
+
+                    PAT.devices.forEach(function(device){
+                        let locationEl = document.querySelector(`.md_list__location[data-location-id="${device.locationId}"]`);
+                        let roomEl = document.querySelector(`.md_list__room[data-location-id="${device.locationId}"][data-room-id="${device.roomId}"]`);
+
+                        if(!locationEl){
+                            locationEl = createLocationEl({locationId:device.locationId});
+                            mdContainerEl.append(locationEl);
+                        }
+                        if(!roomEl){
+                            roomEl = createRoomEl({locationID:device.locationId, roomId:device.roomId});
+                            locationEl.append(roomEl);
+                        }
+                        roomEl.append(createDeviceEl(device));
+                    })
+
+                    if(selectedDevices){
+                        selectedDevices.forEach(deviceId=>{
+                            document.querySelectorAll(`.md_list div.md_list__device[data-device-id="${deviceId}"]`).forEach(el=>{
+                                el.classList.add('md_list__item--selected');
+                                el.querySelector('input[type="checkbox"]').checked=true;
+                            });
+                        })
+                    }else{
+                        document.querySelectorAll('.md_list div.md_list__device')
+                            .forEach(el=>{
+                                el.classList.add('md_list__item--selected');
+                                el.querySelector('input[type="checkbox"]').checked=true;
+                            });
+                    }
+                    refreshMdListStatus();
+                    return Promise.resolve();
+                }else{
+                    const emptyEl = document.createElement('div');
+                    emptyEl.className = 'md_list__empty';
+                    emptyEl.innerText = 'Cannot get Devices with Access Token';
+                    mdContainerEl.append(emptyEl);
+                    refreshMdListStatus();
+                    return Promise.reject('Cannot get Devices with Access Token');
+                }
+                document.querySelector('.st_state').classList.remove('st_state--loading');
+            }
+            function refreshMdListStatus(){
+                const listShowCnt = document.querySelectorAll('.md_list__device.md_list__item--show').length;
+                const listShowSelectedCnt = document.querySelectorAll('.md_list__device.md_list__item--show.md_list__item--selected').length;
+                document.querySelector('.md_header__cnt').innerText = `${listShowCnt} devices, ${listShowSelectedCnt} selected`;
+                document.querySelectorAll('#md_list .md_list__location,#md_list .md_list__room')
+                    .forEach(el=>{
+                        const showCnt = el.querySelectorAll('.md_list__device.md_list__item--show').length;
+                        const showSelectedCnt = el.querySelectorAll('.md_list__device.md_list__item--show.md_list__item--selected').length;
+
+                        el.classList.toggle('md_list__item--show',showCnt>0);
+                        if(showCnt == showSelectedCnt){
+                            el.querySelector('input[type="checkbox"]').checked=true;
+                        }else{
+                            el.querySelector('input[type="checkbox"]').checked=false;
+                        }
+                    })
+            }
+
+            var mdListSearch=function (e){
+                if(e.target.value){
+                    document.querySelectorAll('#md_list div.md_list__device').forEach(el=>{
+                        var matched = el.dataset.name.includes(e.target.value)||el.querySelector('.md_List__device__cps').innerText.includes(e.target.value);
+                        el.classList.toggle('md_list__item--show',matched);
+                    })
+                }else{
+                    document.querySelectorAll('#md_list div.md_list__device').forEach(el=>el.classList.toggle('md_list__item--show',true));
+                }
+                refreshMdListStatus();
+            }
+            document.querySelector('#md_header__search').addEventListener('change',mdListSearch);
+            document.querySelector('#md_header__search').addEventListener('keydown',(e) => {
+                if (e.keyCode === 13) {
+                    mdListSearch(e);
+                    e.preventDefault();
+                }
+            })
         }
     });
 
@@ -840,136 +1438,194 @@
         ]
     }
 
-    function DeviceNodeEventHandler(formObj, node) {
+    function DeviceNodeEventHandler(formObj, NODE) {
+        // console.log('init NODE Event Handler : ',JSON.stringify(NODE));
         var THING = this;
-        THING.node = node;
-        THING.type = node.type;
+        THING.node = NODE;
+        THING.type = NODE.type;
         THING.form = formObj;
-        THING.target = (node.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
+        THING.target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
         THING.device={}
-    // }
-    //
-    // DeviceNodeEventHandler.prototype = {
-        THING.initDeviceNodeSelect = function (initDeviceNodeId) {
-            var deviceNodeIdSelect = this.form.deviceNodeId
-            deviceNodeIdSelect.html('')
-            var deviceNodeList = []
-            deviceNodeList = RED.nodes.filterNodes({z: this.node.z, type: ST_DEVICE_PROFILE})
-            deviceNodeList.map(function(node){
-                var id = node.capabilityId.split('_v')[0]
-                var version = node.capabilityId.split('_v')[1]||1
-                var vid = id+'_v'+version
-                node.device={capabilities:[{id:id,version:version,vid:vid}]}
-            })
-            // if (this.type != ST_EVENT_DEVICE) {
-            deviceNodeList = deviceNodeList.concat(RED.nodes.filterNodes({z: this.node.z, type: ST_MY_DEVICE}))
-            // }
 
-            deviceNodeList.forEach(node=>{
-                if (node.name && node.device && node.device.capabilities) {
-                    node.device.capabilities.forEach(cp=>{
-                        if(typeof cp === 'string'){
-                            cp = {id:cp,version:1,vid:cp+'_v1'}
-                        }
-                        if(profiles.hasCapability(cp.vid)===false && cp._spec){
-                            profiles.addCapability(cp)
-                        }
-                    })
+        THING.initDeviceSelect = function (initDeviceNodeId,initDeviceId) {
+            const stateEl = document.querySelector('.st_state')
+            stateEl.classList.add('st_state--loading');
+
+            const deviceIdEl = document.querySelector('#node-input-deviceId');
+            deviceIdEl.innerHTML='';
+
+            const dpGroupEl = document.createElement('optgroup');
+            dpGroupEl.label='Device Profile';
+            deviceIdEl.append(dpGroupEl);
+
+            const mdGroupEl = document.createElement('optgroup');
+            mdGroupEl.label='My-Device';
+            deviceIdEl.append(mdGroupEl);
+
+            const disGroupEl = document.createElement('optgroup');
+            disGroupEl.label='Disabled';
+            disGroupEl.disabled=true;
+            deviceIdEl.append(disGroupEl);
+
+            const target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes";
+            const addOptionEl = function(node){
+                if(document.querySelector(`#node-input-deviceId option[value="${node.device.deviceId}"]`)){
+                    return;
                 }
-            })
+                const opEl = document.createElement('option');
+                opEl.value = node.device.deviceId||node.id;
+                opEl.dataset.device=JSON.stringify(node.device);
+                opEl.dataset.deviceNodeId=node.id;
+                opEl.dataset.deviceType=node.type;
+                opEl.innerText = node.device.name||node.name||node.alias;
 
-            var target = this.target
-            var enableList = deviceNodeList.filter(node=>{
-                return node.name && node.device && node.device.capabilities
-            }).filter(node=>{
-                node.hasTarget = node.device.capabilities.some(function (_cp) {
-                    var cp = profiles.getCapability(_cp.vid)
+                const isValidType = (NODE.type===ST_EVENT_DEVICE)?node.type==ST_DEVICE_PROFILE:true;
+                const hasTarget = node.device.components.map(cmp=>cmp.capabilities).flat().some( _cp => {
+                    const vid = _cp.vid||`${_cp.id}_v${_cp.version}`;
+                    const cp = profiles.getCapability(vid);
                     return cp && cp.hasOwnProperty(target) && Object.keys(cp[target]).length>0
                 })
-
-                if(THING.type === ST_EVENT_DEVICE){
-                    node.isValidType =  node.type === ST_DEVICE_PROFILE
+                if(isValidType && hasTarget && node.type==ST_DEVICE_PROFILE){
+                    dpGroupEl.append(opEl);
+                }else if(isValidType && hasTarget && node.type==ST_MY_DEVICE){
+                    mdGroupEl.append(opEl);
                 }else{
-                    node.isValidType =  true
-                }
-                if(node.isValidType && node.hasTarget){
-                    if (node.type == ST_DEVICE_PROFILE) {
-                        deviceNodeIdSelect.prepend($("<option></option>").val(node.id).data('device', node.device).text(node.name + ":" + node.capabilityId))
-                    } else if (node.type == ST_MY_DEVICE) {
-                        deviceNodeIdSelect.append($("<option></option>").val(node.id).data('device', node.device).text("(My)" + node.label))
+                    let title = [];
+                    if(!isValidType){
+                        title.push('Event Node cannot use My-Device Node');
                     }
-                }
-                return !(node.isValidType && node.hasTarget)
-            }).forEach(function (node) {
-                var msgarr=[]
-                if(node.isValidType===false){
-                    msgarr.push('Type : '+node.type)
-                }
-                if(node.hasTarget===false){
-                    msgarr.push('No '+target)
-                }
-                var disableMsg = msgarr.join(' / ')
-                if (node.type == ST_DEVICE_PROFILE) {
-                    deviceNodeIdSelect.append(`<optgroup label="${node.name}:${node.capabilityId}" title="${disableMsg}" style="color:#ccc;"> `)
-                } else if (node.type == ST_MY_DEVICE) {
-                    deviceNodeIdSelect.append(`<optgroup label="(My)${node.label}" title="${disableMsg}" style="color:#ccc;"> `)
-                }
-            })
-            if (initDeviceNodeId){
-                if(deviceNodeIdSelect.find('option[value="'+initDeviceNodeId+'"]').length==0){
-                    STRefCheck()
-                    deviceNodeIdSelect.val(this.node.deviceNodeId)
-                    // console.log('initDeviceNodeId : '+initDeviceNodeId+','+this.node.deviceNodeId)
-                } else if(deviceNodeIdSelect.find('option[value="'+initDeviceNodeId+'"]').length>0) {
-                    deviceNodeIdSelect.val(initDeviceNodeId)
+                    if(!hasTarget){
+                        title.push('no '+target)
+                    }
+                    disGroupEl.title = title.join('\n');
+                    disGroupEl.append(opEl);
                 }
             }
+            RED.nodes.filterNodes({z: this.node.z, type: ST_DEVICE_PROFILE})
+                .map(function(node){
+                    var id = node.capabilityId.split('_v')[0]
+                    var version = node.capabilityId.split('_v')[1]||1
+                    var vid = id+'_v'+version
+                    node.device={components:[{id:"main",capabilities:[{id:id,version:version,vid:vid}]}]}
+                    return node;
+                })
+                .forEach(addOptionEl);
+
+            const mydevicePrs = RED.nodes.filterNodes({z: this.node.z, type: ST_MY_DEVICE})
+                .filter(mdNode=> mdNode.credentials?.stAccessToken && profiles.getPAT(mdNode.credentials?.stAccessToken))
+                .map(mdNode=>
+                    profiles.getPAT(mdNode.credentials?.stAccessToken)
+                        .then(PAT => PAT.devices.filter(dvc=>mdNode.devices===null||mdNode.devices?.includes(dvc.deviceId))
+                            .sort((d1,d2)=>d1.name.localeCompare(d2.name))
+                            .map(dvc=>{return {id:mdNode.id,type:mdNode.type,device:dvc}})
+                            .forEach(addOptionEl)
+                        )
+                );
+            Promise.allSettled(mydevicePrs)
+                .finally(()=>{
+                    if(initDeviceNodeId){
+                        document.querySelector('#node-input-deviceNodeId').value=initDeviceNodeId;
+                    }
+                    if(initDeviceId){
+                        deviceIdEl.value = initDeviceId;
+                        const selectedOption = deviceIdEl.selectedOptions[0];
+                        if(selectedOption){
+                            document.querySelector('#node-input-deviceNodeId').value = selectedOption.dataset?.deviceNodeId;
+                            NODE.device = (selectedOption.dataset?.device)?JSON.parse(selectedOption.dataset.device):null;
+                            NODE.deviceType = selectedOption.dataset?.deviceType;
+                        }
+                    }
+
+                    Array.from(document.querySelectorAll('#node-input-deviceId optgroup'))
+                        .filter(el=>el.querySelectorAll('option').length==0)
+                        .forEach(el=>el.classList.add('optgroup--hide'));
+
+                    stateEl.classList.remove('st_state--loading');
+
+                    THING.initCapabilitySelect(THING.node.componentId, THING.node.capabilityId);
+                    THING.initAttributeSelect(THING.node.attributeId);
+                    THING.initAttributeContainer(THING.node.rules);
+                });
+            deviceIdEl.addEventListener('change',e=>{
+                const selectedOption = e.target.selectedOptions[0];
+                if(selectedOption){
+                    document.querySelector('#node-input-deviceNodeId').value = selectedOption.dataset?.deviceNodeId;
+                    NODE.device = JSON.parse(selectedOption.dataset?.device);
+                    NODE.deviceType = selectedOption.dataset?.deviceType;
+                }
+                THING.initCapabilitySelect();
+                THING.initAttributeSelect();
+                THING.initAttributeContainer();
+            })
         }
         //deviceid 선택시 해당 section 정보를 셋팅한다.
-        THING.initCapabilitySelect = function (initCapabilityId) {
-            var capabilityIdSelect = this.form.capabilityId
-            capabilityIdSelect.html('')
-            var device = this.form.deviceNodeId.find('option:selected').data('device')
+        THING.initCapabilitySelect = function (initComponentId, initCapabilityId) {
+            initComponentId=initComponentId||'main';
+
+            var capabilityIdSelect = this.form.capabilityId;
+            capabilityIdSelect.html('');
+            const devicestr = document.querySelector('#node-input-deviceId')?.selectedOptions[0]?.dataset?.device;
+            const device = devicestr?JSON.parse(devicestr):devicestr;
             if(device && device.isLoading){
                 capabilityIdSelect.attr('disabled', true)
                 return
             }
-            if (device && device.capabilities) {
+            if (device && device.components && device.components.some(cmp=>cmp.capabilities)) {
                 var target = this.node.target;
-                device.capabilities.sort(function(c1,c2){
-                    return c1.id.localeCompare(c2.id)
-                }).filter(function (_cp) {
-                    var cp = profiles.getCapability(_cp.vid)
-                    if (cp && cp.hasOwnProperty(target) && Object.keys(cp[target]).length>0) {
-                        capabilityIdSelect.append($("<option></option>").val(cp.vid).text(cp.id))
-                    }
-                    return !(cp && cp.hasOwnProperty(target) && Object.keys(cp[target]).length>0)
-                }).forEach(function(_cp){
-                    var cp = profiles.getCapability(_cp.vid)
+                device.components.forEach(cmp=>{
+                    const groupEl = document.createElement('optgroup');
+                    groupEl.label = cmp.id;
+                    capabilityIdSelect.append(groupEl);
+                    cmp.capabilities.sort(function(c1,c2){
+                        return c1.id.localeCompare(c2.id)
+                    }).filter(function (_cp) {
+                        _cp.vid=_cp.vid||`${_cp.id}_v${_cp.version}`;
+                        var cp = profiles.getCapability(_cp.vid)
+                        if (cp && cp.hasOwnProperty(target) && Object.keys(cp[target]).length>0) {
+                            const optionEl = document.createElement('option');
+                            optionEl.value=cp.vid;
+                            optionEl.innerText = cp.id;
+                            optionEl.dataset.componentId=cmp.id;
+                            groupEl.append(optionEl);
+                        }
+                        // locate disable options at the end;
+                        return !(cp && cp.hasOwnProperty(target) && Object.keys(cp[target]).length>0);
+                    })
+                        .forEach(_cp=>{
+                            var cp = profiles.getCapability(_cp.vid);
+                            var disableMsg='';
+                            if(!cp){
+                                disableMsg = 'undefined capability, '+_cp.vid;
+                            }else{
+                                disableMsg = 'no '+target;
+                            }
 
-                    var disableMsg=''
-                    if(!cp){
-                        disableMsg = 'undefined capability, '+_cp.vid
-                    }else{
-                        disableMsg = 'no '+target
-                    }
-                    capabilityIdSelect.append(`<optgroup vid="${_cp.vid}" label="${_cp.id}" title="${disableMsg}" style="color:#ccc;"> `)
-                })
+                            const optionEl = document.createElement('option');
+                            optionEl.title=disableMsg;
+                            optionEl.innerText=cp.id;
+                            optionEl.disabled=true;
+                            groupEl.append(optionEl);
+                        });
+                });
 
-                capabilityIdSelect.removeClass("input-error")
+                capabilityIdSelect.removeClass("input-error");
                 if (capabilityIdSelect.find('option').length <= 1) {
-                    capabilityIdSelect.attr('disabled', true)
+                    capabilityIdSelect.attr('disabled', true);
                 } else {
-                    capabilityIdSelect.attr('disabled', false)
+                    capabilityIdSelect.attr('disabled', false);
                 }
 
-                capabilityIdSelect.find('option:first').attr("selected", true)
+                capabilityIdSelect.find('option:first').attr("selected", true);
             } else {
-                this.form.deviceNodeId.addClass("input-error")
+                this.form.deviceId.addClass("input-error");
             }
-
-            if (initCapabilityId && capabilityIdSelect.find('option[value="'+initCapabilityId+'"]').length>0) {
-                capabilityIdSelect.val(initCapabilityId)
+            capabilityIdSelect.change((e)=>{
+                document.querySelector('#node-input-componentId').value = e.target.selectedOptions[0]?.dataset.componentId;
+                THING.initAttributeSelect();
+                THING.initAttributeContainer();
+            })
+            if (initCapabilityId && document.querySelector(`#node-input-capabilityId option[data-component-id="${initComponentId}"][value="${initCapabilityId}"]`)) {
+                document.querySelector(`#node-input-capabilityId option[data-component-id="${initComponentId}"][value="${initCapabilityId}"]`).selected=true;
             }
         }
         //capability attr 셀렉트박스구성
@@ -1017,6 +1673,13 @@
 
                     if (arguments.length > 0) {
                         arguments.forEach(function (arg) {
+                            if(arg.schema.title=='Iso8601Date'){
+                                arg.schema.type='Iso8601Date'
+                            }else if(arg.schema.title=='JsonObject'){
+                                arg.schema.type='json'
+                            }else if(arg.schema.type==='object' && (!arg.schema.hasOwnProperty('properties') && arg.schema.title != 'COLOR_MAP' ) ){
+                                arg.schema.type='json'
+                            }
 
                             var row2 = $('<div/>', {style: "height:auto;margin:15px 5px 5px auto;width:100%;display:flex;align-items:center;justify-content:flex-end;"}).appendTo(row)
                             createValueField2(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'})
@@ -1062,6 +1725,7 @@
             $("#attr-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
                 addButton: "Add Filter",
                 emptyMessage: emptymsg,
+                // header: $("<div>").append($('<span style="position:absolute;right:2em;""><i class="fa fa-info-circle" aria-hidden="true"></i>  No Filter : msg.payload = whole device status response</span>')),
                 addItem: function (itemRow, idx, data) {
                     if(data.type === 'empty'){
                         $(itemRow).parent().html('').append(data.msg)
@@ -1081,6 +1745,7 @@
                         type: "text",
                         readonly: "true"
                     }).appendTo(row).val(attributeId)
+
                     var valueProperty = attribute.properties.value
                     var unitProperty = attribute.properties.unit
 
@@ -1127,8 +1792,8 @@
                     data.operator && operatorField.val(data.operator)
                     if(data.value){
                         if(data.valueType === 'object' && typeof data.value === 'object'){
-                            Object.keys(data.value).forEach(propId=>{
-                                var valueField = row.find(`.valueField[propId=${propId}]`)
+                            Object.keys(data.value).forEach(function(propId){
+                                var valueField = row.find('.valueField[propId='+propId+']')
                                 if(valueField.prop('tagName')=='INPUT'){
                                     valueField.typedInput('value',data.value[propId])
                                 }else{
@@ -1249,11 +1914,11 @@
                             style: "width:50%;margin-right:5px;"
                         }).appendTo(row)
                         Object.assign(option,{valueName: "color",valueType: "object",propId: 'hex',propType: 'string',})
-                    // }else if(valueProp.){//TODO : threeAxis vector
-                    //
+                        // }else if(valueProp.){//TODO : threeAxis vector
+                        //
                     }else if (valueProp.hasOwnProperty('properties')){
                         var fields=[]
-                        Object.keys(valueProp.properties).forEach(k=>{
+                        Object.keys(valueProp.properties).forEach(function(k){
                             var row2 = $('<div style="display:flex;align-items:center;justify-content:flex-end;"></div>').appendTo(row)
                             Object.assign(option,{valueType:valueProp.type,propId:k,propType:valueProp.properties[k].type,rowName:k})
                             fields.concat(createValueField2(valueProp.properties[k],row2,option))
@@ -1320,6 +1985,9 @@
                 for (var i = 0; i < this.node.rules.length; i++) {
                     var data = this.node.rules[i];
                     if (data.isInit) break;
+                    if(!data.capaId.includes('_v')){
+                        data.capaId+='_v1';
+                    }
                     if(data.capaId == this.form.capabilityId.val() && data.attrId == this.form.attributeId.val()){
                         this.form.container.editableList('addItem', data);
                     }
@@ -1336,27 +2004,8 @@
 
         THING.initContainer()
 
-        THING.initDeviceNodeSelect(node.deviceNodeId)
-        THING.initCapabilitySelect(node.capabilityId)
-        THING.initAttributeSelect(node.attributeId)
-        THING.initAttributeContainer(node.rules)
+        THING.initDeviceSelect(NODE.deviceNodeId,NODE.deviceId);
 
-        THING.form.deviceNodeId.on("mouseover", function () {
-            THING.form.deviceNodeId.off("change")
-            THING.form.deviceNodeId.on("change", function (e) {
-                THING.initCapabilitySelect()
-                THING.initAttributeSelect()
-                THING.initAttributeContainer()
-            })
-        })
-
-        THING.form.capabilityId.on("mouseover", function () {
-            THING.form.capabilityId.off("change")
-            THING.form.capabilityId.on("change", function () {
-                THING.initAttributeSelect()
-                THING.initAttributeContainer()
-            })
-        })
 
         THING.form.attributeId.on("mouseover", function () {
             THING.form.attributeId.off("change")
@@ -1410,72 +2059,61 @@
         color : "rgb(113,179,145)",
         icon : "st-event.png",
         category: ST_NODES_CATEGORY,
-        defaults : {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
-            name: {required: true},
+        defaults : {
+            name: {value:""},
+            alias: {value:""},
             deviceNodeId: {
                 value: "", required: true,
-                validate: function (val) {
-                    var isValidDevice = false;
-                    RED.nodes.eachNode(function (node) {
-                        if (node.id == val) {
-                            isValidDevice = true
-                        }
-                    })
-                    return !!val && isValidDevice
-                }
+                validate: function (deviceNodeId){return RED.nodes.node(deviceNodeId)}
             },
+            deviceType:{value:""},
             deviceId: {value: ""},
-            componentID: {value: ""},
+            componentId: {value: ""},
             capabilityId: {value: "", required: true},
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},
-            logging: {value:false},
             outputs: {value: 1}
         },
         inputs: 1,
         outputs: 1,
         label: function () {
-            return this.name || this.type;
+            return this.name|| this.alias || this.type;
         },
-        labelStyle: function () {
-            return this.name ? "node_label_italic" : "";
+        oneditsave: function () {
+            this.rules = []
+            saveCommandRules(this);
+            saveAttributesRules(this);
+
+            this.outputs = this.rules.length || 1;
+            if(this.type==ST_COMMAND_DEVICE){
+                const attributeId = document.querySelector('#node-input-attributeId').value;
+                if(attributeId){
+                    const value = document.querySelector(':is(#attr-list-container,#cmd-list-container) .argValue')?.value||'';
+                    this.alias=`${attributeId}${value?':'+value:''}`;
+                }
+            }else{
+                const deviceName = document.querySelector('#node-input-deviceId')?.selectedOptions[0]?.innerText;
+                if(deviceName){
+                    this.alias=deviceName;
+                }
+            }
         },
         oneditprepare: function () {
+            STRefCheck();
             var NODE = this;
-
-            var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
-            NODE.target = target
+            // console.log('deviceNODE init value : ',JSON.stringify(NODE));
+            var targetProperty = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes";
+            NODE.target = targetProperty;
 
             var formObj = {
-                deviceNodeId: $("#node-input-deviceNodeId"),
+                deviceId: $("#node-input-deviceId"),
                 capabilityId: $("#node-input-capabilityId"),
                 attributeId: $("#node-input-attributeId"),
-                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container")),
+                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container"))
             }
 
-            var eventHandler = new DeviceNodeEventHandler(formObj, NODE)
+            DeviceNodeEventHandler(formObj, NODE);
         },
-        /*편집 대화 상자 완료처리시 호출*/
-        oneditsave: function () {
-            var NODE = this;
-            if($('#node-input-deviceNodeId').find('option:selected').length>0){
-                NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId || ''
-            }else{
-                NODE.deviceId = ''
-            }
-
-            NODE.rules = []
-
-            saveCommandRules(NODE);
-            saveAttributesRules(NODE);
-
-            this.outputs = NODE.rules.length || 1
-
-            if($('#node-input-name').val()=='' && $('#node-input-attributeId').val()){
-                $('#node-input-name').attr('placeholder',$('#node-input-deviceNodeId').text()+' - '+$('#node-input-capabilityId').val())
-            }
-        },
-        //editor height 변화에 따라 attr-container의 height를 조정한다.
         oneditresize: function (size) {
             var rows;
             var resizeContainer;
@@ -1501,25 +2139,20 @@
             resizeContainer.editableList('height', height - 100)
         }
     });
+
     RED.nodes.registerType('status-device',{
         paletteLabel : "Status",
         color : "rgb(119,197,191)",
         icon : "st-status.png",
         category: ST_NODES_CATEGORY,
-        defaults : {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
-            name: {required: true},
+        defaults : {
+            name: {value:""},
+            alias: {value:""},
             deviceNodeId: {
                 value: "", required: true,
-                validate: function (val) {
-                    var isValidDevice = false;
-                    RED.nodes.eachNode(function (node) {
-                        if (node.id == val) {
-                            isValidDevice = true
-                        }
-                    })
-                    return !!val && isValidDevice
-                }
+                validate: function (deviceNodeId){return RED.nodes.node(deviceNodeId)}
             },
+            deviceType:{value:""},
             deviceId: {value: ""},
             componentId: {value: ""},
             capabilityId: {value: "", required: true},
@@ -1531,43 +2164,43 @@
         inputs: 1,
         outputs: 1,
         label: function () {
-            return this.name || this.type;
+            return this.name|| this.alias || this.type;
         },
-        labelStyle: function () {
-            return this.name ? "node_label_italic" : "";
+        oneditsave: function () {
+            this.rules = []
+            saveCommandRules(this);
+            saveAttributesRules(this);
+
+            this.outputs = this.rules.length || 1;
+            if(this.type==ST_COMMAND_DEVICE){
+                const attributeId = document.querySelector('#node-input-attributeId').value;
+                if(attributeId){
+                    const value = document.querySelector(':is(#attr-list-container,#cmd-list-container) .argValue')?.value||'';
+                    this.alias=`${attributeId}${value?':'+value:''}`;
+                }
+            }else{
+                const deviceName = document.querySelector('#node-input-deviceId')?.selectedOptions[0]?.innerText;
+                if(deviceName){
+                    this.alias=deviceName;
+                }
+            }
         },
         oneditprepare: function () {
+            STRefCheck();
             var NODE = this;
-
-            var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
-            NODE.target = target
+            // console.log('deviceNODE init value : ',JSON.stringify(NODE));
+            var targetProperty = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes";
+            NODE.target = targetProperty;
 
             var formObj = {
-                deviceNodeId: $("#node-input-deviceNodeId"),
+                deviceId: $("#node-input-deviceId"),
                 capabilityId: $("#node-input-capabilityId"),
                 attributeId: $("#node-input-attributeId"),
-                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container")),
+                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container"))
             }
 
-            var eventHandler = new DeviceNodeEventHandler(formObj, NODE)
+            DeviceNodeEventHandler(formObj, NODE);
         },
-        /*편집 대화 상자 완료처리시 호출*/
-        oneditsave: function () {
-            var NODE = this;
-            NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId || ''
-
-            NODE.rules = []
-
-            saveCommandRules(NODE);
-            saveAttributesRules(NODE);
-
-            this.outputs = NODE.rules.length || 1
-
-            if($('#node-input-name').val()=='' && $('#node-input-attributeId').val()){
-                $('#node-input-name').attr('placeholder',$('#node-input-deviceNodeId').text()+' - '+$('#node-input-capabilityId').val())
-            }
-        },
-        //editor height 변화에 따라 attr-container의 height를 조정한다.
         oneditresize: function (size) {
             var rows;
             var resizeContainer;
@@ -1671,21 +2304,15 @@
         icon: "st-command.png",
         category: ST_NODES_CATEGORY,
         defaults : {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
-            name: {required: true},
+            name: {value:""},
+            alias: {value:""},
             deviceNodeId: {
                 value: "", required: true,
-                validate: function (val) {
-                    var isValidDevice = false;
-                    RED.nodes.eachNode(function (node) {
-                        if (node.id == val) {
-                            isValidDevice = true
-                        }
-                    })
-                    return !!val && isValidDevice
-                }
+                validate: function (deviceNodeId){return RED.nodes.node(deviceNodeId)}
             },
+            deviceType:{value:""},
             deviceId: {value: ""},
-            componentID: {value: ""},
+            componentId: {value: ""},
             capabilityId: {value: "", required: true},
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},
@@ -1695,41 +2322,43 @@
         inputs: 1,
         outputs: 1,
         label: function () {
-            return this.name || this.type;
+            return this.name|| this.alias || this.type;
         },
-        labelStyle: function () {
-            return this.name ? "node_label_italic" : "";
+        oneditsave: function () {
+            this.rules = []
+            saveCommandRules(this);
+            saveAttributesRules(this);
+
+            this.outputs = this.rules.length || 1;
+            if(this.type==ST_COMMAND_DEVICE){
+                const attributeId = document.querySelector('#node-input-attributeId').value;
+                if(attributeId){
+                    const value = document.querySelector(':is(#attr-list-container,#cmd-list-container) .argValue')?.value||'';
+                    this.alias=`${attributeId}${value?':'+value:''}`;
+                }
+            }else{
+                const deviceName = document.querySelector('#node-input-deviceId')?.selectedOptions[0]?.innerText;
+                if(deviceName){
+                    this.alias=deviceName;
+                }
+            }
         },
         oneditprepare: function () {
+            STRefCheck();
             var NODE = this;
-
-            var target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
-            NODE.target = target
+            // console.log('deviceNODE init value : ',JSON.stringify(NODE));
+            var targetProperty = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes";
+            NODE.target = targetProperty;
 
             var formObj = {
-                deviceNodeId: $("#node-input-deviceNodeId"),
+                deviceId: $("#node-input-deviceId"),
                 capabilityId: $("#node-input-capabilityId"),
                 attributeId: $("#node-input-attributeId"),
-                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container")),
+                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container"))
             }
 
-            var eventHandler = new DeviceNodeEventHandler(formObj, NODE)
+            DeviceNodeEventHandler(formObj, NODE);
         },
-        /*편집 대화 상자 완료처리시 호출*/
-        oneditsave: function () {
-            var NODE = this;
-            NODE.deviceId = $('#node-input-deviceNodeId').find('option:selected').data('device').deviceId || ''
-            NODE.rules = []
-            saveCommandRules(NODE);
-            saveAttributesRules(NODE);
-
-            this.outputs = NODE.rules.length || 1
-
-            if($('#node-input-name').val()=='' && $('#node-input-attributeId').val()){
-                $('#node-input-name').attr('placeholder',$('#node-input-deviceNodeId').text()+' - '+$('#node-input-capabilityId').val())
-            }
-        },
-        //editor height 변화에 따라 attr-container의 height를 조정한다.
         oneditresize: function (size) {
             var rows;
             var resizeContainer;
