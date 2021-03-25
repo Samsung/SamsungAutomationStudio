@@ -32,13 +32,20 @@ module.exports = function (RED) {
     var jsonParser = bodyParser.json();
     // var httpSignature = require('http-signature');
     var reqApi = require('./lib/oneapigateway');
-    var stAPI = require('./lib/SmartThingsAPI');
+    var SmartThingsAPI = require('./lib/SmartThingsAPI');
+    var SmartThingsProfile = require('./lib/SmartThingsProfile');
     var corsHandler = cors({origin: "*", methods: "POST"});
     RED.httpNode.options("*", corsHandler);
     var nextHandler = function (req, res, next) {
         next();
     }
 
+    RED.httpNode.get('/_smartthings/capabilities',(req,res)=>{
+        res.json(SmartThingsProfile.getCapabilities()||{});
+    })
+    RED.httpNode.get('/_smartthings/pats',(req,res)=>{
+        SmartThingsProfile.getPATs().then(pats=>res.json(pats||{}))
+    })
     var operators = {
         'eq': function (a, b) {
             return a == b;
@@ -279,7 +286,7 @@ module.exports = function (RED) {
                         RES.error(res,400, {msg:"cannot find 'confirmationUrl'"})
                     }
 
-                    stAPI.confirmUrl(data.confirmationUrl)
+                    SmartThingsAPI.confirmUrl(data.confirmationUrl)
                         .then(response=>{
                             if([200,202].includes(response.statusCode)){
                                 RES.ok(res,{targetUrl:data.confirmationUrl})
@@ -449,7 +456,7 @@ module.exports = function (RED) {
             if(['PING','CONFIRMATION'].includes(req.body.lifecycle)){
                 next()
             }else{
-                stAPI.keyValidate(authHeader.keyId)
+                SmartThingsAPI.keyValidate(authHeader.keyId)
                     .then(response=>{
                         if([200,202].includes(response.statusCode)){
                             next()
@@ -484,6 +491,9 @@ module.exports = function (RED) {
     RED.nodes.registerType(ST_AUTOMATION, Automation);
 
     function DeviceConfigNode(n) {
+        //if(RED.nodes.getCredentials(n.id).stAccessToken){
+            SmartThingsProfile.addpat(n.id,RED.nodes.getCredentials(n.id).stAccessToken);
+        //}
         RED.nodes.createNode(this, n);
         Object.assign(this,n)
         stCompatibleCheck(this)
@@ -491,6 +501,9 @@ module.exports = function (RED) {
     RED.nodes.registerType(ST_DEVICE_PROFILE, DeviceConfigNode);
 
     function installedDeviceConfigNode(n) {
+        //if(RED.nodes.getCredentials(n.id).stAccessToken){
+            SmartThingsProfile.addpat(n.id,RED.nodes.getCredentials(n.id).stAccessToken);
+        //}
         RED.nodes.createNode(this, n)
         Object.assign(this,n)
         stCompatibleCheck(this)
