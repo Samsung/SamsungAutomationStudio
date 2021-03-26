@@ -517,7 +517,9 @@ module.exports = function (RED) {
             done();
         });
     }
-    RED.nodes.registerType(ST_DEVICE_PROFILE, DeviceConfigNode);
+    RED.nodes.registerType(ST_DEVICE_PROFILE, DeviceConfigNode,{credentials:{
+            stAccessToken:{type:'text'}
+        }});
 
     function installedDeviceConfigNode(n) {
         let pat = null;
