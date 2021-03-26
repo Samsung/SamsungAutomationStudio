@@ -2168,6 +2168,9 @@
                     this.alias=deviceName;
                 }
             }
+            if((!document.querySelector('#node-input-deviceNodeId').value) && document.querySelector('#node-input-deviceId')?.selectedOptions[0]){
+                document.querySelector('#node-input-deviceNodeId').value=document.querySelector('#node-input-deviceId')?.selectedOptions[0].dataset.deviceNodeId;
+            }
         },
         oneditprepare: function () {
             STRefCheck();
@@ -2256,6 +2259,9 @@
                 if(deviceName){
                     this.alias=deviceName;
                 }
+            }
+            if((!document.querySelector('#node-input-deviceNodeId').value) && document.querySelector('#node-input-deviceId')?.selectedOptions[0]){
+                document.querySelector('#node-input-deviceNodeId').value=document.querySelector('#node-input-deviceId')?.selectedOptions[0].dataset.deviceNodeId;
             }
         },
         oneditprepare: function () {
@@ -2416,6 +2422,9 @@
                 if(deviceName){
                     this.alias=deviceName;
                 }
+            }
+            if((!document.querySelector('#node-input-deviceNodeId').value) && document.querySelector('#node-input-deviceId')?.selectedOptions[0]){
+                document.querySelector('#node-input-deviceNodeId').value=document.querySelector('#node-input-deviceId')?.selectedOptions[0].dataset.deviceNodeId;
             }
         },
         oneditprepare: function () {

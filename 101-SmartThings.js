@@ -23,9 +23,8 @@ module.exports = function (RED) {
     const ST_MY_DEVICE = 'installed-device';
     const ST_AUTOMATION = 'automation';
     const ST_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE,ST_DEVICE_PROFILE,ST_MY_DEVICE,ST_AUTOMATION];
-    const ST_NODE_VERSION = 200330
-
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+    const ST_NODE_VERSION = 200330;
+        
     var os = require('os');
     var bodyParser = require("body-parser");
     var cors = require('cors');
