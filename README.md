@@ -27,6 +27,13 @@ For further help, or general discussion, please contact sasm.sec@samsung.com
 Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Release Note
+- 1.1.0 : 
+    - SmartThings Node enhancement
+        - Updating SmartThings Capabilities specification 
+        - Device-Profile custom capability support 
+        - My-Device node, device multi-select
+        - Add Location and Room item to the device-list 
+        - Logging option fix 
 - 1.0.16 : 
     - Add 'slack-notification' node
     - Add 'status-device', 'command-device' node device response logging option
