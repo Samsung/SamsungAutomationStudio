@@ -423,7 +423,6 @@ module.exports = function (RED) {
                         })
                     }).catch(function (err) {
                         NODE.loggingEditor&&debugLog("Delete Subscription : " + installedAppId +" / ("+err.errCd +")"+err.errMsg)
-                        // console.log("Delete errorCode : " + err.errCd + " message : " + err.errMsg);
                         NODE.loggingConsole&&console.dir(err)
                     });
                     RES.ok(res, {statusCode: 200, updateData: {}});
@@ -621,9 +620,7 @@ module.exports = function (RED) {
                     NODE.send(resultMsg);
                 } else if (NODE.type == ST_STATUS_DEVICE) {
                     OneApi.getDeviceStates(param, authToken, NODE.logging).then(function (data) {
-                        if(NODE.loggingEditor){
-                            NODE.warn("[SmartThings] Status :" + NODE.name);
-                        }
+                        NODE.loggingEditor&&NODE.warn("[SmartThings] Status :" + NODE.name);
                         var deviceStatus = data;
                         var opCheck = false;
                         NODE.capabilityId = NODE.capabilityId.split('_v')[0]
@@ -659,9 +656,7 @@ module.exports = function (RED) {
                         NODE.loggingConsole&&NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                     });
                 } else {
-                    if(NODE.loggingEditor){
-                        NODE.warn("[SmartThings] Action:" + NODE.name);
-                    }
+                    NODE.loggingEditor&&NODE.warn("[SmartThings] Action:" + NODE.name);
 
                     var commandArr = [];
                     var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main';
