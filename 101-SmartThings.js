@@ -44,8 +44,18 @@ module.exports = function (RED) {
         res.json(SmartThingsProfile.getCapabilities()||{});
     })
     RED.httpNode.get('/_smartthings/pats',(req,res)=>{
-        SmartThingsProfile.getPATs().then(pats=>res.json(pats||{}))
+        SmartThingsProfile.getPATs().then(PATs=>{
+            if(PATs){
+                Object.values(PATs).forEach(PAT=>{
+                    PAT.nodeIdArr = Array.from(PAT.nodeIds)
+                })
+            }
+
+            res.json(PATs||{});
+        })
+
     })
+
     var operators = {
         'eq': function (a, b) {
             return a == b;
@@ -170,7 +180,7 @@ module.exports = function (RED) {
             res.json(obj)
         },
         error: function (res, status, msg) {
-            console.log(`RES error[${status}] : ${msg}`)
+            // console.log(`RES error[${status}] : ${msg}`)
             res.status(status).send(msg)
         }
     }
@@ -273,7 +283,7 @@ module.exports = function (RED) {
                     var evt = req.body;
                     if (!evt.pingData) {
                         var msg = "Required parameter doesn't exist";
-                        debugLog("[error] " + msg);
+                        NODE.loggingEditor&&debugLog("[error] " + msg);
                         RES.error(res, 400, msg);
                         return;
                     }
@@ -302,7 +312,7 @@ module.exports = function (RED) {
                     var evt = req.body;
                     if (!evt.configurationData) {
                         var msg = "Required parameter doesn't exist";
-                        debugLog("[error] " + msg);
+                        NODE.loggingEditor&&debugLog("[error] " + msg);
                         RES.error(res, 400, msg);
                         return;
                     }
@@ -340,12 +350,12 @@ module.exports = function (RED) {
                     var installedAppId = evt.installData.installedApp.installedAppId
                     var authToken = evt.installData.authToken
 
-                    console.log('subscription devices : '+subscriptionDevices)
+                    NODE.loggingConsole&&console.log('subscription devices : '+subscriptionDevices)
 
                     subscriptionDevices.forEach((subscription)=>{
-                        console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
+                        NODE.loggingConsole&&console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
+                        NODE.loggingConsole&&console.log(subscription)
                         subscription.capabilityId = subscription.capabilityId.split('_v')[0]
-                        console.log(subscription)
                         var sectionInfo = evt.installData.installedApp.config[subscription.sectionId][0]
                         var subRequest = {
                             sourceType: 'DEVICE',
@@ -364,11 +374,11 @@ module.exports = function (RED) {
                         keyParam.installedAppId = installedAppId
 
                         OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
-                            debugLog("Create Subscription : " + JSON.stringify(data))
-                            console.log("Create Subscription : " + JSON.stringify(data))
+                            NODE.loggingEditor&&debugLog("Create Subscription : " + JSON.stringify(data))
+                            NODE.loggingConsole&&console.log("Create Subscription : " + JSON.stringify(data))
                         }).catch(function (err) {
-                            debugLog("[error] " + err.errCd + ", " + err.errMsg)
-                            console.log("[error] " + err.errCd + ", " + err.errMsg)
+                            NODE.loggingEditor&&debugLog("[error] " + err.errCd + ", " + err.errMsg)
+                            NODE.loggingConsole&&console.log("[error] " + err.errCd + ", " + err.errMsg)
                         })
 
                     })
@@ -384,9 +394,9 @@ module.exports = function (RED) {
 
                     OneApi.executeDeleteSubscription(keyParam, authToken).then(function (data) {
                         subscriptionDevices.forEach(function(subscription){
-                            console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
+                            NODE.loggingConsole&&console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
                             subscription.capabilityId = subscription.capabilityId.split('_v')[0]
-                            console.log(subscription)
+                            NODE.loggingConsole&&console.log(subscription)
 
                             var sectionInfo = evt.updateData.installedApp.config[subscription.sectionId][0]
                             var subRequest = {
@@ -404,17 +414,17 @@ module.exports = function (RED) {
                             var keyParam = {}
                             keyParam.installedAppId = installedAppId
                             OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
-                                debugLog("Update Subscription : " + JSON.stringify(data))
-                                console.log("Update Subscription : " + JSON.stringify(data))
+                                NODE.loggingEditor&&debugLog("Update Subscription : " + JSON.stringify(data))
+                                NODE.loggingConsole&&console.log("Update Subscription : " + JSON.stringify(data))
                             }).catch(function (err) {
-                                debugLog("Update Subscription Fail: " + JSON.stringify(data)+" / ("+err.errCd +")"+err.errMsg)
-                                console.log("Install errorCode : " + err.errCd + " message : " + err.errMsg);
+                                NODE.loggingEditor&&debugLog("Update Subscription Fail: " + JSON.stringify(data)+" / ("+err.errCd +")"+err.errMsg)
+                                NODE.loggingConsole&&console.log("Install errorCode : " + err.errCd + " message : " + err.errMsg);
                             })
                         })
                     }).catch(function (err) {
-                        debugLog("Delete Subscription : " + installedAppId +" / ("+err.errCd +")"+err.errMsg)
+                        NODE.loggingEditor&&debugLog("Delete Subscription : " + installedAppId +" / ("+err.errCd +")"+err.errMsg)
                         // console.log("Delete errorCode : " + err.errCd + " message : " + err.errMsg);
-                        console.dir(err)
+                        NODE.loggingConsole&&console.dir(err)
                     });
                     RES.ok(res, {statusCode: 200, updateData: {}});
                     break;
@@ -428,7 +438,7 @@ module.exports = function (RED) {
                     break;
                 default:
                     var msg = "No matched lifecycle : "+req.body.lifecycle;
-                    debugLog("[error] " + msg);
+                    NODE.loggingEditor&&debugLog("[error] " + msg);
                     RES.error(res, 400, msg);
                     break;
             }
@@ -466,7 +476,7 @@ module.exports = function (RED) {
                     })
                     .catch(e=>{
                         var msg = "Invalid keyId, internal server error";
-                        debugLog("[error] " + msg + e + e.msg);
+                        NODE.loggingEditor&&debugLog("[error] " + msg + e + e.msg);
                         RES.error(res, 500, msg);
                     })
             }
@@ -491,22 +501,39 @@ module.exports = function (RED) {
     RED.nodes.registerType(ST_AUTOMATION, Automation);
 
     function DeviceConfigNode(n) {
-        //if(RED.nodes.getCredentials(n.id).stAccessToken){
-            SmartThingsProfile.addpat(n.id,RED.nodes.getCredentials(n.id).stAccessToken);
-        //}
+        // if(RED.nodes.getCredentials(n.id).stAccessToken){
+        SmartThingsProfile.addpat(n.id,RED.nodes.getCredentials(n.id).stAccessToken);
+        // }else{
+        //
+        // }
         RED.nodes.createNode(this, n);
         Object.assign(this,n)
         stCompatibleCheck(this)
+
+        this.on('close', function(removed, done) {
+            const pat = (RED.nodes.getCredentials(this.id))?RED.nodes.getCredentials(this.id).stAccessToken:null;
+            SmartThingsProfile.addpat(this.id,pat);
+            done();
+        });
     }
     RED.nodes.registerType(ST_DEVICE_PROFILE, DeviceConfigNode);
 
     function installedDeviceConfigNode(n) {
-        //if(RED.nodes.getCredentials(n.id).stAccessToken){
-            SmartThingsProfile.addpat(n.id,RED.nodes.getCredentials(n.id).stAccessToken);
-        //}
+        SmartThingsProfile.addpat(n.id,RED.nodes.getCredentials(n.id).stAccessToken);
+
         RED.nodes.createNode(this, n)
         Object.assign(this,n)
         stCompatibleCheck(this)
+
+        this.on('close', function(removed, done) {
+            const pat = (RED.nodes.getCredentials(this.id))?RED.nodes.getCredentials(this.id).stAccessToken:null;
+            SmartThingsProfile.addpat(this.id,pat);
+
+            /*if (removed) {
+                SmartThingsProfile.addpat(this.id,null);
+            }*/
+            done();
+        });
     }
 
     RED.nodes.registerType(ST_MY_DEVICE, installedDeviceConfigNode,{credentials:{
@@ -558,7 +585,7 @@ module.exports = function (RED) {
 
                 if (NODE.type == ST_EVENT_DEVICE) {
                     var resultMsg=[];
-                    NODE.warn("[SmartThings] Event:" + NODE.name);
+                    NODE.loggingEditor&&NODE.warn("[SmartThings] Event:" + NODE.name);
 
                     flowContext.eventData.events.forEach(function(event){
                         var deviceEvent = event.deviceEvent;
@@ -587,7 +614,9 @@ module.exports = function (RED) {
                     NODE.send(resultMsg);
                 } else if (NODE.type == ST_STATUS_DEVICE) {
                     OneApi.getDeviceStates(param, authToken, NODE.logging).then(function (data) {
-                        NODE.warn("[SmartThings] Status :" + NODE.name);
+                        if(NODE.loggingEditor){
+                            NODE.warn("[SmartThings] Status :" + NODE.name);
+                        }
                         var deviceStatus = data;
                         var opCheck = false;
                         NODE.capabilityId = NODE.capabilityId.split('_v')[0]
@@ -619,11 +648,13 @@ module.exports = function (RED) {
                         NODE.send(onward);
 
                     }).catch(function (err) {
-                        console.error(err);
-                        NODE.error("[error] " + err.errCd + ", " + err.errMsg);
+                        NODE.loggingEditor&&console.error(err);
+                        NODE.loggingConsole&&NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                     });
                 } else {
-                    NODE.warn("[SmartThings] Action:" + NODE.name);
+                    if(NODE.loggingEditor){
+                        NODE.warn("[SmartThings] Action:" + NODE.name);
+                    }
 
                     var commandArr = [];
                     var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main';
@@ -665,8 +696,8 @@ module.exports = function (RED) {
                             onward.push(msg);
                             NODE.send(onward);
                         }).catch(function (err) {
-                            console.error(err);
-                            NODE.error("[error] " + err.errCd + ", " + err.errMsg);
+                            NODE.loggingConsole&&console.error(err);
+                            NODE.loggingEditor&&NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                         })
                     }else {
                         RED.util.setMessageProperty(msg, 'payload', "command is empty");

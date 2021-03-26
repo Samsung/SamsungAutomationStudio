@@ -334,8 +334,8 @@
     <div class="form-row" style="margin:20px 0px;">
         <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
         <div>
-            <input id="node-input-logging-editor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to debug window<br>
-            <input id="node-input-logging-console" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
+            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to editor debug panel<br>
+            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
         </div>
     </div>
 </script>
@@ -385,6 +385,14 @@
     </div>
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
+    </div>
+    <div class="form-row" style="margin:20px 0px;">
+        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+        <div>
+            <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log device response<br>
+            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to editor debug panel<br>
+            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
+        </div>
     </div>
 </script>
 <script type="text/x-red" data-help-name="event-device">
@@ -450,8 +458,8 @@
         <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
         <div>
             <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log device response<br>
-            <input id="node-input-logging-editor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to debug window<br>
-            <input id="node-input-logging-console" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
+            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to editor debug panel<br>
+            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
         </div>
     </div>
 </script>
@@ -515,8 +523,8 @@
         <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
         <div>
             <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log device response<br>
-            <input id="node-input-logging-editor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to debug window<br>
-            <input id="node-input-logging-console" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
+            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to editor debug panel<br>
+            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
         </div>
     </div>
 </script>
@@ -744,21 +752,16 @@
         }
         this.addPATs=function(PATs){
             Object.assign(_PATs,PATs);
-            Object.values(PATs).forEach(PAT=>PAT.nodeIds.forEach(nodeId=>{
-                    if(RED.nodes.node(nodeId)){
-                        RED.nodes.node(nodeId).PAT=Promise.resolve(PAT);
-                    }
-                })
-            )
         }
         this.addpat = function(nodeId,pat,isRefresh){
             if(!pat){
-                delete _PATs[pat];
+
                 return Promise.reject(null);
             }
             if(!_PATs[pat]||isRefresh){
                 return this.validatePAT(pat).then(()=>{
                     const PAT = {};
+                    PAT.nodeIds = (_PATs[pat]&&_PATs[pat].nodeIds)?_PATs[pat].nodeIds:new Set();
                     const getLocationsPR = SmartThingsApi.getLocations(pat)
                         .then(locationsResult=>{
                             return Promise.allSettled(locationsResult.items
@@ -816,6 +819,7 @@
                         .then(result=>{
                             if(PAT.devices){
                                 _PATs[pat]=PAT;
+                                this.PATmatchNode();
                                 return Promise.resolve(PAT);
                             }else{
                                 delete _PATs[pat];
@@ -836,7 +840,7 @@
                 return Promise.resolve(_PATs[pat]);
             }
         }
-        this.hasPat=(pat)=>{
+        this.hasPAT=(pat)=>{
             return !!_PATs[pat];
         }
         this.getPATs=()=>{
@@ -854,8 +858,20 @@
                 return Promise.reject(undefined);
             }
         }
-        this.getPATbyNodeId=(nodeId)=>{
-            return Object.values(_PATs).filter(PAT=>PAT.nodeIds?.indexOf(nodeId)>-1);
+        this.PATremoveNodeId=(nodeId)=>{
+            return Object.values(_PATs).forEach(PAT=>PAT.nodeIds?.delete(nodeId));
+        }
+        this.PATmatchNode=()=>{
+            Object.keys(_PATs)
+                .filter(pat=>_PATs[pat]&&_PATs[pat].nodeIds)
+                .forEach(pat=>{
+                    const PAT = _PATs[pat];
+                    PAT.nodeIds.forEach(nodeId=>{
+                        if(RED.nodes.node(nodeId)){
+                            RED.nodes.node(nodeId).pat=pat;
+                        }
+                    })
+                })
         }
 
     }
@@ -871,7 +887,12 @@
     const SmartThingsProfiles = new Profiles();
     SmartThingsProfiles.loadPATs()
         .then(PATs=>{
-            console.log('load SmartThings pat success');            
+            console.log('load SmartThings pat success');
+            Object.values(PATs).forEach(PAT=>{
+                if(PAT.nodeIdArr){
+                    PAT.nodeIds = new Set(PAT.nodeIdArr)
+                }
+            })
             SmartThingsProfiles.addPATs(PATs);
         })
         .catch(e=>{console.warn('load pat fail : ',e.message||e)})
@@ -940,7 +961,7 @@
             RED.view.redraw();
         }
 
-        //210318 STNode
+        //210318 STNode compatibility support
         RED.nodes.filterNodes({z:RED.workspaces.active(),type:ST_MY_DEVICE})
             .filter(n=> n.device && !n.devices)
             .forEach(n=> n.devices=[n.device.deviceId]);
@@ -956,6 +977,9 @@
                     n.deviceId=deviceNode.device?.deviceId||(deviceNode.devices?.lenght==1?deviceNode.devices[0]:'');
                 }
             });
+
+        //PAT put into node
+        SmartThingsProfiles.PATmatchNode();
     }
 
     function PATchangeEvent(PAT,initValue){
@@ -1133,7 +1157,7 @@
             profileId: {value:''}
         },
         credentials: {
-            stAccessToken: {type: 'text', required: true, validate: (pat)=>SmartThingsProfiles.hasPat(pat)}
+            stAccessToken: {type: 'text', required: true, validate: (pat)=>SmartThingsProfiles.hasPAT(pat)}
         },
         inputs: 0,
         outputs: 0,
@@ -1145,8 +1169,13 @@
             if(document.querySelectorAll('#md_list .md_list__device.md_list__item--selected').length>0){
                 this.devices = Array.from(document.querySelectorAll('#md_list .md_list__device.md_list__item--selected')).map(el=>el.dataset.deviceId);
             }
-            if(document.querySelector('#node-input-stAccessToken').value){
-                this.alias=`token:${document.querySelector('#node-input-stAccessToken').value.slice(0,8)}`;
+            const pat = document.querySelector('#node-input-stAccessToken').value
+            if(pat){
+                this.alias=`token:${pat.slice(0,8)}`;
+                this.pat=pat;
+                if(SmartThingsProfiles.hasPAT(pat)){
+                    SmartThingsProfiles.getPAT(pat).then(PAT=>PAT.nodeIds.add(this.id))
+                }
             }
         },
         oneditprepare: function () {
@@ -1158,7 +1187,6 @@
 
             /*Element init*/
             const patDatalist = document.getElementById('stAccessToken_datalist');
-            const workspaceId = RED.workspaces.active();
             SmartThingsProfiles.getpats()
                 .forEach(function(pat){
                     var option = document.createElement('option');
@@ -1259,6 +1287,7 @@
                 }
 
                 const mdContainerEl = document.querySelector('#md_list');
+                document.querySelector('.st_state').classList.remove('st_state--loading');
                 if(PAT.devices){
                     if(PAT.locations){
                         PAT.locations.map(location=>{
@@ -1309,7 +1338,6 @@
                     refreshMdListStatus();
                     return Promise.reject('Cannot get Devices with Access Token');
                 }
-                document.querySelector('.st_state').classList.remove('st_state--loading');
             }
             function refreshMdListStatus(){
                 const listShowCnt = document.querySelectorAll('.md_list__device.md_list__item--show').length;
@@ -1368,7 +1396,9 @@
                 value: "", validate: function (v) {
                     return validateAutomationNext(this.id);
                 }
-            }
+            },
+            loggingEditor:{value:false},
+            loggingConsole:{value:false}
         },
         inputs: 0,
         outputs: 1,
@@ -1567,9 +1597,9 @@
                 .forEach(addOptionEl);
 
             const mydevicePrs = RED.nodes.filterNodes({z: this.node.z, type: ST_MY_DEVICE})                
-                .filter(mdNode=> mdNode.PAT)
+                .filter(mdNode=> mdNode.pat)
                 .map(mdNode=>
-                    mdNode.PAT
+                    SmartThingsProfiles.getPAT(mdNode.pat)
                         .then(PAT => PAT.devices.filter(dvc=>mdNode.devices===null||mdNode.devices?.includes(dvc.deviceId))
                             .sort((d1,d2)=>d1.name.localeCompare(d2.name))
                             .map(dvc=>{return {id:mdNode.id,type:mdNode.type,device:dvc}})
@@ -2126,6 +2156,9 @@
             capabilityId: {value: "", required: true},
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},
+            logging: {value:false},
+            loggingEditor:{value:false},
+            loggingConsole:{value:false},
             outputs: {value: 1}
         },
         inputs: 1,
@@ -2213,6 +2246,8 @@
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},
             logging: {value:false},
+            loggingEditor:{value:false},
+            loggingConsole:{value:false},
             outputs: {value: 1}
         },
         inputs: 1,
@@ -2371,6 +2406,8 @@
             attributeId: {value: "", required: true},
             rules: {value: [{isInit: true}]},
             logging: {value:false},
+            loggingEditor:{value:false},
+            loggingConsole:{value:false},
             outputs: {value: 1}
         },
         inputs: 1,
