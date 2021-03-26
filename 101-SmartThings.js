@@ -501,11 +501,12 @@ module.exports = function (RED) {
     RED.nodes.registerType(ST_AUTOMATION, Automation);
 
     function DeviceConfigNode(n) {
-        // if(RED.nodes.getCredentials(n.id).stAccessToken){
-        SmartThingsProfile.addpat(n.id,RED.nodes.getCredentials(n.id).stAccessToken);
-        // }else{
-        //
-        // }
+        let pat = null;
+        if(RED.nodes.getCredentials(n.id)&&RED.nodes.getCredentials(n.id).stAccessToken){
+            pat = RED.nodes.getCredentials(n.id).stAccessToken;
+        }
+        SmartThingsProfile.addpat(n.id,pat);
+
         RED.nodes.createNode(this, n);
         Object.assign(this,n)
         stCompatibleCheck(this)
@@ -519,7 +520,11 @@ module.exports = function (RED) {
     RED.nodes.registerType(ST_DEVICE_PROFILE, DeviceConfigNode);
 
     function installedDeviceConfigNode(n) {
-        SmartThingsProfile.addpat(n.id,RED.nodes.getCredentials(n.id).stAccessToken);
+        let pat = null;
+        if(RED.nodes.getCredentials(n.id)&&RED.nodes.getCredentials(n.id).stAccessToken){
+            pat = RED.nodes.getCredentials(n.id).stAccessToken
+        }
+        SmartThingsProfile.addpat(n.id,pat);
 
         RED.nodes.createNode(this, n)
         Object.assign(this,n)
