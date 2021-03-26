@@ -1384,14 +1384,14 @@
         category: ST_NODES_CATEGORY,
         color: "rgb(80, 196, 253)",
         defaults: {
-            name: {value: "", required: true},
+            name: {value: ""},
+            alias: {value: ""},
             method: {value: 'post'},
             url: {
                 value: "",
                 required: true
             },
             urlDate: {value: ""},
-            // isUniqueUrl: {value: false},
             eqtype: {
                 value: "", validate: function (v) {
                     return validateAutomationNext(this.id);
@@ -1404,22 +1404,9 @@
         outputs: 1,
         icon: "smartapp.png",
         label: function () {
-            if (this.url) {
-                if (this.method) {
-                    return "[" + this.method + "]" + this.url;
-                } else {
-                    return this.url;
-                }
-            } else {
-                return "Automation";
-            }
+            return this.name|| this.alias || "Automation";
         },
-        labelStyle: function () {
-            return this.url ? "node_label_italic" : "";
-        },
-        paletteLabel: function () {
-            return "Automation";
-        },
+        paletteLabel: "Automation",
         oneditprepare: function () {
             var NODE = this;
             var $inputUrl = $('#node-input-url')
