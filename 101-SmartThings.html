@@ -2133,10 +2133,7 @@
         defaults : {
             name: {value:""},
             alias: {value:""},
-            deviceNodeId: {
-                value: "", required: true,
-                validate: function (deviceNodeId){return RED.nodes.node(deviceNodeId)}
-            },
+            deviceNodeId: {value: ""},
             deviceType:{value:""},
             deviceId: {value: ""},
             componentId: {value: ""},
