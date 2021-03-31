@@ -363,7 +363,6 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="default, '{deviceName}'" style="width:50%">
     </div>
-    <input type="hidden" id="node-input-deviceNodeId">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
         <select type="text" id="node-input-deviceId" style="width:50%"></select>
@@ -427,8 +426,6 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="default, '{deviceName}'" style="width:50%">
     </div>
-    <input type="hidden" id="node-input-deviceNodeId">
-    <input type="hidden" id="node-input-componentId">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
         <select type="text" id="node-input-deviceId" style="width:50%"></select>
@@ -495,8 +492,6 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="default, '{attributeID}:{argValue}'" style="width:50%">
     </div>
-    <input type="hidden" id="node-input-deviceNodeId">
-    <input type="hidden" id="node-input-componentId">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
         <select type="text" id="node-input-deviceId" style="width:50%"></select>
@@ -1459,6 +1454,9 @@
                 NODE.urlDate = new Date().getTime()
                 NODE.url = $("#node-input-url").val().trim()
             }
+            if(NODE.url){
+                NODE.alias='[post]'+NODE.url;
+            }
         }
     });
 
@@ -2133,7 +2131,10 @@
         defaults : {
             name: {value:""},
             alias: {value:""},
-            deviceNodeId: {value: ""},
+            deviceNodeId: {
+                value: "", required: true,
+                validate: function (deviceNodeId){return RED.nodes.node(deviceNodeId)}
+            },
             deviceType:{value:""},
             deviceId: {value: ""},
             componentId: {value: ""},
@@ -2168,8 +2169,9 @@
                     this.alias=deviceName;
                 }
             }
-            if((!document.querySelector('#node-input-deviceNodeId').value) && document.querySelector('#node-input-deviceId')?.selectedOptions[0]){
-                document.querySelector('#node-input-deviceNodeId').value=document.querySelector('#node-input-deviceId')?.selectedOptions[0].dataset.deviceNodeId;
+            const selectedOption = document.querySelector('#node-input-deviceId').selectedOptions[0];
+            if(selectedOption&&selectedOption.dataset.deviceNodeId){
+                this.deviceNodeId = selectedOption.dataset?.deviceNodeId;
             }
         },
         oneditprepare: function () {
@@ -2260,8 +2262,12 @@
                     this.alias=deviceName;
                 }
             }
-            if((!document.querySelector('#node-input-deviceNodeId').value) && document.querySelector('#node-input-deviceId')?.selectedOptions[0]){
-                document.querySelector('#node-input-deviceNodeId').value=document.querySelector('#node-input-deviceId')?.selectedOptions[0].dataset.deviceNodeId;
+            const selectedOption = document.querySelector('#node-input-deviceId').selectedOptions[0];
+            if(selectedOption&&selectedOption.dataset.deviceNodeId){
+                this.deviceNodeId = selectedOption.dataset?.deviceNodeId;
+            }
+            if(selectedOption&&selectedOption.dataset.componentId){
+                this.componentId = selectedOption.dataset?.componentId;
             }
         },
         oneditprepare: function () {
@@ -2423,8 +2429,12 @@
                     this.alias=deviceName;
                 }
             }
-            if((!document.querySelector('#node-input-deviceNodeId').value) && document.querySelector('#node-input-deviceId')?.selectedOptions[0]){
-                document.querySelector('#node-input-deviceNodeId').value=document.querySelector('#node-input-deviceId')?.selectedOptions[0].dataset.deviceNodeId;
+            const selectedOption = document.querySelector('#node-input-deviceId').selectedOptions[0];
+            if(selectedOption&&selectedOption.dataset.deviceNodeId){
+                this.deviceNodeId = selectedOption.dataset?.deviceNodeId;
+            }
+            if(selectedOption&&selectedOption.dataset.componentId){
+                this.componentId = selectedOption.dataset?.componentId;
             }
         },
         oneditprepare: function () {
