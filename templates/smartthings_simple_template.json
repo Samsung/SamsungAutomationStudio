@@ -1,0 +1,336 @@
+[
+    {
+        "id": "192306f1.c02d29",
+        "type": "command-device",
+        "z": "b092f96b.944da8",
+        "name": "Switch Off",
+        "deviceId": "f5becfd.54e1f3",
+        "capability": "switch",
+        "eqtype": "command",
+        "attribute": "off",
+        "sensorCapaDs": [
+            {
+                "col1": "switch",
+                "col2": "off",
+                "hidden2": "off",
+                "argType": "{}"
+            }
+        ],
+        "sensorAttrDs": [],
+        "outputs": 1,
+        "x": 561,
+        "y": 358.5,
+        "wires": [
+            []
+        ],
+        "color": "rgb(255,198,109)",
+        "icon": "/assets/icons/st-command.png",
+        "inputs": 1,
+        "label": "Switch Off",
+        "dirty": true,
+        "changed": false,
+        "valid": true,
+        "_config": {},
+        "ports": [
+            0
+        ],
+        "w": 70,
+        "h": 55,
+        "_ports": [
+            [
+                {
+                    "__data__": 0
+                }
+            ]
+        ]
+    },
+    {
+        "id": "372c81ec.dba94e",
+        "type": "device-profile",
+        "z": "b092f96b.944da8",
+        "name": "ContactSensor",
+        "capability": "contactSensor",
+        "device": {
+            "name": "ContactSensor",
+            "capability": "contactSensor",
+            "capabilities": {
+                "contactSensor": {
+                    "attr": [
+                        {
+                            "contact": "ContactState"
+                        }
+                    ],
+                    "status": "live"
+                }
+            }
+        },
+        "x": 213,
+        "y": 85.5,
+        "wires": [],
+        "color": "rgb(168,168,168)",
+        "icon": "/assets/icons/deviceprofile.png",
+        "inputs": 0,
+        "label": "ContactSensor",
+        "dirty": true,
+        "changed": false,
+        "valid": true,
+        "_config": {},
+        "ports": [],
+        "outputs": 0,
+        "w": 70,
+        "h": 55,
+        "_ports": [
+            []
+        ]
+    },
+    {
+        "id": "46454b58.f98974",
+        "type": "event-device",
+        "z": "b092f96b.944da8",
+        "name": "Contact",
+        "deviceId": "372c81ec.dba94e",
+        "capability": "contactSensor",
+        "eqtype": "event",
+        "attribute": "contact",
+        "sensorCapaDs": [],
+        "sensorAttrDs": [
+            {
+                "col1": "contact",
+                "hidden1": "contact|ContactState",
+                "col2": "eq",
+                "col3": "open",
+                "col4": "",
+                "col5": ""
+            },
+            {
+                "col1": "contact",
+                "hidden1": "contact|ContactState",
+                "col2": "eq",
+                "col3": "closed",
+                "col4": "",
+                "col5": ""
+            }
+        ],
+        "outputs": 2,
+        "x": 334,
+        "y": 254.5,
+        "wires": [
+            [
+                "ab7f4fb.f6be7b"
+            ],
+            [
+                "192306f1.c02d29"
+            ]
+        ],
+        "color": "rgb(113,179,145)",
+        "icon": "/assets/icons/st-event.png",
+        "inputs": 1,
+        "label": "Contact",
+        "dirty": true,
+        "changed": false,
+        "valid": true,
+        "_config": {},
+        "ports": [
+            0,
+            1
+        ],
+        "w": 70,
+        "h": 55,
+        "_ports": [
+            [
+                {
+                    "__data__": 0
+                },
+                {
+                    "__data__": 1
+                }
+            ]
+        ]
+    },
+    {
+        "id": "6e1472ad.57f28c",
+        "type": "command-device",
+        "z": "b092f96b.944da8",
+        "name": "Switch On",
+        "deviceId": "f5becfd.54e1f3",
+        "capability": "switch",
+        "eqtype": "command",
+        "attribute": "on",
+        "sensorCapaDs": [
+            {
+                "col1": "switch",
+                "col2": "on",
+                "hidden2": "on",
+                "argType": "{}"
+            }
+        ],
+        "sensorAttrDs": [],
+        "outputs": 1,
+        "x": 697,
+        "y": 171.5,
+        "wires": [
+            []
+        ],
+        "color": "rgb(255,198,109)",
+        "icon": "/assets/icons/st-command.png",
+        "inputs": 1,
+        "label": "Switch On",
+        "dirty": true,
+        "changed": false,
+        "valid": true,
+        "_config": {},
+        "ports": [
+            0
+        ],
+        "w": 70,
+        "h": 55,
+        "_ports": [
+            [
+                {
+                    "__data__": 0
+                }
+            ]
+        ]
+    },
+    {
+        "id": "8760c0db.b9e9",
+        "type": "automation",
+        "z": "b092f96b.944da8",
+        "name": "SmartApp",
+        "method": "post",
+        "url": "/contact-switch",
+        "eqtype": "",
+        "publickey": "-----BEGIN PUBLIC KEY-----\n\n-----END PUBLIC KEY-----",
+        "x": 144,
+        "y": 254.5,
+        "wires": [
+            [
+                "46454b58.f98974"
+            ]
+        ],
+        "color": "rgb(80, 196, 253)",
+        "icon": "/assets/icons/smartapp.png",
+        "inputs": 0,
+        "label": "SmartApp",
+        "dirty": true,
+        "changed": false,
+        "valid": true,
+        "_config": {},
+        "ports": [
+            0
+        ],
+        "outputs": 1,
+        "w": 70,
+        "h": 55,
+        "_ports": [
+            [
+                {
+                    "__data__": 0
+                }
+            ]
+        ]
+    },
+    {
+        "id": "ab7f4fb.f6be7b",
+        "type": "status-device",
+        "z": "b092f96b.944da8",
+        "name": "Switch==Off",
+        "deviceId": "f5becfd.54e1f3",
+        "capability": "switch",
+        "eqtype": "status",
+        "attribute": "switch",
+        "sensorCapaDs": [],
+        "sensorAttrDs": [
+            {
+                "col1": "switch",
+                "hidden1": "switch|SwitchState",
+                "col2": "eq",
+                "col3": "off",
+                "col4": "",
+                "col5": ""
+            }
+        ],
+        "outputs": 1,
+        "x": 517,
+        "y": 190.5,
+        "wires": [
+            [
+                "6e1472ad.57f28c"
+            ]
+        ],
+        "color": "rgb(119,197,191)",
+        "icon": "/assets/icons/st-status.png",
+        "inputs": 1,
+        "label": "Switch==Off",
+        "dirty": true,
+        "changed": false,
+        "valid": true,
+        "_config": {},
+        "ports": [
+            0
+        ],
+        "w": 70,
+        "h": 55,
+        "_ports": [
+            [
+                {
+                    "__data__": 0
+                }
+            ]
+        ]
+    },
+    {
+        "id": "b092f96b.944da8",
+        "type": "tab",
+        "label": "SmartThings : Automation",
+        "disabled": false,
+        "info": "The flow guides for WebHook development used in SmartThings Automation. https://smartthings.developer.samsung.com/docs/smartapps/automation.html"
+    },
+    {
+        "id": "f5becfd.54e1f3",
+        "type": "device-profile",
+        "z": "b092f96b.944da8",
+        "name": "Switch",
+        "capability": "switch",
+        "device": {
+            "name": "Switch",
+            "capability": "switch",
+            "capabilities": {
+                "switch": {
+                    "attr": [
+                        {
+                            "switch": "SwitchState"
+                        }
+                    ],
+                    "cmd": [
+                        {
+                            "on": {}
+                        },
+                        {
+                            "off": {}
+                        }
+                    ],
+                    "status": "live"
+                }
+            }
+        },
+        "x": 386,
+        "y": 86.5,
+        "wires": [],
+        "color": "rgb(168,168,168)",
+        "icon": "/assets/icons/deviceprofile.png",
+        "inputs": 0,
+        "label": "Switch",
+        "dirty": true,
+        "changed": false,
+        "valid": true,
+        "_config": {},
+        "ports": [],
+        "outputs": 0,
+        "w": 70,
+        "h": 55,
+        "_ports": [
+            []
+        ]
+    }
+]
