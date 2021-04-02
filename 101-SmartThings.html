@@ -626,11 +626,13 @@
             });
         },
         getCapability: function(token,capabilityId,capabilityVersion, done, fail){
-            return $.ajax({
-                url: 'https://api.smartthings.com/v1/capabilities/'+capabilityId+'/'+capabilityVersion,
-                headers: {
+            return new Promise((resolve,reject)=>{
+                $.ajax({
+                    url: 'https://api.smartthings.com/v1/capabilities/'+capabilityId+'/'+capabilityVersion,
+                    headers: {
                         Authorization: 'Bearer '+token
                     }
+                }).then(resolve,reject)
             }).then((cp)=>{
                 cp['vid']=cp.id+'_v'+cp.version //vid : id + version
                 cp['vname']=(cp.version===1?cp.name:cp.name+' v'+cp.version)// vname : name + version
@@ -750,8 +752,7 @@
         }
         this.addpat = function(nodeId,pat,isRefresh){
             if(!pat){
-
-                return Promise.reject(null);
+                return Promise.resolve(null);
             }
             if(!_PATs[pat]||isRefresh){
                 return this.validatePAT(pat).then(()=>{
@@ -1593,14 +1594,10 @@
                 );
             Promise.allSettled(mydevicePrs)
                 .finally(()=>{
-                    if(initDeviceNodeId){
-                        document.querySelector('#node-input-deviceNodeId').value=initDeviceNodeId;
-                    }
                     if(initDeviceId){
                         deviceIdEl.value = initDeviceId;
                         const selectedOption = deviceIdEl.selectedOptions[0];
                         if(selectedOption){
-                            document.querySelector('#node-input-deviceNodeId').value = selectedOption.dataset?.deviceNodeId;
                             NODE.device = (selectedOption.dataset?.device)?JSON.parse(selectedOption.dataset.device):null;
                             NODE.deviceType = selectedOption.dataset?.deviceType;
                         }
@@ -1619,7 +1616,6 @@
             deviceIdEl.addEventListener('change',e=>{
                 const selectedOption = e.target.selectedOptions[0];
                 if(selectedOption){
-                    document.querySelector('#node-input-deviceNodeId').value = selectedOption.dataset?.deviceNodeId;
                     NODE.device = JSON.parse(selectedOption.dataset?.device);
                     NODE.deviceType = selectedOption.dataset?.deviceType;
                 }
