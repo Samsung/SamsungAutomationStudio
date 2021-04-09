@@ -14,6 +14,10 @@ Node-RED version: v1.1.2
 Node-RED version: v1.2.2
 Node-RED version: v1.2.9
 
+## Browser Compatibility
+It works on browsers that support for ES6 (2015)   
+(*Internet Explorer does not support ES6)
+
 ## Usage
 [How to use Bixby Nodes](https://sasm.developer.samsung.com/tutorials/article_2_4)  
 [How to use SmartThings Nodes](https://sasm.developer.samsung.com/tutorials/article_2_3)
