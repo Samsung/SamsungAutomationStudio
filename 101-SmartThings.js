@@ -594,7 +594,13 @@ module.exports = function (RED) {
                                 var opCheck = false;
                                 rule.capaId=rule.capaId.split('_v')[0];
                                 if(deviceEvent.capability == rule.capaId && deviceEvent.attribute == rule.attrId){
-                                    opCheck=operators[rule.operator](rule.value, deviceEvent.value);
+                                    let ruleValue = rule.value;
+                                    if(rule.argType==='jsonata'){
+                                        ruleValue = RED.util.evaluateJSONataExpression(ruleValue,msg);
+                                    }else{
+                                        ruleValue = RED.util.evaluateNodeProperty(ruleValue,rule.argType,NODE,msg);
+                                    }
+                                    opCheck=operators[rule.operator](ruleValue, deviceEvent.value);
                                 }
 
                                 if (opCheck) {
@@ -620,13 +626,20 @@ module.exports = function (RED) {
                         NODE.rules.forEach((rule,idx)=>{
                             var attributeValue = deviceStatus.components[deviceConfig.componentId||'main'][NODE.capabilityId][NODE.attributeId].value;
 
-                            if (rule.value == '' || rule.value == undefined){
-                                rule.value = "\'\'"
+                            let ruleValue = rule.value;
+                            if(rule.argType==='jsonata'){
+                                ruleValue = RED.util.evaluateJSONataExpression(ruleValue,msg);
+                            }else{
+                                ruleValue = RED.util.evaluateNodeProperty(ruleValue,rule.argType,NODE,msg);
+                            }
+                            
+                            if (ruleValue == '' || ruleValue == undefined){
+                                ruleValue = "\'\'"
                             }
                             if(rule.valueType == 'Iso8601Date'){
-                                opCheck = operators[rule.operator](new Date(rule.value), new Date(attributeValue));
+                                opCheck = operators[rule.operator](new Date(ruleValue), new Date(attributeValue));
                             }else{
-                                opCheck = operators[rule.operator](rule.value, attributeValue);
+                                opCheck = operators[rule.operator](ruleValue, attributeValue);
                             }
                             if (opCheck) {
                                 // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port success")
@@ -659,7 +672,14 @@ module.exports = function (RED) {
                         cmd.arguments = [];
 
                         var argObj={};
+
                         rule.args.forEach(arg=>{
+                            if(arg.argType==='jsonata'){
+                                arg.value = RED.util.evaluateJSONataExpression(arg.value,msg);
+                            }else{
+                                arg.value = RED.util.evaluateNodeProperty(arg.value,arg.argType,NODE,msg);
+                            }
+                            
                             if(arg.type != 'object'){
                                 arg.type = arg.type || '';
                                 if(arg.type.toLowerCase().indexOf('integer')>-1||arg.type.toLowerCase().indexOf('number')>-1) {
