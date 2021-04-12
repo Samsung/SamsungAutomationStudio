@@ -12,6 +12,11 @@ npm install node-red-contrib-samsung-automation-studio-nodes
 Node-RED version: v1.0.6  
 Node-RED version: v1.1.2  
 Node-RED version: v1.2.2
+Node-RED version: v1.2.9
+
+## Browser Compatibility
+It works on browsers that support for ES6 (2015)   
+(*Internet Explorer does not support ES6)
 
 ## Usage
 [How to use Bixby Nodes](https://sasm.developer.samsung.com/tutorials/article_2_4)  
@@ -27,6 +32,10 @@ For further help, or general discussion, please contact sasm.sec@samsung.com
 Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Release Note
+- 1.1.2 : 
+    - SmartThings Node bugfix
+      - Node.js 10.x version support : remove Promise.allSettled
+      - status-device node bug fix
 - 1.1.0 : 
     - SmartThings Node enhancement
         - Updating SmartThings Capabilities specification 
