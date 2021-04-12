@@ -14,7 +14,7 @@
  limitations under the License.
  **/
 module.exports = function(RED) {
-	"use strict";
+    "use strict";
 	var AWS = require("aws-sdk");
 	var mustache = require("mustache");
 
@@ -135,7 +135,7 @@ module.exports = function(RED) {
 	RED.nodes.registerType("aws-config", AwsConfig,{
 		credentials: {
 			accessKey: {type: "text", required: true},
-			secretKey: {type: "password", required: true}
+            secretKey: {type: "password", required: true}
 		}
 	});
 	RED.nodes.registerType("aws-sdk", AwsSdkNode);

@@ -292,7 +292,7 @@ module.exports = function (RED) {
 
                 case "CONFIRMATION":
                     var data = req.body.confirmationData;
-                    if( !!data === false || data.hasOwnProperty("confirmationUrl") === false){
+                    if( !data || data.hasOwnProperty("confirmationUrl") === false){
                         msg = "cannot find 'confirmationUrl'";
                         NODE.loggingEditor&&debugLog("[error] " + msg);
                         RES.error(res,400, {msg:msg});
@@ -458,9 +458,6 @@ module.exports = function (RED) {
             // console.log('===========Automation Request header / body ==========')
             // console.dir(req.headers,{depth:null})
             // console.dir(req.body,{depth:null})
-
-            next();
-            return;
             var authHeader = x509headerParse(req.headers.authorization);
             if(['PING','CONFIRMATION'].includes(req.body.lifecycle)){
                 next()

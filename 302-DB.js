@@ -14,7 +14,7 @@
  limitations under the License.
  **/
 module.exports = function(RED) {
-	"use strict";
+    "use strict";
 	var mustache = require("mustache");
 
 	function NodeContext(msg, nodeContext,parent) {
