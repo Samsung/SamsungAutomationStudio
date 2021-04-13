@@ -1745,20 +1745,12 @@
                     var argNames = cpArguments.map(function (arg) {
                         return arg.name
                     }).join(', ')
-                    $('<span>').appendTo(row).text(' ( ' + argNames + ' )')
+                    $('<span>').appendTo(row).text(' ( ' + argNames + ' )');
 
                     if (cpArguments.length > 0) {
                         cpArguments.forEach(function (arg) {
-                            if(arg.schema.title=='Iso8601Date'){
-                                arg.schema.type='Iso8601Date'
-                            }else if(arg.schema.title=='JsonObject'){
-                                arg.schema.type='json'
-                            }else if(arg.schema.type==='object' && (!arg.schema.hasOwnProperty('properties') && arg.schema.title != 'COLOR_MAP' ) ){
-                                arg.schema.type='json'
-                            }
-
                             var row2 = $('<div/>', {style: "height:auto;margin:15px 5px 5px auto;width:100%;display:flex;align-items:center;justify-content:flex-end;"}).appendTo(row)
-                            createValueField2(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'})
+                            createValueField(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'})
                         })
                     }
 
@@ -1859,7 +1851,7 @@
 
                 //attribute properties.value
                 //typedInput 사용하려면 row에 html 추가된 상태여야함
-                var valueField = createValueField2(valueProperty,row)
+                var valueField = createValueField(valueProperty,row)
 
                 //'unit' always has string enum
                 var unitField =null
@@ -1907,15 +1899,7 @@
                 }
                 return operatorField
             }
-            function createValueField2(valueProp,row,option){
-                if(valueProp.title=='Iso8601Date'){
-                    valueProp.type='Iso8601Date'
-                }else if(valueProp.title=='JsonObject'){
-                    valueProp.type='json'
-                }else if(valueProp.type==='object' && (!valueProp.hasOwnProperty('properties') && valueProp.title != 'COLOR_MAP' ) ){
-                    valueProp.type='json'
-                }
-
+            function createValueField(valueProp,row,option){
                 option=option || {}
                 if(option.rowName){
                     row.text(option.rowName + ' : ')
@@ -1925,7 +1909,8 @@
                     default:'msg',
                     types: []
                 }
-                let placeholders = {msg:'payload'};
+
+                const placeholders = {msg:'payload'};
                 if (valueProp.enum || (valueProp.type == 'array' && valueProp.items && valueProp.items.enum)) {
                     inputOption.types.push({
                             value:"enum",
@@ -1935,14 +1920,26 @@
                     });
                     inputOption.default = 'enum';
                 }else if (valueProp.type == 'string' ) {
-                    let placeholder = valueProp.type||'';
-                    if(valueProp.hasOwnProperty('maxLength')){
-                        placeholder += ', maxLength:'+valueProp.maxLength;
+					if(valueProp.title=='Iso8601Date'){
+						valueProp.type='Iso8601Date';
+						placeholders['Iso8601Date']=new Date().toISOString().substr(0,19)+'Z';
+						inputOption.types.push({
+							value:'Iso8601Date',
+							label:'Date',
+							validate:/^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$/
+						});
+						inputOption.default = 'Iso8601Date';
+
+					}else{
+						let placeholder = valueProp.type||'';
+						if(valueProp.hasOwnProperty('maxLength')){
+							placeholder += ', maxLength:'+valueProp.maxLength;
+						}
+						placeholders['str']=placeholder;
+						inputOption.types.push('str');
+						inputOption.default = 'str';
                     }
-                    
-                    placeholders['str']=placeholder;
-                    inputOption.types.push('str');
-                    inputOption.default = 'str';
+
                 }else if(valueProp.type == 'number' || valueProp.type == 'integer'){
                     let placeholder = valueProp.title||valueProp.type||'';
                     if (valueProp.hasOwnProperty('minimum') || valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('min')||valueProp.hasOwnProperty('max')) {
@@ -1956,10 +1953,8 @@
                     inputOption.types.push('num');
                     inputOption.default='num';
                 }else if (valueProp.type == 'array') {
-                    if(Array.isArray(valueProp.items)){
-                        throw new Error('unknown data schema, typeof array.items == array')
-                    }else if(typeof valueProp.items === 'object'){
-                        return createValueField2(valueProp.items,row)
+                    if(typeof valueProp.items === 'object'){
+                        return createValueField(valueProp.items,row)
                     }else{
                         throw new Error('unknown data schema '+valueProp.type)
                     }
@@ -1972,33 +1967,21 @@
                 } else if (valueProp.type == 'vector3') {
                     //TODO : vector type
                     throw new Error('vector data type')
-                } else if (valueProp.type == 'json') {
-                    inputOption.types.push('json');
-                    inputOption.default = 'json';
-                } else if (valueProp.type == 'Iso8601Date') {
-                    placeholders['Iso8601Date']=new Date().toISOString().substr(0,19)+'Z';
-                    inputOption.types.push({
-                        value:'Iso8601Date',
-                        label:'Date',
-                        validate:/^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$/                        
-                    });                    
-                    inputOption.default = 'Iso8601Date';
-
                 } else if (valueProp.type == 'object') {
-                    if(valueProp.title ==='COLOR_MAP'){
-                        const colorField = $("<input/>", {
-                            argName: "color",
-                            argType: "object",
-                            propId: 'hex',
-                            propType: 'string',
-                            class: 'colorField',
-                            type: 'color',
-                            value: "#3366ff",
-                            style: "width:50%;margin-right:5px;"
-                        }).appendTo(row)
-                        Object.assign(option,{valueName: "color",valueType: "object",propId: 'hex',propType: 'string'})
-                        // }else if(valueProp.){//TODO : threeAxis vector
-                        //
+					if(valueProp.title ==='COLOR_MAP'){
+                        inputOption.additionalField = $("<input/>", {
+							argName: "color",
+							argType: "object",
+							propId: 'hex',
+							propType: 'string',
+							class: 'colorField',
+							type: 'color',
+							value: "#3366ff",
+							style: "width:50%;margin-right:5px;"
+						});
+
+                        Object.assign(option,{valueName: "color",valueType: "object",propId: 'hex',propType: 'string'});
+
                         inputOption.types.push({
                             value:"color",
                             label:"color",
@@ -2008,19 +1991,18 @@
                         inputOption.default = 'color';
 
                     }else if (valueProp.hasOwnProperty('properties')){
-                        var fields=[]
+                        var fields=[];
                         Object.keys(valueProp.properties).forEach(function(k){
                             var row2 = $('<div style="display:flex;align-items:center;justify-content:flex-end;"></div>').appendTo(row)
                             Object.assign(option,{valueType:valueProp.type,propId:k,propType:valueProp.properties[k].type,rowName:k})
-                            fields.concat(createValueField2(valueProp.properties[k],row2,option))
+                            fields.concat(createValueField(valueProp.properties[k],row2,option))
                         })
-                        return fields
+                        return fields;
                     }else {
                         let placeholder = valueProp.title || valueProp.type || '';
-                        placeholders['str']=placeholder;
-                        inputOption.types.push('str');
-                        inputOption.default='str';
-                        console.error('unknown data schema, '+valueProp.type+' unknown');
+                        placeholders['json']=placeholder;
+						inputOption.types.push('json');
+						inputOption.default = 'json';
                     }
                 } else {
                     throw new Error('unknown data schema')
@@ -2037,11 +2019,6 @@
                 if(option.hasOwnProperty('propId')){
                     valueField.attr('propId',option.propId);
                 }
-                // try{
-                //     valueField.typedInput('width',option.width||'40%')
-                // }catch(e){
-                //     valueField.css('width',option.width||'40%')
-                // }
                 valueField.data('data',Object.assign({valueType:valueProp.type},option))
                 valueField.attr('argName',option.valueName)
                 if(option.hasOwnProperty('propId')){
@@ -2057,6 +2034,10 @@
                         this.parentElement.querySelector('input.red-ui-typedInput-input').placeholder = '';
                     }
                 })
+
+                if(inputOption.additionalField){
+                	inputOption.additionalField.append(row);
+                }
 
                 valueField.get(0).dispatchEvent(new Event('change'));
 

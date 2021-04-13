@@ -57,46 +57,58 @@ module.exports = function (RED) {
     })
 
     var operators = {
-        'eq': function (a, b) {
-            return a == b;
+        //parameter a : condition value set by user
+        //parameter b : value get from device
+        eq: function (a, b) {
+            if(typeof b ==='object'){
+                if(typeof a != 'object'){
+                    try{ a=JSON.parse(a); }
+                    catch(e){ return false; }
+                }
+                return Object.keys(a).every(key=>{
+                    return b.hasOwnProperty(key) && this.eq(a[key],b[key]);
+                })
+            }else{
+                return a==b;
+            }
         },
-        'neq': function (a, b) {
-            return a != b;
+        neq: function (a, b) {
+            return !this.eq(a,b);
         },
-        'lt': function (a, b) {
+        lt: function (a, b) {
             return a < b;
         },
-        'lte': function (a, b) {
+        lte: function (a, b) {
             return a <= b;
         },
-        'gt': function (a, b) {
+        gt: function (a, b) {
             return a > b;
         },
-        'gte': function (a, b) {
+        gte: function (a, b) {
             return a >= b;
         },
-        'in': function(v,arr){
-            return Array.isArray(arr) && arr.includes(v)
+        in: function(v,arr){
+            return Array.isArray(arr) && arr.some(dv=>this.eq(v,dv))
         },
-        'nin': function(v,arr){
-            return Array.isArray(arr) && !(arr.includes(v))
+        nin: function(v,arr){
+            return Array.isArray(arr) && !(this.in(v,arr))
         },
-        'o_eq': function(v,obj){
+        o_eq: function(v,obj){
             if(typeof v != 'object'){
                 try{
                     v=JSON.parse(v)
                 }catch(e){
-                    return false
+                    return false;
                 }
             }
             if(obj==undefined || obj==null || typeof obj != 'object'){
-                return false
+                return false;
             }
             return Object.keys(v).every(k=>{
                 return obj.hasOwnProperty(k) && v[k] == obj[k]
             })
         },
-        'o_neq': function(v,obj){
+        o_neq: function(v,obj){
             if(typeof v != 'object'){
                 try{
                     v=JSON.parse(v)
