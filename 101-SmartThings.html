@@ -1749,8 +1749,8 @@
 
                     if (cpArguments.length > 0) {
                         cpArguments.forEach(function (arg) {
-                            var row2 = $('<div/>', {style: "height:auto;margin:15px 5px 5px auto;width:100%;display:flex;align-items:center;justify-content:flex-end;"}).appendTo(row)
-                            createValueField(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'})
+                            var row2 = $('<div/>', {style: "height:auto;margin:15px 5px 5px auto;width:100%;display:flex;align-items:center;justify-content:flex-end;"}).appendTo(row);
+                            createValueField(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'});
                         })
                     }
 
@@ -1905,30 +1905,32 @@
                     row.text(option.rowName + ' : ')
                 }
                 
-                const inputOption = {
+                const fieldConfig = {
                     default:'msg',
                     types: []
                 }
-
+                const valueSpan= document.createElement('span');
+                valueSpan.classList.add='argValue'
+                valueSpan.argType = valueProp.type;
                 const placeholders = {msg:'payload'};
                 if (valueProp.enum || (valueProp.type == 'array' && valueProp.items && valueProp.items.enum)) {
-                    inputOption.types.push({
+                    fieldConfig.types.push({
                             value:"enum",
                             label:"enum",
                             options:valueProp.enum || valueProp.items.enum,
                             icon:"red/images/typedInput/AZ.png"                            
                     });
-                    inputOption.default = 'enum';
+                    fieldConfig.default = 'enum';
                 }else if (valueProp.type == 'string' ) {
 					if(valueProp.title=='Iso8601Date'){
 						valueProp.type='Iso8601Date';
 						placeholders['Iso8601Date']=new Date().toISOString().substr(0,19)+'Z';
-						inputOption.types.push({
+						fieldConfig.types.push({
 							value:'Iso8601Date',
 							label:'Date',
 							validate:/^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$/
 						});
-						inputOption.default = 'Iso8601Date';
+						fieldConfig.default = 'Iso8601Date';
 
 					}else{
 						let placeholder = valueProp.type||'';
@@ -1936,40 +1938,37 @@
 							placeholder += ', maxLength:'+valueProp.maxLength;
 						}
 						placeholders['str']=placeholder;
-						inputOption.types.push('str');
-						inputOption.default = 'str';
+						fieldConfig.types.push('str');
+						fieldConfig.default = 'str';
                     }
 
                 }else if(valueProp.type == 'number' || valueProp.type == 'integer'){
                     let placeholder = valueProp.title||valueProp.type||'';
                     if (valueProp.hasOwnProperty('minimum') || valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('min')||valueProp.hasOwnProperty('max')) {
                         placeholder += '('
-                        placeholder += valueProp.hasOwnProperty('minimum') ? valueProp.minimum : (valueProp.hasOwnProperty('min')?valueProp.min:' ')
+                        placeholder += valueProp.hasOwnProperty('minimum')||valueProp.hasOwnProperty('min') ? valueProp.minimum||valueProp.min :' ';
                         placeholder += '~'
-                        placeholder += valueProp.hasOwnProperty('maximum') ? valueProp.maximum : (valueProp.hasOwnProperty('max')?valueProp.max:' ')
+                        placeholder += valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('max') ? valueProp.maximum||valueProp.max :' ';
                         placeholder += ')'
                     }
                     placeholders['num']=placeholder;
-                    inputOption.types.push('num');
-                    inputOption.default='num';
+                    fieldConfig.types.push('num');
+                    fieldConfig.default='num';
+                }else if (valueProp.type == 'boolean') {
+                    if(valueProp.default){
+                        fieldConfig.defaultValue=valueProp.default;                        
+                    }
+                    fieldConfig.types.push('bool');
+                    fieldConfig.default = 'bool';
                 }else if (valueProp.type == 'array') {
-                    if(typeof valueProp.items === 'object'){
+                    if(valueProp.items){
                         return createValueField(valueProp.items,row)
                     }else{
                         throw new Error('unknown data schema '+valueProp.type)
                     }
-                }else if (valueProp.type == 'boolean') {
-                    if(valueProp.default){
-                        inputOption.defaultValue=valueProp.default;                        
-                    }
-                    inputOption.types.push('bool');
-                    inputOption.default = 'bool';
-                } else if (valueProp.type == 'vector3') {
-                    //TODO : vector type
-                    throw new Error('vector data type')
                 } else if (valueProp.type == 'object') {
 					if(valueProp.title ==='COLOR_MAP'){
-                        inputOption.additionalField = $("<input/>", {
+                        fieldConfig.additionalField = $("<input/>", {
 							argName: "color",
 							argType: "object",
 							propId: 'hex',
@@ -1982,36 +1981,37 @@
 
                         Object.assign(option,{valueName: "color",valueType: "object",propId: 'hex',propType: 'string'});
 
-                        inputOption.types.push({
+                        fieldConfig.types.push({
                             value:"color",
                             label:"color",
                             icon:"red/images/typedInput/target.png",
                             hasValue:false
                         });
-                        inputOption.default = 'color';
+                        fieldConfig.default = 'color';
 
                     }else if (valueProp.hasOwnProperty('properties')){
                         var fields=[];
-                        Object.keys(valueProp.properties).forEach(function(k){
-                            var row2 = $('<div style="display:flex;align-items:center;justify-content:flex-end;"></div>').appendTo(row)
-                            Object.assign(option,{valueType:valueProp.type,propId:k,propType:valueProp.properties[k].type,rowName:k})
-                            fields.concat(createValueField(valueProp.properties[k],row2,option))
+                        Object.keys(valueProp.properties).forEach(function(key){
+                            var row2 = $('<div style="display:flex;align-items:center;justify-content:flex-end;"></div>').appendTo(row);
+                            Object.assign(option,{valueType:valueProp.type,propId:key,propType:valueProp.properties[key].type,rowName:key});                            
+                            fields = fields.concat(createValueField(valueProp.properties[key],row2,option));
                         })
                         return fields;
                     }else {
                         let placeholder = valueProp.title || valueProp.type || '';
                         placeholders['json']=placeholder;
-						inputOption.types.push('json');
-						inputOption.default = 'json';
+						fieldConfig.types.push('json');
+						fieldConfig.default = 'json';
                     }
                 } else {
                     throw new Error('unknown data schema')
                 }
+
                 const valueField = $("<input/>").appendTo(row);
-                inputOption.types.push('msg','flow','global');
+                fieldConfig.types.push('msg','flow','global');
                 valueField.typedInput({
-                    default: inputOption.default,
-                    types: inputOption.types
+                    default: fieldConfig.default,
+                    types: fieldConfig.types
                 })
                 valueField.typedInput('width',option.width||'40%');
                 valueField.addClass('argValue valueField');
@@ -2021,9 +2021,6 @@
                 }
                 valueField.data('data',Object.assign({valueType:valueProp.type},option))
                 valueField.attr('argName',option.valueName)
-                if(option.hasOwnProperty('propId')){
-                    valueField.attr('propId',option.propId)
-                }
 
                 valueField.on('change',function(e,type){
                     type = type||valueField.typedInput('type');
@@ -2035,8 +2032,8 @@
                     }
                 })
 
-                if(inputOption.additionalField){
-                	inputOption.additionalField.append(row);
+                if(fieldConfig.additionalField){
+                	fieldConfig.additionalField.append(row);
                 }
 
                 valueField.get(0).dispatchEvent(new Event('change'));
@@ -2384,14 +2381,14 @@
     function saveAttributesRules(NODE) {
         $("#attr-list-container").editableList('items').each(function (idx, item) {
             var itemData = item.data('data')
-            var valueData = item.find('.attrValue').data('data')
+            var valueData = item.find('.argValue').data('data')
             var rule = {}
             rule.capaId = itemData.capaId
             rule.attrId = itemData.attrId
             rule.operator = item.find(".attrOperator").val()
-            rule.valueType = itemData.valueType
+            rule.valueType = valueData.valueType||itemData.valueType
             rule.argType = item.find(".valueField").typedInput('type');
-            if(rule.valueType != 'object'){
+            if(valueData.valueType != 'object'){
                 rule.value = item.find(".valueField").val()
 
                 if (rule.valueType.toLowerCase().indexOf('integer') > -1 || rule.valueType.toLowerCase().indexOf('number') > -1) {
@@ -2413,6 +2410,7 @@
                         }catch (e) {}
                     }
                 })
+                //rule.value = JSON.stringify(valueObj)
                 rule.value = valueObj
             }
             rule.unit = item.find(".attrUnit").val()
