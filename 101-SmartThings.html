@@ -1361,7 +1361,9 @@
             var mdListSearch=function (e){
                 if(e.target.value){
                     document.querySelectorAll('#md_list div.md_list__device').forEach(el=>{
-                        var matched = el.dataset.name.includes(e.target.value)||el.querySelector('.md_List__device__cps').innerText.includes(e.target.value);
+                    	const mdName = (el.dataset.name||'').toLowerCase();
+                    	const mdInnerText = (el.querySelector('.md_List__device__cps').innerText||'').toLowerCase();
+                        var matched = mdName.includes(e.target.value)||mdInnerText.includes(e.target.value);
                         el.classList.toggle('md_list__item--show',matched);
                     })
                 }else{
@@ -1770,6 +1772,9 @@
                             if(arg.argType){
                                 valueField.typedInput('type',arg.argType);
                             }
+                            if(arg.argType=='color'){
+                            	container.find('.colorField').val(arg.value);
+                            }
                         })
                     }
 
@@ -1865,14 +1870,8 @@
                         if(data.valueType === 'object' && typeof data.value === 'object'){
                             Object.keys(data.value).forEach(function(propId){
                                 var valueField = row.find('.valueField[propId='+propId+']')
-                                if(valueField.prop('tagName')=='INPUT'){
-                                    valueField.typedInput('value',data.value[propId])
-                                }else{
-                                    valueField.val(data.value[propId])
-                                }
-                                if(data.argType){
-                                    valueField.typedInput('type',data.argType);
-                                }
+                                valueField.typedInput('value',data.value[propId].value);
+                                valueField.typedInput('type',data.value[propId].type);
                             })
                         }else{
                             if (valueField[0].prop('tagName') == 'INPUT') {
@@ -1909,9 +1908,7 @@
                     default:'msg',
                     types: []
                 }
-                const valueSpan= document.createElement('span');
-                valueSpan.classList.add='argValue'
-                valueSpan.argType = valueProp.type;
+
                 const placeholders = {msg:'payload'};
                 if (valueProp.enum || (valueProp.type == 'array' && valueProp.items && valueProp.items.enum)) {
                     fieldConfig.types.push({
@@ -1946,9 +1943,9 @@
                     let placeholder = valueProp.title||valueProp.type||'';
                     if (valueProp.hasOwnProperty('minimum') || valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('min')||valueProp.hasOwnProperty('max')) {
                         placeholder += '('
-                        placeholder += valueProp.hasOwnProperty('minimum')||valueProp.hasOwnProperty('min') ? valueProp.minimum||valueProp.min :' ';
+                        placeholder += (valueProp.hasOwnProperty('minimum')||valueProp.hasOwnProperty('min')) ? (valueProp.minimum||valueProp.min) :' ';
                         placeholder += '~'
-                        placeholder += valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('max') ? valueProp.maximum||valueProp.max :' ';
+                        placeholder += (valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('max')) ? (valueProp.maximum||valueProp.max) :' ';
                         placeholder += ')'
                     }
                     placeholders['num']=placeholder;
@@ -1968,6 +1965,8 @@
                     }
                 } else if (valueProp.type == 'object') {
 					if(valueProp.title ==='COLOR_MAP'){
+						option=option||{};
+						option.width = '20%';
                         fieldConfig.additionalField = $("<input/>", {
 							argName: "color",
 							argType: "object",
@@ -2008,7 +2007,7 @@
                 }
 
                 const valueField = $("<input/>").appendTo(row);
-                fieldConfig.types.push('msg','flow','global');
+				valueProp.title !='COLOR_MAP' && fieldConfig.types.push('msg','flow','global');
                 valueField.typedInput({
                     default: fieldConfig.default,
                     types: fieldConfig.types
@@ -2033,7 +2032,7 @@
                 })
 
                 if(fieldConfig.additionalField){
-                	fieldConfig.additionalField.append(row);
+                	fieldConfig.additionalField.appendTo(row);
                 }
 
                 valueField.get(0).dispatchEvent(new Event('change'));
@@ -2368,8 +2367,10 @@
                 rule.args.push(arg)
 
                 if (arg.argType == 'color') {
-                    let colorValue = document.querySelector('.colorField').value;
-                    var hsl = rgbToHsl(colorValue)
+                    const colorValue = document.querySelector('.colorField').value;
+                    rule.args[0].value = colorValue;
+
+                    const hsl = rgbToHsl(colorValue);
                     rule.args.push({name: 'color', type: 'object', propId: 'hue', propType: 'number', value: hsl.hue})
                     rule.args.push({name: 'color', type: 'object', propId: 'saturation', propType: 'number', value: hsl.saturation})
                 }
@@ -2380,42 +2381,42 @@
 
     function saveAttributesRules(NODE) {
         $("#attr-list-container").editableList('items').each(function (idx, item) {
-            var itemData = item.data('data')
-            var valueData = item.find('.argValue').data('data')
-            var rule = {}
-            rule.capaId = itemData.capaId
-            rule.attrId = itemData.attrId
-            rule.operator = item.find(".attrOperator").val()
-            rule.valueType = valueData.valueType||itemData.valueType
+            var itemData = item.data('data');
+            var valueData = item.find('.argValue').data('data');
+            var rule = {};
+            rule.capaId = itemData.capaId;
+            rule.attrId = itemData.attrId;
+            rule.operator = item.find(".attrOperator").val();
+            rule.valueType = valueData.valueType||itemData.valueType;
             rule.argType = item.find(".valueField").typedInput('type');
             if(valueData.valueType != 'object'){
-                rule.value = item.find(".valueField").val()
+                rule.value = item.find(".valueField").val();
 
                 if (rule.valueType.toLowerCase().indexOf('integer') > -1 || rule.valueType.toLowerCase().indexOf('number') > -1) {
                     try{
-                        rule.value = Number(rule.value)
+                        rule.value = Number(rule.value);
                     }catch(e){}
                 }
             }else{
-                var valueObj = {}
+                var valueObj = {};
                 item.find(".valueField").each((i,valueField)=> {
-                    valueData = $(valueField).data('data')
-                    valueObj[valueData.propId] = $(valueField).val()
+                    const propData = $(valueField).data('data');
+                    let propValue = $(valueField).val();
 
-                    if (valueData.propType.toLowerCase().indexOf('integer') > -1 || valueData.propType.toLowerCase().indexOf('number') > -1) {
+                    if (propData.propType.toLowerCase().indexOf('integer') > -1 || propData.propType.toLowerCase().indexOf('number') > -1) {
                         try {
                             if($(valueField).val().length>0){
-                                valueObj[valueData.propId] = Number($(valueField).val())
+								propValue = Number($(valueField).val());
                             }
                         }catch (e) {}
                     }
+					valueObj[propData.propId] = {name:propData.propId,type:$(valueField).typedInput('type'),value:propValue};
                 })
-                //rule.value = JSON.stringify(valueObj)
-                rule.value = valueObj
+                rule.value = valueObj;
             }
-            rule.unit = item.find(".attrUnit").val()
+            rule.unit = item.find(".attrUnit").val();
 
-            NODE.rules.push(rule)
+            NODE.rules.push(rule);
         })
     }
 

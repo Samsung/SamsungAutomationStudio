@@ -105,7 +105,7 @@ module.exports = function (RED) {
                 return false;
             }
             return Object.keys(v).every(k=>{
-                return obj.hasOwnProperty(k) && v[k] == obj[k]
+                return obj && obj.hasOwnProperty(k) && v[k] == obj[k]
             })
         },
         o_neq: function(v,obj){
@@ -121,7 +121,7 @@ module.exports = function (RED) {
             }
 
             return Object.keys(v).every(k=>{
-                return obj.hasOwnProperty(k) && v[k] != obj[k]
+                return obj && obj.hasOwnProperty(k) && v[k] != obj[k]
             })
         },
 
@@ -494,7 +494,7 @@ module.exports = function (RED) {
         };
         function debugLog(log) {
             try {
-                RED.comms.publish("debug", {id: NODE.id, z: NODE.z, name: NODE.name, topic: "Automation", msg: log});
+                RED.comms.publish("debug", {id: NODE.id, z: NODE.z, name: NODE.name||NODE.alias, topic: "Automation", msg: log});
             } catch (err) {
                 console.error(err);
             }
@@ -596,7 +596,7 @@ module.exports = function (RED) {
 
                 if (NODE.type == ST_EVENT_DEVICE) {
                     var resultMsg=[];
-                    NODE.loggingEditor&&NODE.warn("[SmartThings] Event:" + NODE.name);
+                    NODE.loggingEditor&&NODE.warn("[SmartThings] Event:" + NODE.name||NODE.alias||NODE.type);
 
                     automationEvent.eventData.events.forEach(function(event){
                         var deviceEvent = event.deviceEvent;
@@ -631,7 +631,7 @@ module.exports = function (RED) {
                     NODE.send(resultMsg);
                 } else if (NODE.type == ST_STATUS_DEVICE) {
                     OneApi.getDeviceStates(param, authToken, NODE.logging).then(function (data) {
-                        NODE.loggingEditor&&NODE.warn("[SmartThings] Status :" + NODE.name);
+                        NODE.loggingEditor&&NODE.warn("[SmartThings] Status :" + NODE.name||NODE.alias||NODE.type);
                         var deviceStatus = data;
                         var opCheck = false;
                         NODE.capabilityId = NODE.capabilityId.split('_v')[0]
@@ -639,14 +639,23 @@ module.exports = function (RED) {
                             var attributeValue = deviceStatus.components[deviceConfig.componentId||'main'][NODE.capabilityId][NODE.attributeId].value;
 
                             let ruleValue = rule.value;
-                            if(rule.argType==='jsonata'){
-                                ruleValue = RED.util.evaluateJSONataExpression(ruleValue,msg);
-                            }else{
-                                ruleValue = RED.util.evaluateNodeProperty(ruleValue,rule.argType,NODE,msg);
-                            }
-                            
+
+                            if(rule.valueType=='object'){
+								ruleValue={};
+                            	for(let k in rule.value){
+                            		const data = rule.value[k];
+									ruleValue[k] = RED.util.evaluateNodeProperty(data.value,rule.type,NODE,msg);
+								}
+							}else{
+								if(rule.argType==='jsonata'){
+									ruleValue = RED.util.evaluateJSONataExpression(ruleValue,msg);
+								}else{
+									ruleValue = RED.util.evaluateNodeProperty(ruleValue,rule.argType,NODE,msg);
+								}
+							}
+
                             if (ruleValue == '' || ruleValue == undefined){
-                                ruleValue = "\'\'"
+                                ruleValue = "\'\'";
                             }
                             if(rule.valueType == 'Iso8601Date'){
                                 opCheck = operators[rule.operator](new Date(ruleValue), new Date(attributeValue));
@@ -674,7 +683,7 @@ module.exports = function (RED) {
                         NODE.loggingConsole&&NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                     });
                 } else {
-                    NODE.loggingEditor&&NODE.warn("[SmartThings] Action:" + NODE.name);
+                    NODE.loggingEditor&&NODE.warn("[SmartThings] Action:" + NODE.name||NODE.alias||NODE.type);
 
                     var commandArr = [];
                     var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main';
