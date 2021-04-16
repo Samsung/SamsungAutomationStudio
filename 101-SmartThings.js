@@ -695,13 +695,16 @@ module.exports = function (RED) {
                         var argObj={};
 
                         rule.args.forEach(arg=>{
-                            if(arg.argType==='jsonata'){
+                      
+                            if(arg.argType=='jsonata'){
                                 arg.value = RED.util.evaluateJSONataExpression(arg.value,msg);
                             }else{
                                 arg.value = RED.util.evaluateNodeProperty(arg.value,arg.argType,NODE,msg);
                             }
                             
-                            if(arg.type != 'object'){
+                            
+                            
+                            if(arg.type != 'object'||arg.argType=='json'){
                                 arg.type = arg.type || '';
                                 if(arg.type.toLowerCase().indexOf('integer')>-1||arg.type.toLowerCase().indexOf('number')>-1) {
                                     cmd.arguments.push(Number(arg.value));
