@@ -210,6 +210,14 @@
         margin:auto;
         margin:0px 3px 0px 0px !important;
     }
+    .cmd_arg_row{
+        height:auto;
+        margin:15px 5px 5px auto;
+        width:100%;
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+    }
 </style>
 
 <script type="text/x-red" data-template-name="device-profile">
@@ -1786,7 +1794,7 @@
 
                     if (cpArguments.length > 0) {
                         cpArguments.forEach(function (arg) {
-                            var row2 = $('<div/>', {style: "height:auto;margin:15px 5px 5px auto;width:100%;display:flex;align-items:center;justify-content:flex-end;"}).appendTo(row);
+                            var row2 = $('<div/>', {class:"cmd_arg_row"}).appendTo(row);
                             createValueField(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'});
                         })
                     }
