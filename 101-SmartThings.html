@@ -183,6 +183,41 @@
     .optgroup--hide{
         display:none;
     }
+    .auto__copyurl{
+        display: inline-block; 
+        position: relative; 
+        width: 70%; 
+        height: 20.0114px;
+    }
+    .auto__copyurl__url{
+        position: absolute; 
+        left: 0px; 
+        right: 40px;
+    }
+    .auto__copyurl__btn{
+        position: absolute; 
+        right: 0px; 
+        top: 0px;
+    }
+    .logging-options div{
+        cursor:pointer;        
+    }
+    .logging-options label{
+        vertical-align:top;
+    }
+    .logging-options input{
+        width:auto;
+        margin:auto;
+        margin:0px 3px 0px 0px !important;
+    }
+    .cmd_arg_row{
+        height:auto;
+        margin:15px 5px 5px auto;
+        width:100%;
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+    }
 </style>
 
 <script type="text/x-red" data-template-name="device-profile">
@@ -322,20 +357,22 @@
     </div>
     <div class="form-row">
         <label for="node-input-copyurl"></label>
-        <div style="display: inline-block; position: relative; width: 70%; height: 20.0114px;">
-            <div style="position: absolute; left: 0px; right: 40px;">
-                <input type="text" id="node-input-copyurl" readonly="true" style="width:100%"></input>
+        <div class="auto__copyurl">
+            <div class="auto__copyurl__url">
+                <input type="text" id="node-input-copyurl" readonly="true" style="width:100%"/>
             </div>
-            <a id="export-clipboard" class="editor-button" style="position: absolute; right: 0px; top: 0px;">
+            <a id="export-clipboard" class="editor-button auto__copyurl__btn">
                 <i class="fa fa-copy"></i>
             </a>
         </div>
     </div>
-    <div class="form-row" style="margin:20px 0px;">
-        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
-        <div>
-            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to editor debug panel<br>
-            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
+        <div>            
+            <input id="node-input-loggingEditor" type="checkbox" value="true" >
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
         </div>
     </div>
 </script>
@@ -385,12 +422,15 @@
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
     </div>
-    <div class="form-row" style="margin:20px 0px;">
-        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
         <div>
-            <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log device response<br>
-            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to editor debug panel<br>
-            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
+            <input id="node-input-logging" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
+            <input id="node-input-loggingEditor" type="checkbox" value="true">
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
         </div>
     </div>
 </script>
@@ -451,12 +491,15 @@
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
     </div>
-    <div class="form-row" style="margin:20px 0px;">
-        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
         <div>
-            <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log device response<br>
-            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to editor debug panel<br>
-            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
+            <input id="node-input-logging" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
+            <input id="node-input-loggingEditor" type="checkbox" value="true">
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
         </div>
     </div>
 </script>
@@ -514,12 +557,15 @@
     <div class="form-row actuator-container-row">
         <ol id="cmd-list-container"></ol>
     </div>
-    <div class="form-row" style="margin:20px 0px;">
-        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
         <div>
-            <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log device response<br>
-            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px">Log to editor debug panel<br>
-            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px">Log to system console
+            <input id="node-input-logging" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
+            <input id="node-input-loggingEditor" type="checkbox" value="true">
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
         </div>
     </div>
 </script>
@@ -1358,7 +1404,9 @@
             var mdListSearch=function (e){
                 if(e.target.value){
                     document.querySelectorAll('#md_list div.md_list__device').forEach(el=>{
-                        var matched = el.dataset.name.includes(e.target.value)||el.querySelector('.md_List__device__cps').innerText.includes(e.target.value);
+                    	const mdName = (el.dataset.name||'').toLowerCase();
+                    	const mdInnerText = (el.querySelector('.md_List__device__cps').innerText||'').toLowerCase();
+                        var matched = mdName.includes(e.target.value)||mdInnerText.includes(e.target.value);
                         el.classList.toggle('md_list__item--show',matched);
                     })
                 }else{
@@ -1446,6 +1494,13 @@
                     RED.clipboard.copyText($("#node-input-copyurl").val());
                 });
             }
+
+            document.querySelector('.logging-options').addEventListener('click',function(e){
+                if(e.target.matches('span.logging-options__label')){
+                    const checkbox = document.querySelector('#'+e.target.getAttribute('label_for'));
+                    checkbox.checked = !checkbox.checked;
+                }
+            })
         },
         oneditsave: function () {
             var NODE = this;
@@ -1686,7 +1741,7 @@
                 this.form.deviceId.addClass("input-error");
             }
             capabilityIdSelect.change((e)=>{
-                document.querySelector('#node-input-componentId').value = e.target.selectedOptions[0]?.dataset.componentId;
+                // document.querySelector('#node-input-componentId').value = e.target.selectedOptions[0]?.dataset.componentId;
                 THING.initAttributeSelect();
                 THING.initAttributeContainer();
             })
@@ -1726,29 +1781,21 @@
                 addItem: function (container, idx, data) {
                     var capabilityId = $("#node-input-capabilityId option:selected").val()
                     var commandId = $("#node-input-attributeId option:selected").val()
-                    var arguments = SmartThingsProfiles.getCommandArguments(capabilityId, commandId)
+                    var cpArguments = SmartThingsProfiles.getCommandArguments(capabilityId, commandId)
 
                     var row = $('<div/>', {style: "margin-left:10px;height: auto;"}).appendTo(container);
                     $('<span>', {class: "capaId"}).appendTo(row).text(capabilityId)
                     $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row)
                     $('<span>', {class: "attrId"}).appendTo(row).text(commandId)
-                    var argNames = arguments.map(function (arg) {
+                    var argNames = cpArguments.map(function (arg) {
                         return arg.name
                     }).join(', ')
-                    $('<span>').appendTo(row).text(' ( ' + argNames + ' )')
+                    $('<span>').appendTo(row).text(' ( ' + argNames + ' )');
 
-                    if (arguments.length > 0) {
-                        arguments.forEach(function (arg) {
-                            if(arg.schema.title=='Iso8601Date'){
-                                arg.schema.type='Iso8601Date'
-                            }else if(arg.schema.title=='JsonObject'){
-                                arg.schema.type='json'
-                            }else if(arg.schema.type==='object' && (!arg.schema.hasOwnProperty('properties') && arg.schema.title != 'COLOR_MAP' ) ){
-                                arg.schema.type='json'
-                            }
-
-                            var row2 = $('<div/>', {style: "height:auto;margin:15px 5px 5px auto;width:100%;display:flex;align-items:center;justify-content:flex-end;"}).appendTo(row)
-                            createValueField2(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'})
+                    if (cpArguments.length > 0) {
+                        cpArguments.forEach(function (arg) {
+                            var row2 = $('<div/>', {class:"cmd_arg_row"}).appendTo(row);
+                            createValueField(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'});
                         })
                     }
 
@@ -1764,6 +1811,12 @@
                                 valueField.typedInput('value', arg.value)
                             } else {
                                 valueField.val(arg.value)
+                            }
+                            if(arg.argType){
+                                valueField.typedInput('type',arg.argType);
+                            }
+                            if(arg.argType=='color'){
+                            	container.find('.colorField').val(arg.value);
                             }
                         })
                     }
@@ -1846,7 +1899,7 @@
 
                 //attribute properties.value
                 //typedInput 사용하려면 row에 html 추가된 상태여야함
-                var valueField = createValueField2(valueProperty,row)
+                var valueField = createValueField(valueProperty,row)
 
                 //'unit' always has string enum
                 var unitField =null
@@ -1860,12 +1913,8 @@
                         if(data.valueType === 'object' && typeof data.value === 'object'){
                             Object.keys(data.value).forEach(function(propId){
                                 var valueField = row.find('.valueField[propId='+propId+']')
-                                if(valueField.prop('tagName')=='INPUT'){
-                                    valueField.typedInput('value',data.value[propId])
-                                }else{
-                                    valueField.val(data.value[propId])
-
-                                }
+                                valueField.typedInput('value',data.value[propId].value);
+                                valueField.typedInput('type',data.value[propId].type);
                             })
                         }else{
                             if (valueField[0].prop('tagName') == 'INPUT') {
@@ -1873,8 +1922,12 @@
                             } else {
                                 valueField[0].val(data.value)
                             }
+                            if(data.argType){
+                                valueField[0].typedInput('type',data.argType);
+                            }
                         }
                     }
+
                     // data.value && valueField.find('.attrValue').val(data.value)
                     data.unit && unitField && unitField.val(data.unit)
                 }
@@ -1888,134 +1941,144 @@
                 }
                 return operatorField
             }
-            function createValueField2(valueProp,row,option){
-                if(valueProp.title=='Iso8601Date'){
-                    valueProp.type='Iso8601Date'
-                }else if(valueProp.title=='JsonObject'){
-                    valueProp.type='json'
-                }else if(valueProp.type==='object' && (!valueProp.hasOwnProperty('properties') && valueProp.title != 'COLOR_MAP' ) ){
-                    valueProp.type='json'
-                }
-
+            function createValueField(valueProp,row,option){
                 option=option || {}
                 if(option.rowName){
                     row.text(option.rowName + ' : ')
                 }
-                var valueField=null
+                
+                const fieldConfig = {
+                    default:'msg',
+                    types: []
+                }
+
+                const placeholders = {msg:'payload'};
                 if (valueProp.enum || (valueProp.type == 'array' && valueProp.items && valueProp.items.enum)) {
-                    valueField = $("<select/>").appendTo(row)
-                    if(option.hasOwnProperty('propId')){
-                        valueField.append($("<option></option>").val('').text(''))
-                    }
-                    var enums = valueProp.enum || valueProp.items.enum
-                    enums.forEach(function (value) {
-                        valueField.append($("<option></option>").val(value).text(value))
-                    })
+                    fieldConfig.types.push({
+                            value:"enum",
+                            label:"enum",
+                            options:valueProp.enum || valueProp.items.enum,
+                            icon:"red/images/typedInput/AZ.png"                            
+                    });
+                    fieldConfig.default = 'enum';
                 }else if (valueProp.type == 'string' ) {
-                    var holder = valueProp.type||''
-                    if(valueProp.hasOwnProperty('maxLength')){
-                        holder += ', maxLength:'+valueProp.maxLength
+					if(valueProp.title=='Iso8601Date'){
+						valueProp.type='Iso8601Date';
+						placeholders['Iso8601Date']=new Date().toISOString().substr(0,19)+'Z';
+						fieldConfig.types.push({
+							value:'Iso8601Date',
+							label:'Date',
+							validate:/^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$/
+						});
+						fieldConfig.default = 'Iso8601Date';
+
+					}else{
+						let placeholder = valueProp.type||'';
+						if(valueProp.hasOwnProperty('maxLength')){
+							placeholder += ', maxLength:'+valueProp.maxLength;
+						}
+						placeholders['str']=placeholder;
+						fieldConfig.types.push('str');
+						fieldConfig.default = 'str';
                     }
-                    valueField = $("<input/>",{placeholder:holder})
-                        .appendTo(row)
-                        .typedInput({default: "str", types: ["str"]})
 
                 }else if(valueProp.type == 'number' || valueProp.type == 'integer'){
-                    var holder = valueProp.title||valueProp.type||''
+                    let placeholder = valueProp.title||valueProp.type||'';
                     if (valueProp.hasOwnProperty('minimum') || valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('min')||valueProp.hasOwnProperty('max')) {
-                        holder += '('
-                        holder += valueProp.hasOwnProperty('minimum') ? valueProp.minimum : (valueProp.hasOwnProperty('min')?valueProp.min:' ')
-                        holder += '~'
-                        holder += valueProp.hasOwnProperty('maximum') ? valueProp.maximum : (valueProp.hasOwnProperty('max')?valueProp.max:' ')
-                        holder += ')'
+                        placeholder += '('
+                        placeholder += (valueProp.hasOwnProperty('minimum')||valueProp.hasOwnProperty('min')) ? (valueProp.minimum||valueProp.min) :' ';
+                        placeholder += '~'
+                        placeholder += (valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('max')) ? (valueProp.maximum||valueProp.max) :' ';
+                        placeholder += ')'
                     }
-                    valueField = $("<input/>", {placeholder:holder})
-                        .appendTo(row)
-                        .typedInput({default: "num", types: ["num"]})
-
+                    placeholders['num']=placeholder;
+                    fieldConfig.types.push('num');
+                    fieldConfig.default='num';
+                }else if (valueProp.type == 'boolean') {
+                    if(valueProp.default){
+                        fieldConfig.defaultValue=valueProp.default;                        
+                    }
+                    fieldConfig.types.push('bool');
+                    fieldConfig.default = 'bool';
                 }else if (valueProp.type == 'array') {
-                    if(Array.isArray(valueProp.items)){
-                        throw new Error('unknown data schema, typeof array.items == array')
-                    }else if(typeof valueProp.items === 'object'){
-                        return createValueField2(valueProp.items,row)
+                    if(valueProp.items){
+                        return createValueField(valueProp.items,row)
                     }else{
                         throw new Error('unknown data schema '+valueProp.type)
                     }
-                }else if (valueProp.type == 'boolean') {
-                    valueField = $("<select/>").appendTo(row)
-                    if(option.hasOwnProperty('propId')){
-                        valueField.append($("<option></option>").val('').text(''))
-                    }
-                    valueField.append($("<option></option>").val('true').text('true'))
-                    valueField.append($("<option></option>").val('false').text('false'))
-                    if(valueProp.default){
-                        valueField.val(''+valueProp.default)
-                    }
-                } else if (valueProp.type == 'vector3') {
-                    //TODO : vector type
-                    throw new Error('vector data type')
-                } else if (valueProp.type == 'json') {
-                    valueField = $("<input/>",{placeholder:'Json Object'})
-                        .appendTo(row)
-                        .typedInput({default: "json", types: ["json"]})
-
-                } else if (valueProp.type == 'Iso8601Date') {
-                    var holder = ''
-                    valueField = $("<input/>",{placeholder:holder})
-                        .appendTo(row)
-                        .typedInput({default: "str", types: ["str"]})
-
-                    valueField.typedInput('value',new Date().toISOString().substr(0,19)+'Z')
-                    //TODO : pattern valid check
                 } else if (valueProp.type == 'object') {
-                    if(valueProp.title ==='COLOR_MAP'){
-                        valueField = $("<input/>", {
-                            argName: "color",
-                            argType: "object",
-                            propId: 'hex',
-                            propType: 'string',
-                            class: 'argValue',
-                            type: 'color',
-                            value: "#3366ff",
-                            style: "width:50%;margin-right:5px;"
-                        }).appendTo(row)
-                        Object.assign(option,{valueName: "color",valueType: "object",propId: 'hex',propType: 'string',})
-                        // }else if(valueProp.){//TODO : threeAxis vector
-                        //
+					if(valueProp.title ==='COLOR_MAP'){
+						option=option||{};
+						option.width = '20%';
+                        fieldConfig.additionalField = $("<input/>", {
+							argName: "color",
+							argType: "object",
+							propId: 'hex',
+							propType: 'string',
+							class: 'colorField',
+							type: 'color',
+							value: "#3366ff",
+							style: "width:50%;margin-right:5px;"
+						});
+
+                        Object.assign(option,{valueName: "color",valueType: "object",propId: 'hex',propType: 'string'});
+
+                        fieldConfig.types.push({
+                            value:"color",
+                            label:"color",
+                            icon:"red/images/typedInput/target.png",
+                            hasValue:false
+                        });
+                        fieldConfig.default = 'color';
+
                     }else if (valueProp.hasOwnProperty('properties')){
-                        var fields=[]
-                        Object.keys(valueProp.properties).forEach(function(k){
-                            var row2 = $('<div style="display:flex;align-items:center;justify-content:flex-end;"></div>').appendTo(row)
-                            Object.assign(option,{valueType:valueProp.type,propId:k,propType:valueProp.properties[k].type,rowName:k})
-                            fields.concat(createValueField2(valueProp.properties[k],row2,option))
+                        var fields=[];
+                        Object.keys(valueProp.properties).forEach(function(key){
+                            var row2 = $('<div style="display:flex;align-items:center;justify-content:flex-end;"></div>').appendTo(row);
+                            Object.assign(option,{valueType:valueProp.type,propId:key,propType:valueProp.properties[key].type,rowName:key});                            
+                            fields = fields.concat(createValueField(valueProp.properties[key],row2,option));
                         })
-                        return fields
+                        return fields;
                     }else {
-                        var holder = valueProp.title || valueProp.type || ''
-                        valueField = $("<input/>", {placeholder: holder}).appendTo(row)
-                        valueField.typedInput({default: "str", types: ["str"]})
-                        // throw new Error('unknown data schema, '+valueProp.type+' unkwon')
-                        console.error('unknown data schema, '+valueProp.type+' unknown')
+                        let placeholder = valueProp.title || valueProp.type || '';
+                        placeholders['json']=placeholder;
+						fieldConfig.types.push('json');
+						fieldConfig.default = 'json';
                     }
                 } else {
                     throw new Error('unknown data schema')
                 }
-                valueField.addClass('argValue valueField')
-                valueField.css('margin-right','5px')
+
+                const valueField = $("<input/>").appendTo(row);
+				valueProp.title !='COLOR_MAP' && fieldConfig.types.push('msg','flow','global');
+                valueField.typedInput({
+                    default: fieldConfig.default,
+                    types: fieldConfig.types
+                })
+                valueField.typedInput('width',option.width||'40%');
+                valueField.addClass('argValue valueField');
+                valueField.css('margin-right','5px');
                 if(option.hasOwnProperty('propId')){
-                    valueField.attr('propId',option.propId)
-                }
-                try{
-                    valueField.typedInput('width',option.width||'40%')
-                }catch(e){
-                    valueField.css('width',option.width||'40%')
+                    valueField.attr('propId',option.propId);
                 }
                 valueField.data('data',Object.assign({valueType:valueProp.type},option))
-
                 valueField.attr('argName',option.valueName)
-                if(option.hasOwnProperty('propId')){
-                    valueField.attr('propId',option.propId)
+
+                valueField.on('change',function(e,type){
+                    type = type||valueField.typedInput('type');
+                    
+                    if(placeholders[type]){
+                        this.parentElement.querySelector('input.red-ui-typedInput-input').placeholder = placeholders[type];
+                    }else{
+                        this.parentElement.querySelector('input.red-ui-typedInput-input').placeholder = '';
+                    }
+                })
+
+                if(fieldConfig.additionalField){
+                	fieldConfig.additionalField.appendTo(row);
                 }
+
+                valueField.get(0).dispatchEvent(new Event('change'));
 
                 if(Array.isArray(valueField)){
                     return valueField
@@ -2035,7 +2098,7 @@
                         unitField.val(unitProp.default)
                     }
                 }
-                return unitField
+                return unitField;
             }
             if(THING.node.type===ST_STATUS_DEVICE && $("#attr-list-container").length>0){
                 var msg1 = $('<span style="position:absolute;right:2em;""><i class="fa fa-info-circle" aria-hidden="true"></i>  No Filter : msg.payload = whole device status response</span>')
@@ -2070,8 +2133,6 @@
         THING.initContainer()
 
         THING.initDeviceSelect(NODE.deviceNodeId,NODE.deviceId);
-
-
         THING.form.attributeId.on("mouseover", function () {
             THING.form.attributeId.off("change")
             THING.form.attributeId.on("change", function () {
@@ -2165,9 +2226,13 @@
                     this.alias=deviceName;
                 }
             }
-            const selectedOption = document.querySelector('#node-input-deviceId').selectedOptions[0];
-            if(selectedOption&&selectedOption.dataset.deviceNodeId){
-                this.deviceNodeId = selectedOption.dataset?.deviceNodeId;
+            const selectedDeviceOption = document.querySelector('#node-input-deviceId').selectedOptions[0];
+            if(selectedDeviceOption && selectedDeviceOption.dataset.deviceNodeId){
+                this.deviceNodeId = selectedDeviceOption.dataset?.deviceNodeId;
+            }
+            const selectedCapabilityOption = document.querySelector('#node-input-capabilityId').selectedOptions[0];
+            if(selectedDeviceOption && selectedDeviceOption.dataset.deviceNodeId){
+                this.componentId = selectedCapabilityOption.dataset?.componentId;
             }
         },
         oneditprepare: function () {
@@ -2185,6 +2250,13 @@
             }
 
             DeviceNodeEventHandler(formObj, NODE);
+
+            document.querySelector('.logging-options').addEventListener('click',function(e){
+                if(e.target.matches('span.logging-options__label')){
+                    const checkbox = document.querySelector('#'+e.target.getAttribute('label_for'));
+                    checkbox.checked = !checkbox.checked;
+                }
+            })
         },
         oneditresize: function (size) {
             var rows;
@@ -2281,6 +2353,13 @@
             }
 
             DeviceNodeEventHandler(formObj, NODE);
+
+            document.querySelector('.logging-options').addEventListener('click',function(e){
+                if(e.target.matches('span.logging-options__label')){
+                    const checkbox = document.querySelector('#'+e.target.getAttribute('label_for'));
+                    checkbox.checked = !checkbox.checked;
+                }
+            })
         },
         oneditresize: function (size) {
             var rows;
@@ -2321,6 +2400,7 @@
                 arg.name = data.valueName
                 arg.type = data.valueType
                 arg.value = $(_arg).val()
+                arg.argType = $(_arg).typedInput('type')
                 if (data.hasOwnProperty('propId')) {
                     arg.propId = data.propId
                 }
@@ -2329,8 +2409,11 @@
                 }
                 rule.args.push(arg)
 
-                if (arg.name == 'color') {
-                    var hsl = rgbToHsl(arg.value)
+                if (arg.argType == 'color') {
+                    const colorValue = document.querySelector('.colorField').value;
+                    rule.args[0].value = colorValue;
+
+                    const hsl = rgbToHsl(colorValue);
                     rule.args.push({name: 'color', type: 'object', propId: 'hue', propType: 'number', value: hsl.hue})
                     rule.args.push({name: 'color', type: 'object', propId: 'saturation', propType: 'number', value: hsl.saturation})
                 }
@@ -2341,41 +2424,42 @@
 
     function saveAttributesRules(NODE) {
         $("#attr-list-container").editableList('items').each(function (idx, item) {
-            var itemData = item.data('data')
-            var valueData = item.find('.attrValue').data('data')
-            var rule = {}
-            rule.capaId = itemData.capaId
-            rule.attrId = itemData.attrId
-            rule.operator = item.find(".attrOperator").val()
-            rule.valueType = itemData.valueType
-
-            if(rule.valueType != 'object'){
-                rule.value = item.find(".valueField").val()
+            var itemData = item.data('data');
+            var valueData = item.find('.argValue').data('data');
+            var rule = {};
+            rule.capaId = itemData.capaId;
+            rule.attrId = itemData.attrId;
+            rule.operator = item.find(".attrOperator").val();
+            rule.valueType = valueData.valueType||itemData.valueType;
+            rule.argType = item.find(".valueField").typedInput('type');
+            if(valueData.valueType != 'object'){
+                rule.value = item.find(".valueField").val();
 
                 if (rule.valueType.toLowerCase().indexOf('integer') > -1 || rule.valueType.toLowerCase().indexOf('number') > -1) {
                     try{
-                        rule.value = Number(rule.value)
+                        rule.value = Number(rule.value);
                     }catch(e){}
                 }
             }else{
-                var valueObj = {}
+                var valueObj = {};
                 item.find(".valueField").each((i,valueField)=> {
-                    valueData = $(valueField).data('data')
-                    valueObj[valueData.propId] = $(valueField).val()
+                    const propData = $(valueField).data('data');
+                    let propValue = $(valueField).val();
 
-                    if (valueData.propType.toLowerCase().indexOf('integer') > -1 || valueData.propType.toLowerCase().indexOf('number') > -1) {
+                    if (propData.propType.toLowerCase().indexOf('integer') > -1 || propData.propType.toLowerCase().indexOf('number') > -1) {
                         try {
                             if($(valueField).val().length>0){
-                                valueObj[valueData.propId] = Number($(valueField).val())
+								propValue = Number($(valueField).val());
                             }
                         }catch (e) {}
                     }
+					valueObj[propData.propId] = {name:propData.propId,type:$(valueField).typedInput('type'),value:propValue};
                 })
-                rule.value = valueObj
+                rule.value = valueObj;
             }
-            rule.unit = item.find(".attrUnit").val()
+            rule.unit = item.find(".attrUnit").val();
 
-            NODE.rules.push(rule)
+            NODE.rules.push(rule);
         })
     }
 
@@ -2448,6 +2532,12 @@
             }
 
             DeviceNodeEventHandler(formObj, NODE);
+            document.querySelector('.logging-options').addEventListener('click',function(e){
+                if(e.target.matches('span.logging-options__label')){
+                    const checkbox = document.querySelector('#'+e.target.getAttribute('label_for'));
+                    checkbox.checked = !checkbox.checked;
+                }
+            })
         },
         oneditresize: function (size) {
             var rows;

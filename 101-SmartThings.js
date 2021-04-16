@@ -57,46 +57,58 @@ module.exports = function (RED) {
     })
 
     var operators = {
-        'eq': function (a, b) {
-            return a == b;
+        //parameter a : condition value set by user
+        //parameter b : value get from device
+        eq: function (a, b) {
+            if(typeof b ==='object'){
+                if(typeof a != 'object'){
+                    try{ a=JSON.parse(a); }
+                    catch(e){ return false; }
+                }
+                return Object.keys(a).every(key=>{
+                    return b.hasOwnProperty(key) && this.eq(a[key],b[key]);
+                })
+            }else{
+                return a==b;
+            }
         },
-        'neq': function (a, b) {
-            return a != b;
+        neq: function (a, b) {
+            return !this.eq(a,b);
         },
-        'lt': function (a, b) {
+        lt: function (a, b) {
             return a < b;
         },
-        'lte': function (a, b) {
+        lte: function (a, b) {
             return a <= b;
         },
-        'gt': function (a, b) {
+        gt: function (a, b) {
             return a > b;
         },
-        'gte': function (a, b) {
+        gte: function (a, b) {
             return a >= b;
         },
-        'in': function(v,arr){
-            return Array.isArray(arr) && arr.includes(v)
+        in: function(v,arr){
+            return Array.isArray(arr) && arr.some(dv=>this.eq(v,dv))
         },
-        'nin': function(v,arr){
-            return Array.isArray(arr) && !(arr.includes(v))
+        nin: function(v,arr){
+            return Array.isArray(arr) && !(this.in(v,arr))
         },
-        'o_eq': function(v,obj){
+        o_eq: function(v,obj){
             if(typeof v != 'object'){
                 try{
                     v=JSON.parse(v)
                 }catch(e){
-                    return false
+                    return false;
                 }
             }
             if(obj==undefined || obj==null || typeof obj != 'object'){
-                return false
+                return false;
             }
             return Object.keys(v).every(k=>{
-                return obj.hasOwnProperty(k) && v[k] == obj[k]
+                return obj && obj.hasOwnProperty(k) && v[k] == obj[k]
             })
         },
-        'o_neq': function(v,obj){
+        o_neq: function(v,obj){
             if(typeof v != 'object'){
                 try{
                     v=JSON.parse(v)
@@ -109,7 +121,7 @@ module.exports = function (RED) {
             }
 
             return Object.keys(v).every(k=>{
-                return obj.hasOwnProperty(k) && v[k] != obj[k]
+                return obj && obj.hasOwnProperty(k) && v[k] != obj[k]
             })
         },
 
@@ -482,7 +494,7 @@ module.exports = function (RED) {
         };
         function debugLog(log) {
             try {
-                RED.comms.publish("debug", {id: NODE.id, z: NODE.z, name: NODE.name, topic: "Automation", msg: log});
+                RED.comms.publish("debug", {id: NODE.id, z: NODE.z, name: NODE.name||NODE.alias, topic: "Automation", msg: log});
             } catch (err) {
                 console.error(err);
             }
@@ -584,7 +596,7 @@ module.exports = function (RED) {
 
                 if (NODE.type == ST_EVENT_DEVICE) {
                     var resultMsg=[];
-                    NODE.loggingEditor&&NODE.warn("[SmartThings] Event:" + NODE.name);
+                    NODE.loggingEditor&&NODE.warn("[SmartThings] Event:" + NODE.name||NODE.alias||NODE.type);
 
                     automationEvent.eventData.events.forEach(function(event){
                         var deviceEvent = event.deviceEvent;
@@ -594,7 +606,13 @@ module.exports = function (RED) {
                                 var opCheck = false;
                                 rule.capaId=rule.capaId.split('_v')[0];
                                 if(deviceEvent.capability == rule.capaId && deviceEvent.attribute == rule.attrId){
-                                    opCheck=operators[rule.operator](rule.value, deviceEvent.value);
+                                    let ruleValue = rule.value;
+                                    if(rule.argType==='jsonata'){
+                                        ruleValue = RED.util.evaluateJSONataExpression(ruleValue,msg);
+                                    }else{
+                                        ruleValue = RED.util.evaluateNodeProperty(ruleValue,rule.argType,NODE,msg);
+                                    }
+                                    opCheck=operators[rule.operator](ruleValue, deviceEvent.value);
                                 }
 
                                 if (opCheck) {
@@ -613,20 +631,36 @@ module.exports = function (RED) {
                     NODE.send(resultMsg);
                 } else if (NODE.type == ST_STATUS_DEVICE) {
                     OneApi.getDeviceStates(param, authToken, NODE.logging).then(function (data) {
-                        NODE.loggingEditor&&NODE.warn("[SmartThings] Status :" + NODE.name);
+                        NODE.loggingEditor&&NODE.warn("[SmartThings] Status :" + NODE.name||NODE.alias||NODE.type);
                         var deviceStatus = data;
                         var opCheck = false;
                         NODE.capabilityId = NODE.capabilityId.split('_v')[0]
                         NODE.rules.forEach((rule,idx)=>{
                             var attributeValue = deviceStatus.components[deviceConfig.componentId||'main'][NODE.capabilityId][NODE.attributeId].value;
 
-                            if (rule.value == '' || rule.value == undefined){
-                                rule.value = "\'\'"
+                            let ruleValue = rule.value;
+
+                            if(rule.valueType=='object'){
+								ruleValue={};
+                            	for(let k in rule.value){
+                            		const data = rule.value[k];
+									ruleValue[k] = RED.util.evaluateNodeProperty(data.value,rule.type,NODE,msg);
+								}
+							}else{
+								if(rule.argType==='jsonata'){
+									ruleValue = RED.util.evaluateJSONataExpression(ruleValue,msg);
+								}else{
+									ruleValue = RED.util.evaluateNodeProperty(ruleValue,rule.argType,NODE,msg);
+								}
+							}
+
+                            if (ruleValue == '' || ruleValue == undefined){
+                                ruleValue = "\'\'";
                             }
                             if(rule.valueType == 'Iso8601Date'){
-                                opCheck = operators[rule.operator](new Date(rule.value), new Date(attributeValue));
+                                opCheck = operators[rule.operator](new Date(ruleValue), new Date(attributeValue));
                             }else{
-                                opCheck = operators[rule.operator](rule.value, attributeValue);
+                                opCheck = operators[rule.operator](ruleValue, attributeValue);
                             }
                             if (opCheck) {
                                 // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port success")
@@ -649,7 +683,7 @@ module.exports = function (RED) {
                         NODE.loggingConsole&&NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                     });
                 } else {
-                    NODE.loggingEditor&&NODE.warn("[SmartThings] Action:" + NODE.name);
+                    NODE.loggingEditor&&NODE.warn("[SmartThings] Action:" + NODE.name||NODE.alias||NODE.type);
 
                     var commandArr = [];
                     var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main';
@@ -659,8 +693,18 @@ module.exports = function (RED) {
                         cmd.arguments = [];
 
                         var argObj={};
+
                         rule.args.forEach(arg=>{
-                            if(arg.type != 'object'){
+                      
+                            if(arg.argType=='jsonata'){
+                                arg.value = RED.util.evaluateJSONataExpression(arg.value,msg);
+                            }else{
+                                arg.value = RED.util.evaluateNodeProperty(arg.value,arg.argType,NODE,msg);
+                            }
+                            
+                            
+                            
+                            if(arg.type != 'object'||arg.argType=='json'){
                                 arg.type = arg.type || '';
                                 if(arg.type.toLowerCase().indexOf('integer')>-1||arg.type.toLowerCase().indexOf('number')>-1) {
                                     cmd.arguments.push(Number(arg.value));
