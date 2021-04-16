@@ -183,8 +183,32 @@
     .optgroup--hide{
         display:none;
     }
-    .logging-options{
-        cursor:pointer;
+    .auto__copyurl{
+        display: inline-block; 
+        position: relative; 
+        width: 70%; 
+        height: 20.0114px;
+    }
+    .auto__copyurl__url{
+        position: absolute; 
+        left: 0px; 
+        right: 40px;
+    }
+    .auto__copyurl__btn{
+        position: absolute; 
+        right: 0px; 
+        top: 0px;
+    }
+    .logging-options div{
+        cursor:pointer;        
+    }
+    .logging-options label{
+        vertical-align:top;
+    }
+    .logging-options input{
+        width:auto;
+        margin:auto;
+        margin:0px 3px 0px 0px !important;
     }
 </style>
 
@@ -325,20 +349,22 @@
     </div>
     <div class="form-row">
         <label for="node-input-copyurl"></label>
-        <div style="display: inline-block; position: relative; width: 70%; height: 20.0114px;">
-            <div style="position: absolute; left: 0px; right: 40px;">
-                <input type="text" id="node-input-copyurl" readonly="true" style="width:100%"></input>
+        <div class="auto__copyurl">
+            <div class="auto__copyurl__url">
+                <input type="text" id="node-input-copyurl" readonly="true" style="width:100%"/>
             </div>
-            <a id="export-clipboard" class="editor-button" style="position: absolute; right: 0px; top: 0px;">
+            <a id="export-clipboard" class="editor-button auto__copyurl__btn">
                 <i class="fa fa-copy"></i>
             </a>
         </div>
     </div>
-    <div class="form-row logging-options" style="margin:20px 0px;">
-        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
         <div>            
-            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
-            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
+            <input id="node-input-loggingEditor" type="checkbox" value="true" >
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
         </div>
     </div>
 </script>
@@ -388,12 +414,15 @@
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
     </div>
-    <div class="form-row logging-options" style="margin:20px 0px;">
-        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
         <div>
-            <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
-            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
-            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
+            <input id="node-input-logging" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
+            <input id="node-input-loggingEditor" type="checkbox" value="true">
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
         </div>
     </div>
 </script>
@@ -454,12 +483,15 @@
     <div class="form-row sensor-container-row">
         <ol id="attr-list-container"></ol>
     </div>
-    <div class="form-row logging-options" style="margin:20px 0px;">
-        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
         <div>
-            <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
-            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
-            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
+            <input id="node-input-logging" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
+            <input id="node-input-loggingEditor" type="checkbox" value="true">
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
         </div>
     </div>
 </script>
@@ -517,12 +549,15 @@
     <div class="form-row actuator-container-row">
         <ol id="cmd-list-container"></ol>
     </div>
-    <div class="form-row logging-options" style="margin:20px 0px;">
-        <label for="node-input-attributeId" style="vertical-align:top;"><i class="fa fa-align-right"></i> Log</label>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
         <div>
-            <input id="node-input-logging" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
-            <input id="node-input-loggingEditor" type="checkbox" name="" value="true" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
-            <input id="node-input-loggingConsole" type="checkbox" name="" value="false" style="width:auto;margin:auto;margin-right:3px"><span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
+            <input id="node-input-logging" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
+            <input id="node-input-loggingEditor" type="checkbox" value="true">
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
         </div>
     </div>
 </script>
