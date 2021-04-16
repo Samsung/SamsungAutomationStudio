@@ -24,7 +24,9 @@ module.exports = function (RED) {
     const ST_AUTOMATION = 'automation';
     const ST_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE,ST_DEVICE_PROFILE,ST_MY_DEVICE,ST_AUTOMATION];
     const ST_NODE_VERSION = 200330;
-        
+
+    // process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+
     var os = require('os');
     var bodyParser = require("body-parser");
     var cors = require('cors');
@@ -49,53 +51,64 @@ module.exports = function (RED) {
                     PAT.nodeIdArr = Array.from(PAT.nodeIds)
                 })
             }
-
             res.json(PATs||{});
         })
 
     })
 
     var operators = {
-        'eq': function (a, b) {
-            return a == b;
+        //parameter a : condition value set by user
+        //parameter b : value get from device
+        eq: function (a, b) {
+            if(typeof b ==='object'){
+                if(typeof a != 'object'){
+                    try{ a=JSON.parse(a); }
+                    catch(e){ return false; }
+                }
+                return Object.keys(a).every(key=>{
+                    return b.hasOwnProperty(key) && this.eq(a[key],b[key]);
+                })
+            }else{
+                return a==b;
+            }
         },
-        'neq': function (a, b) {
-            return a != b;
+        neq: function (a, b) {
+            return !this.eq(a,b);
         },
-        'lt': function (a, b) {
+        lt: function (a, b) {
             return a < b;
         },
-        'lte': function (a, b) {
+        lte: function (a, b) {
             return a <= b;
         },
-        'gt': function (a, b) {
+        gt: function (a, b) {
             return a > b;
         },
-        'gte': function (a, b) {
+        gte: function (a, b) {
             return a >= b;
         },
-        'in': function(v,arr){
-            return Array.isArray(arr) && arr.includes(v)
+        in: function(v,arr){
+            return Array.isArray(arr) && arr.some(dv=>this.eq(v,dv))
         },
-        'nin': function(v,arr){
-            return Array.isArray(arr) && !(arr.includes(v))
+        nin: function(v,arr){
+            return Array.isArray(arr) && !(this.in(v,arr))
         },
-        'o_eq': function(v,obj){
+        o_eq: function(v,obj){
             if(typeof v != 'object'){
                 try{
                     v=JSON.parse(v)
                 }catch(e){
-                    return false
+                    return false;
                 }
             }
             if(obj==undefined || obj==null || typeof obj != 'object'){
-                return false
+                return false;
             }
             return Object.keys(v).every(k=>{
-                return obj.hasOwnProperty(k) && v[k] == obj[k]
+                return obj && obj.hasOwnProperty(k) && v[k] == obj[k]
             })
         },
-        'o_neq': function(v,obj){
+        o_neq: function(v,obj){
             if(typeof v != 'object'){
                 try{
                     v=JSON.parse(v)
@@ -108,7 +121,7 @@ module.exports = function (RED) {
             }
 
             return Object.keys(v).every(k=>{
-                return obj.hasOwnProperty(k) && v[k] != obj[k]
+                return obj && obj.hasOwnProperty(k) && v[k] != obj[k]
             })
         },
 
@@ -211,7 +224,7 @@ module.exports = function (RED) {
 
         var visited = new Set([this.id])
         var sectionConfig={}
-        var subscriptionDevices=[]
+        var eventDevices=[]
 
         while (queue.length > 0) {
             var currentId = queue.shift();
@@ -228,8 +241,8 @@ module.exports = function (RED) {
                         settings: [
                             {
                                 id: deviceNode.id,
-                                name: deviceNode.name,
-                                description: deviceNode.name + ":" + deviceNode.capabilityId,
+                                name: deviceNode.name||deviceNode.alias,
+                                description: (deviceNode.name||deviceNode.alias) + ":" + deviceNode.capabilityId,
                                 type: 'DEVICE',
                                 required: true,
                                 multiple: false,
@@ -243,20 +256,18 @@ module.exports = function (RED) {
                     sectionConfig[node.deviceNodeId].settings[0].permissions.push('x')
                 }
                 if(node.type == ST_EVENT_DEVICE){
-                    subscriptionDevices.push({sectionId:node.deviceNodeId,capabilityId:node.capabilityId,attributeId:node.attributeId})
+                    eventDevices.push({sectionId:node.deviceNodeId,capabilityId:node.capabilityId,attributeId:node.attributeId});
                 }
             }
 
-            node.wires.forEach(function(wire){
-                wire.forEach(function(nodeId){
-                    if(visited.has(nodeId) == false){
-                        visited.add(nodeId)
-                        queue.push(nodeId)
-                    }
+            node.wires.flat()
+                .filter(nodeId=>!visited.has(nodeId))
+                .filter((nodeId,idx,arr)=>arr.indexOf(nodeId)==idx)
+                .forEach(nodeId=>{
+                    visited.add(nodeId);
+                    queue.push(nodeId);
                 })
-            })
         }
-        var sections = Object.values(sectionConfig)
 
         if (!n.url) {
             this.warn(RED._("SmartThings.error.missing-path"));
@@ -273,34 +284,38 @@ module.exports = function (RED) {
         };
 
         this.lifecycleHandler = function (req, res) {
-            // console.log('===========Automation Request header / body ==========')
-            // console.dir(req.headers,{depth:null})
-            // console.dir(req.body,{depth:null})
-            // var authHeader = x509headerParse(req.headers.authorization);
+            if(req.body.lifecycle){
+                NODE.loggingEditor&&debugLog(`[${req.body.lifecycle}] : ${JSON.stringify(req.body)}`);
+                NODE.loggingConsole&&console.log(`SmartThings Automation[${req.body.lifecycle}] : ${JSON.stringify(req.body)}`)
+            }
+
             switch(req.body.lifecycle){
                 case "PING":
-                    var evt = req.body;
-                    if (!evt.pingData) {
+                    var reqBody = req.body;
+                    if (!reqBody.pingData) {
                         var msg = "Required parameter doesn't exist";
                         NODE.loggingEditor&&debugLog("[error] " + msg);
                         RES.error(res, 400, msg);
                         return;
+                    }else{
+                        RES.ok(res, {statusCode: 200, pingData: {challenge: reqBody.pingData.challenge}});
                     }
-                    RES.ok(res, {statusCode: 200, pingData: {challenge: evt.pingData.challenge}});
                     break;
 
                 case "CONFIRMATION":
-                    var data = req.body.confirmationData
+                    var data = req.body.confirmationData;
                     if( !!data === false || data.hasOwnProperty("confirmationUrl") === false){
-                        RES.error(res,400, {msg:"cannot find 'confirmationUrl'"})
+                        msg = "cannot find 'confirmationUrl'";
+                        NODE.loggingEditor&&debugLog("[error] " + msg);
+                        RES.error(res,400, {msg:msg});
                     }
 
                     SmartThingsAPI.confirmUrl(data.confirmationUrl)
                         .then(response=>{
                             if([200,202].includes(response.statusCode)){
-                                RES.ok(res,{targetUrl:data.confirmationUrl})
+                                RES.ok(res,{targetUrl:data.confirmationUrl});
                             }else{
-                                RES.error(res,response.statusCode,response.statusMessage)
+                                RES.error(res,response.statusCode,'confirm URL faile : ',response.statusMessage);
                             }
                         })
                         .catch(error=>{
@@ -308,110 +323,106 @@ module.exports = function (RED) {
                         })
                     break;
                 case "CONFIGURATION":
-                    var evt = req.body;
-                    if (!evt.configurationData) {
+                    var reqBody = req.body;
+                    if (!reqBody.configurationData) {
                         var msg = "Required parameter doesn't exist";
                         NODE.loggingEditor&&debugLog("[error] " + msg);
                         RES.error(res, 400, msg);
                         return;
                     }
 
-                    var response = {};
-                    if (evt.configurationData.phase == "INITIALIZE") {
-                        response.initialize = {
-                            id: "app_" + NODE.name.replace(/ /g, ''),  //공백제거
-                            name: NODE.name,
-                            description: NODE.name,
+                    var responseConfigData = {};
+                    if (reqBody.configurationData.phase == "INITIALIZE") {
+                        responseConfigData.initialize = {
+                            id: "app_" +NODE.id,
+                            name: NODE.name||NODE.alias,
+                            description: NODE.name||NODE.alias,
                             firstPageId: "1",
                             permissions: []
                         }
-                    } else if (evt.configurationData.phase == "PAGE") {
-                        if (evt.configurationData.pageId !== "1") {
-                            RES.error(res, 400, `Unsupported page id: ${evt.configurationData.pageId}`);
+                    } else if (reqBody.configurationData.phase == "PAGE") {
+                        if (reqBody.configurationData.pageId !== "1") {
+                            RES.error(res, 400, `Unsupported page id: ${reqBody.configurationData.pageId}`);
                             return;
                         }
-                        response.page = {
+                        const sections = Object.values(sectionConfig);
+                        responseConfigData.page = {
                             pageId: '1',
-                            name: NODE.name,
+                            name: NODE.name||NODE.alias,
                             nextPageId: null,
                             previousPageId: null,
                             complete: true,
                             sections: sections
                         };
                     } else {
-                        RES.error(res, 400, `Unsupported phase: ${evt.configurationData.phase}`);
+                        RES.error(res, 400, `Unsupported phase: ${reqBody.configurationData.phase}`);
                         return;
                     }
-                    RES.ok(res, {statusCode: 200, configurationData: response});
+                    RES.ok(res, {statusCode: 200, configurationData: responseConfigData});
                     break;
                 case "INSTALL":
-                    var evt = req.body
-                    var installedAppId = evt.installData.installedApp.installedAppId
-                    var authToken = evt.installData.authToken
+                    var reqBody = req.body;
+                    var installedAppId = reqBody.installData.installedApp.installedAppId;
+                    var authToken = reqBody.installData.authToken;
 
-                    NODE.loggingConsole&&console.log('subscription devices : '+subscriptionDevices)
+                    NODE.loggingConsole&&console.log('subscription devices : '+eventDevices);
 
-                    subscriptionDevices.forEach((subscription)=>{
-                        NODE.loggingConsole&&console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
-                        NODE.loggingConsole&&console.log(subscription)
-                        subscription.capabilityId = subscription.capabilityId.split('_v')[0]
-                        var sectionInfo = evt.installData.installedApp.config[subscription.sectionId][0]
-                        var subRequest = {
+                    eventDevices.forEach((eventDevice)=>{
+                        eventDevice.capabilityId = eventDevice.capabilityId.split('_v')[0]
+                        var installedConfig = reqBody.installData.installedApp.config[eventDevice.sectionId][0]
+                        var subscriptionBody = {
                             sourceType: 'DEVICE',
                             device: {
-                                deviceId: sectionInfo.deviceConfig.deviceId,
-                                componentId: sectionInfo.deviceConfig.componentId,
-                                capability: subscription.capabilityId,
-                                attribute: subscription.attributeId,
+                                deviceId: installedConfig.deviceConfig.deviceId,
+                                componentId: installedConfig.deviceConfig.componentId,
+                                capability: eventDevice.capabilityId,
+                                attribute: eventDevice.attributeId,
                                 stateChangeOnly: true,
-                                subscriptionName: subscription.name+'_'+subscription.capabilityId+'_'+subscription.attributeId+'_subscription',
+                                subscriptionName: (eventDevice.name+'_'+eventDevice.capabilityId+'_'+eventDevice.attributeId+'_SUBS').slice(0,32),
                                 value: "*"
                             }
                         }
+                        NODE.loggingConsole&&console.log('[ST_AUTOMATION] INSTALL_createSubscription:',JSON.stringify(subscriptionBody))
 
-                        var keyParam = {}
-                        keyParam.installedAppId = installedAppId
-
-                        OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
-                            NODE.loggingEditor&&debugLog("Create Subscription : " + JSON.stringify(data))
-                            NODE.loggingConsole&&console.log("Create Subscription : " + JSON.stringify(data))
-                        }).catch(function (err) {
-                            NODE.loggingEditor&&debugLog("[error] " + err.errCd + ", " + err.errMsg)
-                            NODE.loggingConsole&&console.log("[error] " + err.errCd + ", " + err.errMsg)
-                        })
-
+                        const keyParam = {installedAppId:installedAppId};
+                        OneApi.executeCreateSubscription(keyParam, subscriptionBody, authToken)
+                            .then(function (data) {
+                                NODE.loggingEditor&&debugLog("Create Subscription : " + JSON.stringify(data))
+                                NODE.loggingConsole&&console.log("Create Subscription : " + JSON.stringify(data))
+                            }).catch(function (err) {
+                                NODE.loggingEditor&&debugLog("[error] " + err.errCd + ", " + err.errMsg)
+                                NODE.loggingConsole&&console.log("[error] " + err.errCd + ", " + err.errMsg)
+                            })
                     })
                     RES.ok(res, {statusCode: 200, installData: {}})
                     break;
 
                 case "UPDATE":
-                    var evt = req.body;
-                    var installedAppId = evt.updateData.installedApp.installedAppId;
-                    var authToken = evt.updateData.authToken;
+                    var reqBody = req.body;
+                    var installedAppId = reqBody.updateData.installedApp.installedAppId;
+                    var authToken = reqBody.updateData.authToken;
 
-                    var keyParam = {installedAppId:installedAppId}
+                    const keyParam = {installedAppId:installedAppId};
 
                     OneApi.executeDeleteSubscription(keyParam, authToken).then(function (data) {
-                        subscriptionDevices.forEach(function(subscription){
-                            NODE.loggingConsole&&console.log('-----------EVENT DEVICE SUBSCRIPTION-----------')
-                            subscription.capabilityId = subscription.capabilityId.split('_v')[0]
-                            NODE.loggingConsole&&console.log(subscription)
-
-                            var sectionInfo = evt.updateData.installedApp.config[subscription.sectionId][0]
+                        eventDevices.forEach(function(eventDevice){
+                            eventDevice.capabilityId = eventDevice.capabilityId.split('_v')[0]
+                            var installedConfig = reqBody.updateData.installedApp.config[eventDevice.sectionId][0]
                             var subRequest = {
                                 sourceType: 'DEVICE',
                                 device: {
-                                    deviceId: sectionInfo.deviceConfig.deviceId,
-                                    componentId: sectionInfo.deviceConfig.componentId,
-                                    capability: subscription.capabilityId,
-                                    attribute: subscription.attributeId,
+                                    deviceId: installedConfig.deviceConfig.deviceId,
+                                    componentId: installedConfig.deviceConfig.componentId,
+                                    capability: eventDevice.capabilityId,
+                                    attribute: eventDevice.attributeId,
                                     stateChangeOnly: true,
-                                    subscriptionName: `${Eventattribute}_subscription`,
+                                    subscriptionName: (eventDevice.name+'_'+eventDevice.capabilityId+'_'+eventDevice.attributeId+'_SUBS').slice(0,32),
                                     value: "*"
                                 }
                             }
-                            var keyParam = {}
-                            keyParam.installedAppId = installedAppId
+                            NODE.loggingConsole&&console.log('[ST_AUTOMATION] UPDATE_createSubscription:',JSON.stringify(subscriptionBody))
+
+                            const keyParam = {installedAppId:installedAppId};
                             OneApi.executeCreateSubscription(keyParam, subRequest, authToken).then(function (data) {
                                 NODE.loggingEditor&&debugLog("Update Subscription : " + JSON.stringify(data))
                                 NODE.loggingConsole&&console.log("Update Subscription : " + JSON.stringify(data))
@@ -460,6 +471,8 @@ module.exports = function (RED) {
             // console.dir(req.headers,{depth:null})
             // console.dir(req.body,{depth:null})
 
+            next();
+            return;
             var authHeader = x509headerParse(req.headers.authorization);
             if(['PING','CONFIRMATION'].includes(req.body.lifecycle)){
                 next()
@@ -481,7 +494,7 @@ module.exports = function (RED) {
         };
         function debugLog(log) {
             try {
-                RED.comms.publish("debug", {id: NODE.id, z: NODE.z, name: NODE.name, topic: "Automation", msg: log});
+                RED.comms.publish("debug", {id: NODE.id, z: NODE.z, name: NODE.name||NODE.alias, topic: "Automation", msg: log});
             } catch (err) {
                 console.error(err);
             }
@@ -566,33 +579,26 @@ module.exports = function (RED) {
         this.on('input', function (msg) {
             var onward = [];
             try {
-                let flowContext = NODE.context().flow.get('evt');
-                if (flowContext == undefined) {
-                    // throw new Error("Context Data is null");
-                }
+                const automationEvent = NODE.context().flow.get('evt');
 
                 var deviceConfig = ""
                 var authToken = "";
-                var param = {};
-                param.deviceId = "";
-                var isAutomation=true;
+                var param = {deviceId:""};
 
                 if (RED.nodes.getNode(NODE.deviceNodeId).type == ST_MY_DEVICE){
-                    isAutomation=false;
                     authToken = RED.nodes.getCredentials(NODE.deviceNodeId).stAccessToken;
                     param.deviceId = NODE.deviceId || RED.nodes.getNode(NODE.deviceNodeId).device.deviceId
                 }else{
-                    isAutomation=true;
-                    deviceConfig = flowContext.eventData.installedApp.config[NODE.deviceNodeId][0].deviceConfig;//현재는 section 당 한개의 기기만으로 제한되어있음.[0]처리
-                    authToken = flowContext.eventData.authToken;
+                    deviceConfig = automationEvent.eventData.installedApp.config[NODE.deviceNodeId][0].deviceConfig;//현재는 section 당 한개의 기기만으로 제한되어있음.[0]처리
+                    authToken = automationEvent.eventData.authToken;
                     param.deviceId = deviceConfig.deviceId;
                 }
 
                 if (NODE.type == ST_EVENT_DEVICE) {
                     var resultMsg=[];
-                    NODE.loggingEditor&&NODE.warn("[SmartThings] Event:" + NODE.name);
+                    NODE.loggingEditor&&NODE.warn("[SmartThings] Event:" + NODE.name||NODE.alias||NODE.type);
 
-                    flowContext.eventData.events.forEach(function(event){
+                    automationEvent.eventData.events.forEach(function(event){
                         var deviceEvent = event.deviceEvent;
                         if(deviceEvent && deviceEvent.deviceId == deviceConfig.deviceId && deviceEvent.componentId == deviceConfig.componentId ){
                             resultMsg=[];
@@ -600,7 +606,13 @@ module.exports = function (RED) {
                                 var opCheck = false;
                                 rule.capaId=rule.capaId.split('_v')[0];
                                 if(deviceEvent.capability == rule.capaId && deviceEvent.attribute == rule.attrId){
-                                    opCheck=operators[rule.operator](rule.value, deviceEvent.value);
+                                    let ruleValue = rule.value;
+                                    if(rule.argType==='jsonata'){
+                                        ruleValue = RED.util.evaluateJSONataExpression(ruleValue,msg);
+                                    }else{
+                                        ruleValue = RED.util.evaluateNodeProperty(ruleValue,rule.argType,NODE,msg);
+                                    }
+                                    opCheck=operators[rule.operator](ruleValue, deviceEvent.value);
                                 }
 
                                 if (opCheck) {
@@ -613,26 +625,42 @@ module.exports = function (RED) {
                         }
                     })
                     if (NODE.rules.length == 0) {
-                        RED.util.setMessageProperty(msg, 'payload', flowContext.eventData.events);
+                        RED.util.setMessageProperty(msg, 'payload', automationEvent.eventData.events);
                         resultMsg.push(msg);
                     }
                     NODE.send(resultMsg);
                 } else if (NODE.type == ST_STATUS_DEVICE) {
                     OneApi.getDeviceStates(param, authToken, NODE.logging).then(function (data) {
-                        NODE.loggingEditor&&NODE.warn("[SmartThings] Status :" + NODE.name);
+                        NODE.loggingEditor&&NODE.warn("[SmartThings] Status :" + NODE.name||NODE.alias||NODE.type);
                         var deviceStatus = data;
                         var opCheck = false;
                         NODE.capabilityId = NODE.capabilityId.split('_v')[0]
                         NODE.rules.forEach((rule,idx)=>{
                             var attributeValue = deviceStatus.components[deviceConfig.componentId||'main'][NODE.capabilityId][NODE.attributeId].value;
 
-                            if (rule.value == '' || rule.value == undefined){
-                                rule.value = "\'\'"
+                            let ruleValue = rule.value;
+
+                            if(rule.valueType=='object'){
+								ruleValue={};
+                            	for(let k in rule.value){
+                            		const data = rule.value[k];
+									ruleValue[k] = RED.util.evaluateNodeProperty(data.value,rule.type,NODE,msg);
+								}
+							}else{
+								if(rule.argType==='jsonata'){
+									ruleValue = RED.util.evaluateJSONataExpression(ruleValue,msg);
+								}else{
+									ruleValue = RED.util.evaluateNodeProperty(ruleValue,rule.argType,NODE,msg);
+								}
+							}
+
+                            if (ruleValue == '' || ruleValue == undefined){
+                                ruleValue = "\'\'";
                             }
                             if(rule.valueType == 'Iso8601Date'){
-                                opCheck = operators[rule.operator](new Date(rule.value), new Date(attributeValue));
+                                opCheck = operators[rule.operator](new Date(ruleValue), new Date(attributeValue));
                             }else{
-                                opCheck = operators[rule.operator](rule.value, attributeValue);
+                                opCheck = operators[rule.operator](ruleValue, attributeValue);
                             }
                             if (opCheck) {
                                 // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port success")
@@ -655,7 +683,7 @@ module.exports = function (RED) {
                         NODE.loggingConsole&&NODE.error("[error] " + err.errCd + ", " + err.errMsg);
                     });
                 } else {
-                    NODE.loggingEditor&&NODE.warn("[SmartThings] Action:" + NODE.name);
+                    NODE.loggingEditor&&NODE.warn("[SmartThings] Action:" + NODE.name||NODE.alias||NODE.type);
 
                     var commandArr = [];
                     var componentId = (deviceConfig && deviceConfig.componentId) ? deviceConfig.componentId : 'main';
@@ -665,8 +693,18 @@ module.exports = function (RED) {
                         cmd.arguments = [];
 
                         var argObj={};
+
                         rule.args.forEach(arg=>{
-                            if(arg.type != 'object'){
+                      
+                            if(arg.argType=='jsonata'){
+                                arg.value = RED.util.evaluateJSONataExpression(arg.value,msg);
+                            }else{
+                                arg.value = RED.util.evaluateNodeProperty(arg.value,arg.argType,NODE,msg);
+                            }
+                            
+                            
+                            
+                            if(arg.type != 'object'||arg.argType=='json'){
                                 arg.type = arg.type || '';
                                 if(arg.type.toLowerCase().indexOf('integer')>-1||arg.type.toLowerCase().indexOf('number')>-1) {
                                     cmd.arguments.push(Number(arg.value));
