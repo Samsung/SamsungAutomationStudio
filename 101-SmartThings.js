@@ -699,7 +699,7 @@ module.exports = function (RED) {
                             if(arg.argType=='jsonata'){
                                 argValue = RED.util.evaluateJSONataExpression(argValue,msg);
                             }else{
-                                argValue = RED.util.evaluateNodeProperty(arg.value,arg.argType,NODE,msg);
+                                argValue = RED.util.evaluateNodeProperty(argValue,arg.argType,NODE,msg);
                             }
                             
                             if(arg.type != 'object'||arg.argType=='json'){
@@ -714,9 +714,9 @@ module.exports = function (RED) {
                             }else{
                                 arg.propType=arg.propType || '';
                                 if(arg.propType.toLowerCase().indexOf('integer')>-1||arg.propType.toLowerCase().indexOf('number')>-1) {
-                                    argValue = Number(arg.value);
+                                    argValue = Number(argValue);
                                 }else{
-                                    argValue = arg.value;
+                                    argValue = argValue;
                                 }
                                 argObj[arg.propId]=argValue;
                             }
