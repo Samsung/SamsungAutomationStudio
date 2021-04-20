@@ -695,31 +695,28 @@ module.exports = function (RED) {
                         var argObj={};
 
                         rule.args.forEach(arg=>{
-                      
+                            var argValue=arg.value;
+
                             if(arg.argType=='jsonata'){
-                                arg.value = RED.util.evaluateJSONataExpression(arg.value,msg);
+                                argValue = RED.util.evaluateJSONataExpression(argValue,msg);
                             }else{
-                                arg.value = RED.util.evaluateNodeProperty(arg.value,arg.argType,NODE,msg);
+                                argValue = RED.util.evaluateNodeProperty(argValue,arg.argType,NODE,msg);
                             }
-                            
-                            
-                            
                             if(arg.type != 'object'||arg.argType=='json'){
                                 arg.type = arg.type || '';
                                 if(arg.type.toLowerCase().indexOf('integer')>-1||arg.type.toLowerCase().indexOf('number')>-1) {
-                                    cmd.arguments.push(Number(arg.value));
+                                    cmd.arguments.push(Number(argValue));
                                 }else if(arg.type === 'json'){
-                                    cmd.arguments.push(JSON.parse(arg.value));
+                                    cmd.arguments.push(JSON.parse(argValue));
                                 }else{
-                                    cmd.arguments.push(arg.value);
+                                    cmd.arguments.push(argValue);
                                 }
                             }else{
-                                var argValue;
                                 arg.propType=arg.propType || '';
                                 if(arg.propType.toLowerCase().indexOf('integer')>-1||arg.propType.toLowerCase().indexOf('number')>-1) {
-                                    argValue = Number(arg.value);
+                                    argValue = Number(argValue);
                                 }else{
-                                    argValue = arg.value;
+                                    argValue = argValue;
                                 }
                                 argObj[arg.propId]=argValue;
                             }
