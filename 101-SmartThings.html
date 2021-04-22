@@ -184,23 +184,23 @@
         display:none;
     }
     .auto__copyurl{
-        display: inline-block; 
-        position: relative; 
-        width: 70%; 
+        display: inline-block;
+        position: relative;
+        width: 70%;
         height: 20.0114px;
     }
     .auto__copyurl__url{
-        position: absolute; 
-        left: 0px; 
+        position: absolute;
+        left: 0px;
         right: 40px;
     }
     .auto__copyurl__btn{
-        position: absolute; 
-        right: 0px; 
+        position: absolute;
+        right: 0px;
         top: 0px;
     }
     .logging-options div{
-        cursor:pointer;        
+        cursor:pointer;
     }
     .logging-options label{
         vertical-align:top;
@@ -219,7 +219,6 @@
         justify-content:flex-end;
     }
 </style>
-
 <script type="text/x-red" data-template-name="device-profile">
     <div class="form-row">
         <label for="node-input-name">Name</label>
@@ -280,7 +279,7 @@
     </dl>
 </script>
 <script type="text/x-red" data-template-name="installed-device">
-     <div class="form-tips" style="margin-bottom:10px;"><b>Note:</b> create token on the SmartThings <b><a href="https://account.smartthings.com/tokens" target="_blank">personal access token page</a></b></div>
+    <div class="form-tips" style="margin-bottom:10px;"><b>Note:</b> create token on the SmartThings <b><a href="https://account.smartthings.com/tokens" target="_blank">personal access token page</a></b></div>
 
     <div class="form-row">
         <label for="node-input-name">Node Name</label>
@@ -383,7 +382,7 @@
     <p><a href="https://smartthings.developer.samsung.com/docs/guides/smartapps/webhook-apps.html" target="_blank">more...</a></p>
     <h3>Properties</h3>
     <dl class="message-properties">
-        <dt>Name <span class="property-type">required</span></dt>
+        <dt>Name</dt>
         <dd>A Name for the WebHook endpoint.</dd>
         <dt>Endpoint <span class="property-type">required</span></dt>
         <dd>A Endpoint that should be invoked during execution.</dd>
@@ -440,7 +439,7 @@
     <p>This event-device node interacts with installed SmartThings device. When the device changes and an event occurs, the event node can receive the event as a subscriber.</p>
     <h3>Properties</h3>
     <dl class="message-properties">
-        <dt>Name <span class="property-type">required</span></dt>
+        <dt>Name</dt>
         <dd>The label of the Device assigned by the user.</dd>
         <dt>Device </dt>
         <dd>The unique system identifier for this Device.</dd>
@@ -509,7 +508,7 @@
     <p>This status-device node interact with the installed SmartThings device. This node allows you to branch flows based on the state of the device.</p>
     <h3>Properties</h3>
     <dl class="message-properties">
-        <dt>Name <span class="property-type">required</span></dt>
+        <dt>Name</dt>
         <dd>The label of the Device assigned by the user.</dd>
         <dt>Device </dt>
         <dd>The unique system identifier for this Device.</dd>
@@ -575,7 +574,7 @@
     <p>This command-device node interact with the installed SmartThings device. As commands you set, this node changes the state of the device.</p>
     <h3>Properties</h3>
     <dl class="message-properties">
-        <dt>Name <span class="property-type">required</span></dt>
+        <dt>Name</dt>
         <dd>The label of the Device assigned by the user.</dd>
         <dt>Device </dt>
         <dd>The unique system identifier for this Device.</dd>
@@ -598,7 +597,6 @@
 <!-- Node Html End-->
 
 <script type="text/javascript">
-    // https://api.smartthings.com/v1/devices
     SmartThingsApi = {
         getLocations: function(token){
             return new Promise((resolve,reject)=>{
@@ -948,7 +946,6 @@
         .catch(e=>{console.warn('load capabilities fail : ',e.message||e)})
 
 </script>
-
 <!-- Node Common Script End-->
 
 <!-- Node Script -->
@@ -964,7 +961,6 @@
     const ST_AUTOMATION = 'automation';
     const ST_DEVICE_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE]
     const ST_NODES=[ST_AUTOMATION,ST_DEVICE_PROFILE,ST_MY_DEVICE,ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE];
-    // const ST_NODE_VERSION = 20210318
     var stDevice = {};
 
     function STRefCheck() {
@@ -1003,7 +999,6 @@
             RED.view.redraw();
         }
 
-        //210318 STNode compatibility support
         RED.nodes.filterNodes({z:RED.workspaces.active(),type:ST_MY_DEVICE})
             .filter(n=> n.device && !n.devices)
             .forEach(n=> n.devices=[n.device.deviceId]);

@@ -23,7 +23,6 @@ module.exports = function (RED) {
     const ST_MY_DEVICE = 'installed-device';
     const ST_AUTOMATION = 'automation';
     const ST_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE,ST_DEVICE_PROFILE,ST_MY_DEVICE,ST_AUTOMATION];
-    const ST_NODE_VERSION = 200330;
 
     // process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
@@ -471,8 +470,6 @@ module.exports = function (RED) {
             // console.dir(req.headers,{depth:null})
             // console.dir(req.body,{depth:null})
 
-            next();
-            return;
             var authHeader = x509headerParse(req.headers.authorization);
             if(['PING','CONFIRMATION'].includes(req.body.lifecycle)){
                 next()
