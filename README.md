@@ -30,31 +30,3 @@ For further help, or general discussion, please contact sasm.sec@samsung.com
 
 ## Copyright and license
 Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
-
-## Release Note
-- 1.1.3 : 
-    - SmartThings Node enhancement
-      - enable SmartThings nodes, msg/flow/global parameter parameter
-- 1.1.2 : 
-    - SmartThings Node bugfix
-      - Node.js 10.x version support : remove Promise.allSettled
-      - status-device node bug fix
-- 1.1.0 : 
-    - SmartThings Node enhancement
-        - Updating SmartThings Capabilities specification 
-        - Device-Profile custom capability support 
-        - My-Device node, device multi-select
-        - Add Location and Room item to the device-list 
-        - Logging option fix 
-- 1.0.16 : 
-    - Add 'slack-notification' node
-    - Add 'status-device', 'command-device' node device response logging option
-- 1.0.15 : SmartThings Automation node authorization process modify
-- 1.0.13 : SmartThings device nodes logging modify
-- 1.0.11 : 
-    - Get custom capability spec. dynamically with SmartThings API
-    - SmartThings Capability spec. update (2020.08.13)   
-- 1.0.8 : nodered.org, flows page compatibility fix  
-- 1.0.7 : Node-RED ver.1.1.2 compatibility bug fix  
-    - Nodes credential access modify
-    - Editor HTML template engine compatibility modify  
