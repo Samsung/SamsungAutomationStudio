@@ -26,7 +26,7 @@ It works on browsers that support for ES6 (2015)
 [Samsung Automation Studio Team](https://sasm.developer.samsung.com/)
 
 ## Getting Help
-For further help, or general discussion, please contact sasm.sec@samsung.com
+For further help, or general discussion, please contact https://github.com/Samsung/SamsungAutomationStudio/issues
 
 ## Copyright and license
 Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
