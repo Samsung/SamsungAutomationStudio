@@ -1611,6 +1611,7 @@
                 }else if(isValidType && hasTarget && node.type==ST_MY_DEVICE){
                     mdGroupEl.append(opEl);
                 }else{
+                	opEl.disabled=true;
                     let title = [];
                     if(!isValidType){
                         title.push('Event Node cannot use My-Device Node');

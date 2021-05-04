@@ -40,10 +40,10 @@ module.exports = function (RED) {
         next();
     }
 
-    RED.httpNode.get('/_smartthings/capabilities',(req,res)=>{
+    RED.httpNode.get('/_smartthings/capabilities',RED.auth.needsPermission("settings.read"),(req,res)=>{
         res.json(SmartThingsProfile.getCapabilities()||{});
     })
-    RED.httpNode.get('/_smartthings/pats',(req,res)=>{
+    RED.httpNode.get('/_smartthings/pats',RED.auth.needsPermission("settings.read"),(req,res)=>{
         SmartThingsProfile.getPATs().then(PATs=>{
             if(PATs){
                 Object.values(PATs).forEach(PAT=>{
