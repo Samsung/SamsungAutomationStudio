@@ -24,7 +24,7 @@ module.exports = function (RED) {
     const ST_AUTOMATION = 'automation';
     const ST_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE,ST_DEVICE_PROFILE,ST_MY_DEVICE,ST_AUTOMATION];
 
-    // process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
     var os = require('os');
     var bodyParser = require("body-parser");
@@ -35,6 +35,7 @@ module.exports = function (RED) {
     var SmartThingsAPI = require('./lib/SmartThingsAPI');
     var SmartThingsProfile = require('./lib/SmartThingsProfile');
     var corsHandler = cors({origin: "*", methods: "POST"});
+
     RED.httpNode.options("*", corsHandler);
     var nextHandler = function (req, res, next) {
         next();
@@ -43,16 +44,10 @@ module.exports = function (RED) {
     RED.httpNode.get('/_smartthings/capabilities',RED.auth.needsPermission("settings.read"),(req,res)=>{
         res.json(SmartThingsProfile.getCapabilities()||{});
     })
-    RED.httpNode.get('/_smartthings/pats',RED.auth.needsPermission("settings.read"),(req,res)=>{
-        SmartThingsProfile.getPATs().then(PATs=>{
-            if(PATs){
-                Object.values(PATs).forEach(PAT=>{
-                    PAT.nodeIdArr = Array.from(PAT.nodeIds)
-                })
-            }
-            res.json(PATs||{});
+    RED.httpNode.get('/_smartthings/mydeviceinfo',RED.auth.needsPermission("credentials.read"),(req,res)=>{
+        SmartThingsProfile.getMDinfos().then(MDinfos=>{
+            res.json(MDinfos||{});
         })
-
     })
 
     var operators = {
@@ -536,9 +531,9 @@ module.exports = function (RED) {
         }
         SmartThingsProfile.addpat(n.id,pat);
 
-        RED.nodes.createNode(this, n)
-        Object.assign(this,n)
-        stCompatibleCheck(this)
+        RED.nodes.createNode(this, n);
+        Object.assign(this,n);
+        stCompatibleCheck(this);
 
         this.on('close', function(removed, done) {
             const pat = (RED.nodes.getCredentials(this.id))?RED.nodes.getCredentials(this.id).stAccessToken:null;
@@ -819,5 +814,4 @@ module.exports = function (RED) {
             }
         }
     }
-
 }
