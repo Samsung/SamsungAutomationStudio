@@ -762,12 +762,12 @@
 
         this.loadRuntimeCapabilities= function(){
             return new Promise((resolve,reject)=>{
-                $.getJSON('/_smartthings/capabilities').then(resolve,reject);
+                $.getJSON('_smartthings/capabilities').then(resolve,reject);
             })
         }
         this.loadMydeviceInfo=()=>{
             return new Promise((resolve,reject)=>{
-                $.getJSON('/_smartthings/mydeviceinfo').then(resolve,reject);
+                $.getJSON('_smartthings/mydeviceinfo').then(resolve,reject);
             })
         }
 
@@ -878,10 +878,10 @@
 
     const SmartThingsProfile = new _SmartThingsProfile();
     SmartThingsProfile.loadMydeviceInfo()
-		.then(SmartThingsProfile.setMyDeviceInfos)
-        .catch(e=>{console.warn('load pat fail : ',e.message||e)})
+        .then(SmartThingsProfile.setMyDeviceInfos)
+        .catch(e=>{console.warn('load mydevice info fail : ',e.message||e)})
         .then(SmartThingsProfile.loadRuntimeCapabilities)
-		.then(SmartThingsProfile.setCapabilities)
+        .then(SmartThingsProfile.setCapabilities)
         .catch(e=>{console.warn('load capabilities fail : ',e.message||e)})
 
 </script>
@@ -1118,6 +1118,11 @@
         icon: "mydevice.png",
         label: function () {
             return this.name|| this.alias || "My Device";
+        },
+        onpaletteadd: function(){
+            
+
+            
         },
         oneditsave: function () {
             if(document.querySelectorAll('#md_list .md_list__device.md_list__item--selected').length>0){
