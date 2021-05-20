@@ -44,9 +44,9 @@ module.exports = function (RED) {
     RED.httpNode.get('/_smartthings/capabilities',RED.auth.needsPermission("settings.read"),(req,res)=>{
         res.json(SmartThingsProfile.getCapabilities()||{});
     })
-    RED.httpNode.get('/_smartthings/mydeviceinfo',RED.auth.needsPermission("credentials.read"),(req,res)=>{
-        SmartThingsProfile.getMDinfos().then(MDinfos=>{
-            res.json(MDinfos||{});
+    RED.httpNode.get('/_smartthings/mydevices',RED.auth.needsPermission("credentials.read"),(req,res)=>{
+        SmartThingsProfile.getMyDevices().then(mydevices=>{
+            res.json(mydevices||{});
         })
     })
 
@@ -508,7 +508,7 @@ module.exports = function (RED) {
         if(RED.nodes.getCredentials(n.id)&&RED.nodes.getCredentials(n.id).stAccessToken){
             pat = RED.nodes.getCredentials(n.id).stAccessToken;
         }
-        SmartThingsProfile.addpat(n.id,pat);
+        SmartThingsProfile.addPersonalToken(n.id,pat);
 
         RED.nodes.createNode(this, n);
         Object.assign(this,n)
@@ -516,7 +516,7 @@ module.exports = function (RED) {
 
         this.on('close', function(removed, done) {
             const pat = (RED.nodes.getCredentials(this.id))?RED.nodes.getCredentials(this.id).stAccessToken:null;
-            SmartThingsProfile.addpat(this.id,pat);
+            SmartThingsProfile.addPersonalToken(this.id,pat);
             done();
         });
     }
@@ -529,7 +529,7 @@ module.exports = function (RED) {
         if(RED.nodes.getCredentials(n.id)&&RED.nodes.getCredentials(n.id).stAccessToken){
             pat = RED.nodes.getCredentials(n.id).stAccessToken
         }
-        SmartThingsProfile.addpat(n.id,pat);
+        SmartThingsProfile.addPersonalToken(n.id,pat);
 
         RED.nodes.createNode(this, n);
         Object.assign(this,n);
@@ -537,11 +537,7 @@ module.exports = function (RED) {
 
         this.on('close', function(removed, done) {
             const pat = (RED.nodes.getCredentials(this.id))?RED.nodes.getCredentials(this.id).stAccessToken:null;
-            SmartThingsProfile.addpat(this.id,pat);
-
-            /*if (removed) {
-                SmartThingsProfile.addpat(this.id,null);
-            }*/
+            SmartThingsProfile.addPersonalToken(this.id,pat);
             done();
         });
     }

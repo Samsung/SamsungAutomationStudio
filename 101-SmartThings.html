@@ -767,20 +767,20 @@
         }
         this.loadMydeviceInfo=()=>{
             return new Promise((resolve,reject)=>{
-                $.getJSON('_smartthings/mydeviceinfo').then(resolve,reject);
+                $.getJSON('_smartthings/mydevices').then(resolve,reject);
             })
         }
 
-        let _MDinfos={};
+        let _mydevices={};
         this.validatePat=function(pat){
             return SmartThingsApi.getCapability(pat,'switch',1);
         }
-		this.addpat = function(nodeId,pat,isRefresh){
+		this.addPersonalToken = function(nodeId,pat,isRefresh){
             if(!pat){
-            	_MDinfos[nodeId]=Promise.resolve(null);
+            	_mydevices[nodeId]=Promise.resolve(null);
                 return Promise.resolve(null);
             }
-            if(!_MDinfos[nodeId]||isRefresh){
+            if(!_mydevices[nodeId]||isRefresh){
                 return this.validatePat(pat).then(()=>{
                     const PAT = {};
                     const getLocationsPR = SmartThingsApi.getLocations(pat)
@@ -837,33 +837,33 @@
                     const addPATPromise=Promise.allSettled([getLocationsPR,getDevicesPR,getUnknownCapabilities])
                         .then(result=>{
                             if(PAT.devices){
-                                _MDinfos[nodeId]=Promise.resolve(PAT);
+                                _mydevices[nodeId]=Promise.resolve(PAT);
                             }else{
-								_MDinfos[nodeId]=Promise.resolve(null);
+								_mydevices[nodeId]=Promise.resolve(null);
                             }
-							return _MDinfos[nodeId];
+							return _mydevices[nodeId];
                         });
-					_MDinfos[nodeId]=addPATPromise;
+					_mydevices[nodeId]=addPATPromise;
                     return addPATPromise;
                 }).catch(e=>{
                     console.log('validate SmartThings AccessToken fail : '+e.statusText);
-					_MDinfos[nodeId]=Promise.resolve(null);
+					_mydevices[nodeId]=Promise.resolve(null);
                     return Promise.reject(null);
                 })
-            }else if(_MDinfos[nodeId]){
-                return _MDinfos[nodeId];
+            }else if(_mydevices[nodeId]){
+                return _mydevices[nodeId];
             }
         }
-        this.getMDinfo=(nodeId)=>{
-            if(_MDinfos[nodeId]){
-            	return _MDinfos[nodeId];
+        this.getMyDevices=(nodeId)=>{
+            if(_mydevices[nodeId]){
+            	return _mydevices[nodeId];
 			}else{
             	return Promise.resolve(null);
 			}
         }
-		this.setMyDeviceInfos=(MDs)=>{
-			Object.keys(MDs).forEach(MDid=>{
-				_MDinfos[MDid]=Promise.resolve(MDs[MDid]);
+		this.setMyDeviceInfos=(mydevices)=>{
+			Object.keys(mydevices).forEach(mydeviceId=>{
+				_mydevices[mydeviceId]=Promise.resolve(mydevices[mydeviceId]);
 			})
 		}
     }
@@ -950,17 +950,17 @@
                 }
             });
     }
-    function patChangeEventDP(MDinfo,initValue){
+    function patChangeEventDP(mydevice,initValue){
         const cpCustomEl = document.querySelector('#node-input-capabilityId_custom');
         const stStateEL = document.querySelector('.st_state');
         stStateEL.classList.remove('st_state--loading');
 
-        if(MDinfo){
+        if(mydevice){
             stStateEL.classList.add('st_state--valid');
             cpCustomEl.disabled=false;
             cpCustomEl.innerHTML='';
 
-			MDinfo.customCps
+			mydevice.customCps
                 .map(cpId=>cpId.slice(0,cpId.indexOf('.')))
                 .filter((namespace,idx,arr)=>arr.indexOf(namespace)===idx)
                 .sort()
@@ -969,7 +969,7 @@
                     optgroup.label = namespace;
                     cpCustomEl.append(optgroup);
                 })
-			MDinfo.customCps
+			mydevice.customCps
                 .forEach(cpId=>{
                     const option = document.createElement('option');
                     option.value = cpId;
@@ -1069,7 +1069,7 @@
             function changePat(e,isRefresh){
                 const pat = document.querySelector('#node-input-stAccessToken').value
                 document.querySelector('.st_state').className = 'st_state st_state--loading';
-                SmartThingsProfile.addpat(NODE.id,pat,isRefresh).then(patChangeEventDP,patChangeEventDP);
+                SmartThingsProfile.addPersonalToken(NODE.id,pat,isRefresh).then(patChangeEventDP,patChangeEventDP);
             }
             document.querySelector('#node-input-stAccessToken').addEventListener('change',changePat);
             document.querySelector('.st_state').addEventListener('click',(e)=>{changePat(e,true)});
@@ -1093,7 +1093,7 @@
             document.querySelector('.dp_cp').className = 'dp_cp cp_type--'+NODE.cpType;
             document.querySelector('.cp_type input[type="radio"][value="'+NODE.cpType+'"]').checked=true;
 
-            SmartThingsProfile.getMDinfo(NODE.id).then(MDinfo=>patChangeEventDP(MDinfo, NODE.capabilityId_custom || NODE.capabilityId));
+            SmartThingsProfile.getMyDevices(NODE.id).then(mydevice=>patChangeEventDP(mydevice, NODE.capabilityId_custom || NODE.capabilityId));
             cpStandardEl.value = NODE.capabilityId_standard||NODE.capabilityId;
             cpStandardEl.dispatchEvent(new Event('change'));
         }
@@ -1141,8 +1141,8 @@
             if(NODE.credentials?.stAccessToken){
                 const stateEl = document.querySelector('.st_state');
                 stateEl.classList.add('st_state--loading');
-                SmartThingsProfile.getMDinfo(NODE.id)
-                    .then(MDinfo=>createMdList(MDinfo, NODE.devices))
+                SmartThingsProfile.getMyDevices(NODE.id)
+                    .then(mydevice=>createMyDeviceList(mydevice, NODE.devices))
                     .then(()=>{stateEl.classList.add('st_state--valid')})
                     .catch(()=>{stateEl.classList.remove('st_state--valid')})
                     .finally(()=>{stateEl.classList.remove('st_state--loading')})
@@ -1153,8 +1153,8 @@
                 const stateEl = document.querySelector('.st_state');
                 stateEl.classList.add('st_state--loading');
                 document.querySelector('#md_list').innerHTML='';
-                SmartThingsProfile.addpat(NODE.id,pat,isRefresh)
-                    .then(createMdList,createMdList)
+                SmartThingsProfile.addPersonalToken(NODE.id,pat,isRefresh)
+                    .then(createMyDeviceList,createMyDeviceList)
                     .then(()=>{stateEl.classList.add('st_state--valid')})
                     .catch(()=>{stateEl.classList.remove('st_state--valid')})
                     .finally(()=>{stateEl.classList.remove('st_state--loading')})
@@ -1212,16 +1212,16 @@
                 })
                 return deviceEl;
             }
-            function createMdList(MDinfo,selectedDevices){
-                if(!MDinfo){return Promise.reject(null);}
+            function createMyDeviceList(mydevice,selectedDevices){
+                if(!mydevice){return Promise.reject(null);}
 
                 document.querySelector('.st_state').classList.add('st_state--loading');
 
                 const mdContainerEl = document.querySelector('#md_list');
                 document.querySelector('.st_state').classList.remove('st_state--loading');
-                if(MDinfo.devices){
-                    if(MDinfo.locations){
-                        MDinfo.locations.map(location=>{
+                if(mydevice.devices){
+                    if(mydevice.locations){
+                        mydevice.locations.map(location=>{
                             const locationEl = createLocationEl(location);
                             mdContainerEl.append(locationEl);
                             location.rooms.forEach(function(room,roomIdx){
@@ -1230,7 +1230,7 @@
                         })
                     }
 
-                    MDinfo.devices.forEach(function(device){
+                    mydevice.devices.forEach(function(device){
                         let locationEl = document.querySelector(`.md_list__location[data-location-id="${device.locationId}"]`);
                         let roomEl = document.querySelector(`.md_list__room[data-location-id="${device.locationId}"][data-room-id="${device.roomId}"]`);
 
@@ -1528,10 +1528,10 @@
                 .forEach(addOptionEl);
 
 			const mydevicePrs = RED.nodes.filterNodes({z: this.node.z, type: ST_MY_DEVICE})
-				.filter(mdNode=>SmartThingsProfile.getMDinfo(mdNode.id))
+				.filter(mdNode=>SmartThingsProfile.getMyDevices(mdNode.id))
 				.map(mdNode=>
-					SmartThingsProfile.getMDinfo(mdNode.id)
-						.then(MDinfo => MDinfo.devices.filter(dvc=>mdNode.devices===null||mdNode.devices?.includes(dvc.deviceId))
+					SmartThingsProfile.getMyDevices(mdNode.id)
+						.then(mydevice => mydevice.devices.filter(dvc=>mdNode.devices===null||mdNode.devices?.includes(dvc.deviceId))
 							.sort((d1,d2)=>d1.name.localeCompare(d2.name))
 							.map(dvc=>{return {id:mdNode.id,type:mdNode.type,device:dvc}})
 							.forEach(addOptionEl)
