@@ -607,107 +607,107 @@
     function _SmartThingsProfile() {
         var _capabilities = {}
 
-		const SmartThingsApi = {
-			getLocations: function(token){
-				return new Promise((resolve,reject)=>{
-					$.ajax({
-						url: "https://api.smartthings.com/v1/locations",
-						headers: {
-							Authorization: 'Bearer ' + token
-						}
-					}).then(resolve,reject)
-				});
-			},
-			getLocationsRooms: function(token,locationId){
-				return new Promise((resolve,reject)=> {
-					$.ajax({
-						url: "https://api.smartthings.com/v1/locations/" + locationId + "/rooms", headers: {
-							Authorization: 'Bearer ' + token
-						}
-					}).then(resolve,reject)
-				});
-			},
-			getDevices: function (token) {
-				return new Promise((resolve,reject)=> {
-					$.ajax({
-						url: "https://api.smartthings.com/v1/devices", headers: {
-							Authorization: 'Bearer ' + token
-						}
-					}).then(resolve,reject)
-				})
-			},
-			getDeviceList: function (token, done, fail) {
-				return $.ajax({
-					url: "https://api.smartthings.com/v1/devices",
-					headers: {
-						Authorization: 'Bearer ' + token
-					}
-				}).done(function (result, textStatus, xhr) {
-					if(result.hasOwnProperty('items') && Array.isArray(result.items)){
-						result.items.forEach(device=>{
-							device.capabilities = []
-							device.components.forEach(function (component) {
-								component.capabilities.forEach(function (cp) {
-									cp['vid'] = cp.id+'_v'+cp.version;
-									cp['vname']=cp.version===1?cp.name:cp.name+' v'+cp.version;
-									device.capabilities.push(cp)
+        const SmartThingsApi = {
+          getLocations: function(token){
+            return new Promise((resolve,reject)=>{
+              $.ajax({
+                url: "https://api.smartthings.com/v1/locations",
+                headers: {
+                  Authorization: 'Bearer ' + token
+                }
+              }).then(resolve,reject)
+            });
+          },
+          getLocationsRooms: function(token,locationId){
+            return new Promise((resolve,reject)=> {
+              $.ajax({
+                url: "https://api.smartthings.com/v1/locations/" + locationId + "/rooms", headers: {
+                  Authorization: 'Bearer ' + token
+                }
+              }).then(resolve,reject)
+            });
+          },
+          getDevices: function (token) {
+            return new Promise((resolve,reject)=> {
+              $.ajax({
+                url: "https://api.smartthings.com/v1/devices", headers: {
+                  Authorization: 'Bearer ' + token
+                }
+              }).then(resolve,reject)
+            })
+          },
+          getDeviceList: function (token, done, fail) {
+            return $.ajax({
+              url: "https://api.smartthings.com/v1/devices",
+              headers: {
+                Authorization: 'Bearer ' + token
+              }
+            }).done(function (result, textStatus, xhr) {
+              if(result.hasOwnProperty('items') && Array.isArray(result.items)){
+                result.items.forEach(device=>{
+                  device.capabilities = []
+                  device.components.forEach(function (component) {
+                    component.capabilities.forEach(function (cp) {
+                      cp['vid'] = cp.id+'_v'+cp.version;
+                      cp['vname']=cp.version===1?cp.name:cp.name+' v'+cp.version;
+                      device.capabilities.push(cp)
 
-									if(SmartThingsProfile.hasCapability(cp.vid)===false){
-										var pr = SmartThingsApi.getCapability(token,cp.id,cp.version)
-											.then(spec=>{
-												// cp['spec']=true
+                      if(SmartThingsProfile.hasCapability(cp.vid)===false){
+                        var pr = SmartThingsApi.getCapability(token,cp.id,cp.version)
+                          .then(spec=>{
+                            // cp['spec']=true
 
-												/*NPM SOURCE*/
-												Object.assign(cp,spec)
-												$('#my-device-list-container span.device-item-capability').attr('spec','true')
-											}).fail(err=>{
-												console.error(err)
-												$('#my-device-list-container span.device-item-capability').attr('spec','false')
-											})
-									}
-								})
-							})
+                            /*NPM SOURCE*/
+                            Object.assign(cp,spec)
+                            $('#my-device-list-container span.device-item-capability').attr('spec','true')
+                          }).fail(err=>{
+                            console.error(err)
+                            $('#my-device-list-container span.device-item-capability').attr('spec','false')
+                          })
+                      }
+                    })
+                  })
 
-							delete device['components']
-							delete device['dth']
-							delete device['deviceNetworkType']
-							delete device['locationsId']
-						})
-					}
-					done(result.items);
-				}).fail(function (e) {
-					fail(e);
-				});
-			},
-			getCapability: function(token,capabilityId,capabilityVersion, done, fail){
-				return new Promise((resolve,reject)=>{
-					$.ajax({
-						url: 'https://api.smartthings.com/v1/capabilities/'+capabilityId+'/'+capabilityVersion,
-						headers: {
-							Authorization: 'Bearer '+token
-						}
-					}).then(resolve,reject)
-				}).then((cp)=>{
-					cp['vid']=cp.id+'_v'+cp.version //vid : id + version
-					cp['vname']=(cp.version===1?cp.name:cp.name+' v'+cp.version)// vname : name + version
-					cp['_spec']=true
-					SmartThingsProfile.addCapability(cp)
-					return cp;
-				})
-			}
-		}
-		const runtimeAPI={
-			getPat : function(nodeType, nodeID){
-				const dashedType = nodeType.replace(/\s+/g, '-');
-				const credentialUrl = 'credentials/' + dashedType + "/" + nodeID;
-				return new Promise((resolve,reject)=>{
-					$.getJSON(getCredentialsURL(nodeType, nodeID)).then((data)=>{
-						const pat = (data&&data.stAccessToken)?data.stAccessToken:null;
-						resolve(pat);
-					},reject)
-				})
-			}
-		}
+                  delete device['components']
+                  delete device['dth']
+                  delete device['deviceNetworkType']
+                  delete device['locationsId']
+                })
+              }
+              done(result.items);
+            }).fail(function (e) {
+              fail(e);
+            });
+          },
+          getCapability: function(token,capabilityId,capabilityVersion, done, fail){
+            return new Promise((resolve,reject)=>{
+              $.ajax({
+                url: 'https://api.smartthings.com/v1/capabilities/'+capabilityId+'/'+capabilityVersion,
+                headers: {
+                  Authorization: 'Bearer '+token
+                }
+              }).then(resolve,reject)
+            }).then((cp)=>{
+              cp['vid']=cp.id+'_v'+cp.version //vid : id + version
+              cp['vname']=(cp.version===1?cp.name:cp.name+' v'+cp.version)// vname : name + version
+              cp['_spec']=true
+              SmartThingsProfile.addCapability(cp)
+              return cp;
+            })
+          }
+        }
+        const runtimeAPI={
+          getPat : function(nodeType, nodeID){
+            const dashedType = nodeType.replace(/\s+/g, '-');
+            const credentialUrl = 'credentials/' + dashedType + "/" + nodeID;
+            return new Promise((resolve,reject)=>{
+              $.getJSON(getCredentialsURL(nodeType, nodeID)).then((data)=>{
+                const pat = (data&&data.stAccessToken)?data.stAccessToken:null;
+                resolve(pat);
+              },reject)
+            })
+          }
+        }
 
         this.getAttributeSchema = function (capabilityId, attributeId) {
             if (_capabilities[capabilityId] && _capabilities[capabilityId].attributes && _capabilities[capabilityId].attributes[attributeId]) {
