@@ -24,29 +24,25 @@ module.exports = function (RED) {
 
 	//process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
-	var bodyParser = require("body-parser");
-	var cors = require('cors');
-	var jsonParser = bodyParser.json();
-	var reqApi = require('./lib/oneapigateway');
-	var SmartThingsAPI = require('./lib/SmartThingsAPI');
-	var SmartThingsProfile = require('./lib/SmartThingsProfile');
-	var corsHandler = cors({
+	const bodyParser = require("body-parser");
+	const cors = require('cors');
+	const jsonParser = bodyParser.json();
+	const reqApi = require('./lib/oneapigateway');
+	const SmartThingsAPI = require('./lib/SmartThingsAPI');
+	const SmartThingsProfile = require('./lib/SmartThingsProfile');
+	const corsHandler = cors({
 		origin: "*",
 		methods: "POST"
 	});
 
-	RED.httpNode.options("*", corsHandler);
-	RED.httpNode.get('/_smartthings/capabilities', RED.auth.needsPermission("settings.read"), (req, res) => {
-		res.json(SmartThingsProfile.getCapabilities() || {});
-	})
+	RED.httpNode.use("/_smartthings/*", corsHandler);
+	RED.httpNode.get('/_smartthings/capabilities', RED.auth.needsPermission("settings.read"), (req, res) => res.json(SmartThingsProfile.getCapabilities() || {}))
 	RED.httpNode.get('/_smartthings/mydevices', RED.auth.needsPermission("credentials.read"), (req, res) => {
 		SmartThingsProfile.getMyDevices()
-						  .then(mydevices => {
-							  res.json(mydevices || {});
-						  })
+						  .then(mydevices => res.json(mydevices || {}))
 	})
 
-	var operators = {
+	const operators = {
 		//parameter a : condition value set by user
 		//parameter b : value get from device
 		eq: function (a, b) {
@@ -182,18 +178,6 @@ module.exports = function (RED) {
 		}
 	};
 
-	var RES = {
-		ok: function (res, obj) {
-			// console.log(`RES ok : ${JSON.stringify(obj)}`)
-			res.json(obj)
-		},
-		error: function (res, status, msg) {
-			// console.log(`RES error[${status}] : ${msg}`)
-			res.status(status)
-			   .send(msg)
-		}
-	}
-
 	function Automation (n) {
 		RED.nodes.createNode(this, n)
 		Object.assign(this, n)
@@ -201,7 +185,6 @@ module.exports = function (RED) {
 
 		var NODE = this;
 
-		var Eventattribute;
 		var allnodes = [];
 		RED.nodes.eachNode(function (nn) {
 			var node = Object.assign({}, nn);
@@ -280,7 +263,8 @@ module.exports = function (RED) {
 		}
 		this.errorHandler = function (err, req, res, next) {
 			NODE.error(err);
-			RES.error(res, 500, "Internal Server Errror");
+			res.status(500)
+			   .send('internal server error');
 		};
 
 		this.lifecycleHandler = function (req, res) {
@@ -295,13 +279,15 @@ module.exports = function (RED) {
 					if (!reqBody.pingData) {
 						var msg = "Required parameter doesn't exist";
 						NODE.loggingEditor && debugLog("[error] " + msg);
-						RES.error(res, 400, msg);
+						res.status(400)
+						   .send(msg);
 						return;
 					} else {
-						RES.ok(res, {
-							statusCode: 200,
-							pingData: {challenge: reqBody.pingData.challenge}
-						});
+						res.status(200)
+						   .send({
+							   statusCode: 200,
+							   pingData: {challenge: reqBody.pingData.challenge}
+						   })
 					}
 					break;
 
@@ -310,19 +296,23 @@ module.exports = function (RED) {
 					if (!!data === false || data.hasOwnProperty("confirmationUrl") === false) {
 						msg = "cannot find 'confirmationUrl'";
 						NODE.loggingEditor && debugLog("[error] " + msg);
-						RES.error(res, 400, {msg: msg});
+						res.status(400)
+						   .send({msg: msg});
 					}
 
 					SmartThingsAPI.confirmUrl(data.confirmationUrl)
 								  .then(response => {
 									  if ([200, 202].includes(response.statusCode)) {
-										  RES.ok(res, {targetUrl: data.confirmationUrl});
+										  res.status(response.statusCode)
+											 .send({targetUrl: data.confirmationUrl});
 									  } else {
-										  RES.error(res, response.statusCode, 'confirm URL faile : ', response.statusMessage);
+										  res.status(response.statusCode)
+											 .send('confirm URL faile : ', response.statusMessage);
 									  }
 								  })
 								  .catch(error => {
-									  RES.error(res, 500, error)
+									  res.status(500)
+										 .send(error);
 								  })
 					break;
 				case "CONFIGURATION":
@@ -330,7 +320,8 @@ module.exports = function (RED) {
 					if (!reqBody.configurationData) {
 						var msg = "Required parameter doesn't exist";
 						NODE.loggingEditor && debugLog("[error] " + msg);
-						RES.error(res, 400, msg);
+						res.send(400)
+						   .send(msg);
 						return;
 					}
 
@@ -345,7 +336,8 @@ module.exports = function (RED) {
 						}
 					} else if (reqBody.configurationData.phase == "PAGE") {
 						if (reqBody.configurationData.pageId !== "1") {
-							RES.error(res, 400, `Unsupported page id: ${reqBody.configurationData.pageId}`);
+							res.status(400)
+							   .send(`Unsupported page id: ${reqBody.configurationData.pageId}`);
 							return;
 						}
 						const sections = Object.values(sectionConfig);
@@ -358,13 +350,15 @@ module.exports = function (RED) {
 							sections: sections
 						};
 					} else {
-						RES.error(res, 400, `Unsupported phase: ${reqBody.configurationData.phase}`);
+						res.status(400)
+						   .send(`Unsupported phase: ${reqBody.configurationData.phase}`);
 						return;
 					}
-					RES.ok(res, {
-						statusCode: 200,
-						configurationData: responseConfigData
-					});
+					res.status(200)
+					   .send({
+						   statusCode: 200,
+						   configurationData: responseConfigData
+					   })
 					break;
 				case "INSTALL":
 					var reqBody = req.body;
@@ -401,10 +395,11 @@ module.exports = function (RED) {
 								  NODE.loggingConsole && console.log("[error] " + err.errCd + ", " + err.errMsg)
 							  })
 					})
-					RES.ok(res, {
-						statusCode: 200,
-						installData: {}
-					})
+					res.status(200)
+					   .send({
+						   statusCode: 200,
+						   installData: {}
+					   })
 					break;
 
 				case "UPDATE":
@@ -449,22 +444,25 @@ module.exports = function (RED) {
 							  NODE.loggingEditor && debugLog("Delete Subscription : " + installedAppId + " / (" + err.errCd + ")" + err.errMsg)
 							  NODE.loggingConsole && console.dir(err)
 						  });
-					RES.ok(res, {
-						statusCode: 200,
-						updateData: {}
-					});
+					res.status(200)
+					   .send({
+						   statusCode: 200,
+						   updateData: {}
+					   });
 					break;
 				case "UNINSTALL":
-					RES.ok(res, {
-						statusCode: 200,
-						uninstallData: {}
-					});
+					res.status(200)
+					   .send({
+						   statusCode: 200,
+						   uninstallData: {}
+					   });
 					break;
 				case "EVENT":
-					RES.ok(res, {
-						statusCode: 200,
-						eventData: {}
-					});
+					res.status(200)
+					   .send({
+						   statusCode: 200,
+						   eventData: {}
+					   });
 					NODE.context()
 						.flow
 						.set('evt', req.body);
@@ -473,7 +471,8 @@ module.exports = function (RED) {
 				default:
 					var msg = "No matched lifecycle : " + req.body.lifecycle;
 					NODE.loggingEditor && debugLog("[error] " + msg);
-					RES.error(res, 400, msg);
+					res.status(400)
+					   .send(msg);
 					break;
 			}
 		};
@@ -505,13 +504,15 @@ module.exports = function (RED) {
 								  if ([200, 202].includes(response.statusCode)) {
 									  next()
 								  } else {
-									  RES.error(res, response.statusCode, response.statusMessage);
+									  res.status(response.statusCode)
+										 .send(response.statusMessage);
 								  }
 							  })
 							  .catch(e => {
 								  var msg = "Invalid keyId, internal server error";
 								  NODE.loggingEditor && debugLog("[error] " + msg + e + e.msg);
-								  RES.error(res, 500, msg);
+								  res.status(500)
+									 .send(msg);
 							  })
 			}
 		};
