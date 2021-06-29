@@ -868,13 +868,6 @@
 		}
     }
 
-    var validateAutomationNext = function (id) {
-        //Automation 뒤에는 on device(event) 만 올 수 있다 (input 1, 해당 input port 에 연결된 wires 도 하나)
-        var backLinks = RED.nodes.filterLinks({"source": {"id": id}});
-        if (backLinks[0].target["type"] !== "event-device") return false;
-        return true;
-    }
-
     const SmartThingsProfile = new _SmartThingsProfile();
     SmartThingsProfile.loadMydeviceInfo()
         .then(SmartThingsProfile.setMyDeviceInfos)
@@ -895,7 +888,6 @@
     const ST_AUTOMATION = 'automation';
     const ST_DEVICE_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE]
     const ST_NODES=[ST_AUTOMATION,ST_DEVICE_PROFILE,ST_MY_DEVICE,ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE];
-    var stDevice = {};
 
     function STRefCheck() {
 
