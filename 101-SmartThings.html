@@ -871,7 +871,6 @@
     var validateAutomationNext = function (id) {
         //Automation 뒤에는 on device(event) 만 올 수 있다 (input 1, 해당 input port 에 연결된 wires 도 하나)
         var backLinks = RED.nodes.filterLinks({"source": {"id": id}});
-        if (backLinks.length != 1) return false;
         if (backLinks[0].target["type"] !== "event-device") return false;
         return true;
     }
