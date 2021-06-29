@@ -374,7 +374,7 @@
     </div>
     <div class="logging-options">
         <label><i class="fa fa-align-right"></i> Log</label>
-        <div>            
+        <div>
             <input id="node-input-loggingEditor" type="checkbox" value="true" >
             <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
             <input id="node-input-loggingConsole" type="checkbox" value="false">
@@ -1119,9 +1119,7 @@
             return this.name|| this.alias || "My Device";
         },
         onpaletteadd: function(){
-            
 
-            
         },
         oneditsave: function () {
             if(document.querySelectorAll('#md_list .md_list__device.md_list__item--selected').length>0){
@@ -1324,11 +1322,12 @@
                 required: true
             },
             urlDate: {value: ""},
-            eqtype: {
-                value: "", validate: function (v) {
-                    return validateAutomationNext(this.id);
-                }
-            },
+			eqtype: {
+				value: "", validate: function (v) {
+					const after = RED.nodes.filterLinks({"source": {"id": this.id}});
+					return after.every(link=>link.target && link.target.type===ST_EVENT_DEVICE);
+				}
+			},
             loggingEditor:{value:false},
             loggingConsole:{value:false}
         },
@@ -1837,8 +1836,8 @@
                     fieldConfig.types.push({
                             value:"enum",
                             label:"enum",
-                            options:valueProp.enum || valueProp.items.enum,
-                            icon:"red/images/typedInput/AZ.png"
+                            // icon:"red/images/typedInput/AZ.png",
+                            options:valueProp.enum || valueProp.items.enum
                     });
                     fieldConfig.default = 'enum';
                 }else if (valueProp.type == 'string' ) {
@@ -1906,7 +1905,7 @@
                         fieldConfig.types.push({
                             value:"color",
                             label:"color",
-                            icon:"red/images/typedInput/target.png",
+                            // icon:"red/images/typedInput/target.png",
                             hasValue:false
                         });
                         fieldConfig.default = 'color';
