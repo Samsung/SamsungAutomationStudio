@@ -24,21 +24,28 @@ module.exports = function (RED) {
 
 	//process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
-	const bodyParser = require("body-parser");
-	const cors = require('cors');
-	const jsonParser = bodyParser.json();
-	const reqApi = require('./lib/oneapigateway');
-	const SmartThingsAPI = require('./lib/SmartThingsAPI');
-	const SmartThingsProfile = require('./lib/SmartThingsProfile');
-	const corsHandler = cors({
-		origin: "*",
-		methods: "POST"
-	});
+    var os = require('os');
+    var bodyParser = require("body-parser");
+    var cors = require('cors');
+    var jsonParser = bodyParser.json();
+    // var httpSignature = require('http-signature');
+    var reqApi = require('./lib/oneapigateway');
+    var SmartThingsAPI = require('./lib/SmartThingsAPI');
+    var SmartThingsProfile = require('./lib/SmartThingsProfile');
+    var corsHandler = cors({origin: "*", methods: "POST"});
 
-	RED.httpNode.get('/_smartthings/capabilities', RED.auth.needsPermission("settings.read"), (req, res) => res.json(SmartThingsProfile.getCapabilities() || {}))
-	RED.httpNode.get('/_smartthings/mydevices', RED.auth.needsPermission("credentials.read"), (req, res) => {
-		SmartThingsProfile.getMyDevices()
-						  .then(mydevices => res.json(mydevices || {}))
+    RED.httpNode.options("*", corsHandler);
+    var nextHandler = function (req, res, next) {
+        next();
+    }
+
+    RED.httpNode.get('/_smartthings/capabilities',RED.auth.needsPermission("settings.read"),(req,res)=>{
+        res.json(SmartThingsProfile.getCapabilities()||{});
+    })
+    RED.httpNode.get('/_smartthings/mydevices',RED.auth.needsPermission("credentials.read"),(req,res)=>{
+        SmartThingsProfile.getMyDevices().then(mydevices=>{
+            res.json(mydevices||{});
+        })
 	})
 
 	const operators = {
@@ -177,7 +184,18 @@ module.exports = function (RED) {
 		}
 	};
 
-	function Automation (n) {
+    var RES = {
+        ok: function (res, obj) {
+            // console.log(`RES ok : ${JSON.stringify(obj)}`)
+            res.json(obj)
+        },
+        error: function (res, status, msg) {
+            // console.log(`RES error[${status}] : ${msg}`)
+            res.status(status).send(msg)
+        }
+    }
+
+    function Automation(n) {
 		RED.nodes.createNode(this, n)
 		Object.assign(this, n)
 		stCompatibleCheck(this)
@@ -277,16 +295,11 @@ module.exports = function (RED) {
 					var reqBody = req.body;
 					if (!reqBody.pingData) {
 						var msg = "Required parameter doesn't exist";
-						NODE.loggingEditor && debugLog("[error] " + msg);
-						res.status(400)
-						   .send(msg);
+                        NODE.loggingEditor&&debugLog("[error] " + msg);
+                        RES.error(res, 400, msg);
 						return;
-					} else {
-						res.status(200)
-						   .send({
-							   statusCode: 200,
-							   pingData: {challenge: reqBody.pingData.challenge}
-						   })
+                    }else{
+                        RES.ok(res, {statusCode: 200, pingData: {challenge: reqBody.pingData.challenge}});
 					}
 					break;
 
@@ -294,33 +307,28 @@ module.exports = function (RED) {
 					var data = req.body.confirmationData;
 					if (!!data === false || data.hasOwnProperty("confirmationUrl") === false) {
 						msg = "cannot find 'confirmationUrl'";
-						NODE.loggingEditor && debugLog("[error] " + msg);
-						res.status(400)
-						   .send({msg: msg});
+                        NODE.loggingEditor&&debugLog("[error] " + msg);
+                        RES.error(res,400, {msg:msg});
 					}
 
 					SmartThingsAPI.confirmUrl(data.confirmationUrl)
-								  .then(response => {
-									  if ([200, 202].includes(response.statusCode)) {
-										  res.status(response.statusCode)
-											 .send({targetUrl: data.confirmationUrl});
-									  } else {
-										  res.status(response.statusCode)
-											 .send('confirm URL faile : ', response.statusMessage);
+                        .then(response=>{
+                            if([200,202].includes(response.statusCode)){
+                                RES.ok(res,{targetUrl:data.confirmationUrl});
+                            }else{
+                                RES.error(res,response.statusCode,'confirm URL faile : ',response.statusMessage);
 									  }
 								  })
-								  .catch(error => {
-									  res.status(500)
-										 .send(error);
+                        .catch(error=>{
+                            RES.error(res,500,error)
 								  })
 					break;
 				case "CONFIGURATION":
 					var reqBody = req.body;
 					if (!reqBody.configurationData) {
 						var msg = "Required parameter doesn't exist";
-						NODE.loggingEditor && debugLog("[error] " + msg);
-						res.send(400)
-						   .send(msg);
+                        NODE.loggingEditor&&debugLog("[error] " + msg);
+                        RES.error(res, 400, msg);
 						return;
 					}
 
@@ -353,11 +361,7 @@ module.exports = function (RED) {
 						   .send(`Unsupported phase: ${reqBody.configurationData.phase}`);
 						return;
 					}
-					res.status(200)
-					   .send({
-						   statusCode: 200,
-						   configurationData: responseConfigData
-					   })
+                    RES.ok(res, {statusCode: 200, configurationData: responseConfigData});
 					break;
 				case "INSTALL":
 					var reqBody = req.body;
@@ -394,11 +398,7 @@ module.exports = function (RED) {
 								  NODE.loggingConsole && console.log("[error] " + err.errCd + ", " + err.errMsg)
 							  })
 					})
-					res.status(200)
-					   .send({
-						   statusCode: 200,
-						   installData: {}
-					   })
+                    RES.ok(res, {statusCode: 200, installData: {}})
 					break;
 
 				case "UPDATE":
@@ -443,35 +443,20 @@ module.exports = function (RED) {
 							  NODE.loggingEditor && debugLog("Delete Subscription : " + installedAppId + " / (" + err.errCd + ")" + err.errMsg)
 							  NODE.loggingConsole && console.dir(err)
 						  });
-					res.status(200)
-					   .send({
-						   statusCode: 200,
-						   updateData: {}
-					   });
+                    RES.ok(res, {statusCode: 200, updateData: {}});
 					break;
 				case "UNINSTALL":
-					res.status(200)
-					   .send({
-						   statusCode: 200,
-						   uninstallData: {}
-					   });
+                    RES.ok(res, {statusCode: 200, uninstallData: {}});
 					break;
 				case "EVENT":
-					res.status(200)
-					   .send({
-						   statusCode: 200,
-						   eventData: {}
-					   });
-					NODE.context()
-						.flow
-						.set('evt', req.body);
+                    RES.ok(res, {statusCode: 200, eventData: {}});
+                    NODE.context().flow.set('evt', req.body);
 					NODE.send({payload: req.body});
 					break;
 				default:
-					var msg = "No matched lifecycle : " + req.body.lifecycle;
-					NODE.loggingEditor && debugLog("[error] " + msg);
-					res.status(400)
-					   .send(msg);
+                    var msg = "No matched lifecycle : "+req.body.lifecycle;
+                    NODE.loggingEditor&&debugLog("[error] " + msg);
+                    RES.error(res, 400, msg);
 					break;
 			}
 		};
@@ -502,16 +487,14 @@ module.exports = function (RED) {
 							  .then(response => {
 								  if ([200, 202].includes(response.statusCode)) {
 									  next()
-								  } else {
-									  res.status(response.statusCode)
-										 .send(response.statusMessage);
+                        }else{
+                            RES.error(res, response.statusCode, response.statusMessage);
 								  }
 							  })
 							  .catch(e => {
 								  var msg = "Invalid keyId, internal server error";
-								  NODE.loggingEditor && debugLog("[error] " + msg + e + e.msg);
-								  res.status(500)
-									 .send(msg);
+                        NODE.loggingEditor&&debugLog("[error] " + msg + e + e.msg);
+                        RES.error(res, 500, msg);
 							  })
 			}
 		};
