@@ -548,7 +548,7 @@ module.exports = function (RED) {
 		if (RED.nodes.getCredentials(n.id) && RED.nodes.getCredentials(n.id).stAccessToken) {
 			pat = RED.nodes.getCredentials(n.id).stAccessToken;
 		}
-		SmartThingsProfile.addPersonalToken(n.id, pat);
+		SmartThingsProfile.addMydeviceInfo(n.id, pat);
 
 		RED.nodes.createNode(this, n);
 		Object.assign(this, n)
@@ -556,7 +556,7 @@ module.exports = function (RED) {
 
 		this.on('close', function (removed, done) {
 			const pat = (RED.nodes.getCredentials(this.id)) ? RED.nodes.getCredentials(this.id).stAccessToken : null;
-			SmartThingsProfile.addPersonalToken(this.id, pat);
+			SmartThingsProfile.addMydeviceInfo(this.id, pat);
 			done();
 		});
 	}
@@ -572,7 +572,7 @@ module.exports = function (RED) {
 		if (RED.nodes.getCredentials(n.id) && RED.nodes.getCredentials(n.id).stAccessToken) {
 			pat = RED.nodes.getCredentials(n.id).stAccessToken
 		}
-		SmartThingsProfile.addPersonalToken(n.id, pat);
+		SmartThingsProfile.addMydeviceInfo(n.id, pat);
 
 		RED.nodes.createNode(this, n);
 		Object.assign(this, n);
@@ -580,7 +580,7 @@ module.exports = function (RED) {
 
 		this.on('close', function (removed, done) {
 			const pat = (RED.nodes.getCredentials(this.id)) ? RED.nodes.getCredentials(this.id).stAccessToken : null;
-			SmartThingsProfile.addPersonalToken(this.id, pat);
+			SmartThingsProfile.addMydeviceInfo(this.id, pat);
 			done();
 		});
 	}
