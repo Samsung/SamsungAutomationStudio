@@ -763,13 +763,26 @@
         this.loadRuntimeCapabilities= function(){
             return new Promise((resolve,reject)=>{
                 const root = RED.settings.httpNodeRoot||'/';
-                $.getJSON(root+'_smartthings/capabilities').then(resolve,reject);
+                $.ajax({
+                    beforeSend:function(jqXHR){
+                        const auth_tokens = RED.settings.get("auth-tokens");
+                        if (auth_tokens) {
+                            jqXHR.setRequestHeader("Authorization","Bearer "+auth_tokens.access_token);
+                        }
+                    },url:root+'_smartthings/capabilities',type:"GET",dataType:'json'}).then(resolve,reject);
             })
         }
         this.loadMydeviceInfo=()=>{
             return new Promise((resolve,reject)=>{
                 const root = RED.settings.httpNodeRoot||'/';
-                $.getJSON(root+'_smartthings/mydevices').then(resolve,reject);
+                $.ajax({
+                    beforeSend:function(jqXHR){
+                        const auth_tokens = RED.settings.get("auth-tokens");
+                        if (auth_tokens) {
+                            jqXHR.setRequestHeader("Authorization","Bearer "+auth_tokens.access_token);
+                        }
+                    },url:root+'_smartthings/mydevices',type:"GET",dataType:'json'}).then(resolve,reject);
+
             })
         }
 
