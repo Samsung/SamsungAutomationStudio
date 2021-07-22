@@ -762,15 +762,10 @@
 
         function callMyDeviceApi(path){
             return new Promise((resolve,reject)=>{
-                const root = RED.settings.httpNodeRoot||'/';
-                $.ajax({
-                    beforeSend:function(jqXHR){
-                        const auth_tokens = RED.settings.get("auth-tokens");
-                        if (auth_tokens) {
-                            jqXHR.setRequestHeader("Authorization", "Bearer " + auth_tokens.access_token);
-                    }},
-                    url:root+path,type:"GET",dataType:'json'}).then(resolve,reject);
-
+                let root = RED.settings.httpNodeRoot||'';
+                root = root.trim().replace(/^\/*/,'');
+                if(/[^\/]$/.test(root)){root+='/';}
+                $.ajax({url:root+path,type:"GET",dataType:'json'}).then(resolve,reject);
             })
         }
         this.loadRuntimeCapabilities=()=>callMyDeviceApi('_smartthings/capabilities');
