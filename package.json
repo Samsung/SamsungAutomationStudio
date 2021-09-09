@@ -1,0 +1,8 @@
+{
+    "name": "node-red-contrib-example-detection",
+    "node-red": {
+        "nodes": {
+            "lower-case": "detection-node.js"
+        }
+    }
+}
