@@ -5,9 +5,8 @@
       defaults: {
           name: {value:""}
       },
-      inputs:1,
       outputs:1,
-      icon: "file.png",
+      icon: "font-awesome/fa-video-camera",
       label: function() {
           return this.name||"detection";
       }
@@ -16,10 +15,23 @@
 
 <script type="text/html" data-template-name="detection">
   <div class="form-row">
-      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-      <input type="text" id="node-input-name" placeholder="Name">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Pose Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
   </div>
-  <p>5FNSaaS 입력창입니다.</p>
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-file"></i> Media File</label>
+      <div style="display: inline-block; position: relative; width: 70%; height: 20px;">
+        <div style="position: absolute; left: 0px; right: 75px;">
+            <input type="file" id="node-input-upload" name="fileuploadfile" style="width: 100%" accept="media/*" multiple>
+        </div>
+        <div class="btn-group" style="position: absolute; right: 35px; top: 0px;">
+            <a id="bt-media-upload" class="editor-button"><i class="fa fa-upload"></i></a>
+        </div>
+        <div class="btn-group" style="position: absolute; right: 0px; top: 0px;">
+            <a id="bt-media-cancel" class="editor-button"><i class="fa fa-times"></i></a>
+        </div>
+    </div>
+  </div>
 </script>
 
 <script type="text/html" data-help-name="detection">
