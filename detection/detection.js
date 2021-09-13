@@ -25,7 +25,7 @@ module.exports = function(RED) {
       done();
   });
   }
-  RED.nodes.registerType("detection-ijin", DetectionPose, {
+  RED.nodes.registerType("detection", DetectionPose, {
     settings: {
       detectionIjin: {
           value: "red",

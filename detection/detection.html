@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('detection-ijin',{
+    RED.nodes.registerType('detection',{
         category: 'function',
         color: '#85d5b2',
         defaults: {
@@ -9,18 +9,18 @@
         outputs:1,
         icon: "file.png",
         label: function() {
-            return this.name||"detection-ijin";
+            return this.name||"detection";
         }
     });
 </script>
 
-<script type="text/html" data-template-name="detection-ijin">
+<script type="text/html" data-template-name="detection">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
-<script type="text/html" data-help-name="detection-ijin">
+<script type="text/html" data-help-name="detection">
     <p>A simple node that converts the message payloads into all detection-ijin characters</p>
 </script>

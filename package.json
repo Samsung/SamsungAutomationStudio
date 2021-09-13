@@ -12,7 +12,7 @@
   },
   "node-red": {
     "nodes": {
-      "detection-ijin": "detection.js"
+      "detection-ijin": "detection/detection.js"
     }
   },
   "author": "",
