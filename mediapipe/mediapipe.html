@@ -1,0 +1,79 @@
+<!-- The node .html file defines how the node appears with the editor.
+  It contains three distinct part, each wrapped in its own <script> tag -->
+
+<!-- the main node definition -->
+<!-- https://nodered.org/docs/creating-nodes/appearance -->
+<script type="text/javascript">
+
+  RED.nodes.registerType('mediapipe',{
+    // https://nodered.org/docs/creating-nodes/node-html
+    // category, defaults, credentials, ... 21 properties
+
+    category: 'mediapipe',
+    color: '#a6bbcf',
+    defaults: {
+      // A node’s properties are defined by the defaults object in its html definition.
+
+      // https://nodered.org/docs/creating-nodes/properties
+      // { value, required, validate, type }
+      
+      // https://nodered.org/docs/creating-nodes/config-nodes
+      // type 은 configuration node 가 필요할 때의 해당 노드 타입
+
+      name: {value: ""},
+      group: {type: 'ui_group', required:true},
+      order: {value: 0},
+      width: {value: 6},
+      height: {value: 6},
+
+      // 한글자, id, type, wires, inputs, outputs 사용불가
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "file.png",
+    label: function() {
+        return this.name||"mediapipe"
+    },
+    oneditprepare: function() {
+      // do something..
+    },
+  })
+</script>
+
+
+<!-- the edit template -->
+<!-- https://nodered.org/docs/creating-nodes/edit-dialog -->
+<!-- it can be 'input', 'button', 'multi-line text' -->
+<script type="text/html" data-template-name="mediapipe">
+  <div class="form-row">
+    <!-- normal nodes : node-input-<propertyname> -->
+    <!-- config nodes : node-config-input-<propertyname> -->
+    
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <!-- <i> elements support https://fontawesome.com/v4.7/icons/ -->
+
+    <input type="text" id="node-input-name" placeholder="Name">
+    <!-- 'text' for string/number properties, or 'checkbox' for boolean properties. -->
+    <!--  a <select> element can be used if there is a restricted set of choices. -->
+  </div>
+
+  <div class="form-row" id="template-row-group">
+    <label for="node-input-group"><i class="fa fa-table"></i> Group</span></label>
+    <input type="text" id="node-input-group">
+  </div>
+
+  <!-- <div class="form-row" style="text-align: left;">
+    <label for="node-canvas" style="padding: 5p;"> Preview</label>
+    <hr>
+  </div>
+  <div class="form-row" id="node-canvas" style="text-align: center;">
+    <video id="input-video" style="height:720px; width:1280px;"></video>
+    <canvas id="output-canvas" style="height:720px; width:1280px;"></canvas>
+  </div> -->
+</script>
+
+
+<!-- the help text -->
+<script type="text/html" data-help-name="mediapipe">
+  <p>A simple node that related to mediapipe</p>
+</script>

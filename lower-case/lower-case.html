@@ -1,0 +1,63 @@
+<!-- The node .html file defines how the node appears with the editor.
+  It contains three distinct part, each wrapped in its own <script> tag -->
+
+
+<!-- the main node definition -->
+<!-- https://nodered.org/docs/creating-nodes/appearance -->
+<script type="text/javascript">
+  RED.nodes.registerType('lower-case',{
+    // https://nodered.org/docs/creating-nodes/node-html
+    // category, defaults, credentials, ... 21 properties
+
+    category: 'test',
+    color: '#a6bbcf',
+    defaults: {
+      // A node’s properties are defined by the defaults object in its html definition.
+
+      // https://nodered.org/docs/creating-nodes/properties
+      // { value, required, validate, type }
+      
+      // https://nodered.org/docs/creating-nodes/config-nodes
+      // type 은 configuration node 가 필요할 때의 해당 노드 타입
+
+      name: {value:""},
+      prefix: {value:""}
+
+      // 한글자, id, type, wires, inputs, outputs 사용불가
+    },
+    inputs:1,
+    outputs:1,
+    icon: "file.png",
+    label: function() {
+        return this.name||"lower-case";
+    }
+  });
+</script>
+
+
+<!-- the edit template -->
+<!-- https://nodered.org/docs/creating-nodes/edit-dialog -->
+<!-- it can be 'input', 'button', 'multi-line text' -->
+<script type="text/html" data-template-name="lower-case">
+  <div class="form-row">
+    <!-- normal nodes : node-input-<propertyname> -->
+    <!-- config nodes : node-config-input-<propertyname> -->
+    
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <!-- <i> elements support https://fontawesome.com/v4.7/icons/ -->
+
+    <input type="text" id="node-input-name" placeholder="Name">
+    <!-- 'text' for string/number properties, or 'checkbox' for boolean properties. -->
+    <!--  a <select> element can be used if there is a restricted set of choices. -->
+  </div>
+  <div class="form-row">
+    <label for="node-input-prefix"><i class="fa fa-tag"></i> Prefix</label>
+    <input type="text" id="node-input-prefix">
+  </div>
+</script>
+
+
+<!-- the help text -->
+<script type="text/html" data-help-name="lower-case">
+  <p>A simple node that converts the message payloads into all lower-case characters</p>
+</script>
