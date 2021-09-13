@@ -1,0 +1,24 @@
+{
+  "name": "detection-ijin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/5FNSaaS/detection-ijin.git"
+  },
+  "node-red": {
+    "nodes": {
+      "detection-ijin": "detection.js"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/5FNSaaS/detection-ijin/issues"
+  },
+  "homepage": "https://github.com/5FNSaaS/detection-ijin#readme"
+}
