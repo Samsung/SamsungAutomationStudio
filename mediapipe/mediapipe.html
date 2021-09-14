@@ -36,6 +36,17 @@
     },
     oneditprepare: function() {
       // do something..
+
+      const inputVideo = document.getElementById('input-video')
+
+      const constraints = {}
+      navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+          inputVideo.srcObject = stream
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
   })
 </script>
@@ -62,14 +73,14 @@
     <input type="text" id="node-input-group">
   </div>
 
-  <!-- <div class="form-row" style="text-align: left;">
+  <div class="form-row" style="text-align: left;">
     <label for="node-canvas" style="padding: 5p;"> Preview</label>
     <hr>
   </div>
   <div class="form-row" id="node-canvas" style="text-align: center;">
     <video id="input-video" style="height:720px; width:1280px;"></video>
     <canvas id="output-canvas" style="height:720px; width:1280px;"></canvas>
-  </div> -->
+  </div>
 </script>
 
 

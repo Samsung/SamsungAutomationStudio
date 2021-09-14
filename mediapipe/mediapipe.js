@@ -2,12 +2,12 @@
 
 const path = require('path')
 
-const CAMERA = require('@mediapipe/camera_utils')
-const POSE = require('@mediapipe/pose')
+// const CAMERA = require('@mediapipe/camera_utils')
+// const POSE = require('@mediapipe/pose')
 
-// https://github.com/HiraokaHyperTools/msgreader/issues/5
-const Camera = CAMERA.Camera || CAMERA
-const Pose = POSE.Pose || POSE
+// // https://github.com/HiraokaHyperTools/msgreader/issues/5
+// const Camera = CAMERA.Camera || CAMERA
+// const Pose = POSE.Pose || POSE
 
 
 module.exports = function(RED) {
@@ -20,22 +20,22 @@ module.exports = function(RED) {
           const html = String.raw`
             <!DOCTYPE html>
             <html>
-            <head>
-                <meta charset="utf-8">
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-            </head>
-            
-            <body>
-                <div class="container">
-                <video class="input_video"></video>
-                <canvas class="output_canvas" width="1280px" height="720px"></canvas>
-                <!-- <div class="landmark-grid-container"></div> -->
-                </div>
-            </body>
+                <head>
+                    <meta charset="utf-8">
+                    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+                </head>
+                
+                <body>
+                    <div class="container">
+                    <video class="input_video"></video>
+                    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+                    <!-- <div class="landmark-grid-container"></div> -->
+                    </div>
+                </body>
             </html>
             
             <script type="module">
@@ -48,57 +48,59 @@ module.exports = function(RED) {
                 const ws = new WebSocket('ws://localhost:1880/ws/mediapipe')
                 
                 function onResults(results) {
-                // if (!results.poseLandmarks) {
-                //   grid.updateLandmarks([])
-                //   return
-                // }
+                    // if (!results.poseLandmarks) {
+                    //     grid.updateLandmarks([])
+                    //     return
+                    // }
+                    
+                    canvasCtx.save()
+                    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
+                    canvasCtx.drawImage(results.segmentationMask, 0, 0,
+                                        canvasElement.width, canvasElement.height)
+                    
+                    // Only overwrite existing pixels.
+                    canvasCtx.globalCompositeOperation = 'source-in'
+                    canvasCtx.fillStyle = '#00FF00'
+                    canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height)
+                    
+                    // Only overwrite missing pixels.
+                    canvasCtx.globalCompositeOperation = 'destination-atop'
+                    canvasCtx.drawImage(
+                        results.image, 0, 0, canvasElement.width, canvasElement.height)
+                    
+                    canvasCtx.globalCompositeOperation = 'source-over'
+                    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+                                    {color: '#00FF00', lineWidth: 4})
+                    drawLandmarks(canvasCtx, results.poseLandmarks,
+                                    {color: '#FF0000', lineWidth: 2})
+                    canvasCtx.restore()
                 
-                canvasCtx.save()
-                canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
-                canvasCtx.drawImage(results.segmentationMask, 0, 0,
-                                    canvasElement.width, canvasElement.height)
-                
-                // Only overwrite existing pixels.
-                canvasCtx.globalCompositeOperation = 'source-in'
-                canvasCtx.fillStyle = '#00FF00'
-                canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height)
-                
-                // Only overwrite missing pixels.
-                canvasCtx.globalCompositeOperation = 'destination-atop'
-                canvasCtx.drawImage(
-                    results.image, 0, 0, canvasElement.width, canvasElement.height)
-                
-                canvasCtx.globalCompositeOperation = 'source-over'
-                drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-                                {color: '#00FF00', lineWidth: 4})
-                drawLandmarks(canvasCtx, results.poseLandmarks,
-                                {color: '#FF0000', lineWidth: 2})
-                canvasCtx.restore()
-            
-                ws.send(JSON.stringify(results.poseLandmarks))
-                
-                // grid.updateLandmarks(results.poseWorldLandmarks)
+                    ws.send(JSON.stringify(results.poseLandmarks))
+                    
+                    // grid.updateLandmarks(results.poseWorldLandmarks)
                 }
                 
                 const pose = new Pose({locateFile: (file) => {
-                return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
+                    return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
                 }})
+
                 pose.setOptions({
-                modelComplexity: 1,
-                smoothLandmarks: true,
-                enableSegmentation: true,
-                smoothSegmentation: true,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5
+                    modelComplexity: 1,
+                    smoothLandmarks: true,
+                    enableSegmentation: true,
+                    smoothSegmentation: true,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5
                 })
+
                 pose.onResults(onResults)
                 
                 const camera = new Camera(videoElement, {
-                onFrame: async () => {
-                    await pose.send({image: videoElement})
-                },
-                width: 1280,
-                height: 720
+                    onFrame: async () => {
+                        await pose.send({image: videoElement})
+                    },
+                    width: 1280,
+                    height: 720
                 })
                 camera.start()
             </script>
@@ -110,8 +112,6 @@ module.exports = function(RED) {
         
         // listener to receive messages from the up-stream nodes in a flow.
         this.on('input', (msg, send, done) => {
-            console.log('hello? you just made an input.')
-
             msg.payload = HTML()
 
             // send와 done은 1.0 버전 이후에 추가된 기능
