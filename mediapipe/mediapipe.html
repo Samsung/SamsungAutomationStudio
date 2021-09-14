@@ -21,7 +21,6 @@
       // type 은 configuration node 가 필요할 때의 해당 노드 타입
 
       name: {value: ""},
-      // group: {type: 'ui_group', required:true},
       order: {value: 0},
       width: {value: 6},
       height: {value: 6},
@@ -38,11 +37,17 @@
       // do something..
 
       const inputVideo = document.getElementById('input-video')
+      const constraints = {
+        audio: false, // if you want test audio, give the value 'true'.
+        video: { width: 1280, height: 720 }
+      }
 
-      const constraints = {}
       navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
           inputVideo.srcObject = stream
+          inputVideo.onloadedmetadata = function(e) {
+            inputVideo.play()
+          }
         })
         .catch(err => {
           console.log(err)
@@ -68,18 +73,12 @@
     <!--  a <select> element can be used if there is a restricted set of choices. -->
   </div>
 
-  <!-- <div class="form-row" id="template-row-group">
-    <label for="node-input-group"><i class="fa fa-table"></i> Group</span></label>
-    <input type="text" id="node-input-group">
-  </div> -->
-
   <div class="form-row" style="text-align: left;">
-    <label for="node-canvas" style="padding: 5p;"> Preview</label>
+    <label for="node-canvas" style="padding: 5p;"> Camera Test</label>
     <hr>
   </div>
   <div class="form-row" id="node-canvas" style="text-align: center;">
-    <video id="input-video" style="height:720px; width:1280px;"></video>
-    <canvas id="output-canvas" style="height:720px; width:1280px;"></canvas>
+    <video id="input-video" style="height:360px; width:640px;"></video>
   </div>
 </script>
 
