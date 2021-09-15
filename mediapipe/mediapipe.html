@@ -10,7 +10,7 @@
     // category, defaults, credentials, ... 21 properties
 
     category: 'mediapipe',
-    color: '#a6bbcf',
+    color: '#B2A1F4',
     defaults: {
       // A node’s properties are defined by the defaults object in its html definition.
 
@@ -41,6 +41,9 @@
         audio: false, // if you want test audio, give the value 'true'.
         video: { width: 1280, height: 720 }
       }
+
+      console.log('navigator: ', navigator)
+      console.log('navigator.mediaDevices: ', navigator.mediaDevices)
 
       navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
