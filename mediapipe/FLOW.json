@@ -1,139 +1,21 @@
 [
     {
-        "id": "8f8a4c41bf218d1d",
-        "type": "tab",
-        "label": "플로우 1",
-        "disabled": false,
-        "info": ""
-    },
-    {
-        "id": "12c96704d893c47b",
-        "type": "http in",
-        "z": "8f8a4c41bf218d1d",
-        "name": "",
-        "url": "/mediapipe",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 140,
-        "y": 120,
-        "wires": [
-            [
-                "80d76f62168fdd36"
-            ]
-        ]
-    },
-    {
-        "id": "05b4dcc90a8ead31",
-        "type": "http response",
-        "z": "8f8a4c41bf218d1d",
-        "name": "",
-        "statusCode": "200",
-        "headers": {},
-        "x": 470,
-        "y": 200,
-        "wires": []
-    },
-    {
-        "id": "80d76f62168fdd36",
-        "type": "mediapipe",
-        "z": "8f8a4c41bf218d1d",
-        "name": "",
-        "order": 0,
-        "width": 6,
-        "height": 6,
-        "x": 310,
-        "y": 160,
-        "wires": [
-            [
-                "05b4dcc90a8ead31"
-            ]
-        ]
-    },
-    {
-        "id": "d0c05d982b3b0104",
-        "type": "websocket in",
-        "z": "8f8a4c41bf218d1d",
-        "name": "",
-        "server": "e9b870a1bbf9569d",
-        "client": "",
-        "x": 150,
-        "y": 300,
-        "wires": [
-            [
-                "c598f6a0c7446cc0"
-            ]
-        ]
-    },
-    {
-        "id": "c598f6a0c7446cc0",
-        "type": "mediapipe",
-        "z": "8f8a4c41bf218d1d",
-        "name": "classification (TBD)",
-        "order": 0,
-        "width": 6,
-        "height": 6,
-        "x": 360,
-        "y": 340,
-        "wires": [
-            [
-                "fa830b67684a8e2f"
-            ]
-        ]
-    },
-    {
-        "id": "fa830b67684a8e2f",
-        "type": "websocket out",
-        "z": "8f8a4c41bf218d1d",
-        "name": "",
-        "server": "f4f5807f5af74172",
-        "client": "",
-        "x": 590,
-        "y": 380,
-        "wires": []
-    },
-    {
-        "id": "bfd8aab651c1c8ff",
-        "type": "websocket in",
-        "z": "8f8a4c41bf218d1d",
-        "name": "",
-        "server": "f4f5807f5af74172",
-        "client": "",
-        "x": 160,
-        "y": 460,
-        "wires": [
-            [
-                "f97223074c84eb98"
-            ]
-        ]
-    },
-    {
-        "id": "f97223074c84eb98",
+        "id": "93c41568f826ef23",
         "type": "function",
         "z": "8f8a4c41bf218d1d",
-        "name": "사용자 정의",
-        "func": "\nreturn msg;",
+        "name": "",
+        "func": "msg.payload = JSON.parse(msg.payload)\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 350,
-        "y": 500,
+        "y": 340,
         "wires": [
-            []
+            [
+                "9aeb5c1f3ffa8676"
+            ]
         ]
-    },
-    {
-        "id": "e9b870a1bbf9569d",
-        "type": "websocket-listener",
-        "path": "/ws/mediapipe",
-        "wholemsg": "false"
-    },
-    {
-        "id": "f4f5807f5af74172",
-        "type": "websocket-listener",
-        "path": "/ws/classification",
-        "wholemsg": "false"
     }
 ]
