@@ -1,0 +1,19 @@
+{
+	"name": "pose-similarity",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "steven9408",
+	"license": "ISC",
+	"node-red": {
+		"nodes": {
+			"pose-similarity": "pose-similarity.js"
+		}
+	},
+	"dependencies": {
+		"compute-cosine-similarity": "^1.0.0"
+	}
+}
