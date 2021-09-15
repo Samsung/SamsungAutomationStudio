@@ -45,7 +45,7 @@ module.exports = function(RED) {
                 // const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0]
                 // const grid = new LandmarkGrid(landmarkContainer)
             
-                const ws = new WebSocket('ws://localhost:1880/ws/mediapipe')
+                const ws = new WebSocket('wss://15.165.220.70:1880/ws/mediapipe')
                 
                 function onResults(results) {
                     // if (!results.poseLandmarks) {
