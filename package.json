@@ -1,5 +1,5 @@
 {
-  "name": "detection-ijin",
+  "name": "node-red-contrib-pose-detection",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,7 +12,7 @@
   },
   "node-red": {
     "nodes": {
-      "detection-ijin": "detection/detection.js"
+      "node-red-contrib-pose-detection": "detection/detection.js"
     }
   },
   "author": "",
@@ -20,5 +20,13 @@
   "bugs": {
     "url": "https://github.com/5FNSaaS/detection-ijin/issues"
   },
-  "homepage": "https://github.com/5FNSaaS/detection-ijin#readme"
+  "homepage": "https://github.com/5FNSaaS/detection-ijin#readme",
+  "dependencies": {
+    "@mediapipe/camera_utils": "^0.3.1631210127",
+    "@mediapipe/control_utils": "^0.6.1629159505",
+    "@mediapipe/control_utils_3d": "^0.2.1625245254",
+    "@mediapipe/drawing_utils": "^0.3.1620248257",
+    "@mediapipe/pose": "^0.4.1630009814",
+    "jquery": "^3.6.0"
+  }
 }
