@@ -24,15 +24,15 @@
       }
 
       navigator.mediaDevices.getUserMedia(constraints)
-        .then(stream => {
-          inputVideo.srcObject = stream
-          inputVideo.onloadedmetadata = function(e) {
-            inputVideo.play()
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      .then(stream => {
+        inputVideo.srcObject = stream
+        inputVideo.onloadedmetadata = function(e) {
+          inputVideo.play();
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
     },
   })
 </script>
@@ -40,7 +40,7 @@
 <script type="text/html" data-template-name="hands-detection">
   <div class="form-row">    
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Name">
+    <input type="text" id="node-input-name" placeholder="Motion Name">
   </div>
 
   <div class="form-row" style="text-align: left;">
