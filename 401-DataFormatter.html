@@ -1,0 +1,72 @@
+<!--
+    SAMSUNG SW ACADEMY FOR YOUTH (SSAFY) 5th SOTAEJI Team
+-->
+<script type="text/html" data-template-name="data-formatter">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name"><br>
+    </div>
+    <div class="form-row">
+        <label for="node-input-data_src"><i class="fa fa-tag"></i> Data</label>
+        <input type="text" id="node-input-data_src" placeholder="Data"><br>
+    </div>
+    <div class="form-row">
+        <label for="node-input-data_type"><i class="fa fa-tag"></i> Data type</label>
+        <select id="node-input-data_type">
+            <option value="json">json</option>
+            <option value="xlsx">xlsx</option>
+            <option value="xml">xml</option>
+            <option value="csv">csv</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-chart_type"><i class="fa fa-tag"></i> Chart type</label>
+        <select id="node-input-chart_type">
+            <option value="line">line chart</option>
+            <option value="bar">bar chart</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-title"><i class="fa fa-tag"></i> Title</label>
+        <input type="text" id="node-input-title" placeholder="title">
+    </div>
+    <div class="form-row">
+        <label for="node-input-x_data"><i class="fa fa-tag"></i> x_data</label>
+        <input type="text" id="node-input-x_data" placeholder="x_data"><br>
+    </div>
+    <div class="form-row">
+        <label for="node-input-y_data"><i class="fa fa-tag"></i> y_data</label>
+        <input type="text" id="node-input-y_data" placeholder="y_data">
+    </div>
+    <div class="form-row">
+        <label for="node-input-y_label"><i class="fa fa-tag"></i> y_label</label>
+        <input type="text" id="node-input-y_label" placeholder="y_label">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="data-formatter">
+    <p>A simple node that converts data to json for chart.js</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('data-formatter', {
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            title: { value: "" },
+            data_src: { value: "" },
+            data_type: { value: "", },
+            chart_type: { value: "", },
+            x_data: { value: "" },
+            y_data: { value: "" },
+            y_label: { value: "" },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        label: function () {
+            return this.name || "data-formatter";
+        }
+    });
+</script>
