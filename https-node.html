@@ -9,16 +9,16 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
   <title>Hands Detection</title>
   <style>    
-		.tooltip {
-			position: relative;
-			display: inline-block;
-		}
-		.tooltip .tooltip-content {
-			visibility: hidden;
-			background-color: rgba(255, 255, 255, 0.8);
-			color: black;
-			text-align: center;
-			position: absolute;
+	.tooltip {
+		position: relative;
+		display: inline-block;
+	}
+	.tooltip .tooltip-content {
+		visibility: hidden;
+		background-color: rgba(255, 255, 255, 0.8);
+		color: black;
+		text-align: center;
+		position: absolute;
       top: 3px;
       left: 3px;
       padding-left: 15px;
@@ -59,12 +59,15 @@
     <div>
       <br>
       <select id="secondTimer">
-        <option value="0" onclick="changeSecond" selected>Now</option>
-        <option value="1" onclick="changeSecond">1s Timer</option>
-        <option value="2" onclick="changeSecond">2s Timer</option>
-        <option value="3" onclick="changeSecond">3s Timer</option>
-      </select>
-      <input type="text" placeholder="Hands Motion Name"><button id="regist-btn">Regist</button>
+        <option value="0" selected>Now</option>
+        <option value="1">1s Timer</option>
+        <option value="2">2s Timer</option>
+        <option value="3">3s Timer</option>
+      </select> 
+      <input id="hand-motion-name"type="text" placeholder="Hands Motion Name"><button id="regist-btn">Regist</button>
+    </div>
+    <div>
+      <p id="motion-result-message"></p>
     </div>
   </div>  
   <hr>
@@ -73,12 +76,29 @@
   </div>
 </body>
 <script type="module">
-  function changeSecond(){
-    const timerSecond = document.getElementById("secondTimer");
-    const second = timerSecond.options[timerSecond.selectedIndex].value;
-    console.log(second);
-  }
+  /* motion regist timer */
+  const timerSecond = document.getElementById("secondTimer");
+  var second = timerSecond.options[timerSecond.selectedIndex].value;
+  console.log(second);
 
+  document.getElementById("secondTimer").addEventListener('change', function(){
+    second = timerSecond.options[timerSecond.selectedIndex].value;
+    console.log(second);
+  })
+
+  /* motion name empty check*/
+  var handMotionName = document.getElementById("hand-motion-name");
+  document.getElementById("regist-btn").addEventListener('click', function(){
+    if(handMotionName.value === "" || handMotionName.value === undefined){
+      document.getElementById("motion-result-message").textContent = "[Fail] Invalid Motion-Name";
+    }else{
+      document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + handMotionName.value +"] motion";
+    }
+
+    document.getElementById("hand-motion-name").value = "";
+  })
+
+  /* used mediapipe hands model */
   const videoElement = document.getElementsByClassName('input_video')[0];
   const canvasElement = document.getElementsByClassName('output_canvas')[0];
   const canvasCtx = canvasElement.getContext('2d');
@@ -94,8 +114,8 @@
     if (results.multiHandLandmarks) {
       for (const landmarks of results.multiHandLandmarks) {
         drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
-                      {color: '#00FF00', lineWidth: 5});
-        drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 1});
+                      {color: '#f2d6ae', lineWidth: 5});
+        drawLandmarks(canvasCtx, landmarks, {color: '#b2a1f4', lineWidth: 1});
         results["poseName"] = poseName;
         ws.send(JSON.stringify(results));
         poseName = null;
@@ -109,7 +129,7 @@
   }});
   hands.setOptions({
     maxNumHands: 2,
-    minDetectionConfidence: 0.5,
+    minDetectionConfidence: 0.6,
     minTrackingConfidence: 0.5
   });
   hands.onResults(onResults);
