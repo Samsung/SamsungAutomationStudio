@@ -56,6 +56,9 @@ module.exports = function(RED) {
             }
             
             function audioTimerLoop(callback, frequency) {
+
+                // 아래 링크를 참고함
+                // https://stackoverflow.com/questions/44156528/canvas-doesnt-repaint-when-tab-inactive-backgrounded-for-recording-webgl
             
                 var freq = frequency / 1000  // AudioContext time params are in seconds
                 var aCtx = new AudioContext()
