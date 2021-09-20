@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js"
@@ -102,10 +103,18 @@
 
   /* motion name empty check*/
   var handMotionName = document.getElementById("pose-motion-name");
+  var curLandmarks = null
   document.getElementById("regist-btn").addEventListener('click', function(){
     if(handMotionName.value === "" || handMotionName.value === undefined){
       document.getElementById("motion-result-message").textContent = "[Fail] Invalid Motion-Name";
     }else{
+      var result = $.post("regist", {"name": handMotionName.value, "keypoints": curLandmarks}, function(data){
+        alert("success");
+      }).done(function(){
+        alert("second success");
+      }).fail(function(){
+        alert("error");
+      })
       document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + handMotionName.value +"] motion";
     }
 
@@ -134,6 +143,7 @@
     canvasCtx.restore()
 
     if (results.poseLandmarks) {
+      curLandmarks = results.poseLandmarks
       ws.send(JSON.stringify(results.poseLandmarks))
     }
   }

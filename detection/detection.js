@@ -17,6 +17,7 @@ module.exports = function(RED) {
             <meta charset="UTF-8">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
             <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
             <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js"
@@ -81,7 +82,16 @@ module.exports = function(RED) {
               </div>
               <div>
                 <br>
-                <input type="text" placeholder="Pose Motion Name"><button id="regist-btn">Regist</button>
+                <select id="secondTimer">
+                  <option value="0" selected>Now</option>
+                  <option value="1">1s Timer</option>
+                  <option value="2">2s Timer</option>
+                  <option value="3">3s Timer</option>
+                </select> 
+                <input id="pose-motion-name"type="text" placeholder="Hands Motion Name"><button id="regist-btn">Regist</button>
+              </div>
+              <div>
+                <p id="motion-result-message"></p>
               </div>
             </div>  
             <hr>
@@ -93,6 +103,36 @@ module.exports = function(RED) {
           </html>
           
           <script type="module">
+            /* motion regist timer */
+            const timerSecond = document.getElementById("secondTimer");
+            var second = timerSecond.options[timerSecond.selectedIndex].value;
+            console.log(second);
+          
+            document.getElementById("secondTimer").addEventListener('change', function(){
+              second = timerSecond.options[timerSecond.selectedIndex].value;
+              console.log(second);
+            })
+          
+            /* motion name empty check*/
+            var handMotionName = document.getElementById("pose-motion-name");
+            var curLandmarks = null
+            document.getElementById("regist-btn").addEventListener('click', function(){
+              if(handMotionName.value === "" || handMotionName.value === undefined){
+                document.getElementById("motion-result-message").textContent = "[Fail] Invalid Motion-Name";
+              }else{
+                var result = $.post("regist", {"name": handMotionName.value, "keypoints": curLandmarks}, function(data){
+                  alert("success");
+                }).done(function(){
+                  alert("second success");
+                }).fail(function(){
+                  alert("error");
+                })
+                document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + handMotionName.value +"] motion";
+              }
+          
+              document.getElementById("pose-motion-name").value = "";
+            })
+          
             const videoElement = document.getElementsByClassName('input_video')[0]
             const canvasElement = document.getElementsByClassName('output_canvas')[0]
             const canvasCtx = canvasElement.getContext('2d')
@@ -115,6 +155,7 @@ module.exports = function(RED) {
               canvasCtx.restore()
           
               if (results.poseLandmarks) {
+                curLandmarks = results.poseLandmarks
                 ws.send(JSON.stringify(results.poseLandmarks))
               }
             }
@@ -145,6 +186,8 @@ module.exports = function(RED) {
             })
             camera.start()
           </script>
+          
+          
           `
           return html
         }
