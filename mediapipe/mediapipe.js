@@ -32,7 +32,7 @@ module.exports = function(RED) {
                 <body>
                     <div class="container">
                     <video class="input_video"></video>
-                    <button id="start-btn">start</button>
+                    <!-- <button id="start-btn">start</button> -->
                     <canvas class="output_canvas" width="1280px" height="720px"></canvas>
                     <!-- <div class="landmark-grid-container"></div> -->
                     </div>
@@ -48,15 +48,19 @@ module.exports = function(RED) {
                 // render_func()
             
                 var fps = 60
-                var stopAnim = audioTimerLoop(render_func, 1000 / fps)
+                var stopLoop = audioTimerLoop(render_func, 1000 / fps)
             
-                setTimeout(function() {
-                    stopAnim()
-                }, 50000)
+                // window.onbeforeunload = function () {
+                //     stopLoop()
+                // }
+            
+                // setTimeout(function() {
+                //     stopLoop()
+                // }, 5000)
             }
             
             function audioTimerLoop(callback, frequency) {
-
+            
                 // 아래 링크를 참고함
                 // https://stackoverflow.com/questions/44156528/canvas-doesnt-repaint-when-tab-inactive-backgrounded-for-recording-webgl
             
@@ -162,6 +166,14 @@ module.exports = function(RED) {
             // camera.start()
             
             
+            function render() {
+                pose.send({ image: videoElement })
+            
+                // console.log('rendering..')
+                // if (ws.readyState === 1) {
+                //     ws.send(JSON.stringify({'time': new Date()}))
+                // }
+            }
             
             const constraints = {
                 audio: false, // if you want test audio, give the value 'true'.
@@ -173,27 +185,30 @@ module.exports = function(RED) {
                     videoElement.srcObject = stream
                     videoElement.onloadedmetadata = function(e) {
                         videoElement.play()
+                            .then(() => {
+                                startVideo(videoElement, render)
+                            })
                     }
                 })
                 .catch(err => {
                     console.log(err)
                 })
             
-            function render() {
-                pose.send({image: videoElement})
-            
-                // console.log('rendering..')
-                // if (ws.readyState === 1) {
-                //     ws.send(JSON.stringify({'time': new Date()}))
-                // }
-            }
             
             // render()
             
-            const btn = document.getElementById('start-btn')
-            btn.onclick = function() {
-                startVideo(videoElement, render)
-            }
+            // videoElement.onloadeddata = function () {
+            //     startVideo(videoElement, render)
+            // }
+            
+            // setTimeout(() => {
+            //     startVideo(videoElement, render)
+            // }, 3000)
+            
+            // const btn = document.getElementById('start-btn')
+            // btn.onclick = function() {
+            //     startVideo(videoElement, render)
+            // }
             </script>
           `
           return html

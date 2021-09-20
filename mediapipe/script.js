@@ -6,11 +6,15 @@ function startVideo(canvasDom, render_func) {
     // render_func()
 
     var fps = 60
-    var stopAnim = audioTimerLoop(render_func, 1000 / fps)
+    var stopLoop = audioTimerLoop(render_func, 1000 / fps)
 
-    setTimeout(function() {
-        stopAnim()
-    }, 5000)
+    // window.onbeforeunload = function () {
+    //     stopLoop()
+    // }
+
+    // setTimeout(function() {
+    //     stopLoop()
+    // }, 5000)
 }
 
 function audioTimerLoop(callback, frequency) {
@@ -120,6 +124,14 @@ pose.onResults(onResults)
 // camera.start()
 
 
+function render() {
+    pose.send({ image: videoElement })
+
+    // console.log('rendering..')
+    // if (ws.readyState === 1) {
+    //     ws.send(JSON.stringify({'time': new Date()}))
+    // }
+}
 
 const constraints = {
     audio: false, // if you want test audio, give the value 'true'.
@@ -131,24 +143,27 @@ navigator.mediaDevices.getUserMedia(constraints)
         videoElement.srcObject = stream
         videoElement.onloadedmetadata = function(e) {
             videoElement.play()
+                .then(() => {
+                    startVideo(videoElement, render)
+                })
         }
     })
     .catch(err => {
         console.log(err)
     })
 
-function render() {
-    pose.send({image: videoElement})
-
-    // console.log('rendering..')
-    // if (ws.readyState === 1) {
-    //     ws.send(JSON.stringify({'time': new Date()}))
-    // }
-}
 
 // render()
 
-const btn = document.getElementById('start-btn')
-btn.onclick = function() {
-    startVideo(videoElement, render)
-}
+// videoElement.onloadeddata = function () {
+//     startVideo(videoElement, render)
+// }
+
+// setTimeout(() => {
+//     startVideo(videoElement, render)
+// }, 3000)
+
+// const btn = document.getElementById('start-btn')
+// btn.onclick = function() {
+//     startVideo(videoElement, render)
+// }
