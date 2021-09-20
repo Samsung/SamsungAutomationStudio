@@ -2,14 +2,6 @@
 
 const path = require('path')
 
-// const CAMERA = require('@mediapipe/camera_utils')
-// const POSE = require('@mediapipe/pose')
-
-// // https://github.com/HiraokaHyperTools/msgreader/issues/5
-// const Camera = CAMERA.Camera || CAMERA
-// const Pose = POSE.Pose || POSE
-
-
 module.exports = function(RED) {
 
     // The node .js file defines the runtime behavior of the node.
@@ -72,12 +64,7 @@ module.exports = function(RED) {
             </style>
           </head>
           
-          <body>
-            <!-- <div class="container">
-              <video class="input_video"></video>
-              <canvas class="output_canvas" width="1280px" height="720px"></canvas>
-            </div> -->
-            
+          <body>            
             <div align="center" style="min-height: 800px;">
               <h1>Pose Detection Page</h1>
               <div style="display: inline-block;" align="center" class="tooltip">

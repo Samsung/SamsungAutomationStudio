@@ -34,24 +34,22 @@
           return this.name||"pose-detection"
       },
       oneditprepare: function() {
-        // do something..
-  
         const inputVideo = document.getElementById('input-video')
         const constraints = {
-          audio: false, // if you want test audio, give the value 'true'.
+          audio: false,
           video: { width: 1280, height: 720 }
         }
   
         navigator.mediaDevices.getUserMedia(constraints)
-          .then(stream => {
-            inputVideo.srcObject = stream
-            inputVideo.onloadedmetadata = function(e) {
-              inputVideo.play()
-            }
-          })
-          .catch(err => {
-            console.log(err)
-          })
+        .then(stream => {
+          inputVideo.srcObject = stream
+          inputVideo.onloadedmetadata = function(e) {
+            inputVideo.play();
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
       },
     })
   </script>

@@ -52,29 +52,33 @@
   </style>
 </head>
 
-<body>
-  <!-- <div class="container">
-    <video class="input_video"></video>
-    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
-  </div> -->
-  
+<body>            
   <div align="center" style="min-height: 800px;">
     <h1>Pose Detection Page</h1>
     <div style="display: inline-block;" align="center" class="tooltip">
-      <video class="input_video" width="480px" height="270px" crossorigin="anonymous" style="border:3px solid grey"></video><br>
+      <video class="input_video" width="600px" height="340px" crossorigin="anonymous" style="border:3px solid grey"></video><br>
       <div class="tooltip-content">
         <p>Your Camera</p>
       </div>
     </div>
     <div style="display: inline-block;" align="center" class="tooltip">
-      <canvas class="output_canvas" width="480px" height="270px" style="border:3px solid #B2A1F4"></canvas><br>
+      <canvas class="output_canvas" width="600px" height="340px" style="border:3px solid #B2A1F4"></canvas><br>
       <div class="tooltip-content">
         <p>Tracking your Pose</p>
       </div>
     </div>
     <div>
       <br>
-      <input type="text" placeholder="Pose Motion Name"><button id="regist-btn">Regist</button>
+      <select id="secondTimer">
+        <option value="0" selected>Now</option>
+        <option value="1">1s Timer</option>
+        <option value="2">2s Timer</option>
+        <option value="3">3s Timer</option>
+      </select> 
+      <input id="pose-motion-name"type="text" placeholder="Hands Motion Name"><button id="regist-btn">Regist</button>
+    </div>
+    <div>
+      <p id="motion-result-message"></p>
     </div>
   </div>  
   <hr>
@@ -86,6 +90,28 @@
 </html>
 
 <script type="module">
+  /* motion regist timer */
+  const timerSecond = document.getElementById("secondTimer");
+  var second = timerSecond.options[timerSecond.selectedIndex].value;
+  console.log(second);
+
+  document.getElementById("secondTimer").addEventListener('change', function(){
+    second = timerSecond.options[timerSecond.selectedIndex].value;
+    console.log(second);
+  })
+
+  /* motion name empty check*/
+  var handMotionName = document.getElementById("pose-motion-name");
+  document.getElementById("regist-btn").addEventListener('click', function(){
+    if(handMotionName.value === "" || handMotionName.value === undefined){
+      document.getElementById("motion-result-message").textContent = "[Fail] Invalid Motion-Name";
+    }else{
+      document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + handMotionName.value +"] motion";
+    }
+
+    document.getElementById("pose-motion-name").value = "";
+  })
+
   const videoElement = document.getElementsByClassName('input_video')[0]
   const canvasElement = document.getElementsByClassName('output_canvas')[0]
   const canvasCtx = canvasElement.getContext('2d')
