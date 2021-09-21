@@ -1,5 +1,27 @@
-function startVideo(canvasDom, render_func) {
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+    </head>
     
+    <body>
+        <div class="container">
+        <video class="input_video"></video>
+        <!-- <button id="start-btn">start</button> -->
+        <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+        <!-- <div class="landmark-grid-container"></div> -->
+        </div>
+    </body>
+</html>
+
+<script type="module">
+function startVideo(canvasDom, render_func) {
+
     // var canvas = canvasDom.cloneNode()
     // var ctx = canvas.getContext('2d')
 
@@ -98,10 +120,10 @@ function onResults(results) {
         if (wsData.readyState === 1) {
             wsData.send(JSON.stringify(results.poseLandmarks))
         }
-
+            
         if (wsVideo.readyState === 1) {
             canvasElement.toBlob(function (blob) {
-                wsVideo.send(blob)
+                wsVideo.send(JSON.stringify(blob))
             })
         }
     }
@@ -177,3 +199,4 @@ navigator.mediaDevices.getUserMedia(constraints)
 // btn.onclick = function() {
 //     startVideo(videoElement, render)
 // }
+</script>

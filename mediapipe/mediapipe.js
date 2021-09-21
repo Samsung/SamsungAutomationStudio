@@ -99,11 +99,13 @@ module.exports = function(RED) {
             const videoElement = document.getElementsByClassName('input_video')[0]
             const canvasElement = document.getElementsByClassName('output_canvas')[0]
             const canvasCtx = canvasElement.getContext('2d')
-            // // const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0]
-            // // const grid = new LandmarkGrid(landmarkContainer)
+            // const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0]
+            // const grid = new LandmarkGrid(landmarkContainer)
             
-            // // const ws = new WebSocket('wss://15.165.220.70:1880/ws/mediapipe')
-            const ws = new WebSocket('ws://localhost:1880/ws/mediapipe')
+            const wsData = new WebSocket('wss://15.165.220.70:1880/ws/data')
+            const wsVideo = new WebSocket('wss://15.165.220.70:1880/ws/video')
+            // const wsData = new WebSocket('ws://localhost:1880/ws/data')
+            // const wsVideo = new WebSocket('ws://localhost:1880/ws/video')
             
             function onResults(results) {
                 // if (!results.poseLandmarks) {
@@ -133,9 +135,17 @@ module.exports = function(RED) {
                                 {color: '#FF0000', lineWidth: 2})
                 canvasCtx.restore()
                 
-                if (results.poseLandmarks && ws.readyState === 1) {
+                if (results.poseLandmarks) {
                     // console.log('websocket sending..')
-                    ws.send(JSON.stringify(results.poseLandmarks))
+                    if (wsData.readyState === 1) {
+                        wsData.send(JSON.stringify(results.poseLandmarks))
+                    }
+                        
+                    if (wsVideo.readyState === 1) {
+                        canvasElement.toBlob(function (blob) {
+                            wsVideo.send(blob)
+                        })
+                    }
                 }
                                 
                 // grid.updateLandmarks(results.poseWorldLandmarks)
@@ -170,8 +180,8 @@ module.exports = function(RED) {
                 pose.send({ image: videoElement })
             
                 // console.log('rendering..')
-                // if (ws.readyState === 1) {
-                //     ws.send(JSON.stringify({'time': new Date()}))
+                // if (wsData.readyState === 1) {
+                //     wsData.send(JSON.stringify({'time': new Date()}))
                 // }
             }
             
