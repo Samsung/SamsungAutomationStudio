@@ -106,6 +106,10 @@ module.exports = function(RED) {
             const wsVideo = new WebSocket('wss://15.165.220.70:1880/ws/video')
             // const wsData = new WebSocket('ws://localhost:1880/ws/data')
             // const wsVideo = new WebSocket('ws://localhost:1880/ws/video')
+
+            wsVideo.onmessage = function (event) {
+                console.log('received: ', event.data)
+            }
             
             function onResults(results) {
                 // if (!results.poseLandmarks) {
