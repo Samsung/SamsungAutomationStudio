@@ -148,7 +148,7 @@ module.exports = function(RED) {
                     if (wsVideo.readyState === 1) {
                         canvasElement.toBlob(function (blob) {
                             console.log('blob send')
-                            wsVideo.send(JSON.stringify({data: 'blob'}))
+                            wsVideo.send(JSON.stringify({data: 'blob'}) + "\n\n")
                             // wsVideo.send(blob)
                         })
                     }
