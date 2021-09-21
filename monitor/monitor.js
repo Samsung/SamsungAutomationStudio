@@ -30,7 +30,7 @@ module.exports = function(RED) {
 
                 ws.onopen = function(event) {
                 console.log('Hello, ', event.currentTarget.url);
-                ws.send(JSON.stringify({data: "Hello"}));  // Sends a message.
+                ws.send(JSON.stringify({data: "Hello"}) + "\n\n");  // Sends a message.
                 };
 
                 ws.onmessage = function(e) {
