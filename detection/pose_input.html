@@ -76,7 +76,7 @@
         <option value="2">2s Timer</option>
         <option value="3">3s Timer</option>
       </select> 
-      <input id="pose-motion-name"type="text" placeholder="Hands Motion Name"><button id="regist-btn">Regist</button>
+      <input id="pose-motion-name" type="text" placeholder="Motion Pose Name"><button id="regist-btn">Regist</button>
     </div>
     <div>
       <p id="motion-result-message"></p>
@@ -102,20 +102,28 @@
   })
 
   /* motion name empty check*/
-  var handMotionName = document.getElementById("pose-motion-name");
+  var poseMotionName = document.getElementById("pose-motion-name");
   var curLandmarks = null
   document.getElementById("regist-btn").addEventListener('click', function(){
-    if(handMotionName.value === "" || handMotionName.value === undefined){
+    if(poseMotionName.value === "" || poseMotionName.value === undefined){
       document.getElementById("motion-result-message").textContent = "[Fail] Invalid Motion-Name";
     }else{
-      var result = $.post("regist", {"name": handMotionName.value, "keypoints": curLandmarks}, function(data){
-        alert("success");
-      }).done(function(){
-        alert("second success");
-      }).fail(function(){
-        alert("error");
-      })
-      document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + handMotionName.value +"] motion";
+      const poseName = poseMotionName.value;
+      
+      setTimeout((poseName)=>{
+          console.log(poseName);
+            var result = $.post("regist", {"name": poseName, "keypoints": curLandmarks}, function(data){
+              alert("success");
+            }).done(function(){
+              alert("second success");
+            }).fail(function(){
+              alert("error");
+            })
+            //console.log(poseName);
+            //console.log(document.getElementById("secondTimer").value*1000);
+            document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + poseName +"] motion";
+          
+        }, document.getElementById("secondTimer").value*1000, poseName);
     }
 
     document.getElementById("pose-motion-name").value = "";
@@ -142,10 +150,10 @@
       { color: '#FF0000', lineWidth: 2 })
     canvasCtx.restore()
 
-    if (results.poseLandmarks) {
-      curLandmarks = results.poseLandmarks
-      ws.send(JSON.stringify(results.poseLandmarks))
-    }
+        if (results.poseLandmarks) {
+          curLandmarks = results.poseLandmarks
+          ws.send(JSON.stringify(results.poseLandmarks))
+        }
   }
 
   const pose = new Pose({
@@ -174,3 +182,4 @@
   })
   camera.start()
 </script>
+
