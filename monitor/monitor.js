@@ -10,62 +10,82 @@ module.exports = function(RED) {
     function MonitorNode(config) {
 
         function HTML() {
-          const html = String.raw`
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
+            const html = String.raw`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
             <meta charset="UTF-8">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Document</title>
-          </head>
-          <body>
-          
+            <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.min.js" integrity="sha512-jtr9/t8rtBf1Sv832XjG1kAtUECQCqFnTAJWccL8CSC82VGzkPPih8rjtOfiiRKgqLXpLA1H/uQ/nq2bkHGWTQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+            </head>
+            <body>
+
             <img id="video" src="" />
-          
+
             <script>
-          
-              const wsData = new WebSocket('ws://localhost:1880/ws/data')
-          
-              wsData.addEventListener('message', function (event) {
-                console.log('Message from wsData ', event.data);
-              });
-          
-              wsData.onopen = function(event) {
-                console.log('open: ', event.currentTarget.url);
-              }
-          
-              console.log('hello..')
-              const urlCreator = window.URL || window.webkitURL;
-              const video = document.getElementById('video');
-              const wsVideo = new WebSocket('ws://localhost:1880/ws/video')
-              wsVideo.binaryType = 'arraybuffer';
-          
-              wsVideo.onmessage = function(event) {
-                console.log('receiving..')
-                const arrayBufferView = new Uint8Array(event.data);
-                const blob = new Blob([arrayBufferView], {type: "image/jpeg"});
-                const imageUrl = urlCreator.createObjectURL(blob);
-                video.src = imageUrl;
-              }
-          
-              wsVideo.onopen = function(event) {
-                console.log('open: ', event.currentTarget.url);
-              }
-          
-              wsVideo.onclose = function(event) {
-                console.log('close: ', event);
-              }
-          
-              wsVideo.onerror = function(error) {
-                console.log('error: ', error);
-              }
-          
+
+                const ws = new WebSocket('wss://15.165.220.70:1880/ws/video')
+
+                ws.onopen = function(event) {
+                console.log('Hello, ', event.currentTarget.url);
+                ws.send(JSON.stringify({data: "Hello"}));  // Sends a message.
+                };
+
+                ws.onmessage = function(e) {
+                // Receives a message.
+                console.log('Data');
+                };
+
+                ws.onclose = function() {
+                console.log('Bye')
+                alert("closed");
+                };
+
+                console.log(ws.onmessage)
+
+                // const wsData = new WebSocket('ws://localhost:1880/ws/data')
+
+                // wsData.addEventListener('message', function (event) {
+                //   console.log('Message from wsData ', event.data);
+                // });
+
+                // wsData.onopen = function(event) {
+                //   console.log('open: ', event.currentTarget.url);
+                // }
+
+                // console.log('hello..')
+                // const urlCreator = window.URL || window.webkitURL;
+                // const video = document.getElementById('video');
+                // const wsVideo = new WebSocket('ws://localhost:1880/ws/video')
+                // wsVideo.binaryType = 'arraybuffer';
+
+                // wsVideo.onmessage = function(event) {
+                //   console.log('receiving..')
+                //   const arrayBufferView = new Uint8Array(event.data);
+                //   const blob = new Blob([arrayBufferView], {type: "image/jpeg"});
+                //   const imageUrl = urlCreator.createObjectURL(blob);
+                //   video.src = imageUrl;
+                // }
+
+                // wsVideo.onopen = function(event) {
+                //   console.log('open: ', event.currentTarget.url);
+                // }
+
+                // wsVideo.onclose = function(event) {
+                //   console.log('close: ', event);
+                // }
+
+                // wsVideo.onerror = function(error) {
+                //   console.log('error: ', error);
+                // }
+
             </script>
-          </body>
-          </html>
-          `
-          return html
+            </body>
+            </html>
+            `
+            return html
         }
 
         RED.nodes.createNode(this, config)
