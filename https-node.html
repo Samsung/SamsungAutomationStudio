@@ -120,6 +120,7 @@
     var detail = "";
     const fixed = 5;
 
+    // hands motion keypoint data table
     for (let idx = 0; idx < poseData.multiHandedness.length; idx++) {
       detail += "<table style='display:inline;margin:0px 5px;'>";
       detail += "<tr><th colspan='4' align='center'>"+poseData.multiHandedness[idx].label+" (score:"+poseData.multiHandedness[idx].score.toFixed(fixed)+")</th></tr>";
