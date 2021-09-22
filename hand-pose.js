@@ -1,24 +1,24 @@
-function calcCosSimilarity(originalLeft, testLeft) {
-  let similarity = [];
+// function calcCosSimilarity(originalLeft, testLeft) {
+//   let similarity = [];
 
-  for (var i = 0; i < 21; i++) {
-    const originX = originalLeft[i].x;
-    const testX = testLeft[i].x;
-    const originY = originalLeft[i].y;
-    const testY = testLeft[i].y;
+//   for (var i = 0; i < 21; i++) {
+//     const originX = originalLeft[i].x;
+//     const testX = testLeft[i].x;
+//     const originY = originalLeft[i].y;
+//     const testY = testLeft[i].y;
 
-    //분자
-    const dot = originX * testX + originY * testY;
-    //분모
-    const size = Math.sqrt(originX ** 2 + originY ** 2) * Math.sqrt(testX ** 2 + testY ** 2);
+//     //분자
+//     const dot = originX * testX + originY * testY;
+//     //분모
+//     const size = Math.sqrt(originX ** 2 + originY ** 2) * Math.sqrt(testX ** 2 + testY ** 2);
 
-    const result = dot / size;
+//     const result = dot / size;
 
-    similarity[i] = result;
-  }
+//     similarity[i] = result;
+//   }
 
-  return similarity;
-}
+//   return similarity;
+// }
 
 function checkCosSimilarity(originalLeft, testLeft) {
   for (var i = 0; i < 21; i++) {
@@ -124,7 +124,7 @@ module.exports = function (RED) {
       let leftHand = [];
       let rightHand = [];
 
-      //두 손이 모두 나온지 여부
+      //손의 모든 포인트가 나온지 여부
       let isCorrect = true;
 
       //왼손, 오른손 찾아 저장
@@ -160,6 +160,31 @@ module.exports = function (RED) {
       let isExisted = false;
       let isExisted1 = false;
       let isExisted2 = false;
+      //범위 밖의 좌표가 있는 경우
+      let isIn = true;
+
+      for (let idx = 0; idx < 21; idx++) {
+        if (
+          leftHand[idx].x < 0 ||
+          rightHand[idx].x < 0 ||
+          leftHand[idx].y < 0 ||
+          rightHand[idx].y < 0 ||
+          leftHand[idx].x > 1 ||
+          rightHand[idx].x > 1 ||
+          leftHand[idx].y > 1 ||
+          rightHand[idx].y > 1
+        ) {
+          isIn = false;
+          break;
+        }
+      }
+
+      if (!isIn) {
+        msg.status = false;
+        node.send(msg);
+
+        return;
+      }
 
       for (let idx = 0; idx < length; idx++) {
         moveHand(msg.leftHand[idx]);
@@ -190,11 +215,12 @@ module.exports = function (RED) {
         }
       }
 
+      //이미 있는 핸드인 경우
       if (isExisted && isExisted1 && isExisted2) {
         msg.status = false;
         //테스트용 나중에 지워야함
-        msg.left = leftHand;
-        msg.right = rightHand;
+        // msg.left = leftHand;
+        // msg.right = rightHand;
       } else {
         msg.status = true;
         msg.left = leftHand;
