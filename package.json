@@ -7,7 +7,8 @@
     "Bixby",
     "node-red",
     "Samsung Automation Studio",
-    "AWS"
+    "AWS",
+    "OneDrive"
   ],
   "license": "Apache 2.0",
   "repository": {
@@ -21,7 +22,8 @@
       "Auth": "201-basicauth.js",
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
-      "SlackNotification": "303-SlackNotification.js"
+      "SlackNotification": "303-SlackNotification.js",
+      "OneDrive": "502-OneDrive.js"
     }
   },
   "dependencies": {
@@ -40,6 +42,7 @@
     "proxy-agent": "^5.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
-    "when": "3.7.8"
+    "when": "3.7.8",
+    "request-promise-native": "^1.0.9"
   }
 }

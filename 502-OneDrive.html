@@ -1,0 +1,109 @@
+<script type="text/javascript">
+    RED.nodes.registerType("OneDrive", {
+        category: "storage",
+        color: "#0078d4",
+        defaults: {
+            name: {
+                value: "",
+                type: "text",
+            },
+            accessToken: {
+                type: "text",
+                required: true,
+            },
+            doType: {
+                value: "",
+                type: "text",
+                required: true,
+            },
+            fileName: {
+                value: "",
+                type: "text",
+            },
+            filePath: {
+                value: "",
+                type: "text",
+            },
+            // fileId: {
+            //     value: "",
+            //     type: "text",
+            // },
+            dataType: {
+                value: "",
+                type: "text",
+                required: true,
+            }
+        },
+        icon: "onedrive.png",
+        inputs: 1,
+        outputs: 1,
+        label(){
+            return this.name || "OneDrive"
+        }
+        // oneditprepare: function() {
+		// 	$("#node-input-doType").on("change", function() {
+		// 		const val = $(this).val();
+		// 		switch (val) {
+		// 			case 'download':
+		// 				$("#node-input-fileId-row").show();
+		// 				break;
+		// 			case 'upload':
+		// 				$("#node-input-fileId-row").hide();
+		// 		}
+		// 	});
+		// }
+    })
+</script>
+<script type="text/html" data-template-name="OneDrive">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-accessToken"><i class="fa fa-tag"></i> Access Token</label>
+        <input type="text" id="node-input-accessToken" placeholder="Access Token">
+    </div>
+    <div class="form-row">
+        <label for="node-input-doType"><i class="fa fa-hdd-o"></i> What to do</label>
+        <select id="node-input-doType">
+            <option value="" selected>Select What to do</option>
+            <option value="download">Download to Local</option>
+            <option value="upload">Upload to OneDrive</option>
+        </select>
+    </div>
+    <!-- <div class="form-row" id="node-input-fileId-row">
+        <label for="node-input-fileId"><i class="fa fa-file-text-o"></i> File ID</label>
+        <input type="text" id="node-input-fileId" placeholder="File ID">
+    </div> -->
+    <div class="form-row">
+        <label for="node-input-fileName"><i class="fa fa-file-text-o"></i> File Name</label>
+        <input type="text" id="node-input-fileName" placeholder="example.png">
+    </div>
+    <div class="form-row">
+        <label for="node-input-filePath"><i class="fa fa-folder-o"></i> File Path</label>
+        <input type="text" id="node-input-filePath" placeholder="C:/">
+    </div>
+    <div class="form-row">
+        <label for="node-input-targetPath"><i class="fa fa-folder-o"></i> Target Path</label>
+        <input type="text" id="node-input-targetPath" placeholder="myFolder/">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dataType"><i class="fa fa-cube"></i> Data Type</label>
+        <select id="node-input-dataType">
+            <option value="" selected>Select Data Type</option>
+            <option value="pdf">PDF</option>
+            <option value="text">Text</option>
+            <option value="msWord">Word</option>
+            <option value="msExcel">Excel</option>
+            <option value="msPpt">PPT</option>
+            <option value="csv">CSV</option>
+            <option value="json">Json</option>
+            <option value="jpeg">Jpeg</option>
+            <option value="png">Png</option>
+            <option value="svg">Svg</option>
+        </select>
+    </div>
+</script>
+<script type="text/html" data-help-name="OneDrive">
+    <p>This node downloads an item from OneDrive to the specified Filename or msg.filename (a complete path). msg.itemID or ItemID must be specified.</p>
+</script>
