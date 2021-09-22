@@ -1,4 +1,4 @@
-module.exports = function (RED) {
+module.exports = function(RED) {
     const xlsx = require('xlsx');
     const fs = require("fs-extra");
     const os = require("os");
@@ -104,11 +104,11 @@ module.exports = function (RED) {
         var tmp = fs.readFileSync(data, { encoding: "utf8" });
         var xml_data = xmlParser.parse(tmp, xmlOptions);
 
-        console.log(xml_data);
+        // console.log(xml_data);
 
         XmlfindAllParents(xml_data, x_data);
 
-        console.log(parents);
+        // console.log(parents);
 
         parents.forEach(key => {
             if (isNaN(key) === true) {
@@ -119,7 +119,7 @@ module.exports = function (RED) {
         let root = Object.keys(xml_data)[0];
         if (isNaN(root)) xml_data = xml_data[root];
 
-        console.log(xml_data);
+        // console.log(xml_data);
         return xml_data;
     }
 
@@ -141,25 +141,122 @@ module.exports = function (RED) {
         }
     }
 
+    function calculateStatistics(jsonData, title, type, x_data, y_label, y_data) {
+        // y데이터의 최대, 최소, 평균 세기
+        var total = 0;
+        var count = 0;
+        var min = jsonData[0][y_data];
+        var max = jsonData[0][y_data];
+
+        for (var row of jsonData) {
+            total += row[y_data];
+            count += 1;
+            if (min > row[y_data]) min = row[y_data];
+            if (max < row[y_data]) max = row[y_data];
+        }
+
+        var average = total / count;
+
+        var X = ['min', 'max', 'count', 'total', 'average'];
+        var Y = [min, max, count, total, average];
+
+        console.log('min: ', min, ' max: ', max, ' count: ', count, ' total: ', total, ' average: ', average);
+
+        var result = {
+            type: type,
+            data: {
+                labels: X,
+                datasets: [{
+                    label: y_label,
+                    data: Y
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: title
+                }
+            }
+        }
+        return result;
+
+    }
+
+    function makeItemsCount(jsonData, title, type, x_data, y_label, y_data) {
+        var countByItemsJson = {};
+
+        for (var row of jsonData) {
+            if (countByItemsJson.hasOwnProperty(row[x_data])) {
+                countByItemsJson[row[x_data]] += 1;
+            } else {
+                countByItemsJson[row[x_data]] = 1;
+            }
+        }
+        var X = (Object.keys(countByItemsJson));
+        var Y = (Object.values(countByItemsJson));
+
+        console.log(countByItemsJson);
+
+        var result = {
+            type: type,
+            data: {
+                labels: X,
+                datasets: [{
+                    label: y_label,
+                    data: Y
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: title
+                }
+            }
+        }
+        return result;
+    }
+
     function DataFormatting(config) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on('input', function(msg) {
             var type = config.data_type;
             var jsonData = config.data_src;
+            console.log(config);
 
             //data parsing
             if (type == 'xlsx') jsonData = XlsxParser(config.data_src);
             else if (type == 'csv') jsonData = CsvParser(config.data_src);
-            else if (type == 'xml') jsonData = XmlParser(config.data_src, config.x_data);
+            else if (type == 'xml') {
+                jsonData = XmlParser(config.data_src, config.x_data);
+                parents = [];
+            }
 
-            //change json to chart.js format
-            msg.data = JsonFormatting(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+            console.log('config.result_data_type ', config.result_data_type);
+            if (config.result_data_type === 'statistics') {
+                msg.data = calculateStatistics(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+
+            } else if (config.result_data_type === 'count') {
+                // count the number of x_data items
+                msg.data = makeItemsCount(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+
+            } else {
+                //change json to chart.js format
+                msg.data = JsonFormatting(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+            }
+
             node.send(msg);
         })
     }
 
     RED.nodes.registerType("data-formatter", DataFormatting);
 }
-
