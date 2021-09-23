@@ -23,6 +23,7 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
+      "GoogleDrive": "501-GoogleDrive.js",
       "OneDrive": "502-OneDrive.js"
     }
   },
@@ -43,6 +44,7 @@
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "when": "3.7.8",
-    "request-promise-native": "^1.0.9"
+    "request-promise-native": "^1.0.9",
+    "googleapis": "^85.0.0"
   }
 }
