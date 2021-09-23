@@ -1,5 +1,5 @@
 {
-  "name": "node-red-contrib-example-mediapipe-websocket-server",
+  "name": "node-red-contrib-example-mediapipe-socket-server",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -13,7 +13,7 @@
   ],
   "node-red": {
     "nodes": {
-      "websocket-server": "websocket-server.js"
+      "socket-server": "socket-server.js"
     }
   },
   "dependencies": {

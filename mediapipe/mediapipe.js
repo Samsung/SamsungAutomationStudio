@@ -42,22 +42,8 @@ module.exports = function(RED) {
             
             <script type="module">
             function startVideo(canvasDom, render_func) {
-    
-                // var canvas = canvasDom.cloneNode()
-                // var ctx = canvas.getContext('2d')
-            
-                // render_func()
-            
                 var fps = 10
                 var stopLoop = audioTimerLoop(render_func, 1000 / fps)
-            
-                // window.onbeforeunload = function () {
-                //     stopLoop()
-                // }
-            
-                // setTimeout(function() {
-                //     stopLoop()
-                // }, 5000)
             }
             
             function audioTimerLoop(callback, frequency) {
@@ -151,15 +137,10 @@ module.exports = function(RED) {
                 }
                 
                 if (socketClient.connected) {
-                    const a = new Date()
-
+                    // 아래 링크들을 참고함
+                    // https://github.com/Infocatcher/Right_Links/issues/25
                     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
                     canvasElement.toBlob(function (blob) {
-                        // console.log('blob send')
-                        const b = new Date()
-                        console.log(b - a)
-
-                        // https://github.com/Infocatcher/Right_Links/issues/25
                         const imageUrl = urlCreator.createObjectURL(blob);
                         socketClient.emit('video', imageUrl); // This will emit the event to all connected sockets
                     }, 'image/webp')
@@ -183,23 +164,8 @@ module.exports = function(RED) {
             
             pose.onResults(onResults)
             
-            // const camera = new Camera(videoElement, {
-            //     onFrame: async () => {
-            //         await pose.send({image: videoElement})
-            //     },
-            //     width: 1280,
-            //     height: 720
-            // })
-            // camera.start()
-            
-            
             function render() {
                 pose.send({ image: videoElement })
-            
-                // console.log('rendering..')
-                // if (wsData.readyState === 1) {
-                //     wsData.send(JSON.stringify({'time': new Date()}))
-                // }
             }
             
             const constraints = {
@@ -220,22 +186,6 @@ module.exports = function(RED) {
                 .catch(err => {
                     console.log(err)
                 })
-            
-            
-            // render()
-            
-            // videoElement.onloadeddata = function () {
-            //     startVideo(videoElement, render)
-            // }
-            
-            // setTimeout(() => {
-            //     startVideo(videoElement, render)
-            // }, 3000)
-            
-            // const btn = document.getElementById('start-btn')
-            // btn.onclick = function() {
-            //     startVideo(videoElement, render)
-            // }
             </script>
           `
           return html

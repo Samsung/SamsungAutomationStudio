@@ -1,0 +1,201 @@
+[
+    {
+        "id": "66eb90dda6328873",
+        "type": "tab",
+        "label": "플로우 2",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "ba7c1ea1b5bf8284",
+        "type": "http in",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "url": "/mediapipe",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "edc468d23851d741"
+            ]
+        ]
+    },
+    {
+        "id": "edc468d23851d741",
+        "type": "mediapipe",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "order": 0,
+        "width": 6,
+        "height": 6,
+        "x": 330,
+        "y": 80,
+        "wires": [
+            [
+                "8e56eb3ff2877811"
+            ]
+        ]
+    },
+    {
+        "id": "6daf959e6656c7ee",
+        "type": "websocket in",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "server": "195476cd95ebd763",
+        "client": "",
+        "x": 140,
+        "y": 160,
+        "wires": [
+            [
+                "e30a1ab01052c379",
+                "fb106b2c8e95f2fd"
+            ]
+        ]
+    },
+    {
+        "id": "e30a1ab01052c379",
+        "type": "mediapipe",
+        "z": "66eb90dda6328873",
+        "name": "classification (TBD)",
+        "order": 0,
+        "width": 6,
+        "height": 6,
+        "x": 360,
+        "y": 220,
+        "wires": [
+            [
+                "506b759457d6c13c"
+            ]
+        ]
+    },
+    {
+        "id": "506b759457d6c13c",
+        "type": "websocket out",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "server": "f4f5807f5af74172",
+        "client": "",
+        "x": 610,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "eeb18f6cddb7ce89",
+        "type": "debug",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "fb106b2c8e95f2fd",
+        "type": "function",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "func": "msg.payload = JSON.parse(msg.payload)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 160,
+        "wires": [
+            [
+                "eeb18f6cddb7ce89"
+            ]
+        ]
+    },
+    {
+        "id": "8e56eb3ff2877811",
+        "type": "websocket out",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "server": "195476cd95ebd763",
+        "client": "",
+        "x": 520,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "091e530fd3f2bc20",
+        "type": "http in",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "url": "/monitor",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 380,
+        "wires": [
+            [
+                "f13dc57c736f19e3"
+            ]
+        ]
+    },
+    {
+        "id": "f13dc57c736f19e3",
+        "type": "monitor",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "order": 0,
+        "width": 6,
+        "height": 6,
+        "x": 300,
+        "y": 380,
+        "wires": [
+            [
+                "8e3a5c51aa43b1b8"
+            ]
+        ]
+    },
+    {
+        "id": "8e3a5c51aa43b1b8",
+        "type": "http response",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 470,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "a5fc38587b75fbea",
+        "type": "socket-server",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "order": 0,
+        "width": 6,
+        "height": 6,
+        "port": 1881,
+        "x": 140,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "195476cd95ebd763",
+        "type": "websocket-listener",
+        "path": "/ws/video",
+        "wholemsg": "false"
+    },
+    {
+        "id": "f4f5807f5af74172",
+        "type": "websocket-listener",
+        "path": "/ws/classification",
+        "wholemsg": "false"
+    }
+]
