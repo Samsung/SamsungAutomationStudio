@@ -1,5 +1,5 @@
 {
-  "name": "node-red-hand-pose",
+  "name": "node-red-hand",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   "license": "jo",
   "node-red": {
     "nodes": {
-      "hand-pose": "hand-pose.js"
+      "hand-register": "hand-register.js"
     }
   }
 }
