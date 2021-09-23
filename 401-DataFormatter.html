@@ -27,6 +27,14 @@
         </select>
     </div>
     <div class="form-row">
+        <label for="node-input-result_data_type"><i class="fa fa-tag"></i> Result Data Type</label>
+        <select id="node-input-result_data_type">
+            <option value="raw">Raw Data</option>
+            <option value="statistics">Statistics</option>
+            <option value="count">Count By Items</option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-title"><i class="fa fa-tag"></i> Title</label>
         <input type="text" id="node-input-title" placeholder="title">
     </div>
@@ -53,19 +61,38 @@
         category: 'function',
         color: '#a6bbcf',
         defaults: {
-            name: { value: "" },
-            title: { value: "" },
-            data_src: { value: "" },
-            data_type: { value: "", },
-            chart_type: { value: "", },
-            x_data: { value: "" },
-            y_data: { value: "" },
-            y_label: { value: "" },
+            name: {
+                value: ""
+            },
+            title: {
+                value: ""
+            },
+            data_src: {
+                value: ""
+            },
+            data_type: {
+                value: "",
+            },
+            chart_type: {
+                value: "",
+            },
+            result_data_type: {
+                value: "raw",
+            },
+            x_data: {
+                value: ""
+            },
+            y_data: {
+                value: ""
+            },
+            y_label: {
+                value: ""
+            },
         },
         inputs: 1,
         outputs: 1,
         icon: "file.png",
-        label: function () {
+        label: function() {
             return this.name || "data-formatter";
         }
     });

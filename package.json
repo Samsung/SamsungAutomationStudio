@@ -21,7 +21,7 @@
       "Auth": "201-basicauth.js",
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
-      "SlackNotification": "303-SlackNotification.js"
+      "SlackNotification": "303-SlackNotification.js",
       "data-formatter": "401-DataFormatter.js"
     }
   },
