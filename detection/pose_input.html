@@ -14,6 +14,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
   <title>Pose Detection</title>
   <style>
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid rgb(216, 216, 216);
+      padding: 3px;
+    }
     .tooltip {
       position: relative;
       display: inline-block;
@@ -53,11 +62,12 @@
   </style>
 </head>
 
-<body>            
+<body>
   <div align="center" style="min-height: 800px;">
     <h1>Pose Detection Page</h1>
     <div style="display: inline-block;" align="center" class="tooltip">
-      <video class="input_video" width="600px" height="340px" crossorigin="anonymous" style="border:3px solid grey"></video><br>
+      <video class="input_video" width="600px" height="340px" crossorigin="anonymous"
+        style="border:3px solid grey"></video><br>
       <div class="tooltip-content">
         <p>Your Camera</p>
       </div>
@@ -75,13 +85,15 @@
         <option value="1">1s Timer</option>
         <option value="2">2s Timer</option>
         <option value="3">3s Timer</option>
-      </select> 
+      </select>
       <input id="pose-motion-name" type="text" placeholder="Motion Pose Name"><button id="regist-btn">Regist</button>
     </div>
-    <div>
+    <div id="result-div" style="display: none;">
       <p id="motion-result-message"></p>
+      <canvas class="capture_canvas" width="480px" height="270px" style="border:1px solid black"></canvas>
+      <div id="motion-result-keypoint"></div>
     </div>
-  </div>  
+  </div>
   <hr>
   <div align="center">
     <a href="https://github.com/5FNSaaS">5FNSaaS</a>
@@ -96,34 +108,22 @@
   var second = timerSecond.options[timerSecond.selectedIndex].value;
   console.log(second);
 
-  document.getElementById("secondTimer").addEventListener('change', function(){
+  document.getElementById("secondTimer").addEventListener('change', function () {
     second = timerSecond.options[timerSecond.selectedIndex].value;
     console.log(second);
   })
 
   /* motion name empty check*/
   var poseMotionName = document.getElementById("pose-motion-name");
-  var curLandmarks = null
-  document.getElementById("regist-btn").addEventListener('click', function(){
-    if(poseMotionName.value === "" || poseMotionName.value === undefined){
+  var poseData = null
+  document.getElementById("regist-btn").addEventListener('click', function () {
+    if (poseMotionName.value === "" || poseMotionName.value === undefined) {
+      document.getElementById("motion-result-message").style.color = "red";
       document.getElementById("motion-result-message").textContent = "[Fail] Invalid Motion-Name";
-    }else{
-      const poseName = poseMotionName.value;
-      
-      setTimeout((poseName)=>{
-          console.log(poseName);
-            var result = $.post("regist", {"name": poseName, "keypoints": curLandmarks}, function(data){
-              alert("success");
-            }).done(function(){
-              alert("second success");
-            }).fail(function(){
-              alert("error");
-            })
-            //console.log(poseName);
-            //console.log(document.getElementById("secondTimer").value*1000);
-            document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + poseName +"] motion";
-          
-        }, document.getElementById("secondTimer").value*1000, poseName);
+      document.getElementsByClassName("capture_canvas")[0].style.display = "none";
+      document.getElementById("result-div").style.display = "block";
+    } else {
+      onCapture(poseMotionName.value);
     }
 
     document.getElementById("pose-motion-name").value = "";
@@ -131,9 +131,56 @@
 
   const videoElement = document.getElementsByClassName('input_video')[0]
   const canvasElement = document.getElementsByClassName('output_canvas')[0]
+  const captureElement = document.getElementsByClassName('capture_canvas')[0];
   const canvasCtx = canvasElement.getContext('2d')
+  const captureCtx = captureElement.getContext('2d');
 
   const ws = new WebSocket('ws://localhost:1880/ws/mediapipe')
+
+  function onCapture(motionName) {
+    setTimeout((motionName) => {
+      //motionRegister(motionName);
+
+      captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height);    
+      var detail = "";
+      const fixed = 5;
+
+      // hands motion keypoint data table
+        
+      detail += "<table style='display:inline;margin:0px 5px;'>";
+      detail += "<caption>Estimated Pose</caption>";
+      detail += `<tr><th></th><th>x</th><th>y</th><th>z</th><th>visibility</th></tr>`;
+      //(visibility:"+poseData[idx].visibility.toFixed(fixed)+")
+      for (let idx = 0; idx < poseData.length; idx++) {
+        detail += "<tr>";
+        detail += "<td align='center'>"+idx+"</td>";
+        detail += "<td>"+poseData[idx].x.toFixed(fixed)+"</td>"
+        detail += "<td>"+poseData[idx].y.toFixed(fixed)+"</td>"
+        detail += "<td>"+poseData[idx].z.toFixed(fixed)+"</td>"
+        detail += "<td>"+poseData[idx].z.toFixed(fixed)+"</td>"
+        detail += "</tr>";
+      }
+      detail += "</table>";
+        
+      document.getElementById("motion-result-keypoint").innerHTML = '<br><b>' + motionName + "</b> Motion Detail <br>" + detail;
+      document.getElementById("motion-result-message").style.color = "green";
+      document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + motionName + "] motion";
+      document.getElementsByClassName("capture_canvas")[0].style.display = "block";
+      document.getElementById("pose-motion-name").value = "";
+      document.getElementById("result-div").style.display = "block";
+
+    }, document.getElementById("secondTimer").value * 1000, motionName);
+  }
+
+  function motionRegister(motionName) {
+    var result = $.post("regist", { "name": motionName, "keypoints": poseData }, function (data) {
+      alert("success");
+    }).done(function () {
+      alert("second success");
+    }).fail(function () {
+      alert("error");
+    })
+  };
 
   function onResults(results) {
 
@@ -150,10 +197,10 @@
       { color: '#FF0000', lineWidth: 2 })
     canvasCtx.restore()
 
-        if (results.poseLandmarks) {
-          curLandmarks = results.poseLandmarks
-          ws.send(JSON.stringify(results.poseLandmarks))
-        }
+    if (results.poseLandmarks) {
+      poseData = results.poseLandmarks
+      ws.send(JSON.stringify(results.poseLandmarks))
+    }
   }
 
   const pose = new Pose({
@@ -182,4 +229,3 @@
   })
   camera.start()
 </script>
-
