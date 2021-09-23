@@ -1,0 +1,15 @@
+{
+  "name": "node-red-hand",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "hm",
+  "license": "jo",
+  "node-red": {
+    "nodes": {
+      "hand-register": "hand-register.js",
+      "hand-find": "hand-find.js"
+    }
+  }
+}
