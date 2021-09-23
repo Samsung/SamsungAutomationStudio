@@ -1,51 +1,54 @@
 module.exports = function(RED) {
-    function PoseSimilarity(config) {
+    function PoseSimilarityRegister(config) {
         RED.nodes.createNode(this, config);
         var node = this;
         node.on('input', function(msg, send, done) {
             const similarity = require("compute-cosine-similarity");
+            
             const inputData = msg.payload
 
-            const inputKeypoints =  inputData.inputKeypoints
+            // let today = new Date()
+            // if (today.getSeconds() % 10 == 0) {
+            //     console.log(msg.payload.inputKeypoint)
+            // }
+
+            const inputKeypoint =  inputData.inputKeypoint
             const savedKeypoints = inputData.savedKeypoints
-            const keypointsNum = inputKeypoints[0].length
+            const keypointsNum = inputKeypoint.length
 
             let isExist = false
+            let isAccurate = false
             let similarPoseName
 
-            // Input keypoints Preprocessing
-            let inputVectors = []
-            for ( let inputKeypoint of inputKeypoints) {
-                inputVectors.push(keypoinstsPreprocessing(inputKeypoint))
-            } 
+
+            // Input keypoint Accuracy Evaluation
+            let accuracyCount = 0
+            for ( let point of inputKeypoint) {
+                if ( point.score < 0.8) {
+                    accuracyCount += 1
+                }
+            }
+            if (accuracyCount < keypointsNum/2) {
+                isAccurate = true
+            }
+
+            // Input keypoint Preprocessing
+            let inputVector = keypoinstsPreprocessing(inputKeypoint) 
 
             // Saved keypoints Iteration
             for ( let name in savedKeypoints ) {
-                let savedVector = keypoinstsPreprocessing(savedKeypoints[name])
-                let matchingValues = []
-                for (let inputVector of inputVectors) {
-                    cosineMatching = 100*(1 - cosineDistanceMatching(inputVector, savedVector, keypointsNum) / Math.sqrt(2))
-                    weightedMatching = 100*(1-weightedDistanceMatching(inputVector, savedVector, keypointsNum) / 0.2)
+                savedVector = keypoinstsPreprocessing(savedKeypoints[name])
 
-                    matchingValues.push( (cosineMatching + weightedMatching) / 2 )
-                }
+                cosineMatching = 100*(1 - cosineDistanceMatching(inputVector, savedVector, keypointsNum) / Math.sqrt(2))
+                weightedMatching = 100*(1-weightedDistanceMatching(inputVector, savedVector, keypointsNum) / 0.2)
 
-                // Evaluating Matching Values
-                
-                // Using Mean value
-                let sum = 0
-                for (let value of matchingValues) {
-                    sum += value
-                }
-                meanValue = sum / matchingValues.length
+                matchingValue = (cosineMatching + weightedMatching) / 2
 
-                // Determine Similarity
-                if ( meanValue > 80 ) {
-                    isExist = true
-                    similarPoseName = name
-                    break
-                }
-
+                if ( matchingValue > 80 ) {
+                isExist = true
+                similarPoseName = name
+                break
+                }            
             }
 
             // Return Value
@@ -89,6 +92,7 @@ module.exports = function(RED) {
                     yTerms[i] /= l2norm
                     zTerms[i] /= l2norm
                 }
+
                 return [...xTerms, ...yTerms, ...zTerms, ...scores]
 
             }
@@ -123,5 +127,5 @@ module.exports = function(RED) {
             node.send(msg)
         })
     }
-    RED.nodes.registerType("pose-similarity", PoseSimilarity)
+    RED.nodes.registerType("pose-similarity-register", PoseSimilarityRegister)
 }

@@ -10,7 +10,8 @@
 	"license": "ISC",
 	"node-red": {
 		"nodes": {
-			"pose-similarity": "pose-similarity.js"
+			"pose-similarity": "pose-similarity.js",
+			"pose-similarity-register": "pose-similarity-register.js"
 		}
 	},
 	"dependencies": {
