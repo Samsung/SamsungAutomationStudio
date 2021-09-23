@@ -27,6 +27,7 @@ module.exports = function(RED) {
                     <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script> -->
                     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
                     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+                    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
                 </head>
                 
                 <body>
@@ -47,7 +48,7 @@ module.exports = function(RED) {
             
                 // render_func()
             
-                var fps = 60
+                var fps = 10
                 var stopLoop = audioTimerLoop(render_func, 1000 / fps)
             
                 // window.onbeforeunload = function () {
@@ -102,14 +103,17 @@ module.exports = function(RED) {
             // const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0]
             // const grid = new LandmarkGrid(landmarkContainer)
             
-            const wsData = new WebSocket('wss://15.165.220.70:1880/ws/data')
-            const wsVideo = new WebSocket('wss://15.165.220.70:1880/ws/video')
-            // const wsData = new WebSocket('ws://localhost:1880/ws/data')
-            // const wsVideo = new WebSocket('ws://localhost:1880/ws/video')
+            // const wsData = new WebSocket('wss://15.165.220.70:1880/ws/data')
+            const wsData = new WebSocket('ws://localhost:1880/ws/data')
 
-            wsVideo.onmessage = function (event) {
-                console.log('received: ', event.data)
-            }
+            const socketClient = io('http://localhost:1881');
+            const urlCreator = window.URL || window.webkitURL;
+
+            socketClient.on("connect", () => {
+                console.log("connection server");
+                socketClient.emit("echo", "echo from mediapipe")
+            });
+
             
             function onResults(results) {
                 // if (!results.poseLandmarks) {
@@ -144,16 +148,23 @@ module.exports = function(RED) {
                     if (wsData.readyState === 1) {
                         wsData.send(JSON.stringify(results.poseLandmarks))
                     }
-                        
-                    if (wsVideo.readyState === 1) {
-                        canvasElement.toBlob(function (blob) {
-                            console.log('blob send')
-                            wsVideo.send(JSON.stringify({data: 'blob'}) + "\n\n")
-                            // wsVideo.send(blob)
-                        })
-                    }
                 }
-                                
+                
+                if (socketClient.connected) {
+                    const a = new Date()
+
+                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+                    canvasElement.toBlob(function (blob) {
+                        // console.log('blob send')
+                        const b = new Date()
+                        console.log(b - a)
+
+                        // https://github.com/Infocatcher/Right_Links/issues/25
+                        const imageUrl = urlCreator.createObjectURL(blob);
+                        socketClient.emit('video', imageUrl); // This will emit the event to all connected sockets
+                    }, 'image/webp')
+                }
+
                 // grid.updateLandmarks(results.poseWorldLandmarks)
             }
             

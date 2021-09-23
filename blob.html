@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.min.js" integrity="sha512-jtr9/t8rtBf1Sv832XjG1kAtUECQCqFnTAJWccL8CSC82VGzkPPih8rjtOfiiRKgqLXpLA1H/uQ/nq2bkHGWTQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+  <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -13,24 +13,41 @@
 
   <script>
 
-    const ws = new WebSocket('wss://15.165.220.70:1880/ws/video')
+    // there should be no IP or port in parameter.
+    // https://stackoverflow.com/questions/24526166/socketio-err-connection-refused
+    // const socketClient = io();
+    const socketClient = io('http://localhost:1881');
+    const videoElem = document.getElementById('video');
 
-    ws.onopen = function(event) {
-      console.log('Hello, ', event.currentTarget.url);
-      ws.send(JSON.stringify({data: "Hello"}) + "\n\n");  // Sends a message.
-    };
+    socketClient.on("connect", () => {
+      console.log("connection server");
 
-    ws.onmessage = function(e) {
-      // Receives a message.
-      console.log('Data');
-    };
+      socketClient.on("blob video", msg => {
+        const arrayBufferView = new Uint8Array(msg.blob);
+        const blob = new Blob([arrayBufferView], {type: "image/jpeg"});
+        const imageUrl = urlCreator.createObjectURL(blob);
+        videoElem.src = imageUrl;
+      })
+    });
 
-    ws.onclose = function() {
-      console.log('Bye')
-      alert("closed");
-    };
+    // const ws = new WebSocket('ws://localhost:1881')
 
-    console.log(ws.onmessage)
+    // ws.onopen = function(event) {
+    //   console.log('Hello, ', event.currentTarget.url);
+    //   ws.send(JSON.stringify({data: "Hello"}) + "\n\n");  // Sends a message.
+    // };
+
+    // ws.onmessage = function(e) {
+    //   // Receives a message.
+    //   console.log('Data');
+    // };
+
+    // ws.onclose = function() {
+    //   console.log('Bye')
+    //   alert("closed");
+    // };
+
+    // console.log(ws.onmessage)
 
     // const wsData = new WebSocket('ws://localhost:1880/ws/data')
 
