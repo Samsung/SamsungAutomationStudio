@@ -1,4 +1,55 @@
-function checkCosSimilarityFromOrigin(inputHandData, savedHandData, isExisted) {
+let simL = 0.0;
+let simR = 0.0;
+
+function handDataPreprocessing(inputHandData) {
+  let inputX = [];
+  let inputY = [];
+
+  let minX = 1.0;
+  let minY = 1.0;
+  let maxX = 0.0;
+  let maxY = 0.0;
+
+  let sum = 0;
+
+  for (let idx = 0; idx < inputHandData.length; idx++) {
+    let x = inputHandData[idx].x;
+    let y = inputHandData[idx].y;
+
+    if (minX > x) {
+      minX = x;
+    }
+
+    if (minY > y) {
+      minY = y;
+    }
+
+    if (maxX < x) {
+      maxX = x;
+    }
+
+    if (maxY < y) {
+      maxY = y;
+    }
+
+    sum += x ** 2 + y ** 2;
+
+    inputX[idx] = x;
+    inputY[idx] = y;
+  }
+
+  let numX = 1.0 / (maxX - minX);
+  let numY = 1.0 / (maxY - minY);
+
+  for (let idx = 0; idx < inputHandData.length; idx++) {
+    inputX[idx] = (inputX[idx] - minX) * numX;
+    inputY[idx] = (inputY[idx] - minY) * numY;
+  }
+
+  return [...inputX, ...inputY];
+}
+
+function checkCosSimilarity(inputHandData, savedHandData, isExisted, similarity) {
   if (isExisted) {
     if (savedHandData == "") {
       return false;
@@ -12,122 +63,21 @@ function checkCosSimilarityFromOrigin(inputHandData, savedHandData, isExisted) {
     }
   }
 
-  for (var i = 0; i < 21; i++) {
-    const inputX = inputHandData[i].x;
-    const savedX = savedHandData[i].x;
-    const inputY = inputHandData[i].y;
-    const savedY = savedHandData[i].y;
+  let inputHand = handDataPreprocessing(inputHandData);
+  let savedHand = handDataPreprocessing(savedHandData);
 
-    //분자
-    const dot = inputX * savedX + inputY * savedY;
-    //분모
-    const size = Math.sqrt(inputX ** 2 + inputY ** 2) * Math.sqrt(savedX ** 2 + savedY ** 2);
+  let cosSimilarity = similarity(inputHand, savedHand);
 
-    const similarity = dot / size;
-
-    const num = Math.round(Math.abs(1 - similarity) * 1000000000000000) / 1000000000000000;
-
-    const result = Math.sqrt(2 * num);
-
-    if (result > 0.1) {
-      return false;
-    }
+  if (cosSimilarity > 0.98) {
+    simL = cosSimilarity;
+    return true;
   }
 
-  return true;
-}
-
-function checkCosSimilarityFromPointFour(inputHandData, savedHandData, isExisted) {
-  if (isExisted) {
-    if (savedHandData == "") {
-      return false;
-    }
-  } else {
-    //둘다 없는 경우
-    if (savedHandData == "") {
-      return true;
-    } else {
-      return false;
-    }
+  if (simR < cosSimilarity) {
+    simR = cosSimilarity;
   }
 
-  for (var i = 0; i < 21; i++) {
-    const inputX = inputHandData[i].x - inputHandData[4].x;
-    const savedX = savedHandData[i].x - inputHandData[4].x;
-    const inputY = inputHandData[i].y - inputHandData[4].y;
-    const savedY = savedHandData[i].y - inputHandData[4].y;
-
-    //분자
-    const dot = inputX * savedX + inputY * savedY;
-    //분모
-    const size = Math.sqrt(inputX ** 2 + inputY ** 2) * Math.sqrt(savedX ** 2 + savedY ** 2);
-
-    const similarity = dot / size;
-
-    const num = Math.round(Math.abs(1 - similarity) * 1000000000000000) / 1000000000000000;
-
-    const result = Math.sqrt(2 * num);
-
-    if (result > 0.1) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function checkCosSimilarityFromPointTwenty(inputHandData, savedHandData, isExisted) {
-  if (isExisted) {
-    if (savedHandData == "") {
-      return false;
-    }
-  } else {
-    //둘다 없는 경우
-    if (savedHandData == "") {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  for (var i = 0; i < 21; i++) {
-    const inputX = inputHandData[i].x - inputHandData[20].x;
-    const savedX = savedHandData[i].x - inputHandData[20].x;
-    const inputY = inputHandData[i].y - inputHandData[20].y;
-    const savedY = savedHandData[i].y - inputHandData[20].y;
-
-    //분자
-    const dot = inputX * savedX + inputY * savedY;
-    //분모
-    const size = Math.sqrt(inputX ** 2 + inputY ** 2) * Math.sqrt(savedX ** 2 + savedY ** 2);
-
-    const similarity = dot / size;
-
-    const num = Math.round(Math.abs(1 - similarity) * 1000000000000000) / 1000000000000000;
-
-    const result = Math.sqrt(2 * num);
-
-    if (result > 0.1) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function moveHand(hand) {
-  let minX = 1;
-  let minY = 1;
-
-  hand.forEach((el) => {
-    minX = Math.min(minX, el.x);
-    minY = Math.min(minY, el.y);
-  });
-
-  hand.forEach((el, index) => {
-    hand[index].x -= minX;
-    hand[index].y -= minY;
-  });
+  return false;
 }
 
 module.exports = function (RED) {
@@ -138,34 +88,12 @@ module.exports = function (RED) {
 
     //data.right, data.left
     node.on("input", function (msg) {
+      const similarity = require("compute-cosine-similarity");
+
       /*--------------- DB 데이터 처리 -------------------------*/
-      const handDataCount = msg.payload.length;
-      let savedLeftHand = [];
-      let savedRightHand = [];
-
-      msg.payload.forEach((el, index) => {
-        let leftData = el.left_hand_land_marks.split("},");
-        let rightData = el.right_hand_land_marks.split("},");
-
-        const length = leftData.length;
-
-        savedLeftHand[index] = [];
-        savedRightHand[index] = [];
-
-        let left = [];
-        let right = [];
-
-        for (let i = 0; i < length; i++) {
-          if (i != 21) {
-            left[i] = JSON.parse(leftData[i] + "}");
-            right[i] = JSON.parse(rightData[i] + "}");
-          }
-        }
-
-        savedLeftHand[index] = left;
-        savedRightHand[index] = right;
-      });
-
+      const handDataCount = msg.savedNameList.length;
+      let savedLeftHand = msg.savedLeftHand;
+      let savedRightHand = msg.savedRightHand;
       /*--------------- 유사도 체크 시작 -------------------------*/
       let inputLeftHand = [];
       let inputRightHand = [];
@@ -176,20 +104,20 @@ module.exports = function (RED) {
       let isRightExisted = false;
 
       //왼손, 오른손 찾아 저장
-      msg.multiHandedness.forEach((el) => {
+      msg.multiHandedness.forEach((el, index) => {
         if (el.label === "Right") {
-          if (msg.multiHandLandmarks[el.index].length != 21) {
+          if (msg.multiHandLandmarks[index].length != 21) {
             isCorrect = false;
           } else {
             isRightExisted = true;
-            inputRightHand = msg.multiHandLandmarks[el.index];
+            inputRightHand = msg.multiHandLandmarks[index];
           }
         } else if (el.label === "Left") {
-          if (msg.multiHandLandmarks[el.index].length != 21) {
+          if (msg.multiHandLandmarks[index].length != 21) {
             isCorrect = false;
           } else {
             isLeftExisted = true;
-            inputLeftHand = msg.multiHandLandmarks[el.index];
+            inputLeftHand = msg.multiHandLandmarks[index];
           }
         }
       });
@@ -236,48 +164,23 @@ module.exports = function (RED) {
         return;
       }
 
-      if (isLeftExisted) moveHand(inputLeftHand);
-      if (isRightExisted) moveHand(inputRightHand);
-
       //db에서 가져온 데이터랑 비교
       let isExistedFromOrigin = false;
-      let isExistedFromPointFour = false;
-      let isExistedFromPointTwenty = false;
+      let findHandName = "";
 
       for (let idx = 0; idx < handDataCount; idx++) {
-        moveHand(savedLeftHand[idx]);
-        moveHand(savedRightHand[idx]);
-
-        let isLeftSameFromOrigin = checkCosSimilarityFromOrigin(
+        let isLeftSameFromOrigin = checkCosSimilarity(
           inputLeftHand,
           savedLeftHand[idx],
-          isLeftExisted
-        );
-        let isLeftSameFromPointFour = checkCosSimilarityFromPointFour(
-          inputLeftHand,
-          savedLeftHand[idx],
-          isLeftExisted
-        );
-        let isLeftSameFromPointTwenty = checkCosSimilarityFromPointTwenty(
-          inputLeftHand,
-          savedLeftHand[idx],
-          isLeftExisted
+          isLeftExisted,
+          similarity
         );
 
-        let isRightSameFromOrigin = checkCosSimilarityFromOrigin(
+        let isRightSameFromOrigin = checkCosSimilarity(
           inputRightHand,
           savedRightHand[idx],
-          isRightExisted
-        );
-        let isRightSameFromPointFour = checkCosSimilarityFromPointFour(
-          inputRightHand,
-          savedRightHand[idx],
-          isRightExisted
-        );
-        let isRightSameFromPointTwenty = checkCosSimilarityFromPointTwenty(
-          inputRightHand,
-          savedRightHand[idx],
-          isRightExisted
+          isRightExisted,
+          similarity
         );
 
         //둘 모두 true인 경우 -> 이미 존재하는 경우
@@ -287,25 +190,15 @@ module.exports = function (RED) {
           isExistedFromOrigin = false;
         }
 
-        if (isLeftSameFromPointFour && isRightSameFromPointFour) {
-          isExistedFromPointFour = true;
-        } else {
-          isExistedFromOrigin = false;
-        }
-
-        if (isLeftSameFromPointTwenty && isRightSameFromPointTwenty) {
-          isExistedFromPointTwenty = true;
-        } else {
-          isExistedFromOrigin = false;
-        }
-
-        if (isExistedFromOrigin && isExistedFromPointFour && isExistedFromPointTwenty) {
+        if (isExistedFromOrigin) {
+          msg.sim = simL;
+          findHandName = savedNameList[idx];
           break;
         }
       }
 
       //이미 있는 핸드인 경우
-      if (isExistedFromOrigin && isExistedFromPointFour && isExistedFromPointTwenty) {
+      if (isExistedFromOrigin) {
         msg.status = false;
         //테스트용 나중에 지워야함
         // msg.left = leftHand;
@@ -313,8 +206,8 @@ module.exports = function (RED) {
       } else {
         msg.status = true;
         //포즈 이름 추가
-        msg.left = inputLeftHand;
-        msg.right = inputRightHand;
+        msg.inputLeftHand = inputLeftHand;
+        msg.inputRightHand = inputRightHand;
       }
 
       node.send(msg);
