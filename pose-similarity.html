@@ -1,15 +1,16 @@
 <script type="text/javascript">
   RED.nodes.registerType('pose-similarity',{
-      category: 'function',
-      color: '#a6bbcf',
+      category: 'motion pose',
+      color: '#B2A1F4',
       defaults: {
           name: {value:""}
       },
       inputs:1,
       outputs:1,
       icon: "file.png",
+      paletteLabel: "pose similarity eval",
       label: function() {
-          return this.name||"pose-similarity";
+          return this.name||"pose similarity eval";
       }
   });
 </script>
