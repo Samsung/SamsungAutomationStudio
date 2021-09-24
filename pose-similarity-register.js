@@ -124,7 +124,11 @@ module.exports = function(RED) {
                 }
                 return summation2 / summation1;
             }
+
+            
             node.send(msg)
+            
+            
         })
     }
     RED.nodes.registerType("pose-similarity-register", PoseSimilarityRegister)

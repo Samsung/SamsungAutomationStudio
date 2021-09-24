@@ -5,16 +5,26 @@ module.exports = function(RED) {
         node.on('input', function(msg, send, done) {
             const similarity = require("compute-cosine-similarity");
             const inputData = msg.payload
-
             const inputKeypoints =  inputData.inputKeypoints
             const savedKeypoints = inputData.savedKeypoints
-            const keypointsNum = inputKeypoints[0].length
 
+            // Kepoints Number Check
+            if (inputKeypoints.length == 0) {
+                msg.payload = {
+                    "result" : null,
+                    "keypoint" : null
+                }
+                node.send(msg)
+                return
+            }
+
+            const keypointsNum = inputKeypoints[0].length
             let isExist = false
             let similarPoseName
 
             // Input keypoints Preprocessing
             let inputVectors = []
+            let similarLimit = 80
             for ( let inputKeypoint of inputKeypoints) {
                 inputVectors.push(keypoinstsPreprocessing(inputKeypoint))
             } 
@@ -40,10 +50,10 @@ module.exports = function(RED) {
                 meanValue = sum / matchingValues.length
 
                 // Determine Similarity
-                if ( meanValue > 80 ) {
+                if ( meanValue > similarLimit ) {
                     isExist = true
+                    similarLimit = meanValue
                     similarPoseName = name
-                    break
                 }
 
             }
@@ -121,6 +131,7 @@ module.exports = function(RED) {
                 return summation2 / summation1;
             }
             node.send(msg)
+
         })
     }
     RED.nodes.registerType("pose-similarity", PoseSimilarity)
