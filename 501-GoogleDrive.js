@@ -35,52 +35,46 @@ module.exports = function exportFunc(RED) {
         version: "v3",
         auth,
       });
-      try {
-        const response = await ((doType) => {
-          switch (doType) {
-            case "download":
-              return drive.files.get(
-                {
-                  fileId,
-                  alt: "media",
-                },
-                {
-                  responseType: "stream",
-                },
-                function (err, { data }) {
-                  data
-                    .on("end", () => {})
-                    .on("error", (err) => {
-                      msg.payload = `Error during download: ${err}`;
-                    })
-                    .pipe(fs.createWriteStream(`${filePath}/${fileName}`));
-                }
-              );
-            case "upload":
-              return drive.files
-                .create({
-                  requestBody: {
-                    name: fileName,
-                    mimeType: mimeType[dataType],
-                  },
-                  media: {
-                    mimeType: mimeType[dataType],
-                    body: fs.createReadStream(filePath),
-                  },
-                })
-                .then((res) => {
-                  msg.filePath = filePath;
-                })
-                .catch((err) => {
-                  msg.payload = err;
-                });
-          }
-        })(doType);
-      } catch (error) {
-        msg.payload = error;
+      async function googleAPI(doType) {
+        if (doType === "download" || doType === "read") {
+          return await drive.files.get(
+            {
+              fileId,
+              alt: "media",
+            },
+            {
+              responseType: "stream",
+            }
+          );
+        } else if (doType === "upload") {
+          return await drive.files.create({
+            requestBody: {
+              name: fileName,
+              mimeType: mimeType[dataType],
+            },
+            media: {
+              mimeType: mimeType[dataType],
+              body: fs.createReadStream(`${filePath}\\${fileName}`),
+            },
+          });
+        }
       }
-      msg.filePath = filePath;
-      this.send(msg);
+
+      googleAPI(doType)
+        .then((res) => {
+          res.data.pipe(fs.createWriteStream(`${filePath}\\${fileName}`));
+          if (doType === "read") {
+            msg.buffer =
+              res.data["_outBuffer"] ||
+              res.data["_readableState"]["buffer"]["head"]["data"];
+          } else {
+            msg.filePath = `${filePath}\\${fileName}`;
+          }
+          send(msg);
+        })
+        .catch((err) => {
+          console.log("error: ", err);
+        });
     });
   }
   RED.nodes.registerType("GoogleDrive", GoogleDriveNode);

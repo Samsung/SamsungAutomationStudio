@@ -22,7 +22,6 @@
     oneditprepare: function () {
       $("#node-input-doType").on("change", function () {
         const val = $(this).val();
-
         switch (val) {
           case "download":
             $("#node-input-fileId-row").show();
@@ -74,6 +73,7 @@
     <select name="doType" id="node-input-doType">
       <option value="download">Download to Local</option>
       <option value="upload">Upload to Google Drive</option>
+      <option value="read">Read a File</option>
     </select>
   </div>
   <div class="form-row" id="node-input-fileId-row">
@@ -128,14 +128,38 @@
     <dt>Client ID</dt>
     <dt>Client Secret Key</dt>
     <dd>
-      먼저 이 노드를 사용하기 위해서는 Google Cloud Platform으로 이동하여 OAuth
-      클라이언트 ID를 생성해야 합니다.
+      You need to go to the google cloud platform console to get the client ID
+      and client secret key. Select your project and go to APIs & Services. And
+      create an OAuth client ID from credentials. After that, go to credentials
+      and click on OAuth client ID. Enter
+      "https://developers.google.com/oauthplayground" in Redirect URIs and click
+      the "create" button. If it was issued normally, you will be able to check
+      the client id and client secret key.
     </dd>
     <dt>Refresh Token</dt>
+    <dd>
+      You can get a refresh token by going to
+      https://developers.google.com/oauthplayground. Select Drive API v3 from
+      the API list, click "https://www.googleapis.com/auth/drive", and then
+      click "Authorize APIs". Connect with your Google account and allow access
+      to Google Drive. If it proceeds normally, you will be able to check the
+      refresh token.
+    </dd>
     <dt>What to do</dt>
+    <dd>You can choose download or upload mode.</dd>
     <dt>File ID</dt>
+    <dd>Enter the ID of the file on the drive.</dd>
     <dt>File Name</dt>
+    <dd>
+      Enter the name of the file to be saved in Local Or the name of the file to
+      be saved in Drive.
+    </dd>
     <dt>File Path</dt>
+    <dd>
+      Enter the path without the file name when downloading. And enter the Full
+      Path(with file name) when uploading.
+    </dd>
     <dt>Data Type</dt>
+    <dd>You must select the data type of the file.</dd>
   </dl>
 </script>
