@@ -11,5 +11,8 @@
       "hand-register": "hand-register.js",
       "hand-find": "hand-find.js"
     }
+  },
+  "dependencies": {
+    "compute-cosine-similarity": "^1.0.0"
   }
 }
