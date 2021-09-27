@@ -10,8 +10,6 @@ function handDataPreprocessing(inputHandData) {
   let maxX = 0.0;
   let maxY = 0.0;
 
-  let sum = 0;
-
   for (let idx = 0; idx < inputHandData.length; idx++) {
     let x = inputHandData[idx].x;
     let y = inputHandData[idx].y;
@@ -32,8 +30,6 @@ function handDataPreprocessing(inputHandData) {
       maxY = y;
     }
 
-    sum += x ** 2 + y ** 2;
-
     inputX[idx] = x;
     inputY[idx] = y;
   }
@@ -51,12 +47,12 @@ function handDataPreprocessing(inputHandData) {
 
 function checkCosSimilarity(inputHandData, savedHandData, isExisted, similarity) {
   if (isExisted) {
-    if (savedHandData == "") {
+    if (savedHandData == null) {
       return false;
     }
   } else {
     //둘다 없는 경우
-    if (savedHandData == "") {
+    if (savedHandData == null) {
       return true;
     } else {
       return false;
@@ -91,12 +87,22 @@ module.exports = function (RED) {
       const similarity = require("compute-cosine-similarity");
 
       /*--------------- DB 데이터 처리 -------------------------*/
-      const handDataCount = msg.savedNameList.length;
+      const handDataCount = msg.savedLeftHand.length;
       let savedLeftHand = msg.savedLeftHand;
       let savedRightHand = msg.savedRightHand;
+      let savedNameList = msg.savedNameList;
+      let inputName = msg.poseName;
+
+      /*--------------- 핸드 이름 중복 체크 -------------------------*/
+      if (savedNameList.includes(inputName)) {
+        msg.status = false;
+        node.send(msg);
+
+        return;
+      }
       /*--------------- 유사도 체크 시작 -------------------------*/
-      let inputLeftHand = [];
-      let inputRightHand = [];
+      let inputLeftHand = null;
+      let inputRightHand = null;
 
       //손의 모든 포인트가 나온지 여부
       let isCorrect = true;
@@ -166,7 +172,6 @@ module.exports = function (RED) {
 
       //db에서 가져온 데이터랑 비교
       let isExistedFromOrigin = false;
-      let findHandName = "";
 
       for (let idx = 0; idx < handDataCount; idx++) {
         let isLeftSameFromOrigin = checkCosSimilarity(
@@ -192,7 +197,6 @@ module.exports = function (RED) {
 
         if (isExistedFromOrigin) {
           msg.sim = simL;
-          findHandName = savedNameList[idx];
           break;
         }
       }
