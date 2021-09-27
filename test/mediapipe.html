@@ -1,202 +1,182 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-        <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script> -->
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-    </head>
-    
-    <body>
-        <div class="container">
-        <video class="input_video"></video>
-        <!-- <button id="start-btn">start</button> -->
-        <canvas class="output_canvas" width="1280px" height="720px"></canvas>
-        <!-- <div class="landmark-grid-container"></div> -->
-        </div>
-    </body>
-</html>
+      <html>
+          <head>
+              <meta charset="utf-8">
+              <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+              <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+              <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+              <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+              <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+          </head>
+          
+          <body>
+              <div class="container">
+              <video class="input_video"></video>
+              <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+              </div>
+          </body>
+      </html>
+      
+      <script type="module">
 
-<script type="module">
-function startVideo(canvasDom, render_func) {
-
-    // var canvas = canvasDom.cloneNode()
-    // var ctx = canvas.getContext('2d')
-
-    // render_func()
-
-    var fps = 60
-    var stopLoop = audioTimerLoop(render_func, 1000 / fps)
-
-    // window.onbeforeunload = function () {
-    //     stopLoop()
-    // }
-
-    // setTimeout(function() {
-    //     stopLoop()
-    // }, 5000)
-}
-
-function audioTimerLoop(callback, frequency) {
-
-    // 아래 링크를 참고함
-    // https://stackoverflow.com/questions/44156528/canvas-doesnt-repaint-when-tab-inactive-backgrounded-for-recording-webgl
-
-    var freq = frequency / 1000  // AudioContext time params are in seconds
-    var aCtx = new AudioContext()
-    var silence = aCtx.createGain()
-    silence.gain.value = 0
-    silence.connect(aCtx.destination)  // ??
-
-    onOSCend()
-
-    var stopped = false  // A flag to know when we'll stop the loop
-    function onOSCend() {
-        var osc = aCtx.createOscillator()
-        osc.onended = onOSCend  // so we can loop
-        osc.connect(silence)  // ??
-        osc.start(0)  // start it now
-        osc.stop(freq)  // stop it next frame
-
-        callback()  // render
-        
-        if (stopped) {
-            osc.onended = function () {
-                aCtx.close()
-                return
-            }
-        }
-    }
-    // return a function to stop the loop
-    return function() {
-        stopped = true
-    }
-}
+      console.log(0)
+      // 비활성화된 탭에서도 캔버스가 지속적으로 업데이트되도록 하기 위해
+      // 재귀적으로 생성되는 빈 오디오 트랙의 Loop를 사용합니다. (각 오디오 트랙의 지속시간은 10fps 기준 0.1초)
+      // 빈 오디오 트랙의 생성자 함수에 캔버스 렌더링 메소드를 포함해 지속적 렌더링이 가능해집니다.
+      // 관련 링크 : https://stackoverflow.com/questions/44156528/canvas-doesnt-repaint-when-tab-inactive-backgrounded-for-recording-webgl
 
 
-const videoElement = document.getElementsByClassName('input_video')[0]
-const canvasElement = document.getElementsByClassName('output_canvas')[0]
-const canvasCtx = canvasElement.getContext('2d')
-// // const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0]
-// // const grid = new LandmarkGrid(landmarkContainer)
-
-// // const wsData = new WebSocket('wss://15.165.220.70:1880/ws/data')
-// // const wsVideo = new WebSocket('wss://15.165.220.70:1880/ws/video')
-const wsData = new WebSocket('ws://localhost:1880/ws/data')
-const wsVideo = new WebSocket('ws://localhost:1880/ws/video')
-
-function onResults(results) {
-    // if (!results.poseLandmarks) {
-    //     grid.updateLandmarks([])
-    //     return
-    // }
-    
-    canvasCtx.save()
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
-    // canvasCtx.drawImage(results.segmentationMask, 0, 0,
-    //                     canvasElement.width, canvasElement.height)
-    
-    // Only overwrite existing pixels.
-    // canvasCtx.globalCompositeOperation = 'source-in'
-    // canvasCtx.fillStyle = '#00FF00'
-    // canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height)
-    
-    // Only overwrite missing pixels.
-    canvasCtx.globalCompositeOperation = 'destination-atop'
-    canvasCtx.drawImage(
-        results.image, 0, 0, canvasElement.width, canvasElement.height)
-    
-    canvasCtx.globalCompositeOperation = 'source-over'
-    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-                    {color: '#00FF00', lineWidth: 4})
-    drawLandmarks(canvasCtx, results.poseLandmarks,
-                    {color: '#FF0000', lineWidth: 2})
-    canvasCtx.restore()
-    
-    if (results.poseLandmarks) {
-        // console.log('websocket sending..')
-        if (wsData.readyState === 1) {
-            wsData.send(JSON.stringify(results.poseLandmarks))
-        }
-            
-        if (wsVideo.readyState === 1) {
-            canvasElement.toBlob(function (blob) {
-                wsVideo.send(JSON.stringify(blob))
-            })
-        }
-    }
-                    
-    // grid.updateLandmarks(results.poseWorldLandmarks)
-}
-
-const pose = new Pose({locateFile: (file) => {
-    return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
-}})
-
-pose.setOptions({
-    modelComplexity: 1,
-    smoothLandmarks: true,
-    enableSegmentation: true,
-    smoothSegmentation: true,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5
-})
-
-pose.onResults(onResults)
-
-// const camera = new Camera(videoElement, {
-//     onFrame: async () => {
-//         await pose.send({image: videoElement})
-//     },
-//     width: 1280,
-//     height: 720
-// })
-// camera.start()
+      // 디텍션 시작 함수
+      function startDetect(renderFunc) {
+          // 최초의 오디오 트랙을 생성한다.
+          // (Loop 정지 함수는 현재 사용하지 않고 있음, 개발자의 취지에 따라 커스터마이징 가능)
+          var fps = 60
+          var stopLoop = audioTimerLoop(renderFunc, 1000 / fps)
+      }
 
 
-function render() {
-    pose.send({ image: videoElement })
+      // 오디오 트랙 Loop 생성자
+      function audioTimerLoop(renderFunc, frequency) {
+          var freq = frequency / 1000  // AudioContext는 second 단위
+          var aCtx = new AudioContext()
+          var silence = aCtx.createGain()
+          silence.gain.value = 0
+          silence.connect(aCtx.destination)  // 오디오 트랙 비우기 (추측)
 
-    // console.log('rendering..')
-    // if (wsData.readyState === 1) {
-    //     wsData.send(JSON.stringify({'time': new Date()}))
-    // }
-}
+          onOSCend()
 
-const constraints = {
-    audio: false, // if you want test audio, give the value 'true'.
-    video: { width: 1280, height: 720 }
-}
+          var stopped = false  // loop를 멈추기 위한 flag
+          async function onOSCend() {
+              // 캔버스 렌더링 (비동기)
+              await renderFunc()
 
-navigator.mediaDevices.getUserMedia(constraints)
-    .then(stream => {
-        videoElement.srcObject = stream
-        videoElement.onloadedmetadata = function(e) {
-            videoElement.play()
-                .then(() => {
-                    startVideo(videoElement, render)
-                })
-        }
-    })
-    .catch(err => {
-        console.log(err)
-    })
+              // loop 생성
+              var osc = aCtx.createOscillator()
+              osc.onended = onOSCend  // loop가 되는 이유
+              osc.connect(silence)
+              osc.start()  // 당장 시작
+              osc.stop(aCtx.currentTime + freq)  // 한 프레임 이후 정지
+              
+              // loop 정지
+              if (stopped) {
+                  osc.onended = function () {
+                      aCtx.close()
+                      return
+                  }
+              }
+          }
+          // loop를 정지하기 위한 함수를 반환한다.
+          return function() {
+              stopped = true
+          }
+      }
 
 
-// render()
+      // DOM 엘리먼트
+      const videoElement = document.getElementsByClassName('input_video')[0]
+      const canvasElement = document.getElementsByClassName('output_canvas')[0]
+      const canvasCtx = canvasElement.getContext('2d')
 
-// videoElement.onloadeddata = function () {
-//     startVideo(videoElement, render)
-// }
 
-// setTimeout(() => {
-//     startVideo(videoElement, render)
-// }, 3000)
+      // Detection 데이터 전송할 웹소켓 인스턴스 생성
+      const dataWebSocket = new WebSocket('ws://localhost:1880/ws/data')
 
-// const btn = document.getElementById('start-btn')
-// btn.onclick = function() {
-//     startVideo(videoElement, render)
-// }
-</script>
+
+      // 미러링 관련 소켓 인스턴스 생성
+      const isMirror = 1
+      if (isMirror) {
+          const mirrorPort = 1881
+          const mirrorSocket = io('http://localhost:' + mirrorPort)
+          const urlCreator = window.URL || window.webkitURL
+          mirrorSocket.on("connect", () => {
+              console.log("connection server")
+              mirrorSocket.emit("echo", "echo from mediapipe")
+          })
+      }
+
+
+      // 캔버스에 Pose Detection 결과값 렌더링하는 함수
+      function onResults(results) {
+          // 빈 캔버스 로드
+          canvasCtx.save()
+          canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
+          
+          // 캔버스에 비디오 화면 표시
+          canvasCtx.globalCompositeOperation = 'destination-atop'
+          canvasCtx.drawImage(
+              results.image, 0, 0, canvasElement.width, canvasElement.height)
+          
+          // 캔버스에 디텍션 랜드마크 표시
+          canvasCtx.globalCompositeOperation = 'source-over'
+          drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+                          {color: '#00FF00', lineWidth: 4})
+          drawLandmarks(canvasCtx, results.poseLandmarks,
+                          {color: '#FF0000', lineWidth: 2})
+          canvasCtx.restore()
+          
+          // 랜드마크 데이터 웹소켓으로 전송
+          if (results.poseLandmarks) {
+              if (dataWebSocket.readyState === 1) {
+                  dataWebSocket.send(JSON.stringify(results.poseLandmarks))
+              }
+          }
+          
+          // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
+          // https://github.com/Infocatcher/Right_Links/issues/25
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+          if (isMirror && mirrorSocket.connected) {
+              canvasElement.toBlob(function (blob) {
+                  const imageUrl = urlCreator.createObjectURL(blob)
+                  mirrorSocket.emit('video', imageUrl)
+              }, 'image/webp')
+          }
+      }
+
+
+      // Mediapipe의 Pose 인스턴스 생성
+      const pose = new Pose({locateFile: (file) => {
+          return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
+      }})
+
+
+      // Pose 인스턴스 설정
+      pose.setOptions({
+          modelComplexity: 1,
+          smoothLandmarks: true,
+          enableSegmentation: true,
+          smoothSegmentation: true,
+          minDetectionConfidence: 0.5,
+          minTrackingConfidence: 0.5
+      })
+      pose.onResults(onResults)
+
+
+      // 렌더링 함수 (비동기)
+      async function render() {
+          await pose.send({ image: videoElement })
+      }
+
+
+      // 미디어 장치 연결 및 Detection 시작
+      const mediaConstraints = {
+          audio: false, // 음성 포함하려면 값을 'true'로 바꿔야 함
+          video: { width: 1280, height: 720 }
+      }
+      console.log(1)
+      navigator.mediaDevices.getUserMedia(mediaConstraints)
+          .then(stream => {
+              console.log(2)
+              videoElement.srcObject = stream
+              videoElement.oncanplay = function(e) {
+                  console.log(3)
+                  videoElement.play()
+                      .then(() => {
+                          console.log(4)
+                          startDetect(render)
+                      })
+              }
+          })
+          .catch(err => {
+              console.log(err)
+          })
+    </script>

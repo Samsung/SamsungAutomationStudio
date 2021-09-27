@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+            <meta charset="utf-8">
+            <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+            <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script> -->
+            <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+            <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+        </head>
+        
+        <body>
+            <div class="container">
+            <video class="input_video"></video>
+            <!-- <button id="start-btn">start</button> -->
+            <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+            <!-- <div class="landmark-grid-container"></div> -->
+            </div>
+        </body>
+    </html>
+    
+    <script type="module">
+    function startVideo(canvasDom, render_func) {
+      console.log('start video ok')
+        var fps = 100
+        var stopLoop = audioTimerLoop(render_func, 1000 / fps)
+
+        document.addEventListener('keypress', stopLoop);
+    }
+    
+    function audioTimerLoop(callback, frequency) {
+    
+        // 아래 링크를 참고함
+        // https://stackoverflow.com/questions/44156528/canvas-doesnt-repaint-when-tab-inactive-backgrounded-for-recording-webgl
+    
+        var freq = frequency / 1000  // AudioContext time params are in seconds
+        var aCtx = new AudioContext()
+        var silence = aCtx.createGain()
+        silence.gain.value = 0
+        silence.connect(aCtx.destination)  // ??
+    
+        onOSCend()
+        console.log('loop start ok')
+    
+        var stopped = false  // A flag to know when we'll stop the loop
+        async function onOSCend() {
+            await callback()  // render
+            
+            var osc = aCtx.createOscillator()
+            osc.onended = onOSCend  // so we can loop
+            osc.connect(silence)  // ??
+            osc.start()  // start it now
+            osc.stop(aCtx.currentTime + freq)  // stop it next frame
+            
+            if (stopped) {
+                osc.onended = function () {
+                    aCtx.close()
+                    return
+                }
+            }
+        }
+        // return a function to stop the loop
+        return function() {
+            stopped = true
+        }
+    }
+    
+    
+    const videoElement = document.getElementsByClassName('input_video')[0]
+    const canvasElement = document.getElementsByClassName('output_canvas')[0]
+    const canvasCtx = canvasElement.getContext('2d')
+    // const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0]
+    // const grid = new LandmarkGrid(landmarkContainer)
+    
+    // const wsData = new WebSocket('wss://15.165.220.70:1880/ws/data')
+    const wsData = new WebSocket('ws://localhost:1880/ws/data')
+    
+    function onResults(results) {
+      console.log('result ok1')
+      
+      if (results) {
+          console.log('result ok2')
+            // if (!results.poseLandmarks) {
+            //     grid.updateLandmarks([])
+            //     return
+            // }
+            
+            canvasCtx.save()
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
+            // canvasCtx.drawImage(results.segmentationMask, 0, 0,
+            //                     canvasElement.width, canvasElement.height)
+            
+            // Only overwrite existing pixels.
+            // canvasCtx.globalCompositeOperation = 'source-in'
+            // canvasCtx.fillStyle = '#00FF00'
+            // canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height)
+            
+            // Only overwrite missing pixels.
+            canvasCtx.globalCompositeOperation = 'destination-atop'
+            canvasCtx.drawImage(
+                results.image, 0, 0, canvasElement.width, canvasElement.height)
+            
+            canvasCtx.globalCompositeOperation = 'source-over'
+            drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+                            {color: '#00FF00', lineWidth: 4})
+            drawLandmarks(canvasCtx, results.poseLandmarks,
+                            {color: '#FF0000', lineWidth: 2})
+            canvasCtx.restore()
+            
+            if (results.poseLandmarks) {
+                // console.log('websocket sending..')
+                if (wsData.readyState === 1) {
+                    wsData.send(JSON.stringify(results.poseLandmarks))
+                }
+            }
+            // grid.updateLandmarks(results.poseWorldLandmarks)
+        }
+    }
+    
+    const pose = new Pose({locateFile: (file) => {
+      console.log('cdn ok')
+        return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
+    }})
+    
+    pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        enableSegmentation: true,
+        smoothSegmentation: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+    })
+    
+    pose.onResults(onResults)
+    
+    async function render() {
+        await pose.send({ image: videoElement })
+    }
+    
+    const constraints = {
+        audio: false, // if you want test audio, give the value 'true'.
+        video: { width: 1280, height: 720 }
+    }
+    
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            videoElement.srcObject = stream
+            videoElement.oncanplay = function(e) {
+                videoElement.play()
+                    .then(() => {
+                        startVideo(videoElement, render)
+                    })
+            }
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    </script>

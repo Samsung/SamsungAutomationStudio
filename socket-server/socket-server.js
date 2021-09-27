@@ -1,6 +1,6 @@
 "use strict"
 
-const path = require('path')
+
 const http = require('http')
 const express = require('express')
 const io = require('socket.io')
@@ -17,10 +17,10 @@ module.exports = function(RED) {
         const port = config.port
         const app = express()
         const httpServer = http.createServer(app).listen(port, () => {
-            console.log('포트 1881에 연결되었습니다.')
+            console.log(`Socket.io : 포트 ${port}이 준비되었습니다.`)
         })
 
-        // CORS 설정
+        // CORS 설정 (아래 링크를 참고하였음)
         // https://socket.io/docs/v3/handling-cors/
         const socketServer = io(httpServer, {
             cors: {
@@ -31,21 +31,17 @@ module.exports = function(RED) {
             }
         });
         socketServer.on('connection', socket => {
-            console.log('connect client by Socket.io')
+            console.log(`Socket.io : 포트 ${port}에 클라이언트가 접속했습니다.`)
 
             socket.on('video', msg => {
-                // console.log(msg)
                 socketServer.emit('video', msg)
             })
 
             socket.on('echo', msg => {
-                // console.log(msg)
-                socketServer.emit('echo', 'hello from server')
+                socketServer.emit('echo', `Socket.io : Hello from ${port}`)
             })
         })
-    
-        // 다른 플로우가 배포되면, 기존의 노드들은 삭제됩니다.
-        // 이 삭제를 리스닝해서 무언가를 해야 한다면 아래처럼 하면 됩니다.
+        
         this.on('close', function() {
             // do something
         })

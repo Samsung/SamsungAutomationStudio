@@ -1,7 +1,5 @@
 "use strict"
 
-const path = require('path')
-
 
 module.exports = function(RED) {
 
@@ -25,23 +23,20 @@ module.exports = function(RED) {
             <img id="video" src="" />
 
             <script>
-
-                // there should be no IP or port in parameter.
-                // https://stackoverflow.com/questions/24526166/socketio-err-connection-refused
-                // const socketClient = io();
-                
-                const socketClient = io('http://localhost:1881');
-                const videoElem = document.getElementById('video');
-
-                socketClient.on("connect", () => {
-                    console.log("connection server");
-
-                    socketClient.emit("echo", "echo from monitor")
+                // DOM 엘리먼트
+                const videoElem = document.getElementById('video')
+            
+                // 미러링 관련 소켓 인스턴스 생성
+                const mirrorPort = ${config.mirrorPort}
+                const mirrorSocket = io('http://localhost:' + mirrorPort)
+                mirrorSocket.on("connect", () => {
+                    console.log("connection server")
+                    mirrorSocket.emit("echo", "echo from monitor")
                 });
 
-                socketClient.on("video", (msg) => {
-                    // console.log('blob received')
-                    videoElem.src = msg;
+                // 수신한 데이터를 화면에 출력
+                mirrorSocket.on("video", (msg) => {
+                    videoElem.src = msg
                 })
             </script>
             </body>

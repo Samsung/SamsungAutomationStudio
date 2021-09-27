@@ -24,6 +24,7 @@
       order: {value: 0},
       width: {value: 6},
       height: {value: 6},
+      mirrorPort: {value: 1881, required:true, validate:RED.validators.number()},
 
       // 한글자, id, type, wires, inputs, outputs 사용불가
     },
@@ -54,6 +55,11 @@
     <input type="text" id="node-input-name" placeholder="Name">
     <!-- 'text' for string/number properties, or 'checkbox' for boolean properties. -->
     <!--  a <select> element can be used if there is a restricted set of choices. -->
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-mirrorPort"><i class="fa fa-tag"></i> Mirror Port</label>
+    <input type="text" id="node-input-mirrorPort" placeholder="(default) 1881">
   </div>
 </script>
 

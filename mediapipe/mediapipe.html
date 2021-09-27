@@ -24,6 +24,8 @@
       order: {value: 0},
       width: {value: 6},
       height: {value: 6},
+      isMirror: {value: 1, required:true, validate:RED.validators.number()},
+      mirrorPort: {value: 1881, required:true, validate:RED.validators.number()},
 
       // 한글자, id, type, wires, inputs, outputs 사용불가
     },
@@ -41,9 +43,6 @@
         audio: false, // if you want test audio, give the value 'true'.
         video: { width: 1280, height: 720 }
       }
-
-      console.log('navigator: ', navigator)
-      console.log('navigator.mediaDevices: ', navigator.mediaDevices)
 
       navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
@@ -74,6 +73,16 @@
     <input type="text" id="node-input-name" placeholder="Name">
     <!-- 'text' for string/number properties, or 'checkbox' for boolean properties. -->
     <!--  a <select> element can be used if there is a restricted set of choices. -->
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-isMirror"><i class="fa fa-tag"></i> Is Mirror</label>
+    <input type="text" id="node-input-isMirror" placeholder="(1: true, 0: false) 1">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-mirrorPort"><i class="fa fa-tag"></i> Mirror Port</label>
+    <input type="text" id="node-input-mirrorPort" placeholder="(default) 1881">
   </div>
 
   <div class="form-row" style="text-align: left;">
