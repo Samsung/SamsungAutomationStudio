@@ -152,20 +152,16 @@ module.exports = function(RED) {
             const ws = new WebSocket('ws://localhost:1880/ws/mediapipe');
             var poseName = null;
           
+            /* visualize and transmit registered data  */
             function onCapture(motionName) {
               setTimeout((motionName) => {
-                // motionRegister(motionName);
-          
                 captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height);
                 var detail = "";
                 const fixed = 5;
           
-                // hands motion keypoint data table
-          
                 detail += "<table style='display:inline;margin:0px 5px;'>";
                 detail += "<caption>Estimated Pose</caption>";
                 detail += "<tr><th></th><th>x</th><th>y</th><th>z</th><th>visibility</th></tr>";
-                //(visibility:"+poseData[idx].visibility.toFixed(fixed)+")
                 for (let idx = 0; idx < poseData.poseLandmarks.length; idx++) {
                   detail += "<tr>";
                   detail += "<td align='center'>" + idx + "</td>";
@@ -191,18 +187,8 @@ module.exports = function(RED) {
               }, document.getElementById("secondTimer").value * 1000, motionName);
             }
           
-            function motionRegister(motionName) {
-              var result = $.post("regist", { "name": motionName, "keypoints": poseData }, function (data) {
-                alert("success");
-              }).done(function () {
-                alert("second success");
-              }).fail(function () {
-                alert("error");
-              })
-            };
-          
+            /*  visualize real-time pose data and transmit data */ 
             function onResults(results) {
-          
               canvasCtx.save()
               canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
               canvasCtx.globalCompositeOperation = 'destination-atop'
@@ -227,6 +213,7 @@ module.exports = function(RED) {
               canvasCtx.restore();
             }
           
+            /* get pose data from mediapipe */
             const pose = new Pose({
               locateFile: (file) => {
                 return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
@@ -252,7 +239,7 @@ module.exports = function(RED) {
               height: 720
             })
             camera.start()
-          </script>          
+          </script>
           `
           return html
         }
