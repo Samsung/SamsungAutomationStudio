@@ -24,10 +24,10 @@
                 value: "",
                 type: "text",
             },
-            // fileId: {
-            //     value: "",
-            //     type: "text",
-            // },
+            targetPath: {
+                value: "",
+                type: "text",
+            },
             dataType: {
                 value: "",
                 type: "text",
@@ -39,19 +39,17 @@
         outputs: 1,
         label(){
             return this.name || "OneDrive"
-        }
-        // oneditprepare: function() {
-		// 	$("#node-input-doType").on("change", function() {
-		// 		const val = $(this).val();
-		// 		switch (val) {
-		// 			case 'download':
-		// 				$("#node-input-fileId-row").show();
-		// 				break;
-		// 			case 'upload':
-		// 				$("#node-input-fileId-row").hide();
-		// 		}
-		// 	});
-		// }
+        },
+        oneditprepare: function() {
+			$("#node-input-doType").on("change", function() {
+				const val = $(this).val();
+                if (val === 'read') {
+                    $("#node-input-filePath-row").hide();
+                } else {
+                    $("#node-input-filePath-row").show();
+                }
+			});
+		}
     })
 </script>
 <script type="text/html" data-template-name="OneDrive">
@@ -69,17 +67,14 @@
             <option value="" selected>Select What to do</option>
             <option value="download">Download to Local</option>
             <option value="upload">Upload to OneDrive</option>
+            <option value="read">Read a File</option>
         </select>
     </div>
-    <!-- <div class="form-row" id="node-input-fileId-row">
-        <label for="node-input-fileId"><i class="fa fa-file-text-o"></i> File ID</label>
-        <input type="text" id="node-input-fileId" placeholder="File ID">
-    </div> -->
     <div class="form-row">
         <label for="node-input-fileName"><i class="fa fa-file-text-o"></i> File Name</label>
         <input type="text" id="node-input-fileName" placeholder="example.png">
     </div>
-    <div class="form-row">
+    <div class="form-row" id="node-input-filePath-row">
         <label for="node-input-filePath"><i class="fa fa-folder-o"></i> File Path</label>
         <input type="text" id="node-input-filePath" placeholder="C:/">
     </div>

@@ -1,5 +1,6 @@
 const request = require('request-promise-native')
 const fs = require('fs')
+const { time } = require('console')
 
 
 module.exports = RED => {
@@ -31,32 +32,38 @@ module.exports = RED => {
             const dataType = msg.payload.dataType || config.dataType
 
             try {
+                var params = {
+                    accessToken,
+                    targetPath,
+                    fileName,
+                    filePath,
+                    dataType,
+                }
                 switch (doType) {
                     case 'download':
-                        var params = {
-                            accessToken,
-                            targetPath,
-                            fileName,
-                            filePath,
-                        }
-                        download(params)
+                        download(params).then((val) => {
+                            msg.filePath = `${params.filePath}/${params.fileName}`;
+                            msg.data = val;
+                            this.send(msg);
+                        });
                         break;
                     case 'upload':
-                        var params = {
-                            accessToken,
-                            fileName,
-                            filePath,
-                            targetPath,
-                            dataType,
-                        }
-                        upload(params)
+                        upload(params).then((val) => {
+                            msg.filePath = `${params.filePath}/${params.fileName}`;
+                            msg.data = val;
+                            this.send(msg);
+                        });
+                        break;
+                    case 'read':
+                        read(params).then((val) => {
+                            msg.data = val;
+                            this.send(msg);
+                        });
                 }
             } catch (error) {
-                msg.payload = error
-            } finally {
-                msg.payload = `${filePath}/${fileName}`
-                this.send(msg)
-            }
+                msg.payload = error;
+                this.send(msg);
+            } 
         })
     }
 
@@ -81,6 +88,7 @@ module.exports = RED => {
         var response = await request(options)
         const fileId = JSON.parse(response).id
         
+        const path = `${params.filePath}/${params.fileName}`;
         var options = {
             method: 'GET',
             uri: apiUrl + 'items/' + fileId + '/content',
@@ -88,16 +96,15 @@ module.exports = RED => {
                 'Authorization': 'Bearer ' + params.accessToken
             },
         }
-        const item = request(options);
-        const writeStream = fs.createWriteStream(`${params.filePath}/${params.fileName}`)
+        const item = await request(options);
+        const writeStream = fs.createWriteStream(path);
+        const buffer = Buffer.from(item);
 
-        item.pipe(writeStream)
-        item.on('error', err => {
-            throw err
-        })
+        writeStream.write(buffer);
+        return buffer;
     }
 
-    function upload(params) {
+    async function upload(params) {
         if (!params.accessToken) {
             throw new Error('Missing params.accessToken')
         }
@@ -111,6 +118,7 @@ module.exports = RED => {
             throw new Error('Missing params.dataType')
         }
 
+        const path = `${params.filePath}/${params.fileName}`;
         var options = {
             method: 'PUT',
             uri: apiUrl + 'items/root:/' + params.targetPath + params.fileName + ':/content',
@@ -118,9 +126,40 @@ module.exports = RED => {
                 'Authorization': params.accessToken,
                 'Content-Type': mimeType[params.dataType],
             },
-            body: fs.createReadStream(`${params.filePath}/${params.fileName}`, 'binary'),
+            body: fs.createReadStream(path, 'binary'),
         }
-        request(options)
+        request(options);
+        const data = await fs.promises.readFile(path);
+        return Buffer.from(data);
+    }
+
+    async function read(params) {
+        if (!params.accessToken) {
+            throw new Error('Missing params.accessToken')
+        }
+        if (!params.fileName) {
+            throw new Error('Missing params.fileName')
+        }
+
+        var options = {
+            method: 'GET',
+            uri: apiUrl + 'root:/' + params.targetPath + params.fileName,
+            headers: {
+                'Authorization': params.accessToken
+            },
+        }
+        var response = await request(options)
+        const fileId = JSON.parse(response).id
+        
+        var options = {
+            method: 'GET',
+            uri: apiUrl + 'items/' + fileId + '/content',
+            headers: {
+                'Authorization': 'Bearer ' + params.accessToken
+            },
+        }
+        const item = await request(options);
+        return Buffer.from(item);
     }
 
     RED.nodes.registerType('OneDrive', OneDriveNode)
