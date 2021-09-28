@@ -13,17 +13,100 @@ module.exports = function(RED) {
             <html>
                 <head>
                     <meta charset="utf-8">
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
                     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
                     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
                     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
                     <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+
+                    <style>
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                
+                    th,
+                    td {
+                        border: 1px solid rgb(216, 216, 216);
+                        padding: 3px;
+                    }
+                
+                    .tooltip {
+                        position: relative;
+                        display: inline-block;
+                    }
+                
+                    .tooltip .tooltip-content {
+                        visibility: hidden;
+                        background-color: rgba(255, 255, 255, 0.8);
+                        color: black;
+                        text-align: center;
+                        position: absolute;
+                        top: 3px;
+                        left: 3px;
+                        padding-left: 15px;
+                        padding-right: 15px;
+                        margin-top: 0px;
+                        border-radius: 10px;
+                        z-index: 1;
+                    }
+                
+                    .tooltip:hover .tooltip-content {
+                        visibility: visible;
+                    }
+                
+                    #regist-btn {
+                        background-color: #B2A1F4;
+                        border: 1px solid grey;
+                        border-left: none;
+                        height: 21px;
+                        color: white;
+                    }
+                
+                    #regist-btn:hover {
+                        background-color: #7557f0;
+                        cursor: pointer;
+                    }
+                    </style>
                 </head>
                 
                 <body>
-                    <div class="container">
-                    <video class="input_video"></video>
-                    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+                    <div align="center" style="min-height: 800px;">
+                        <h1>Pose Detection Page</h1>
+                        <div style="display: inline-block;" align="center" class="tooltip">
+                        <video class="input_video" width="600px" height="340px" crossorigin="anonymous"
+                            style="border:3px solid grey"></video><br>
+                        <div class="tooltip-content">
+                            <p>Your Camera</p>
+                        </div>
+                        </div>
+                        <div style="display: inline-block;" align="center" class="tooltip">
+                        <canvas class="output_canvas" width="600px" height="340px" style="border:3px solid #B2A1F4"></canvas><br>
+                        <div class="tooltip-content">
+                            <p>Tracking your Pose</p>
+                        </div>
+                        </div>
+                        <div>
+                        <br>
+                        <select id="secondTimer">
+                            <option value="0" selected>Now</option>
+                            <option value="1">1s Timer</option>
+                            <option value="2">2s Timer</option>
+                            <option value="3">3s Timer</option>
+                        </select>
+                        <input id="pose-motion-name" type="text" placeholder="Motion Pose Name"><button id="regist-btn">Regist</button>
+                        </div>
+                        <div id="result-div" style="display: none;">
+                        <p id="motion-result-message"></p>
+                        <canvas class="capture_canvas" width="480px" height="270px" style="border:1px solid black"></canvas>
+                        <div id="motion-result-keypoint"></div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div align="center">
+                        <a href="https://github.com/5FNSaaS">5FNSaaS</a>
                     </div>
                 </body>
             </html>
@@ -81,14 +164,82 @@ module.exports = function(RED) {
             }
 
 
+            /* motion regist timer */
+            const timerSecond = document.getElementById("secondTimer");
+            var second = timerSecond.options[timerSecond.selectedIndex].value;
+            var poseData = null;
+            var poseName = null;
+
+
+            document.getElementById("secondTimer").addEventListener('change', () => {
+                second = timerSecond.options[timerSecond.selectedIndex].value;
+                console.log(second);
+            })
+
+
+            /* motion name empty check */
+            var poseMotionName = document.getElementById("pose-motion-name");
+            document.getElementById("regist-btn").addEventListener('click', () => {
+                if (poseMotionName.value === "" || poseMotionName.value === undefined) {
+                document.getElementById("motion-result-message").style.color = "red";
+                document.getElementById("motion-result-message").textContent = "[Fail] Invalid Motion-Name";
+                document.getElementsByClassName("capture_canvas")[0].style.display = "none";
+                document.getElementById("result-div").style.display = "block";
+                }
+                else {
+                onCapture(poseMotionName.value);
+                }
+
+                document.getElementById("pose-motion-name").value = "";
+            })
+
+
             // DOM 엘리먼트
             const videoElement = document.getElementsByClassName('input_video')[0]
             const canvasElement = document.getElementsByClassName('output_canvas')[0]
+            const captureElement = document.getElementsByClassName('capture_canvas')[0];
             const canvasCtx = canvasElement.getContext('2d')
+            const captureCtx = captureElement.getContext('2d');
 
 
             // Detection 데이터 전송할 웹소켓 인스턴스 생성
             const dataWebSocket = new WebSocket('ws://localhost:1880/ws/data')
+
+
+            /* visualize and transmit registered data  */
+            function onCapture(motionName) {
+                setTimeout((motionName) => {
+                captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height);
+                var detail = "";
+                const fixed = 5;
+
+                detail += "<table style='display:inline;margin:0px 5px;'>";
+                detail += "<caption>Estimated Pose</caption>";
+                detail += "<tr><th></th><th>x</th><th>y</th><th>z</th><th>visibility</th></tr>";
+                for (let idx = 0; idx < poseData.poseLandmarks.length; idx++) {
+                    detail += "<tr>";
+                    detail += "<td align='center'>" + idx + "</td>";
+                    detail += "<td>" + poseData.poseLandmarks[idx].x.toFixed(fixed) + "</td>"
+                    detail += "<td>" + poseData.poseLandmarks[idx].y.toFixed(fixed) + "</td>"
+                    detail += "<td>" + poseData.poseLandmarks[idx].z.toFixed(fixed) + "</td>"
+                    detail += "<td>" + poseData.poseLandmarks[idx].z.toFixed(fixed) + "</td>"
+                    detail += "</tr>";
+                }
+                detail += "</table>";
+
+                document.getElementById("motion-result-keypoint").innerHTML = '<br><b>' + motionName + "</b> Motion Detail <br>" + detail;
+                document.getElementById("motion-result-message").style.color = "green";
+                document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + motionName + "] motion";
+                document.getElementsByClassName("capture_canvas")[0].style.display = "block";
+                document.getElementById("pose-motion-name").value = "";
+                document.getElementById("result-div").style.display = "block";
+
+
+                poseData.regist = true;
+                poseData.poseName = motionName;
+                dataWebSocket.send(JSON.stringify(poseData));
+                }, document.getElementById("secondTimer").value * 1000, motionName);
+            }
 
 
             // 미러링 관련 소켓 인스턴스 생성
@@ -118,17 +269,22 @@ module.exports = function(RED) {
                     results.image, 0, 0, canvasElement.width, canvasElement.height)
                 
                 // 캔버스에 디텍션 랜드마크 표시
-                canvasCtx.globalCompositeOperation = 'source-over'
+                canvasCtx.globalCompositeOperation = 'source-over';
                 drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-                                {color: '#00FF00', lineWidth: 4})
+                    { color: '#f2d6ae', lineWidth: 5 });
                 drawLandmarks(canvasCtx, results.poseLandmarks,
-                                {color: '#FF0000', lineWidth: 2})
+                    { color: '#b2a1f4', lineWidth: 1 });
                 canvasCtx.restore()
                 
                 // 랜드마크 데이터 웹소켓으로 전송
                 if (results.poseLandmarks) {
                     if (dataWebSocket.readyState === 1) {
-                        dataWebSocket.send(JSON.stringify(results.poseLandmarks))
+                        results.regist = false;
+                        results.poseName = poseName;
+                        dataWebSocket.send(JSON.stringify(results))
+
+                        poseData = results;
+                        poseName = null;
                     }
                 }
                 

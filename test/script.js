@@ -50,14 +50,82 @@ function audioTimerLoop(renderFunc, frequency) {
 }
 
 
+/* motion regist timer */
+const timerSecond = document.getElementById("secondTimer");
+var second = timerSecond.options[timerSecond.selectedIndex].value;
+var poseData = null;
+var poseName = null;
+
+
+document.getElementById("secondTimer").addEventListener('change', () => {
+    second = timerSecond.options[timerSecond.selectedIndex].value;
+    console.log(second);
+})
+
+
+/* motion name empty check */
+var poseMotionName = document.getElementById("pose-motion-name");
+document.getElementById("regist-btn").addEventListener('click', () => {
+    if (poseMotionName.value === "" || poseMotionName.value === undefined) {
+    document.getElementById("motion-result-message").style.color = "red";
+    document.getElementById("motion-result-message").textContent = "[Fail] Invalid Motion-Name";
+    document.getElementsByClassName("capture_canvas")[0].style.display = "none";
+    document.getElementById("result-div").style.display = "block";
+    }
+    else {
+    onCapture(poseMotionName.value);
+    }
+
+    document.getElementById("pose-motion-name").value = "";
+})
+
+
 // DOM 엘리먼트
 const videoElement = document.getElementsByClassName('input_video')[0]
 const canvasElement = document.getElementsByClassName('output_canvas')[0]
+const captureElement = document.getElementsByClassName('capture_canvas')[0];
 const canvasCtx = canvasElement.getContext('2d')
+const captureCtx = captureElement.getContext('2d');
 
 
 // Detection 데이터 전송할 웹소켓 인스턴스 생성
 const dataWebSocket = new WebSocket('ws://localhost:1880/ws/data')
+
+
+/* visualize and transmit registered data  */
+function onCapture(motionName) {
+    setTimeout((motionName) => {
+    captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height);
+    var detail = "";
+    const fixed = 5;
+
+    detail += "<table style='display:inline;margin:0px 5px;'>";
+    detail += "<caption>Estimated Pose</caption>";
+    detail += "<tr><th></th><th>x</th><th>y</th><th>z</th><th>visibility</th></tr>";
+    for (let idx = 0; idx < poseData.poseLandmarks.length; idx++) {
+        detail += "<tr>";
+        detail += "<td align='center'>" + idx + "</td>";
+        detail += "<td>" + poseData.poseLandmarks[idx].x.toFixed(fixed) + "</td>"
+        detail += "<td>" + poseData.poseLandmarks[idx].y.toFixed(fixed) + "</td>"
+        detail += "<td>" + poseData.poseLandmarks[idx].z.toFixed(fixed) + "</td>"
+        detail += "<td>" + poseData.poseLandmarks[idx].z.toFixed(fixed) + "</td>"
+        detail += "</tr>";
+    }
+    detail += "</table>";
+
+    document.getElementById("motion-result-keypoint").innerHTML = '<br><b>' + motionName + "</b> Motion Detail <br>" + detail;
+    document.getElementById("motion-result-message").style.color = "green";
+    document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + motionName + "] motion";
+    document.getElementsByClassName("capture_canvas")[0].style.display = "block";
+    document.getElementById("pose-motion-name").value = "";
+    document.getElementById("result-div").style.display = "block";
+
+
+    poseData.regist = true;
+    poseData.poseName = motionName;
+    dataWebSocket.send(JSON.stringify(poseData));
+    }, document.getElementById("secondTimer").value * 1000, motionName);
+}
 
 
 // 미러링 관련 소켓 인스턴스 생성
@@ -87,17 +155,22 @@ function onResults(results) {
         results.image, 0, 0, canvasElement.width, canvasElement.height)
     
     // 캔버스에 디텍션 랜드마크 표시
-    canvasCtx.globalCompositeOperation = 'source-over'
+    canvasCtx.globalCompositeOperation = 'source-over';
     drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-                    {color: '#00FF00', lineWidth: 4})
+        { color: '#f2d6ae', lineWidth: 5 });
     drawLandmarks(canvasCtx, results.poseLandmarks,
-                    {color: '#FF0000', lineWidth: 2})
+        { color: '#b2a1f4', lineWidth: 1 });
     canvasCtx.restore()
     
     // 랜드마크 데이터 웹소켓으로 전송
     if (results.poseLandmarks) {
         if (dataWebSocket.readyState === 1) {
-            dataWebSocket.send(JSON.stringify(results.poseLandmarks))
+            results.regist = false;
+            results.poseName = poseName;
+            dataWebSocket.send(JSON.stringify(results))
+
+            poseData = results;
+            poseName = null;
         }
     }
     
