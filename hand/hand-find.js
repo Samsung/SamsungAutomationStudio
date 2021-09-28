@@ -1,6 +1,3 @@
-let simL = 0.0;
-let simR = 0.0;
-
 function handDataPreprocessing(inputHandData) {
   let inputX = [];
   let inputY = [];
@@ -65,12 +62,7 @@ function checkCosSimilarity(inputHandData, savedHandData, isExisted, similarity)
   let cosSimilarity = similarity(inputHand, savedHand);
 
   if (cosSimilarity > 0.98) {
-    simL = cosSimilarity;
     return true;
-  }
-
-  if (simR < cosSimilarity) {
-    simR = cosSimilarity;
   }
 
   return false;
@@ -85,6 +77,43 @@ module.exports = function (RED) {
     //data.right, data.left
     node.on("input", function (msg) {
       const similarity = require("compute-cosine-similarity");
+
+      /*--------------- input 체크 -------------------------*/
+      for (let idx = 1; idx < msg.inputLeftHands; idx++) {
+        let isLeftInputExisted = true;
+
+        if (msg.inputLeftHands[idx] == null) {
+          isLeftInputExisted = false;
+        }
+
+        let isRightInputExisted = true;
+
+        if (msg.inputRightHands[idx] == null) {
+          isRightInputExisted = false;
+        }
+
+        let isSameLeftInput = checkCosSimilarity(
+          msg.inputLeftHands[0],
+          msg.inputLeftHands[idx],
+          isLeftInputExisted,
+          similarity
+        );
+
+        let isSameRightInput = checkCosSimilarity(
+          msg.inputRightHands[0],
+          msg.inputRightHands[idx],
+          isRightInputExisted,
+          similarity
+        );
+
+        //둘 모두 true인 경우 -> 이미 존재하는 경우
+        if (!isSameLeftInput || !isSameRightInput) {
+          msg.status = false;
+          node.send(msg);
+
+          return;
+        }
+      }
 
       /*--------------- DB 데이터 처리 -------------------------*/
       const handDataCount = msg.savedLeftHand.length;
@@ -188,7 +217,6 @@ module.exports = function (RED) {
         }
 
         if (isExistedFromOrigin) {
-          msg.sim = simL;
           findHandName = savedNameList[idx];
           break;
         }
@@ -201,8 +229,6 @@ module.exports = function (RED) {
       } else {
         msg.status = false;
       }
-
-      msg.simR = simR;
 
       node.send(msg);
     });

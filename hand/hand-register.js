@@ -1,6 +1,3 @@
-let simL = 0.0;
-let simR = 0.0;
-
 function handDataPreprocessing(inputHandData) {
   let inputX = [];
   let inputY = [];
@@ -65,12 +62,7 @@ function checkCosSimilarity(inputHandData, savedHandData, isExisted, similarity)
   let cosSimilarity = similarity(inputHand, savedHand);
 
   if (cosSimilarity > 0.98) {
-    simL = cosSimilarity;
     return true;
-  }
-
-  if (simR < cosSimilarity) {
-    simR = cosSimilarity;
   }
 
   return false;
@@ -196,7 +188,6 @@ module.exports = function (RED) {
         }
 
         if (isExistedFromOrigin) {
-          msg.sim = simL;
           break;
         }
       }
