@@ -35,7 +35,8 @@
         "wires": [
             [
                 "fb106b2c8e95f2fd",
-                "9547f433f1b38d1c"
+                "9547f433f1b38d1c",
+                "f300abd3759d4f92"
             ]
         ]
     },
@@ -96,7 +97,7 @@
         "upload": false,
         "swaggerDoc": "",
         "x": 130,
-        "y": 380,
+        "y": 500,
         "wires": [
             [
                 "cdcacefb7d2fa089"
@@ -111,7 +112,7 @@
         "statusCode": "200",
         "headers": {},
         "x": 490,
-        "y": 380,
+        "y": 500,
         "wires": []
     },
     {
@@ -124,7 +125,7 @@
         "height": 6,
         "port": 1881,
         "x": 140,
-        "y": 300,
+        "y": 420,
         "wires": []
     },
     {
@@ -184,12 +185,90 @@
         "height": 6,
         "mirrorPort": 1881,
         "x": 320,
-        "y": 380,
+        "y": 500,
         "wires": [
             [
                 "8e3a5c51aa43b1b8"
             ]
         ]
+    },
+    {
+        "id": "2504454f47f37419",
+        "type": "debug",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "05fbeab3534d221c",
+        "type": "switch",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "property": "payload.regist",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 470,
+        "y": 280,
+        "wires": [
+            [
+                "2504454f47f37419"
+            ],
+            [
+                "3936493a5e64943e"
+            ]
+        ]
+    },
+    {
+        "id": "f300abd3759d4f92",
+        "type": "json",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 310,
+        "y": 280,
+        "wires": [
+            [
+                "05fbeab3534d221c"
+            ]
+        ]
+    },
+    {
+        "id": "3936493a5e64943e",
+        "type": "debug",
+        "z": "66eb90dda6328873",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 340,
+        "wires": []
     },
     {
         "id": "e9b870a1bbf9569d",
