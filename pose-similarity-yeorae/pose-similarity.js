@@ -67,7 +67,7 @@ module.exports = function(RED) {
             } else {
                 msg.payload = {
                 "result" : null,
-                "keypoint" : null
+                "keypoint" : inputKeypoints[0]
                 }
             }
             function keypoinstsPreprocessing(keypoints) {
