@@ -7,17 +7,12 @@ module.exports = function(RED) {
             
             const inputData = msg.payload
 
-            // let today = new Date()
-            // if (today.getSeconds() % 10 == 0) {
-            //     console.log(msg.payload.inputKeypoint)
-            // }
-
             const inputKeypoint =  inputData.inputKeypoint
             const savedKeypoints = inputData.savedKeypoints
             const keypointsNum = inputKeypoint.length
 
             let isExist = false
-            let isAccurate = false
+            let isUnAccurate = false
             let similarPoseName
 
 
@@ -29,7 +24,7 @@ module.exports = function(RED) {
                 }
             }
             if (accuracyCount < keypointsNum/2) {
-                isAccurate = true
+                isUnAccurate = true
             }
 
             // Input keypoint Preprocessing
@@ -52,15 +47,20 @@ module.exports = function(RED) {
             }
 
             // Return Value
-            if ( isExist ) {
+            if ( isUnAccurate ) {
                 msg.payload = {
-                "result" : similarPoseName,
-                "keypoint" : savedKeypoints[similarPoseName]
+                    "result" : 'UnAccurate',
+                    "keypoint" : null
+                }
+            } else if ( isExist ) {
+                msg.payload = {
+                    "result" : similarPoseName,
+                    "keypoint" : savedKeypoints[similarPoseName]
                 }
             } else {
                 msg.payload = {
-                "result" : null,
-                "keypoint" : inputKeypoint
+                    "result" : null,
+                    "keypoint" : null
                 }
             }
             function keypoinstsPreprocessing(keypoints) {
