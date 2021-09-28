@@ -1,0 +1,37 @@
+{
+  "name": "motion-pose-node-body",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/5FNSaaS/Motion-Pose-Node-Body.git"
+  },
+  "node-red": {
+    "nodes": {
+      "mediapipe": "/detection-hogeun/mediapipe/mediapipe.js",
+      "monitor": "/detection-hogeun/monitor/monitor.js",
+      "socket-server": "/detection-hogeun/socket-server/socket-server.js",
+      "pose-similarity": "/pose-similarity-yeorae/pose-similarity.js",
+      "pose-similarity-register": "/pose-similarity-yeorae/pose-similarity-register.js"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/5FNSaaS/Motion-Pose-Node-Body/issues"
+  },
+  "dependencies": {
+    "@mediapipe/camera_utils": "^0.3.1631210127",
+    "@mediapipe/control_utils": "^0.6.1629159505",
+    "@mediapipe/drawing_utils": "^0.3.1620248257",
+    "@mediapipe/pose": "^0.4.1630009814",
+    "compute-cosine-similarity": "^1.0.0",
+    "express": "^4.17.1",
+    "socket.io": "^4.2.0"
+  },
+  "homepage": "https://github.com/5FNSaaS/Motion-Pose-Node-Body#readme"
+}
