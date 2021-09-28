@@ -1,0 +1,27 @@
+<script type="text/javascript">
+  RED.nodes.registerType('pose-similarity',{
+      category: 'motion pose',
+      color: '#B2A1F4',
+      defaults: {
+          name: {value:""}
+      },
+      inputs:1,
+      outputs:1,
+      icon: "file.png",
+      paletteLabel: "pose similarity eval",
+      label: function() {
+          return this.name||"pose similarity eval";
+      }
+  });
+</script>
+
+<script type="text/html" data-template-name="pose-similarity">
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="pose-similarity">
+  <p>A simple node that converts the message payloads into all pose-similarity characters</p>
+</script>
