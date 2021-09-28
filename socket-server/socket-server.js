@@ -43,7 +43,7 @@ module.exports = function(RED) {
         })
         
         this.on('close', function() {
-            // do something
+            socketServer.close()
         })
     }
     RED.nodes.registerType("socket-server", SocketServerNode)
