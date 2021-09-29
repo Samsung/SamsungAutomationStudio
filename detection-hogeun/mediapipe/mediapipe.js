@@ -222,7 +222,7 @@ module.exports = function(RED) {
                     detail += "<td>" + poseData.poseLandmarks[idx].x.toFixed(fixed) + "</td>"
                     detail += "<td>" + poseData.poseLandmarks[idx].y.toFixed(fixed) + "</td>"
                     detail += "<td>" + poseData.poseLandmarks[idx].z.toFixed(fixed) + "</td>"
-                    detail += "<td>" + poseData.poseLandmarks[idx].z.toFixed(fixed) + "</td>"
+                    detail += "<td>" + poseData.poseLandmarks[idx].visibility.toFixed(fixed) + "</td>"
                     detail += "</tr>";
                 }
                 detail += "</table>";
