@@ -1,23 +1,9 @@
-const request = require('request-promise-native')
-const fs = require('fs')
+const axios = require('axios');
+const mimeType = require('mime-types');
+const fs = require('fs');
 
 module.exports = RED => {
     const apiUrl = 'https://graph.microsoft.com/v1.0/me/drive/'
-    const mimeType = {
-        pdf: "application/pdf",
-        text: "text/plain",
-        xml: "text/xml",
-        msWord:
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        msExcel: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        msPpt:
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        csv: "text/csv",
-        json: "application/vnd.google-apps.script+json",
-        jpeg: "image/jpeg",
-        png: "image/png",
-        svg: "image/svg+xml",
-    }
 
     function OneDriveNode(config) {
         RED.nodes.createNode(this, config)
@@ -27,16 +13,12 @@ module.exports = RED => {
             const doType = config.doType
             const fileName = msg.payload.fileName || config.fileName
             const filePath = msg.payload.filePath || config.filePath
-            const targetPath = msg.payload.targetPath || config.targetPath
-            const dataType = msg.payload.dataType || config.dataType
 
             try {
                 const params = {
                     accessToken,
-                    targetPath,
                     fileName,
                     filePath,
-                    dataType,
                 }
                 switch (doType) {
                     case 'download':
@@ -79,28 +61,39 @@ module.exports = RED => {
 
         var options = {
             method: 'GET',
-            uri: apiUrl + 'root:/' + encodeURIComponent(params.targetPath + params.fileName),
+            url: apiUrl + 'root:/' + encodeURIComponent(params.fileName),
             headers: {
                 'Authorization': 'Bearer ' + params.accessToken
             },
         }
-        var response = await request(options)
-        const fileId = JSON.parse(response).id
-        
+        var response = await axios(options)
+        const fileId = response.data.id
+
         const path = `${params.filePath}/${params.fileName}`;
         var options = {
             method: 'GET',
-            uri: apiUrl + 'items/' + fileId + '/content',
+            url: apiUrl + 'items/' + fileId + '/content',
             headers: {
                 'Authorization': 'Bearer ' + params.accessToken
             },
+            responseType: 'stream'
         }
-        const item = request(options);
+        var response = await axios(options);
+        const item = response.data;
         const writeStream = fs.createWriteStream(path);
-        item.pipe(writeStream);
 
-        const data = await item;
-        return Buffer.from(data);
+        var end = new Promise((resolve, reject) => {
+            var buffer = [];
+            item.on('data', (data) => {
+                writeStream.write(data);
+                buffer.push(data);
+            })
+            item.on('end', () => {
+                writeStream.end();
+                resolve(Buffer.concat(buffer));
+            })
+        })
+        return await end;
     }
 
     async function upload(params) {
@@ -113,23 +106,21 @@ module.exports = RED => {
         if (!params.filePath) {
             throw new Error('Missing params.filePath')
         }
-        if (!params.dataType) {
-            throw new Error('Missing params.dataType')
-        }
 
         const path = `${params.filePath}/${params.fileName}`;
         const data = await fs.promises.readFile(path);
+
         var options = {
             method: 'PUT',
-            uri: apiUrl + 'items/root:/' + encodeURIComponent(params.targetPath + params.fileName) + ':/content',
+            url: apiUrl + 'items/root:/' + encodeURIComponent(params.fileName) + ':/content',
             headers: {
-                'Content-Type': mimeType[params.dataType],
+                'Content-Type': mimeType.lookup(path),
                 'Authorization': 'Bearer ' + params.accessToken,
             },
-            body: data,
+            data: data,
             encoding: null,
         }
-        request(options);
+        axios(options);
         return Buffer.from(data);
     }
 
@@ -143,23 +134,23 @@ module.exports = RED => {
 
         var options = {
             method: 'GET',
-            uri: apiUrl + 'root:/' + encodeURIComponent(params.targetPath + params.fileName),
+            url: apiUrl + 'root:/' + encodeURIComponent(params.fileName),
             headers: {
                 'Authorization': 'Bearer ' + params.accessToken
             },
         }
-        var response = await request(options)
-        const fileId = JSON.parse(response).id
+        var response = await axios(options);
+        const fileId = response.data.id;
         
         var options = {
             method: 'GET',
-            uri: apiUrl + 'items/' + fileId + '/content',
+            url: apiUrl + 'items/' + fileId + '/content',
             headers: {
                 'Authorization': 'Bearer ' + params.accessToken
             },
         }
-        const data = await request(options);
-        return Buffer.from(data);
+        var response = await axios(options);
+        return Buffer.from(response.data);
     }
 
     RED.nodes.registerType('OneDrive', OneDriveNode)

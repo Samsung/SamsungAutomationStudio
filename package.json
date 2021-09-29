@@ -44,7 +44,8 @@
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "when": "3.7.8",
-    "request-promise-native": "^1.0.9",
-    "googleapis": "^85.0.0"
+    "googleapis": "^85.0.0",
+    "axios": "^0.21.4",
+    "mime-types": "^2.1.32"
   }
 }

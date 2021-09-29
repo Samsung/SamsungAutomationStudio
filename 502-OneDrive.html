@@ -24,15 +24,6 @@
                 value: "",
                 type: "text",
             },
-            targetPath: {
-                value: "",
-                type: "text",
-            },
-            dataType: {
-                value: "",
-                type: "text",
-                required: true,
-            }
         },
         icon: "onedrive.png",
         inputs: 1,
@@ -77,27 +68,6 @@
     <div class="form-row" id="node-input-filePath-row">
         <label for="node-input-filePath"><i class="fa fa-folder-o"></i> File Path</label>
         <input type="text" id="node-input-filePath" placeholder="C:/">
-    </div>
-    <div class="form-row">
-        <label for="node-input-targetPath"><i class="fa fa-folder-o"></i> Target Path</label>
-        <input type="text" id="node-input-targetPath" placeholder="myFolder/">
-    </div>
-    <div class="form-row">
-        <label for="node-input-dataType"><i class="fa fa-cube"></i> Data Type</label>
-        <select id="node-input-dataType">
-            <option value="" selected>Select Data Type</option>
-            <option value="pdf">PDF</option>
-            <option value="text">Text</option>
-            <option value="xml">XML</option>
-            <option value="msWord">Word</option>
-            <option value="msExcel">Excel</option>
-            <option value="msPpt">PPT</option>
-            <option value="csv">CSV</option>
-            <option value="json">Json</option>
-            <option value="jpeg">Jpeg</option>
-            <option value="png">Png</option>
-            <option value="svg">Svg</option>
-        </select>
     </div>
 </script>
 <script type="text/html" data-help-name="OneDrive">
