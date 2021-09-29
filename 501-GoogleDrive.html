@@ -1,16 +1,19 @@
+<script
+  type="module"
+  src="https://unpkg.com/googleapis@87.0.0/build/src/index.js"
+></script>
 <script type="text/javascript">
   RED.nodes.registerType("GoogleDrive", {
     category: "drive",
     color: "#e6e6e6",
     defaults: {
       name: { value: "" },
-      clientId: { value: "" },
-      clientSecret: { value: "" },
-      refreshToken: { value: "" },
+      clientId: { value: "", required: true },
+      clientSecret: { value: "", required: true },
+      refreshToken: { value: "", required: true },
       doType: { value: "download" },
-      fileName: { value: "" },
-      fileId: { value: "" },
-      filePath: { value: "" },
+      fileName: { value: "", required: true },
+      filePath: { value: "", required: true },
       dataType: { value: "" },
     },
     inputs: 1,
@@ -23,14 +26,11 @@
       $("#node-input-doType").on("change", function () {
         const val = $(this).val();
         switch (val) {
-          case "download":
-            $("#node-input-fileId-row").show();
-            break;
-          case "upload":
-            $("#node-input-fileId-row").hide();
+          case "read":
+            $("#node-input-filePath-row").hide();
             break;
           default:
-            $("#node-input-fileId-row").show();
+            $("#node-input-filePath-row").show();
         }
       });
     },
@@ -75,12 +75,6 @@
       <option value="upload">Upload to Google Drive</option>
       <option value="read">Read a File</option>
     </select>
-  </div>
-  <div class="form-row" id="node-input-fileId-row">
-    <label for="node-input-fileId"
-      ><i class="fa fa-file-text-o"></i> File ID</label
-    >
-    <input type="text" id="node-input-fileId" placeholder="File ID" />
   </div>
   <div class="form-row" id="node-input-fileName-row">
     <label for="node-input-fileName"

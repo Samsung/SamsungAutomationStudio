@@ -26,7 +26,6 @@ module.exports = function exportFunc(RED) {
       const clientSecret = msg.payload.clientSecret || config.clientSecret;
       const refreshToken = msg.payload.refreshToken || config.refreshToken;
       const fileName = msg.payload.fileName || config.fileName;
-      const fileId = msg.payload.fileId || config.fileId;
       const filePath = msg.payload.filePath || config.filePath;
       const dataType = msg.payload.dataType || config.dataType;
       const auth = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
@@ -37,6 +36,15 @@ module.exports = function exportFunc(RED) {
       });
       async function googleAPI(doType) {
         if (doType === "download" || doType === "read") {
+          const params = {
+            q: `name='${fileName}'`,
+            fields: "files(id, name)",
+            spaces: "drive",
+          };
+          let fileId = null;
+          const response = await drive.files.list(params).then((res) => {
+            fileId = res.data.files[0]["id"] || null;
+          });
           return await drive.files.get(
             {
               fileId,
@@ -62,14 +70,17 @@ module.exports = function exportFunc(RED) {
 
       googleAPI(doType)
         .then((res) => {
-          res.data.pipe(fs.createWriteStream(`${filePath}\\${fileName}`));
-          if (doType === "read") {
+          if (doType === "download") {
+            res.data.pipe(fs.createWriteStream(`${filePath}\\${fileName}`));
+          }
+          if (doType === "read" || doType === "download") {
             msg.buffer =
               res.data["_outBuffer"] ||
               res.data["_readableState"]["buffer"]["head"]["data"];
           } else {
-            msg.filePath = `${filePath}\\${fileName}`;
+            msg.buffer = fs.readFileSync(`${filePath}\\${fileName}`);
           }
+          msg.filePath = `${filePath}\\${fileName}` || null;
           send(msg);
         })
         .catch((err) => {
