@@ -1,20 +1,6 @@
-const { google } = require("googleapis");
 const fs = require("fs");
-
-const mimeType = {
-  pdf: "application/pdf",
-  text: "text/plain",
-  msWord:
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  msExcel: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  msPpt:
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-  csv: "text/csv",
-  json: "application/vnd.google-apps.script+json",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  svg: "image/svg+xml",
-};
+const { google } = require("googleapis");
+const mime = require("mime-types");
 
 module.exports = function exportFunc(RED) {
   function GoogleDriveNode(config) {
@@ -27,7 +13,6 @@ module.exports = function exportFunc(RED) {
       const refreshToken = msg.payload.refreshToken || config.refreshToken;
       const fileName = msg.payload.fileName || config.fileName;
       const filePath = msg.payload.filePath || config.filePath;
-      const dataType = msg.payload.dataType || config.dataType;
       const auth = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
       auth.setCredentials({ refresh_token: refreshToken });
       const drive = google.drive({
@@ -35,6 +20,18 @@ module.exports = function exportFunc(RED) {
         auth,
       });
       async function googleAPI(doType) {
+        if (!clientId || !clientSecret || !refreshToken) {
+          throw new Error("Missing token to access Google Drive");
+        }
+
+        if (!fileName) {
+          msg = "Missing file name";
+          send(msg);
+          throw new Error("Missing file name");
+        }
+        if (!filePath) {
+          throw new Error("Missing file path");
+        }
         if (doType === "download" || doType === "read") {
           const params = {
             q: `name='${fileName}'`,
@@ -43,25 +40,27 @@ module.exports = function exportFunc(RED) {
           };
           let fileId = null;
           const response = await drive.files.list(params).then((res) => {
-            fileId = res.data.files[0]["id"] || null;
+            fileId = res.data.files.length > 0 ? res.data.files[0]["id"] : null;
           });
-          return await drive.files.get(
-            {
-              fileId,
-              alt: "media",
-            },
-            {
-              responseType: "stream",
-            }
-          );
+          if (fileId) {
+            return await drive.files.get(
+              {
+                fileId,
+                alt: "media",
+              },
+              {
+                responseType: "stream",
+              }
+            );
+          }
         } else if (doType === "upload") {
           return await drive.files.create({
             requestBody: {
               name: fileName,
-              mimeType: mimeType[dataType],
+              mimeType: mime.lookup(fileName),
             },
             media: {
-              mimeType: mimeType[dataType],
+              mimeType: mime.lookup(fileName),
               body: fs.createReadStream(`${filePath}\\${fileName}`),
             },
           });

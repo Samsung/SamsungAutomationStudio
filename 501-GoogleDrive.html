@@ -14,11 +14,10 @@
       doType: { value: "download" },
       fileName: { value: "", required: true },
       filePath: { value: "", required: true },
-      dataType: { value: "" },
     },
     inputs: 1,
     outputs: 1,
-    icon: "drive.png",
+    icon: "googleDrive.png",
     label: function () {
       return this.name || "Google Drive";
     },
@@ -88,24 +87,6 @@
     >
     <input type="text" id="node-input-filePath" placeholder="C:\" />
   </div>
-  <div class="form-row">
-    <label for="node-input-dataType"
-      ><i class="fa fa-cube"></i> Data Type</label
-    >
-    <select name="doType" id="node-input-dataType">
-      <option value="">Select Data Type</option>
-      <option value="pdf">PDF</option>
-      <option value="text">Text</option>
-      <option value="msWord">MS Word</option>
-      <option value="msExcel">MS Excel</option>
-      <option value="msPpt">MS PowerPoint</option>
-      <option value="csv">CSV</option>
-      <option value="json">JSON</option>
-      <option value="jpeg">JPEG</option>
-      <option value="png">PNG</option>
-      <option value="svg">SVG</option>
-    </select>
-  </div>
 </script>
 
 <style type="text/css">
@@ -141,8 +122,6 @@
     </dd>
     <dt>What to do</dt>
     <dd>You can choose download or upload mode.</dd>
-    <dt>File ID</dt>
-    <dd>Enter the ID of the file on the drive.</dd>
     <dt>File Name</dt>
     <dd>
       Enter the name of the file to be saved in Local Or the name of the file to
@@ -153,7 +132,5 @@
       Enter the path without the file name when downloading. And enter the Full
       Path(with file name) when uploading.
     </dd>
-    <dt>Data Type</dt>
-    <dd>You must select the data type of the file.</dd>
   </dl>
 </script>
