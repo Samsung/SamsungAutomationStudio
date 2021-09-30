@@ -13,6 +13,9 @@
     a {
       text-decoration: none;
     }
+    body {
+      overflow-y: scroll;
+    }
     .btn {
       border: none;
       width: 100px;
@@ -25,6 +28,12 @@
     }
     .btn:hover{
       cursor: pointer;
+    }
+    .btn:hover:first-child{
+      background-color: #7557f0;
+    }
+    .btn:hover:last-child{
+      background-color: grey;
     }
     table {
       width: 100%;
@@ -89,12 +98,12 @@
         <option value="2">2s Timer</option>
         <option value="3">3s Timer</option>
       </select> 
-      <input id="hand-motion-name" type="text" placeholder="Hands Motion Name"><button id="captrue-btn">Capture</button>
+      <input id="hand-motion-name" type="search" placeholder="Hands Motion Name"><button id="captrue-btn">Capture</button>
     </div>
     <div id="result-div" style="display: none;">
       <p id="motion-result-message"></p>
       <div id="regist-btn-bar" align="center">
-        <button class="btn">Regist</button> <button class="btn">Cancel</button>
+        <button id="regist-btn" class="btn">Regist</button> <button id="cancel-btn" class="btn">Cancel</button>
       </div><br>
       <canvas class="capture_canvas" width="480px" height="270px" style="border:1px solid black"></canvas>
       <div id="motion-result-keypoint"></div>
@@ -121,18 +130,25 @@
     second = timerSecond.options[timerSecond.selectedIndex].value;
   })
 
-  /* motion name empty check*/
+  /* motion check : name and keypoint*/
   var handMotionName = document.getElementById("hand-motion-name");
   document.getElementById("captrue-btn").addEventListener('click', function(){
     if(handMotionName.value === "" || handMotionName.value === undefined){
-      document.getElementById("motion-result-message").style.color = "red";
       document.getElementById("motion-result-message").textContent = "[Fail] Invalid Name : The motion name is empty.";
-      document.getElementsByClassName("capture_canvas")[0].style.display = "none";
-      document.getElementById("hand-motion-name").value = "";
-      document.getElementById("result-div").style.display = "block";
-      document.getElementById("regist-btn-bar").style.display = "none";
+      isFail();
+    }else if(poseData==null){
+      document.getElementById("motion-result-message").textContent = "[Fail] Keypoint not found. Show your hands on cam!";
+      isFail();
     }else onCapture(handMotionName.value);
   })
+
+  /* Hands Detection Error case */
+  function isFail(){
+    document.getElementById("motion-result-message").style.color = "red";
+    document.getElementsByClassName("capture_canvas")[0].style.display = "none";
+    document.getElementById("result-div").style.display = "block";
+    document.getElementById("regist-btn-bar").style.display = "none";
+  }
 
   /* hands motion capture used timer if sucess regist*/
   function onCapture(motionName){
@@ -162,22 +178,32 @@
       document.getElementById("motion-result-message").style.color = "green";
       document.getElementById("motion-result-message").textContent = "[" + motionName +"] motion captured! Is this the behavior you want?";
       document.getElementsByClassName("capture_canvas")[0].style.display = "block";
-      document.getElementById("hand-motion-name").value = "";
       document.getElementById("regist-btn-bar").style.display = "block";
       document.getElementById("result-div").style.display = "block";
-
-      poseData["regist"] = true;
-      poseData["poseName"] = motionName;
-      ws.send(JSON.stringify(poseData));
     }, second*1000);
   }
 
-  /* result message reset if focus input box */
-  document.getElementById("hand-motion-name").addEventListener('focus', function(){
+  /* send pose data */
+  document.getElementById("regist-btn").addEventListener('click', function(){
+    document.getElementById("motion-result-message").style.color = "green";
+    document.getElementById("motion-result-message").textContent = "[" + handMotionName.value +"] Data sent successfully! Check out the registration results!";
+    poseData["regist"] = true;
+    poseData["poseName"] = handMotionName.value;
+    ws.send(JSON.stringify(poseData));
+  })
+
+  /* result message reset*/
+  document.getElementById("hand-motion-name").addEventListener('focus', onClear);
+  document.getElementById("cancel-btn").addEventListener('click', function(){
+    document.getElementById("hand-motion-name").value = "";
+    onClear();
+  });
+
+  function onClear(){
     document.getElementById("motion-result-message").textContent = "";
     document.getElementById("motion-result-keypoint").innerHTML = "";
     document.getElementById("result-div").style.display = "none";
-  });
+  }
 
   /* used mediapipe hands model */
   const videoElement = document.getElementsByClassName('input_video')[0];
@@ -187,7 +213,6 @@
   const captureCtx = captureElement.getContext('2d');
 
   const ws = new WebSocket('ws://localhost:1880/ws/handsdetection')
-  var poseName = null;
   
   function onResults(results) {
     canvasCtx.save();
@@ -200,10 +225,9 @@
                       {color: '#f2d6ae', lineWidth: 5});
         drawLandmarks(canvasCtx, landmarks, {color: '#b2a1f4', lineWidth: 1});
         results["regist"] = false;
-        results["poseName"] = poseName;
+        results["poseName"] = null;
         ws.send(JSON.stringify(results));
         poseData = results;
-        poseName = null;
       }
     }
     canvasCtx.restore();
