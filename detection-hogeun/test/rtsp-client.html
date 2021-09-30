@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rtsp client</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+  </head>
+
+  <body>
+    <button id="btn">조여래 짱</button><br>
+    <canvas id="output-canvas" width="600px" height="340px"></canvas>
+    <canvas id="input-canvas" width="600px" height="340px"></canvas>
+  </body>
+
+  <script type="text/javascript">
+    // 참고 링크
+    // https://www.npmjs.com/package/node-rtsp-stream
+    // https://webnautes.tistory.com/1476
+
+    var client = new WebSocket('ws://localhost:9999');
+    var canvas = document.getElementById('input-canvas')
+    var player = new jsmpeg(client, {
+        canvas: canvas 
+    });
+
+    function startDetect(renderFunc) {
+        // 최초의 오디오 트랙을 생성한다.
+        // (Loop 정지 함수는 현재 사용하지 않고 있음, 개발자의 취지에 따라 커스터마이징 가능)
+        var fps = 10
+        var stopLoop = audioTimerLoop(renderFunc, 1000 / fps)
+    }
+
+
+    // 오디오 트랙 Loop 생성자
+    function audioTimerLoop(renderFunc, frequency) {
+        var freq = frequency / 1000  // AudioContext는 second 단위
+        var aCtx = new AudioContext()
+        var silence = aCtx.createGain()
+        silence.gain.value = 0
+        silence.connect(aCtx.destination)  // 오디오 트랙 비우기 (추측)
+
+        onOSCend()
+
+        var stopped = false  // loop를 멈추기 위한 flag
+        async function onOSCend() {
+            // 캔버스 렌더링 (비동기)
+            await renderFunc()
+
+            // loop 생성
+            var osc = aCtx.createOscillator()
+            osc.onended = onOSCend  // loop가 되는 이유
+            osc.connect(silence)
+            osc.start()  // 당장 시작
+            osc.stop(aCtx.currentTime + freq)  // 한 프레임 이후 정지
+            
+            // loop 정지
+            if (stopped) {
+                osc.onended = function () {
+                    aCtx.close()
+                    return
+                }
+            }
+        }
+        // loop를 정지하기 위한 함수를 반환한다.
+        return function() {
+            stopped = true
+        }
+    }
+
+    // DOM 엘리먼트
+    const canvasElement = document.getElementById('output-canvas')
+    const canvasCtx = canvasElement.getContext('2d')
+
+
+    // 캔버스에 Pose Detection 결과값 렌더링하는 함수
+    function onResults(results) {
+        // 빈 캔버스 로드
+        canvasCtx.save()
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
+        
+        // 캔버스에 비디오 화면 표시
+        canvasCtx.globalCompositeOperation = 'destination-atop'
+        canvasCtx.drawImage(
+            results.image, 0, 0, canvasElement.width, canvasElement.height)
+        
+        // 캔버스에 디텍션 랜드마크 표시
+        canvasCtx.globalCompositeOperation = 'source-over';
+        drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+            { color: '#f2d6ae', lineWidth: 5 });
+        drawLandmarks(canvasCtx, results.poseLandmarks,
+            { color: '#b2a1f4', lineWidth: 1 });
+        canvasCtx.restore()
+    }
+
+
+    // Mediapipe의 Pose 인스턴스 생성
+    const pose = new Pose({locateFile: (file) => {
+        return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
+    }})
+
+
+    // Pose 인스턴스 설정
+    pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        enableSegmentation: true,
+        smoothSegmentation: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+    })
+    pose.onResults(onResults)
+
+
+    // 렌더링 함수 (비동기)
+    async function render() {
+        await pose.send({ image: canvas })
+    }
+
+    
+    const btn = document.getElementById('btn')
+    btn.onclick = function() {
+      startDetect(render)
+    }
+  </script>
+</html>
