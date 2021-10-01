@@ -1,0 +1,636 @@
+[
+    {
+        "id": "eacd9506f734c442",
+        "type": "tab",
+        "label": "플로우 2",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "279bf3abbff3d896",
+        "type": "http in",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "url": "/regist",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 230,
+        "y": 480,
+        "wires": [
+            [
+                "158eab363829903c"
+            ]
+        ]
+    },
+    {
+        "id": "e5484a7e67565041",
+        "type": "debug",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1370,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "77484a778f84c3f8",
+        "type": "switch",
+        "z": "eacd9506f734c442",
+        "name": "등록 가능 여부",
+        "property": "status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "true",
+                "vt": "jsonata"
+            },
+            {
+                "t": "eq",
+                "v": "false",
+                "vt": "jsonata"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1120,
+        "y": 820,
+        "wires": [
+            [
+                "086321443914c4c8"
+            ],
+            [
+                "e5484a7e67565041",
+                "c9d1051f25c8971f"
+            ]
+        ]
+    },
+    {
+        "id": "19a684fe33594495",
+        "type": "change",
+        "z": "eacd9506f734c442",
+        "name": "인풋값 조정",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.multiHandLandmarks",
+                "pt": "msg",
+                "to": "multiHandLandmarks",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.multiHandedness",
+                "pt": "msg",
+                "to": "multiHandedness",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.poseName",
+                "pt": "msg",
+                "to": "poseName",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 570,
+        "y": 680,
+        "wires": [
+            [
+                "b755f8db7d0a4300"
+            ]
+        ]
+    },
+    {
+        "id": "8b91c24b3f3aa93e",
+        "type": "hand-register",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "x": 970,
+        "y": 740,
+        "wires": [
+            [
+                "77484a778f84c3f8"
+            ]
+        ]
+    },
+    {
+        "id": "158eab363829903c",
+        "type": "switch",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "property": "payload.regist",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 430,
+        "y": 480,
+        "wires": [
+            [
+                "0b1e9455f54beba1"
+            ],
+            [
+                "19a684fe33594495"
+            ]
+        ]
+    },
+    {
+        "id": "c9d1051f25c8971f",
+        "type": "http response",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1380,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "d66d9167ba4bd390",
+        "type": "function",
+        "z": "eacd9506f734c442",
+        "name": "hand-regist인풋값 조정",
+        "func": "const handDataCount = msg.payload.length;\nmsg.savedLeftHand = [];\nmsg.savedRightHand = [];\nmsg.savedNameList = [];\n\nmsg.payload.forEach((el, index) => {\n    let leftData = el.left_hand_landmarks;\n    let rightData = el.right_hand_landmarks;\n    \n    if(leftData != null){\n        msg.savedLeftHand[index] = leftData;\n    }\n    else{\n        msg.savedLeftHand[index] = null;\n    }\n    \n    if(rightData != null){\n        msg.savedRightHand[index] = rightData;\n    }\n    else{\n        msg.savedRightHand[index] = null;\n    }\n    \n    msg.savedNameList[index] = el.name;\n});\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 880,
+        "wires": [
+            [
+                "8b91c24b3f3aa93e",
+                "0582d9c3ca5ecf8e"
+            ]
+        ]
+    },
+    {
+        "id": "b755f8db7d0a4300",
+        "type": "mongodb in",
+        "z": "eacd9506f734c442",
+        "mongodb": "94218b756ed95528",
+        "name": "mongoDB 핸즈데이터 Select",
+        "collection": "hands",
+        "operation": "find",
+        "x": 700,
+        "y": 780,
+        "wires": [
+            [
+                "d66d9167ba4bd390"
+            ]
+        ]
+    },
+    {
+        "id": "2af20d08b5d7294a",
+        "type": "mongodb out",
+        "z": "eacd9506f734c442",
+        "mongodb": "94218b756ed95528",
+        "name": "hands 값 mongoDB 저장",
+        "collection": "hands",
+        "payonly": true,
+        "upsert": false,
+        "multi": false,
+        "operation": "insert",
+        "x": 1450,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "086321443914c4c8",
+        "type": "function",
+        "z": "eacd9506f734c442",
+        "name": "mongoDB 등록 인풋",
+        "func": "msg.payload = {};\nmsg.payload.left_hand_landmarks = msg.inputLeftHand;\nmsg.payload.right_hand_landmarks = msg.inputRightHand;\nmsg.payload.name = msg.poseName;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1120,
+        "y": 660,
+        "wires": [
+            [
+                "e5a201cbe65becdd",
+                "2af20d08b5d7294a",
+                "8a822011f821cac7"
+            ]
+        ]
+    },
+    {
+        "id": "e5a201cbe65becdd",
+        "type": "debug",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1530,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "8a822011f821cac7",
+        "type": "http response",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1540,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "0b1e9455f54beba1",
+        "type": "change",
+        "z": "eacd9506f734c442",
+        "name": "인풋값 조정",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.multiHandLandmarks",
+                "pt": "msg",
+                "to": "multiHandLandmarks",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.multiHandedness",
+                "pt": "msg",
+                "to": "multiHandedness",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 360,
+        "wires": [
+            [
+                "241111a7a50ce84c"
+            ]
+        ]
+    },
+    {
+        "id": "0d2e14a61f812f66",
+        "type": "hand-find",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "x": 1040,
+        "y": 340,
+        "wires": [
+            [
+                "356a7f60b59dd6db"
+            ]
+        ]
+    },
+    {
+        "id": "356a7f60b59dd6db",
+        "type": "switch",
+        "z": "eacd9506f734c442",
+        "name": "동작 존재 여부",
+        "property": "status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "true",
+                "vt": "jsonata"
+            },
+            {
+                "t": "eq",
+                "v": "false",
+                "vt": "jsonata"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1260,
+        "y": 400,
+        "wires": [
+            [
+                "5638c6030f22a979"
+            ],
+            [
+                "16b0eeaf5e225a67",
+                "c6b667d284011a31"
+            ]
+        ]
+    },
+    {
+        "id": "16b0eeaf5e225a67",
+        "type": "debug",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1530,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "c6b667d284011a31",
+        "type": "http response",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1540,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "b8a6fe9d6768b13b",
+        "type": "debug",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1530,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "b864f3580d8e16f0",
+        "type": "http response",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1540,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "01e239a71d5dfbba",
+        "type": "mongodb in",
+        "z": "eacd9506f734c442",
+        "mongodb": "94218b756ed95528",
+        "name": "mongoDB 핸즈데이터 Select",
+        "collection": "hands",
+        "operation": "find",
+        "x": 760,
+        "y": 380,
+        "wires": [
+            [
+                "66ef2ca9854d4836"
+            ]
+        ]
+    },
+    {
+        "id": "66ef2ca9854d4836",
+        "type": "function",
+        "z": "eacd9506f734c442",
+        "name": "hand-find 인풋값 조정",
+        "func": "const handDataCount = msg.payload.length;\nmsg.savedLeftHand = [];\nmsg.savedRightHand = [];\nmsg.savedNameList = [];\n\nmsg.payload.forEach((el, index) => {\n    let leftData = el.left_hand_landmarks;\n    let rightData = el.right_hand_landmarks;\n    \n    if(leftData != null){\n        msg.savedLeftHand[index] = leftData;\n    }\n    else{\n        msg.savedLeftHand[index] = null;\n    }\n    \n    if(rightData != null){\n        msg.savedRightHand[index] = rightData;\n    }\n    else{\n        msg.savedRightHand[index] = null;\n    }\n    \n    msg.savedNameList[index] = el.name;\n});\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 500,
+        "wires": [
+            [
+                "0d2e14a61f812f66",
+                "94f892a022be153c"
+            ]
+        ]
+    },
+    {
+        "id": "b97df660ec857bcb",
+        "type": "switch",
+        "z": "eacd9506f734c442",
+        "name": "데이터 누적 여부",
+        "property": "isCorrect",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 690,
+        "y": 280,
+        "wires": [
+            [
+                "fb0b7608ce67145b"
+            ],
+            [
+                "01e239a71d5dfbba"
+            ]
+        ]
+    },
+    {
+        "id": "fb0b7608ce67145b",
+        "type": "http response",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 900,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "5638c6030f22a979",
+        "type": "function",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1340,
+        "y": 280,
+        "wires": [
+            [
+                "b8a6fe9d6768b13b",
+                "b864f3580d8e16f0"
+            ]
+        ]
+    },
+    {
+        "id": "241111a7a50ce84c",
+        "type": "function",
+        "z": "eacd9506f734c442",
+        "name": "입력 데이터 누적",
+        "func": "let inputLeftHand = null;\nlet inputRightHand = null;\nlet isCorrect = true;\n\nmsg.multiHandedness.forEach((el, index) => {\n    if (el.label === \"Right\") {\n      if (msg.multiHandLandmarks[index].length != 21) {\n        isCorrect = false;\n      } else {\n        inputRightHand = msg.multiHandLandmarks[index];\n      }\n    } else if (el.label === \"Left\") {\n      if (msg.multiHandLandmarks[index].length != 21) {\n        isCorrect = false;\n      } else {\n        inputLeftHand = msg.multiHandLandmarks[index];\n      }\n    }\n});\n\nif(!isCorrect){\n    msg.isCorrect = false;\n    return msg;\n}\n\nif(flow.leftHands == null)\n    flow.leftHands = [];\n    \nif(flow.rightHands == null)\n    flow.rightHands = [];\n\nflow.leftHands.push(inputLeftHand);\nflow.rightHands.push(inputRightHand);\n\nif(flow.leftHands.length == 30){\n    msg.isCorrect = true;\n    msg.inputLeftHands = flow.leftHands;\n    msg.inputRightHands = flow.leftHands;\n\n    flow.leftHands = [];\n    flow.rightHands = [];\n}\n\n\n      \nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 220,
+        "wires": [
+            [
+                "b97df660ec857bcb"
+            ]
+        ]
+    },
+    {
+        "id": "94f892a022be153c",
+        "type": "debug",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1150,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "0582d9c3ca5ecf8e",
+        "type": "debug",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1130,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "4e0ffd1a0a4f4ffb",
+        "type": "websocket in",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "server": "91ec4121f2b84c12",
+        "client": "",
+        "x": 440,
+        "y": 80,
+        "wires": [
+            [
+                "c45d0330725f0f58"
+            ]
+        ]
+    },
+    {
+        "id": "c45d0330725f0f58",
+        "type": "function",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "func": "msg.payload = JSON.parse(msg.payload);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 80,
+        "wires": [
+            [
+                "c635e23fa98301a4"
+            ]
+        ]
+    },
+    {
+        "id": "c635e23fa98301a4",
+        "type": "http request",
+        "z": "eacd9506f734c442",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://127.0.0.1:1880/regist",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 1190,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "94218b756ed95528",
+        "type": "mongodb",
+        "hostname": "127.0.0.1",
+        "topology": "direct",
+        "connectOptions": "",
+        "port": "27017",
+        "db": "5fn",
+        "name": ""
+    },
+    {
+        "id": "91ec4121f2b84c12",
+        "type": "websocket-listener",
+        "path": "/ws/handsdetection",
+        "wholemsg": "false"
+    }
+]
