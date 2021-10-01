@@ -1,0 +1,26 @@
+<script type="text/javascript">
+
+  RED.nodes.registerType('hand-detection',{
+    category: 'motion pose',
+    color: "#B2A1F4",
+    defaults: {
+      name: {value: ""}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-hand-paper-o",
+    paletteLabel: "hand detect",
+    label: function() {
+      return this.name||"hands detection"
+    },
+    oneditprepare: function() {
+    },
+  })
+</script>
+
+<script type="text/html" data-template-name="hand-detection">
+</script>
+
+<script type="text/html" data-help-name="hand-detection">
+  <p>A simple node that related to hands detection</p>
+</script>
