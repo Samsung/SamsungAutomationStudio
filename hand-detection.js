@@ -196,6 +196,7 @@ module.exports = function(RED) {
               poseData["regist"] = true;
               poseData["poseName"] = handMotionName.value;
               ws.send(JSON.stringify(poseData));
+              console.log(poseData);
             })
 
             /* result message reset*/
@@ -280,5 +281,5 @@ module.exports = function(RED) {
         this.on('close', function() {
         })
     }
-    RED.nodes.registerType("hands-detection", HandsDetectionNode)
+    RED.nodes.registerType("hand-detection", HandsDetectionNode)
 }
