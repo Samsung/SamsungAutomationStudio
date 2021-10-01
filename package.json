@@ -23,7 +23,8 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
-      "FileCloud": "501-FileCloud.js"
+      "FileCloud": "501-FileCloud.js",
+      "data-formatter": "401-DataFormatter.js"
     }
   },
   "dependencies": {
@@ -45,6 +46,12 @@
     "when": "3.7.8",
     "googleapis": "^85.0.0",
     "axios": "^0.21.4",
-    "mime-types": "^2.1.32"
+    "mime-types": "^2.1.32",
+    "xlsx": "^0.17.2",
+    "fs-extra": "^10.0.0",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
+    "he": "1.2.0",
+    "fast-xml-parser": "3.19.0"
   }
 }
