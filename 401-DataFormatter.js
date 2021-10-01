@@ -1,23 +1,23 @@
 module.exports = function (RED) {
     const xlsx = require('xlsx');
-    const fs = require("fs-extra");
-    const os = require("os");
-    const path = require("path");
+    const fs = require('fs-extra');
+    const os = require('os');
+    const path = require('path');
     const xmlParser = require('fast-xml-parser');
     const he = require('he');
-    var parents = [];
+    let parents = [];
 
     function JsonFormatting(X, Y, title, type, y_label, nodeConfig) {
         //json formatting
-        var result = {
+        let result = {
             type: type,
             data: {
                 labels: X,
                 datasets: [{
                     label: y_label,
-                    backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || "rgba(0, 0, 0, 0.1)"),
+                    backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || 'rgba(0, 0, 0, 0.1)'),
                     borderWidth: ((nodeConfig && nodeConfig.borderWidth || null)),
-                    borderColor: ((nodeConfig && nodeConfig.borderColor) || "rgba(0, 0, 0, 0.1)"),
+                    borderColor: ((nodeConfig && nodeConfig.borderColor) || 'rgba(0, 0, 0, 0.1)'),
                     data: Y
                 }]
             },
@@ -35,7 +35,6 @@ module.exports = function (RED) {
                         ticks: {
                             min: ((nodeConfig && Number(nodeConfig.yMin)) || Math.min.apply(Math, Y)),
                             stepSize: ((nodeConfig && Number(nodeConfig.yStepSize)) || null)
-
                         }
                     }]
                 }
@@ -46,17 +45,17 @@ module.exports = function (RED) {
 
     function CsvParser(csvData) {
         //csv to json
-        var rows = csvData.split("\r\n");
-        var result = [];
+        let rows = csvData.split('\r\n');
+        let result = [];
 
-        for (var rowIndex in rows) {
-            var row = rows[rowIndex].split(",");
-            if (rowIndex === "0") {
-                var columns = row;
+        for (let rowIndex in rows) {
+            let row = rows[rowIndex].split(',');
+            if (rowIndex === '0') {
+                let columns = row;
             } else {
-                var csvData = {};
-                for (var columnIndex in columns) {
-                    var column = columns[columnIndex];
+                let csvData = {};
+                for (let columnIndex in columns) {
+                    let column = columns[columnIndex];
                     csvData[column] = row[columnIndex];
                 }
                 result.push(csvData);
@@ -67,35 +66,35 @@ module.exports = function (RED) {
 
     function XlsxParser(xlsxData) {
         //xlsx to json
-        var sheetnames = Object.keys(xlsxData.Sheets);
-        var sheetname = sheetnames[0];
+        let sheetnames = Object.keys(xlsxData.Sheets);
+        let sheetname = sheetnames[0];
 
-        var result = xlsx.utils.sheet_to_json(xlsxData.Sheets[sheetname]);
+        let result = xlsx.utils.sheet_to_json(xlsxData.Sheets[sheetname]);
         return result;
     }
 
     function XmlParser(xmlData, x_data) {
         //xml to json
         const xmlOptions = {
-            attributeNamePrefix: "@_",
-            attrNodeName: "attr", //default is 'false' 
-            textNodeName: "#text",
+            attributeNamePrefix: '@_',
+            attrNodeName: 'attr', //default is 'false' 
+            textNodeName: '#text',
             ignoreAttributes: true,
             ignoreNameSpace: false,
             allowBooleanAttributes: false,
             parseNodeValue: true,
             parseAttributeValue: false,
             trimValues: true,
-            cdataTagName: "__cdata", //default is 'false' 
-            cdataPositionChar: "\\c",
+            cdataTagName: '__cdata', //default is 'false' 
+            cdataPositionChar: '\\c',
             parseTrueNumberOnly: false,
-            arrayMode: false, //"strict" 
+            arrayMode: false, //'strict' 
             attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true }), //default is a=>a 
             tagValueProcessor: (val, tagName) => he.decode(val), //default is a=>a 
-            stopNodes: ["parse-me-as-string"]
+            stopNodes: ['parse-me-as-string']
         };
 
-        var result = xmlParser.parse(xmlData, xmlOptions);
+        let result = xmlParser.parse(xmlData, xmlOptions);
         XmlfindAllParents(result, x_data);
 
         parents.forEach(key => {
@@ -119,10 +118,10 @@ module.exports = function (RED) {
                 return true;
             } else {
                 for (let i in keys) {
-                    var key = keys[i];
+                    let key = keys[i];
                     parents.push(key);
-                    var res = XmlfindAllParents(jsonObj[key], x_data);
-                    if (res === false || res == undefined) {
+                    let res = XmlfindAllParents(jsonObj[key], x_data);
+                    if (res === false || res === undefined) {
                         parents.pop();
                     }
                 }
@@ -131,10 +130,10 @@ module.exports = function (RED) {
     }
 
     function getRawData(jsonData, x_data, y_data) {
-        var X = [];
-        var Y = [];
+        let X = [];
+        let Y = [];
 
-        for (var row of jsonData) {
+        for (let row of jsonData) {
             X.push(row[x_data]);
             Y.push(row[y_data]);
         }
@@ -143,31 +142,31 @@ module.exports = function (RED) {
     }
 
     function getOverallStatistics(jsonData, y_data) {
-        var total = 0;
-        var count = 0;
-        var min = jsonData[0][y_data];
-        var max = jsonData[0][y_data];
+        let total = 0;
+        let count = 0;
+        let min = jsonData[0][y_data];
+        let max = jsonData[0][y_data];
 
-        for (var row of jsonData) {
+        for (let row of jsonData) {
             total += row[y_data];
             count += 1;
             if (min > row[y_data]) min = row[y_data];
             if (max < row[y_data]) max = row[y_data];
         }
 
-        var average = total / count;
+        let average = total / count;
 
-        var X = ['min', 'max', 'count', 'total', 'average'];
-        var Y = [min, max, count, total, average];
+        let X = ['min', 'max', 'count', 'total', 'average'];
+        let Y = [min, max, count, total, average];
 
         return { X: X, Y: Y };
     }
 
     function getCountByItems(jsonData, x_data) {
         // count the number of x_data items
-        var countByItemsJson = {};
+        let countByItemsJson = {};
 
-        for (var row of jsonData) {
+        for (let row of jsonData) {
             if (countByItemsJson.hasOwnProperty(row[x_data])) {
                 countByItemsJson[row[x_data]] += 1;
             } else {
@@ -179,9 +178,9 @@ module.exports = function (RED) {
     }
 
     function getTotalByItems(jsonData, x_data, y_data) {
-        var totalByItems = {};
+        let totalByItems = {};
 
-        for (var row of jsonData) {
+        for (let row of jsonData) {
             if (totalByItems.hasOwnProperty(row[x_data])) {
                 totalByItems[row[x_data]] += row[y_data];
             } else {
@@ -193,10 +192,10 @@ module.exports = function (RED) {
     }
 
     function getAverageByItems(jsonData, x_data, y_data) {
-        var averageByItems = {};
-        var countByItems = {};
+        let averageByItems = {};
+        let countByItems = {};
 
-        for (var row of jsonData) {
+        for (let row of jsonData) {
             if (averageByItems.hasOwnProperty(row[x_data])) {
                 averageByItems[row[x_data]] += row[y_data];
                 countByItems[row[x_data]] += 1;
@@ -225,13 +224,13 @@ module.exports = function (RED) {
 
     function stringToNumber(jsonData, y_data) {
         if (typeof (jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
-            for (var row of jsonData) {
-                row[y_data] = Number(row[y_data].replace(/,/g, ""));
+            for (let row of jsonData) {
+                row[y_data] = Number(row[y_data].replace(/,/g, ''));
             }
         }
 
         if (typeof (jsonData[0][y_data]) === 'string') {
-            for (var row of jsonData) {
+            for (let row of jsonData) {
                 row[y_data] = Number(row[y_data]);
             }
         }
@@ -241,15 +240,15 @@ module.exports = function (RED) {
 
     function DataFormatting(n) {
         RED.nodes.createNode(this, n);
-        var node = this;
+        let node = this;
 
         node.on('input', function (msg) {
-            var type = n.data_type;
-            var jsonData, data, cleanData;
+            let type = n.data_type;
+            let jsonData, data, cleanData;
 
             node.configId = n.config;
             RED.nodes.eachNode(function (nn) {
-                if (node.configId == nn.id) {
+                if (node.configId === nn.id) {
                     node.config = nn;
                 }
             });
@@ -259,14 +258,14 @@ module.exports = function (RED) {
                 if (type === 'xlsx') {
                     data = xlsx.readFile(n.data_path);
                 } else {
-                    data = fs.readFileSync(n.data_path, { encoding: "utf8" });
+                    data = fs.readFileSync(n.data_path, { encoding: 'utf8' });
                 }
             } else if (n.data_entry_point === 'binary') {
                 if (type === 'xlsx') {
-                    var binaryData = Buffer.from(msg.data, "base64").toString('base64');
+                    let binaryData = Buffer.from(msg.data, 'base64').toString('base64');
                     data = xlsx.read(binaryData);
                 } else {
-                    data = Buffer.from(msg.data, "base64").toString('utf8');
+                    data = Buffer.from(msg.data, 'base64').toString('utf8');
                 }
             } else if (n.data_entry_point === 'string') {
                 data = msg.payload;
@@ -280,31 +279,27 @@ module.exports = function (RED) {
                 jsonData = XmlParser(data, n.x_data);
                 parents = [];
             }
+
             jsonData = stringToNumber(jsonData, n.y_data);
 
             //data formatting
             if (n.result_data_type === 'totalByItems') {
                 cleanData = getTotalByItems(jsonData, n.x_data, n.y_data);
-
             } else if (n.result_data_type === 'countByItems') {
                 cleanData = getCountByItems(jsonData, n.y_data);
-
             } else if (n.result_data_type === 'averageByItems') {
                 cleanData = getAverageByItems(jsonData, n.x_data, n.y_data);
-
             } else if (n.result_data_type === 'overallStatistics') {
                 cleanData = getOverallStatistics(jsonData, n.x_data, n.y_data);
-
             } else {
                 cleanData = getRawData(jsonData, n.x_data, n.y_data);
             }
-
 
             msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, n.y_label, node.config);
             node.send(msg);
         })
     }
 
-    RED.nodes.registerType("data-formatter", DataFormatting);
-    RED.nodes.registerType("chart-config", ChartConfig);
+    RED.nodes.registerType('data-formatter', DataFormatting);
+    RED.nodes.registerType('chart-config', ChartConfig);
 }
