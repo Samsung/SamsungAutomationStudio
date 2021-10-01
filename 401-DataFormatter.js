@@ -7,22 +7,17 @@ module.exports = function(RED) {
     const he = require('he');
     var parents = [];
 
-    function JsonFormatting(jsonData, title, type, x_data, y_label, y_data) {
+    function JsonFormatting(X, Y, title, type, y_label, nodeConfig) {
         //json formatting
-        var X = []
-        var Y = []
-
-        for (var row of jsonData) {
-            X.push(row[x_data])
-            Y.push(row[y_data])
-        }
-
         var result = {
             type: type,
             data: {
                 labels: X,
                 datasets: [{
                     label: y_label,
+                    backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || "rgba(0, 0, 0, 0.1)"),
+                    borderWidth: ((nodeConfig && nodeConfig.borderWidth || null)),
+                    borderColor: ((nodeConfig && nodeConfig.borderColor) || "rgba(0, 0, 0, 0.1)"),
                     data: Y
                 }]
             },
@@ -34,23 +29,24 @@ module.exports = function(RED) {
                 title: {
                     display: true,
                     text: title
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: ((nodeConfig && Number(nodeConfig.yMin)) || Math.min.apply(Math, Y)),
+                            stepSize: ((nodeConfig && Number(nodeConfig.yStepSize)) || null)
+
+                        }
+                    }]
                 }
             }
         }
         return result;
     }
 
-    function CsvParser(data) {
+    function CsvParser(csvData) {
         //csv to json
-        var filename = data;
-        var fullFilename = filename;
-
-        if (filename && RED.settings.fileWorkingDirectory && !path.isAbsolute(filename)) {
-            fullFilename = path.resolve(path.join(RED.settings.fileWorkingDirectory, filename));
-        }
-
-        var csv_data = fs.readFileSync(fullFilename, { encoding: "utf8" });
-        var rows = csv_data.split("\r\n");
+        var rows = csvData.split("\r\n");
         var result = [];
 
         for (var rowIndex in rows) {
@@ -58,29 +54,27 @@ module.exports = function(RED) {
             if (rowIndex === "0") {
                 var columns = row;
             } else {
-                var csv_data = {};
+                var csvData = {};
                 for (var columnIndex in columns) {
                     var column = columns[columnIndex];
-                    csv_data[column] = row[columnIndex];
+                    csvData[column] = row[columnIndex];
                 }
-                result.push(csv_data);
+                result.push(csvData);
             }
         }
         return result;
     }
 
-    function XlsxParser(data) {
+    function XlsxParser(xlsxData) {
         //xlsx to json
-        var xlsx_data = xlsx.readFile(data);
-
-        var sheetnames = Object.keys(xlsx_data.Sheets);
+        var sheetnames = Object.keys(xlsxData.Sheets);
         var sheetname = sheetnames[0];
 
-        var result = xlsx.utils.sheet_to_json(xlsx_data.Sheets[sheetname]);
+        var result = xlsx.utils.sheet_to_json(xlsxData.Sheets[sheetname]);
         return result;
     }
 
-    function XmlParser(data, x_data) {
+    function XmlParser(xmlData, x_data) {
         //xml to json
         const xmlOptions = {
             attributeNamePrefix: "@_",
@@ -101,26 +95,21 @@ module.exports = function(RED) {
             stopNodes: ["parse-me-as-string"]
         };
 
-        var tmp = fs.readFileSync(data, { encoding: "utf8" });
-        var xml_data = xmlParser.parse(tmp, xmlOptions);
-
-        // console.log(xml_data);
-
-        XmlfindAllParents(xml_data, x_data);
-
-        // console.log(parents);
+        var result = xmlParser.parse(xmlData, xmlOptions);
+        XmlfindAllParents(result, x_data);
 
         parents.forEach(key => {
             if (isNaN(key) === true) {
-                xml_data = xml_data[key];
+                result = result[key];
             }
         });
 
-        let root = Object.keys(xml_data)[0];
-        if (isNaN(root)) xml_data = xml_data[root];
+        let root = Object.keys(result)[0];
+        if (isNaN(root)) {
+            result = result[root];
+        }
 
-        // console.log(xml_data);
-        return xml_data;
+        return result;
     }
 
     function XmlfindAllParents(jsonObj, x_data) {
@@ -141,7 +130,19 @@ module.exports = function(RED) {
         }
     }
 
-    function calculateStatistics(jsonData, title, type, x_data, y_label, y_data) {
+    function getRawData(jsonData, x_data, y_data) {
+        var X = [];
+        var Y = [];
+
+        for (var row of jsonData) {
+            X.push(row[x_data]);
+            Y.push(row[y_data]);
+        }
+
+        return { X: X, Y: Y };
+    }
+
+    function getOverallStatistics(jsonData, y_data) {
         // y데이터의 최대, 최소, 평균 세기
         var total = 0;
         var count = 0;
@@ -160,33 +161,11 @@ module.exports = function(RED) {
         var X = ['min', 'max', 'count', 'total', 'average'];
         var Y = [min, max, count, total, average];
 
-        console.log('min: ', min, ' max: ', max, ' count: ', count, ' total: ', total, ' average: ', average);
-
-        var result = {
-            type: type,
-            data: {
-                labels: X,
-                datasets: [{
-                    label: y_label,
-                    data: Y
-                }]
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: title
-                }
-            }
-        }
-        return result;
-
+        return { X: X, Y: Y };
     }
 
-    function makeItemsCount(jsonData, title, type, x_data, y_label, y_data) {
+    function getCountByItems(jsonData, x_data) {
+        // count the number of x_data items
         var countByItemsJson = {};
 
         for (var row of jsonData) {
@@ -196,67 +175,139 @@ module.exports = function(RED) {
                 countByItemsJson[row[x_data]] = 1;
             }
         }
-        var X = (Object.keys(countByItemsJson));
-        var Y = (Object.values(countByItemsJson));
 
-        console.log(countByItemsJson);
-
-        var result = {
-            type: type,
-            data: {
-                labels: X,
-                datasets: [{
-                    label: y_label,
-                    data: Y
-                }]
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: title
-                }
-            }
-        }
-        return result;
+        return { X: (Object.keys(countByItemsJson)), Y: (Object.values(countByItemsJson)) };
     }
 
-    function DataFormatting(config) {
-        RED.nodes.createNode(this, config);
+    function getTotalByItems(jsonData, x_data, y_data) {
+        var totalByItems = {};
+
+        for (var row of jsonData) {
+            if (totalByItems.hasOwnProperty(row[x_data])) {
+                totalByItems[row[x_data]] += row[y_data];
+            } else {
+                totalByItems[row[x_data]] = row[y_data];
+            }
+        }
+
+        return { X: (Object.keys(totalByItems)), Y: (Object.values(totalByItems)) };
+    }
+
+    function getAverageByItems(jsonData, x_data, y_data) {
+        var averageByItems = {};
+        var countByItems = {};
+
+        for (var row of jsonData) {
+            if (averageByItems.hasOwnProperty(row[x_data])) {
+                averageByItems[row[x_data]] += row[y_data];
+                countByItems[row[x_data]] += 1;
+
+            } else {
+                averageByItems[row[x_data]] = row[y_data];
+                countByItems[row[x_data]] = 1;
+            }
+        }
+
+        // 평균 구하기
+        for (key in averageByItems) {
+            averageByItems[key] /= countByItems[key];
+        }
+
+        return { X: (Object.keys(averageByItems)), Y: (Object.values(averageByItems)) };
+    }
+
+    function ChartConfig(n) {
+        RED.nodes.createNode(this, n);
+        this.borderColor = n.borderColor
+        this.borderWidth = n.borderWidth;
+        this.backgroundColor = n.backgroundColor
+        this.yMin = n.yMin;
+        this.yStepSize = n.yStepSize;
+    }
+
+    function stringToNumber(jsonData, y_data) {
+        if (typeof(jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
+            for (var row of jsonData) {
+                row[y_data] = Number(row[y_data].replace(/,/g, ""));
+            }
+        }
+
+        if (typeof(jsonData[0][y_data]) === 'string') {
+            for (var row of jsonData) {
+                row[y_data] = Number(row[y_data]);
+            }
+        }
+
+        return jsonData;
+    }
+
+    function DataFormatting(n) {
+        RED.nodes.createNode(this, n);
         var node = this;
 
         node.on('input', function(msg) {
-            var type = config.data_type;
-            var jsonData = config.data_src;
-            console.log(config);
+            var type = n.data_type;
+            var jsonData, data, cleanData;
 
-            //data parsing
-            if (type == 'xlsx') jsonData = XlsxParser(config.data_src);
-            else if (type == 'csv') jsonData = CsvParser(config.data_src);
-            else if (type == 'xml') {
-                jsonData = XmlParser(config.data_src, config.x_data);
+            node.configId = n.config;
+            RED.nodes.eachNode(function(nn) {
+                if (node.configId == nn.id) {
+                    node.config = nn;
+                }
+            });
+
+            //data entry
+            if (n.data_entry_point === 'path') {
+                if (type == 'xlsx') {
+                    data = xlsx.readFile(n.data_path);
+                } else {
+                    data = fs.readFileSync(n.data_path, { encoding: "utf8" });
+                }
+            } else if (n.data_entry_point === 'binary') {
+                if (type == 'xlsx') {
+                    var tmp = Buffer.from(msg.buffer, "base64").toString('base64');
+                    data = xlsx.read(tmp);
+                } else {
+                    data = Buffer.from(msg.buffer, "base64").toString('utf8');
+                }
+            } else if (n.data_entry_point === 'string') {
+                data = msg.payload;
+            }
+
+            if (type == 'xlsx') {
+                jsonData = XlsxParser(data);
+            } else if (type == 'csv') {
+                jsonData = CsvParser(data);
+            } else if (type == 'xml') {
+                jsonData = XmlParser(data, n.x_data);
                 parents = [];
             }
+            jsonData = stringToNumber(jsonData, n.y_data);
 
-            console.log('config.result_data_type ', config.result_data_type);
-            if (config.result_data_type === 'statistics') {
-                msg.data = calculateStatistics(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+            //data formatting
+            if (n.result_data_type === 'totalByItems') {
+                cleanData = getTotalByItems(jsonData, n.x_data, n.y_data);
 
-            } else if (config.result_data_type === 'count') {
-                // count the number of x_data items
-                msg.data = makeItemsCount(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+            } else if (n.result_data_type === 'countByItems') {
+                cleanData = getCountByItems(jsonData, n.y_data);
+
+            } else if (n.result_data_type === 'averageByItems') {
+                cleanData = getAverageByItems(jsonData, n.x_data, n.y_data);
+
+            } else if (n.result_data_type === 'overallStatistics') {
+                cleanData = getOverallStatistics(jsonData, n.x_data, n.y_data);
 
             } else {
-                //change json to chart.js format
-                msg.data = JsonFormatting(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+                cleanData = getRawData(jsonData, n.x_data, n.y_data);
             }
 
+            console.log(cleanData);
+
+            msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, n.y_label, node.config);
             node.send(msg);
         })
     }
 
     RED.nodes.registerType("data-formatter", DataFormatting);
+    RED.nodes.registerType("chart-config", ChartConfig);
 }
