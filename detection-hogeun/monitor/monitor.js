@@ -77,7 +77,7 @@ module.exports = function(RED) {
             httpServer.once('listening', () => {
                 console.log(`Socket.io : port ${port} is now ready.`)
         
-                // config for CORS (I referenced the link below)
+                // config for CORS. (I referenced the link below)
                 // CORS 설정 (아래 링크를 참고하였음)
                 // https://socket.io/docs/v3/handling-cors/
                 socketServer = io(httpServer, {
@@ -110,7 +110,7 @@ module.exports = function(RED) {
         })
         
         // if flow is closed, socket server would be closed.
-        // flow 중단되면 socket server 종료
+        // flow 중단되면, socket server 종료
         this.on('close', function() {
             socketServer.close()
         })
