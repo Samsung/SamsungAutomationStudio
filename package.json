@@ -7,7 +7,8 @@
     "Bixby",
     "node-red",
     "Samsung Automation Studio",
-    "AWS"
+    "AWS",
+    "File Cloud"
   ],
   "license": "Apache 2.0",
   "repository": {
@@ -21,7 +22,9 @@
       "Auth": "201-basicauth.js",
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
-      "SlackNotification": "303-SlackNotification.js"
+      "SlackNotification": "303-SlackNotification.js",
+      "FileCloud": "501-FileCloud.js",
+      "data-formatter": "401-DataFormatter.js"
     }
   },
   "dependencies": {
@@ -40,6 +43,15 @@
     "proxy-agent": "^5.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
-    "when": "3.7.8"
+    "when": "3.7.8",
+    "googleapis": "^85.0.0",
+    "axios": "^0.21.4",
+    "mime-types": "^2.1.32",
+    "xlsx": "^0.17.2",
+    "fs-extra": "^10.0.0",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
+    "he": "1.2.0",
+    "fast-xml-parser": "3.19.0"
   }
 }
