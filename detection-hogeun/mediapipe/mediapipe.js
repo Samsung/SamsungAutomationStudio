@@ -3,8 +3,6 @@
 
 module.exports = function(RED) {
 
-    // The node .js file defines the runtime behavior of the node.
-
     function MediapipeNode(config) {
 
         function HTML() {
@@ -422,26 +420,11 @@ module.exports = function(RED) {
         
         // listener to receive messages from the up-stream nodes in a flow.
         this.on('input', (msg, send, done) => {
+            // Return HTML document to the client.
+            // 클라이언트에 HTML 문서 반환
             msg.payload = HTML()
-
-            // send와 done은 1.0 버전 이후에 추가된 기능
-            // 0.x 버전에서 호환되게끔 하려면 아래처럼 처리하면 됨
-            if (done) {
-                done()
-            }
-        
-            // 인풋을 받은 후에 외부로 메시지를 보낼 때 (0.x 버전 호환)
             send = send || function() { this.send.apply(this, arguments )}
             send(msg)
-        })
-    
-        // 외부로 메시지를 보낼 때
-        this.send({ payload: 'this is message from MediapipeNode' })
-    
-        // 다른 플로우가 배포되면, 기존의 노드들은 삭제됩니다.
-        // 이 삭제를 리스닝해서 무언가를 해야 한다면 아래처럼 하면 됩니다.
-        this.on('close', function() {
-            // do something
         })
     }
     RED.nodes.registerType("mediapipe", MediapipeNode)
