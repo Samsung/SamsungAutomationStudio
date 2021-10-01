@@ -9,6 +9,11 @@ module.exports = function(RED) {
 
     function JsonFormatting(X, Y, title, type, y_label, nodeConfig) {
         //json formatting
+        var min = Math.min.apply(Math, Y)
+        if (nodeConfig && nodeConfig.yMin) {
+            min = Number(nodeConfig.yMin)
+        } 
+
         let result = {
             type: type,
             data: {
@@ -33,7 +38,7 @@ module.exports = function(RED) {
                 scales: {
                     yAxes: [{
                         ticks: {
-                            min: ((nodeConfig && Number(nodeConfig.yMin)) || Math.min.apply(Math, Y)),
+                            min: min,
                             stepSize: ((nodeConfig && Number(nodeConfig.yStepSize)) || null)
                         }
                     }]
