@@ -19,16 +19,6 @@
   </body>
 
   <script type="text/javascript">
-    // 참고 링크
-    // https://www.npmjs.com/package/node-rtsp-stream
-    // https://webnautes.tistory.com/1476
-
-    var client = new WebSocket('ws://localhost:9999');
-    var canvas = document.getElementById('input-canvas')
-    var player = new jsmpeg(client, {
-        canvas: canvas 
-    });
-
     function startDetect(renderFunc) {
         // 최초의 오디오 트랙을 생성한다.
         // (Loop 정지 함수는 현재 사용하지 않고 있음, 개발자의 취지에 따라 커스터마이징 가능)
@@ -123,9 +113,20 @@
     }
 
     
+    // 서버 웹소켓으로부터 rtsps 스트리밍 데이터 받아오기
+    // 참고 링크
+    // https://www.npmjs.com/package/node-rtsp-stream
+    // https://webnautes.tistory.com/1476
+    var client = new WebSocket('ws://localhost:9999');
+    var canvas = document.getElementById('input-canvas')
+    var player = new jsmpeg(client, {
+        canvas: canvas 
+    });
+
+    
     const btn = document.getElementById('btn')
     btn.onclick = function() {
-      startDetect(render)
+        startDetect(render)
     }
   </script>
 </html>
