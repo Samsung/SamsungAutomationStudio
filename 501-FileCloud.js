@@ -1,8 +1,8 @@
 const { google } = require("googleapis");
 
-module.exports = function(RED) {
-  const googleApi = require('./lib/googleApi');
-	const oneApi = require('./lib/oneApi');
+module.exports = function (RED) {
+  const googleApi = require("./lib/googleApi");
+  const oneApi = require("./lib/oneApi");
 
   function FileCloudNode(config) {
     RED.nodes.createNode(this, config);
@@ -14,35 +14,37 @@ module.exports = function(RED) {
       const cloudType = config.cloudType;
       const fileName = msg.payload.fileName || config.fileName;
       const filePath = msg.payload.filePath || config.filePath;
-      
+
       var param = {
         fileName,
-        filePath
+        filePath,
       };
 
       if (cloudType === "google") {
         const refreshToken = config.refreshToken;
-        const redirectUri = "https://developers.google.com/oauthplayground";
+        const redirectURI = "https://developers.google.com/oauthplayground";
         const auth = new google.auth.OAuth2(
           config.clientId,
           config.clientSecret,
-          redirectUri
+          redirectURI
         );
         auth.setCredentials({ refresh_token: refreshToken });
         const drive = google.drive({
           version: "v3",
           auth,
         });
-        param['drive'] = drive;
+        param["drive"] = drive;
       } else if (cloudType === "one") {
         const accessToken = config.accessToken;
-        param['accessToken'] = accessToken;
+        param["accessToken"] = accessToken;
       }
-      
+
       switch (doType) {
         case "download":
-          var api = cloudType === 'google' ? googleApi : oneApi;
-          api.download(param).then((val) => {
+          var api = cloudType === "google" ? googleApi : oneApi;
+          api
+            .download(param)
+            .then((val) => {
               msg.filePath = `${filePath}/${fileName}`;
               msg.data = val;
               send(msg);
@@ -53,8 +55,10 @@ module.exports = function(RED) {
             });
           break;
         case "upload":
-          var api = cloudType === 'google' ? googleApi : oneApi;
-          api.upload(param).then((val) => {
+          var api = cloudType === "google" ? googleApi : oneApi;
+          api
+            .upload(param)
+            .then((val) => {
               msg.filePath = `${filePath}/${fileName}`;
               msg.data = val;
               send(msg);
@@ -65,8 +69,10 @@ module.exports = function(RED) {
             });
           break;
         case "read":
-          var api = cloudType === 'google' ? googleApi : oneApi;
-          api.read(param).then((val) => {
+          var api = cloudType === "google" ? googleApi : oneApi;
+          api
+            .read(param)
+            .then((val) => {
               msg.data = val;
               send(msg);
             })
