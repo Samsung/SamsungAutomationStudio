@@ -8,7 +8,7 @@
     "node-red",
     "Samsung Automation Studio",
     "AWS",
-    "OneDrive"
+    "File Cloud"
   ],
   "license": "Apache 2.0",
   "repository": {
@@ -23,8 +23,7 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
-      "GoogleDrive": "501-GoogleDrive.js",
-      "OneDrive": "502-OneDrive.js"
+      "FileCloud": "501-FileCloud.js"
     }
   },
   "dependencies": {
