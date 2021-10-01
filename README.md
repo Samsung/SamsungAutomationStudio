@@ -15,19 +15,19 @@
   ```
   npm install node-red -g
   ```
-2. Hands Detection Repository Clone
+2. Hands Repository Clone
   ```
-  git clone https://github.com/5FNSaaS/detection-hyeona.git
+  git clone https://github.com/5FNSaaS/Motion-Pose-Node-Hands.git
   ```
 3. Node-Red에 Hands Detection Node 설치
   ```
-  npm install <clone_받은_경로>\detection-hyeona
+  npm install <clone_받은_경로>\Motion-Pose-Node-Hands
   ```
 4. 명령프롬프트에서 실행하기
   ```
   node-red
   ```
-5. Node-red [http://127.0.0.1:1880/](http://127.0.0.1:1880/) 접속해서 Hands Detection 확인하기
+5. Node-red [http://127.0.0.1:1880/](http://127.0.0.1:1880/) 접속해서 Hands 확인하기
 
 
 ## Reference
