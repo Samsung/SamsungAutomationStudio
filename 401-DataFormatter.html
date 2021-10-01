@@ -7,7 +7,7 @@
         <input type="text" id="node-input-name" placeholder="Name"><br>
     </div>
     <div class="form-row">
-        <label for="node-input-data_entry_point"><i class="fa fa-tag"></i> Input Type</label>
+        <label for="node-input-data_entry_point"><i class="fa fa-sign-in"></i> Input Type</label>
         <select id="node-input-data_entry_point">
             <option value="string">String</option>
             <option value="binary">Binary File</option>
@@ -15,11 +15,11 @@
         </select>
     </div>
     <div class="form-row" id = "node-input-data_path-row">
-        <label for="node-input-data_path"><i class="fa fa-tag"></i> Data Path</label>
+        <label for="node-input-data_path"><i class="fa fa-folder-open-o"></i> Data Path</label>
         <input type="text" id="node-input-data_path" placeholder="Data Path"><br>
     </div>
     <div class="form-row">
-        <label for="node-input-data_type"><i class="fa fa-tag"></i> File Extension</label>
+        <label for="node-input-data_type"><i class="fa fa-file-text-o"></i> Data Format</label>
         <select id="node-input-data_type">
             <option value="json">json</option>
             <option value="xml">xml</option>
@@ -28,14 +28,14 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-chart_type"><i class="fa fa-tag"></i> Chart type</label>
+        <label for="node-input-chart_type"><i class="fa fa-bar-chart"></i> Chart type</label>
         <select id="node-input-chart_type">
             <option value="line">line chart</option>
             <option value="bar">bar chart</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-result_data_type"><i class="fa fa-tag"></i> Result</label>
+        <label for="node-input-result_data_type"><i class="fa fa-sign-out"></i> Result</label>
         <select id="node-input-result_data_type">
             <option value="raw">Raw Data</option>
             <option value="totalByItems">Total By Items</option>
@@ -49,11 +49,11 @@
         <input type="text" id="node-input-title" placeholder="title">
     </div>
     <div class="form-row">
-        <label for="node-input-x_data"><i class="fa fa-tag"></i> x_data</label>
+        <label for="node-input-x_data"><i class="fa fa-line-chart"></i> X-axes</label>
         <input type="text" id="node-input-x_data" placeholder="x_data"><br>
     </div>
     <div class="form-row" id = "node-input-y_data-row">
-        <label for="node-input-y_data"><i class="fa fa-tag"></i> y_data</label>
+        <label for="node-input-y_data"><i class="fa fa-line-chart"></i> Y-axes</label>
         <input type="text" id="node-input-y_data" placeholder="y_data">
     </div>
     <div class="form-row" id = "node-input-y_label-row">
@@ -116,7 +116,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('data-formatter', {
-        category: 'function',
+        category: 'sotaeji',
         color: '#FFE682',
         defaults: {
             config: {
@@ -151,7 +151,7 @@
         },
         oneditprepare: function () {
             var NODE = this;
-            $("#node-input-config").html('');
+            $("#node-input-config").html('<option value = ""> Select Config</>');
             RED.nodes.eachNode(function (node) {
                 if (node.name && node.type == 'chart-config') {
                     $("#node-input-config").append($("<option></option>").val(node.id).text(node.name + " (" + node.id + ")"));
@@ -189,7 +189,7 @@
     });
 
     RED.nodes.registerType('chart-config', {
-        category: 'function',
+        category: 'sotaeji',
         color: '#FF9F43',
         defaults: {
             name: { value: "Chart Config" },
@@ -199,7 +199,7 @@
             yMin: { value: 0 },
             yStepSize: { value: null },
         },
-        icon:"font-awesome/fa-bar-chart-o",
+        icon: "font-awesome/fa-bar-chart-o",
         paletteLabel: "Chart Config",
         label: function () {
             return this.name;
