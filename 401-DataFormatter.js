@@ -1,4 +1,4 @@
-module.exports = function (RED) {
+module.exports = function(RED) {
     const xlsx = require('xlsx');
     const fs = require('fs-extra');
     const os = require('os');
@@ -54,9 +54,9 @@ module.exports = function (RED) {
         let result = [];
 
         for (let rowIndex in rows) {
-            let row = rows[rowIndex].split(',');
+            var row = rows[rowIndex].split(',');
             if (rowIndex === '0') {
-                let columns = row;
+                var columns = row;
             } else {
                 let csvData = {};
                 for (let columnIndex in columns) {
@@ -228,13 +228,13 @@ module.exports = function (RED) {
     }
 
     function stringToNumber(jsonData, y_data) {
-        if (typeof (jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
+        if (typeof(jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
             for (let row of jsonData) {
                 row[y_data] = Number(row[y_data].replace(/,/g, ''));
             }
         }
 
-        if (typeof (jsonData[0][y_data]) === 'string') {
+        if (typeof(jsonData[0][y_data]) === 'string') {
             for (let row of jsonData) {
                 row[y_data] = Number(row[y_data]);
             }
@@ -247,12 +247,12 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n);
         let node = this;
 
-        node.on('input', function (msg) {
+        node.on('input', function(msg) {
             let type = n.data_type;
             let jsonData, data, cleanData;
 
             node.configId = n.config;
-            RED.nodes.eachNode(function (nn) {
+            RED.nodes.eachNode(function(nn) {
                 if (node.configId === nn.id) {
                     node.config = nn;
                 }
