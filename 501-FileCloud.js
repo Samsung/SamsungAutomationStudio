@@ -1,15 +1,15 @@
-const { google } = require("googleapis");
+const { google } = require('googleapis');
 
 module.exports = function (RED) {
-  const googleApi = require("./lib/googleApi");
-  const oneApi = require("./lib/oneApi");
+  const googleApi = require('./lib/googleApi');
+  const oneApi = require('./lib/oneApi');
 
   function FileCloudNode(config) {
     RED.nodes.createNode(this, config);
     var node = this;
     node.status({});
 
-    this.on("input", async (msg, send) => {
+    this.on('input', async (msg, send) => {
       const doType = config.doType;
       const cloudType = config.cloudType;
       const fileName = msg.payload.fileName || config.fileName;
@@ -20,9 +20,9 @@ module.exports = function (RED) {
         filePath,
       };
 
-      if (cloudType === "google") {
+      if (cloudType === 'google') {
         const refreshToken = config.refreshToken;
-        const redirectURI = "https://developers.google.com/oauthplayground";
+        const redirectURI = 'https://developers.google.com/oauthplayground';
         const auth = new google.auth.OAuth2(
           config.clientId,
           config.clientSecret,
@@ -30,18 +30,18 @@ module.exports = function (RED) {
         );
         auth.setCredentials({ refresh_token: refreshToken });
         const drive = google.drive({
-          version: "v3",
+          version: 'v3',
           auth,
         });
-        param["drive"] = drive;
-      } else if (cloudType === "one") {
+        param['drive'] = drive;
+      } else if (cloudType === 'one') {
         const accessToken = config.accessToken;
-        param["accessToken"] = accessToken;
+        param['accessToken'] = accessToken;
       }
 
       switch (doType) {
-        case "download":
-          var api = cloudType === "google" ? googleApi : oneApi;
+        case 'download':
+          var api = cloudType === 'google' ? googleApi : oneApi;
           api
             .download(param)
             .then((val) => {
@@ -50,12 +50,12 @@ module.exports = function (RED) {
               send(msg);
             })
             .catch((error) => {
-              node.status({ fill: "red", shape: "dot", text: "error" });
-              node.error("download failed: " + error.toString(), msg);
+              node.status({ fill: 'red', shape: 'dot', text: 'error' });
+              node.error('download failed: ' + error.toString(), msg);
             });
           break;
-        case "upload":
-          var api = cloudType === "google" ? googleApi : oneApi;
+        case 'upload':
+          var api = cloudType === 'google' ? googleApi : oneApi;
           api
             .upload(param)
             .then((val) => {
@@ -64,12 +64,12 @@ module.exports = function (RED) {
               send(msg);
             })
             .catch((error) => {
-              node.status({ fill: "red", shape: "dot", text: "error" });
-              node.error("upload failed: " + error.toString(), msg);
+              node.status({ fill: 'red', shape: 'dot', text: 'error' });
+              node.error('upload failed: ' + error.toString(), msg);
             });
           break;
-        case "read":
-          var api = cloudType === "google" ? googleApi : oneApi;
+        case 'read':
+          var api = cloudType === 'google' ? googleApi : oneApi;
           api
             .read(param)
             .then((val) => {
@@ -77,12 +77,12 @@ module.exports = function (RED) {
               send(msg);
             })
             .catch((error) => {
-              node.status({ fill: "red", shape: "dot", text: "error" });
-              node.error("read failed: " + error.toString(), msg);
+              node.status({ fill: 'red', shape: 'dot', text: 'error' });
+              node.error('read failed: ' + error.toString(), msg);
             });
       }
     });
   }
 
-  RED.nodes.registerType("FileCloud", FileCloudNode);
+  RED.nodes.registerType('FileCloud', FileCloudNode);
 };
