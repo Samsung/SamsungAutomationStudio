@@ -1,0 +1,114 @@
+<script type="text/javascript">
+  RED.nodes.registerType('shopping-filter', {
+    category: 'SASM Ecommerce Extensions Pack' ,
+    color: '#ffffff',
+    defaults: {
+      name: {value: ""},
+      vendor: {value: "", required: false},
+      sorttype: {value: "", required: false},
+      minprice: {value: "", required: false},
+      maxprice: {value: "", required: false},
+    },
+    inputs:1,
+    outputs:1,
+    icon: "shopping.png",
+    label: function() {
+      return this.name||"shopping-filter";
+    }
+  });
+
+  RED.nodes.registerType('shopping-formatter', {
+    category: 'SASM Ecommerce Extensions Pack',
+    color: '#ffffff',
+    defaults: {
+      name: {value: ""},
+      vendor: {value:""},
+    },
+    inputs:1,
+    outputs:1,
+    icon: "shopping.png",
+    label: function() {
+      return this.name||"shopping-formatter";
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="shopping-filter">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-vendor"><i class="icon-tag"></i> Vendor</label>
+        <select id="node-input-vendor" name="node-input-vendor">
+            <option value="naver">Naver</option>
+            <option value="11st">11st</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-sorttype"><i class="icon-tag"></i> Sort Type</label>
+        <select id="node-input-sorttype" name="node-input-sorttype">
+            <option value="asc">asc</option>
+            <option value="desc">desc</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-minprice"><i class="icon-tag"></i> MinPrice</label>
+        <input type="text" id="node-input-minprice" placeholder="minprice">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxprice"><i class="icon-tag"></i> MaxPrice</label>
+        <input type="text" id="node-input-maxprice" placeholder="maxprice">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="shopping-filter">
+    <p>Summary of the node.</p>
+    <h3>Input Data</h3>
+    <dl class="message-properties">
+        <dt>Vendor<span class="property-type">String</span></dt>
+        <dd>Input Shopping Mall Vendor</dd>
+        <dt>Sort Type<span class="property-type">String</span></dt>
+        <dd>Select Sorting Type (asc or desc)</dd>
+        <dt>MinPrice<span class="property-type">Number</span></dt>
+        <dd>Set Minimum Price</dd>
+        <dt>MaxPrice<span class="property-type">Number</span></dt>
+        <dd>Set Maximum Price</dd>
+    </dl>
+
+    <h3>Output Data</h3>
+    <dl class="message-properties">
+        <dt>Output JSON<span class="property-type">JSON Object</span></dt>
+        <dd>Sorted product list</dd>
+    </dl>
+</script>
+
+<script type="text/x-red" data-template-name="shopping-formatter">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-vendor"><i class="icon-tag"></i> Vendor</label>
+        <select id="node-input-vendor" name="node-input-vendor">
+            <option value="naver">Naver</option>
+            <option value="11st">11st</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="shopping-formatter">
+    <p>Summary of the node.</p>
+    <h3>Input Data</h3>
+    <dl class="message-properties">
+        <dt>Input JSON<span class="property-type">JSON Object</span></dt>
+        <dd>Output from shopping nodes</dd>
+    </dl>
+
+    <h3>Output Data</h3>
+    <dl class="message-properties">
+        <dt>Output JSON<span class="property-type">JSON Object</span></dt>
+        <dd>Refined product list data</dd>
+    </dl>
+</script>
