@@ -1,0 +1,148 @@
+<script type="text/html" data-template-name="naver-shopping">
+    <div class="form-row">
+      <label for="node-input-name">
+        <i class="fa fa-tag"></i> Name
+      </label>
+      <input type="text" id="node-input-name" data-i18n="[placeholder]Name">
+    </div>
+    <div class="form-row">
+      <label for="node-input-creds">
+        <i class="fa fa-key fa-fw"></i> API Key
+      </label>
+      <input type="text" id="node-input-creds">
+    </div>
+    <div class="form-row">
+      <label for="node-input-returnType">
+        <i class="fa fa-file-text-o fa-fw"></i> Return Type
+      </label>
+      <select type="text" id="node-input-returnType" style="width:70%!important;">
+        <option value="json" selected>JSON</option>
+        <option value="xml">XML</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="node-input-query">
+        <i class="fa fa-search fa-fw"></i> Query
+      </label>
+      <input type="text" id="node-input-query" data-i18n="[placeholder]word1,word2,word3...">
+    </div>
+    <div class="form-row">
+      <label for="node-input-sort">
+        <i class="fa fa-cog fa-fw"></i> Option
+      </label>
+      <select type="text" id="node-input-sort" style="width:70%!important;">
+        <option value="sim">sim</option>
+        <option value="date">date</option>
+        <option value="asc">asc</option>
+        <option value="dsc">dsc</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="node-input-start">
+        <i class="fa fa-play fa-fw"></i> Start
+      </label>
+      <input type="text" id="node-input-start" data-i18n="[placeholder]1 ~ 1000">
+    </div>
+    <div class="form-row">
+      <label for="node-input-display">
+        <i class="fa fa-list fa-fw"></i> Display
+      </label>
+      <input type="text" id="node-input-display" data-i18n="[placeholder]10 ~ 100">
+    </div>
+    <div class="form-row">
+      <label for="node-input-filter">
+        <i class="fa fa-filter fa-fw"></i> Mall Filter
+      </label>
+      <input type="text" id="node-input-filter" data-i18n="[placeholder]선택 옵션">
+    </div>
+  </script>
+  
+  <script type="text/html" data-help-name="naver-shopping">
+    <p>Summary of the node.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+      <dt>API Key<span class="property-type">naver-shopping-api-key</span></dt>
+      <dd>네이버 쇼핑 API Key</dd>
+      <dt>Return Type<span class="property-type">select</span></dt>
+      <dd>JSON/XML 형식 지원</dd>
+      <dt>Query<span class="property-type">string</span></dt>
+      <dd>네이버 쇼핑에서 검색할 단어 입력. "," 로 구분하여 여러 단어 검색가능</dd>
+      <dt>Option<span class="property-type">select</span></dt>
+      <dd>검색 시 사용할 옵션 (sim: 유사도 순, date: 날짜 순, asc: 가격 오름차순, dsc: 가격 내림차순)</dd>
+      <dt>Start<span class="property-type">integer</span></dt>
+      <dd>검색 시작 위치 (1 ~ 1000)</dd>
+      <dt>Display<span class="property-type">integer</span></dt>
+      <dd>검색 결과 출력 건수 (10 ~ 100)</dd>
+      <dt class="optional">Mall Filter<span class="property-type">string</span></dt>
+      <dd>검색 결과에서 입력한 텍스트로 mall 필터링 (부분 일치)</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+      <dt>payload<span class="property-type">object</span></dt>
+      <dd>네이버 쇼핑 검색 API에서 얻어온 결과 데이터 반환 (JSON/XML)</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>Explanation of the details.</p>
+    <p><b>Note</b>: Note of the node.</p>
+  </script>
+  
+  <script type="text/javascript">
+    RED.nodes.registerType("naver-shopping", {
+      color: "#04cf5c",
+      category: "SASM Ecommerce Extensions Pack",
+      defaults: {
+        name: {value: "Naver Shopping"},
+        returnType: {value: "json", required: false},
+        query: {value: "", required: false},
+        display: {value: "10", required: false},
+        sort: {value: "sim", required: false},
+        start: {value: "1", required: false},
+        filter: {value: "", required: false},
+        creds: {
+          value: "",
+          type: "naver-shopping-api-key"
+        },
+      },
+      inputs: 1,
+      outputs: 1,
+      paletteLabel: "Naver Shopping",
+      icon: "navershopping.png",
+      label: function () {
+        return this.name || 'Naver Shopping';
+      },
+    });
+  </script>
+  
+  
+  <script type="text/html" data-template-name="naver-shopping-api-key">
+    <div class="form-row">
+      <label for="node-input-name"> <i class="fa fa-tag fa-fw"></i> Name</label>
+      <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+  
+    <div class="form-row">
+      <label for="node-config-input-clientId"> Client Id</label>
+      <input type="text" id="node-config-input-clientId" placeholder="Client Id">
+    </div>
+    <div class="form-row">
+      <label for="node-config-input-clientSecret"> Client Secret</label>
+      <input type="text" id="node-config-input-clientSecret" placeholder="Client Secret">
+    </div>
+  </script>
+  
+  <script type="text/javascript">
+    RED.nodes.registerType('naver-shopping-api-key', {
+      category: 'config',
+      defaults: {
+        name: {value: "Naver Shopping API Key"},
+      },
+      credentials: {
+        clientId: {},
+        clientSecret: {},
+      },
+      paletteLabel: "Naver Shopping API Key",
+      label: function () {
+        return this.name || 'Naver Shopping API Key';
+      }
+    });
+  </script>

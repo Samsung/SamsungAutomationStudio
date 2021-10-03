@@ -1,0 +1,188 @@
+<script type="text/html" data-template-name="shipping">
+    <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> <span
+          data-i18n="node-red:common.label.name"></span></label>
+      <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+  
+    <div class="form-row">
+      <label for="node-input-creds"> <i class="fa fa-key fa-fw"></i><span>API key</span></label>
+      <input type="text" id="node-input-creds">
+    </div>
+    <div class="form-row"><label for="node-input-ship_number"><i class="fa"></i>송장 번호 <span
+        data-i18n="shipping.label.ship_number"></span> </label> <input type="text" id="node-input-ship_number"
+                                                                       data-i18n="[placeholder]송장 번호를 입력해주세요">
+    </div>
+    <div class="form-row"><label for="node-input-ship_company"><i class="fa"></i>배송회사 코드<span
+        data-i18n="shipping.label.ship_company"></span></label>
+      <select type="text" id="node-input-ship_company" data-i18n="[placeholder]배송 회사를 선택해주세요">
+        <option value="01"> 우체국택배</option>
+        <option value="04"> CJ대한통운</option>
+        <option value="05"> 한진택배</option>
+        <option value="06"> 로젠택배</option>
+        <option value="08"> 롯데택배</option>
+        <option value="11"> 일양로지스</option>
+        <option value="12"> EMS</option>
+        <option value="13"> DHL</option>
+        <option value="14"> UPS</option>
+        <option value="16"> 한의사랑택배</option>
+        <option value="17"> 천일택배</option>
+        <option value="18"> 건영택배</option>
+        <option value="20"> 한덱스</option>
+        <option value="21"> FedEx</option>
+        <option value="22"> 대신택배</option>
+        <option value="23"> 경동택배</option>
+        <option value="24"> GS Postbox 택배</option>
+        <option value="25"> TNT Express</option>
+        <option value="26"> USPS</option>
+        <option value="28"> GSMNtoN</option>
+        <option value="30"> KGL네트웍스</option>
+        <option value="32"> 합동택배</option>
+        <option value="33"> DHL Global Mail</option>
+        <option value="34"> i-Parcel</option>
+        <option value="37"> LX판토스</option>
+        <option value="38"> ECMS Express</option>
+        <option value="40"> 굿투럭</option>
+        <option value="41"> GSI Express</option>
+        <option value="42"> CJ대한통운 국제특송</option>
+        <option value="43"> 애니트랙</option>
+        <option value="44"> SLX택배</option>
+        <option value="45"> 호남택배</option>
+        <option value="46"> CU 편의점택배</option>
+        <option value="47"> 우리한방택배</option>
+        <option value="48"> ACI Express</option>
+        <option value="49"> A.C.E EXPRESS INC</option>
+        <option value="50"> GPS Logix</option>
+        <option value="51"> 성원글로벌카고</option>
+        <option value="53"> 농협택배</option>
+        <option value="54"> 홈픽택배</option>
+        <option value="55"> EuroParcel</option>
+        <option value="57"> Cway Express</option>
+        <option value="60"> YJS글로벌(영국)</option>
+        <option value="63"> 은하쉬핑</option>
+        <option value="65"> YJS글로벌(월드)</option>
+        <option value="66"> Giant Network Group</option>
+        <option value="67"> 디디로지스</option>
+        <option value="69"> 대림통운</option>
+        <option value="70"> LOTOS CORPORATION</option>
+        <option value="71"> IK물류</option>
+        <option value="72"> 성훈물류</option>
+        <option value="73"> CR로지텍</option>
+        <option value="74"> 용마로지스</option>
+        <option value="75"> 원더스퀵</option>
+        <option value="77"> LineExpress</option>
+        <option value="79"> 티피엠코리아㈜ 용달이 특송</option>
+        <option value="81"> 제니엘시스템</option>
+        <option value="82"> 컬리로지스</option>
+        <option value="84"> 스마트로지스</option>
+        <option value="85"> 풀앳홈</option>
+        <option value="86"> 삼성전자물류</option>
+        <option value="87"> 이투마스(ETOMARS)</option>
+        <option value="88"> 큐런택배</option>
+        <option value="89"> 두발히어로</option>
+        <option value="90"> 위니아딤채</option>
+        <option value="91"> 하이브시티</option>
+        <option value="92"> 지니고 당일배송</option>
+        <option value="93"> 팬스타국제특송(PIEX)</option>
+        <option value="94"> 오늘의픽업</option>
+        <option value="95"> 큐익스프레스</option>
+        <option value="96"> 로지스밸리</option>
+        <option value="97"> 에이씨티앤코아물류</option>
+        <option value="99"> 롯데택배 해외특송</option>
+        <option value="100"> 나은물류</option>
+        <option value="101"> 한샘서비스원 택배</option>
+        <option value="102"> 배송하기좋은날(SHIPNERGY)</option>
+        <option value="103"> NDEX KOREA</option>
+        <option value="104"> 도도플렉스(dodoflex)</option>
+        <option value="105"> BRIDGE LOGIS</option>
+        <option value="106"> 허브넷로지스틱스</option>
+        <option value="107"> LG전자(판토스)</option>
+        <option value="108"> MEXGLOBAL</option>
+        <option value="109"> 윈핸드해운항공</option>
+        <option value="110"> 부릉</option>
+        <option value="111"> SBGLS</option>
+        <option value="112"> 1004홈</option>
+        <option value="113"> 썬더히어로</option>
+        <option value="114"> 캐나다쉬핑</option>
+        <option value="116"> (주)팀프레시</option>
+        <option value="117"> YUNDA EXPRESS</option>
+        <option value="118"> 롯데칠성</option>
+        <option value="119"> 핑퐁</option>
+        <option value="120"> 발렉스 특수물류</option>
+        <option value="121"> 바바바(bababa)</option>
+        <option value="122"> BAIMA EXPRESS</option>
+      </select>
+    </div>
+  </script>
+  
+  <script type="text/html" data-help-name="shipping">
+    <p>Summary of the node.</p>
+    <h3>입력 데이터</h3>
+    <dl class="message-properties">
+      <dt>API Key<span class="property-type">String</span></dt>
+      <dd>스마트 택배 API key</dd>
+      <dt class="optional">송장 번호 <span class="property-type">String</span></dt>
+      <dd>현재 본인에게 입력되어 들어오는 송장 번호 입력</dd>
+      <dt class="optional">배송 회사코드 <span class="property-type">String</span></dt>
+      <dd>배송회사 입력</dd>
+    </dl>
+    <h3>출력 데이터</h3>
+    <dl class="message-properties">
+      <dt>output json<span class="property-type">json object</span></dt>
+      <dd>배송회사로부터 얻어온 Json Object를 내보낸다.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>Explanation of the details.</p>
+    <p><b>Note</b>: Note of the node.</p>
+  </script>
+  
+  <script type="text/javascript">
+    RED.nodes.registerType('shipping', {
+      color: 'rgba(16,116,229,0.8)',
+      category: 'SASM Ecommerce Extensions Pack',
+      defaults: {
+        name: {value: ""},
+        ship_number: {value: "", required: true},
+        ship_company: {value: "", required: true},
+        creds: {
+          value: "",
+          type: "shippingApiKey"
+        },
+      },
+      inputs: 1,
+      outputs: 1,
+      label() {
+        return this.name || 'shipping';
+      },
+      icon: 'on.png',
+      align: 'left'
+    });
+  </script>
+  
+  
+  <script type="text/html" data-template-name="shippingApiKey">
+    <div class="form-row">
+      <label for="node-input-name"> <i class="fa fa-tag fa-fw"></i> Name</label>
+      <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+  
+    <div class="form-row">
+      <label for="node-config-input-ApiKey">ApiKey</label>
+      <input type="text" id="node-config-input-ApiKey" placeholder="ApiKey">
+    </div>
+  </script>
+  
+  <script type="text/javascript">
+    RED.nodes.registerType('shippingApiKey', {
+      category: 'config',
+      defaults: {
+        name: {value: ""}
+      },
+      credentials: {
+        ApiKey: {},
+      },
+      label() {
+        return this.name || 'API Key';
+      }
+    });
+  </script>
