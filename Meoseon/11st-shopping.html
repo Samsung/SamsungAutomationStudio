@@ -1,0 +1,183 @@
+<!-- CONFIG 노드! -->
+<script type="text/html" data-template-name="sk11st-credential">
+  <div class="form-row">
+    <label for="node-config-input-name">
+      <i class="fa fa-tag fa-fw"></i> Name</label
+    >
+    <input type="text" id="node-config-input-name" placeholder="Name" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-apikey"> API Key</label>
+    <input type="text" id="node-config-input-apikey" placeholder="API Key" />
+  </div>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType("sk11st-credential", {
+    category: "config",
+    defaults: {
+      name: { value: "" },
+    },
+    credentials: {
+      apikey: { type: "text" },
+    },
+    label: function () {
+      return this.name || "sk11st-credential";
+    },
+    oneditsave: function () {
+      var trimField = $("#node-config-input-apikey").val().trim();
+      $("#node-config-input-apikey").val(trimField);
+    },
+  });
+</script>
+
+<!-- IN 노드! -->
+<script type="text/html" data-template-name="sk11st-shopping">
+  <div class="form-row">
+    <label for="node-input-name"> <i class="fa fa-tag fa-fw"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-creds"> <i class="fa fa-key"></i> API Key </label>
+    <input type="text" id="node-input-creds" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-apiCode">
+      <i class="fa fa-list"></i> API Code
+    </label>
+    <select
+      type="text"
+      id="node-input-apiCode"
+      style="display: inline-block; vertical-align: middle; width:60%;"
+    >
+      <option value="ProductSearch">ProductSearch(상품검색)</option>
+      <option value="CategoryInfo">CategoryInfo(카테고리)</option>
+      <option value="ProductInfo">ProductInfo(상품정보조회)</option>
+      <option value="ProductImage">ProductImage(상품이미지조회)</option>
+    </select>
+  </div>
+  <div class="form-row" id="node-input-keyword-row">
+    <label for="node-input-keyword"> Keyword* </label>
+    <input type="text" id="node-input-keyword" />
+  </div>
+  <div class="form-row" id="node-input-categoryCode-row">
+    <label for="node-input-categoryCode"> categoryCode* </label>
+    <input type="text" id="node-input-categoryCode" />
+  </div>
+  <div class="form-row" id="node-input-productCode-row">
+    <label for="node-input-productCode"> productCode* </label>
+    <input type="text" id="node-input-productCode" />
+  </div>
+  <div id="product-category-common">
+    <div class="form-row" id="node-input-pagenum-row">
+      <label for="node-input-pagenum"> pageNum </label>
+      <input type="text" id="node-input-pagenum" />
+    </div>
+    <div class="form-row">
+      <label for="node-input-pagesize"> pageSize </label>
+      <input type="text" id="node-input-pagesize" />
+    </div>
+    <div class="form-row">
+      <label for="node-input-sortcd"> sortCd </label>
+      <input type="text" id="node-input-sortcd" />
+    </div>
+  </div>
+  <div class="form-row" id="node-input-option-row">
+    <label for="node-input-option"> option </label>
+    <input type="text" id="node-input-option" />
+  </div>
+  <div class="form-row" id="node-input-targetSearchPrd-row">
+    <label for="node-input-targetSearchPrd"> targetSearchPrd</label>
+    <input type="text" id="node-input-targetSearchPrd" />
+  </div>
+  <div class="form-tips">
+    <b>Tips: </b> Here is to give users guidelines for input. <br />
+    <b>sortCd</b><br />
+    * sort type<br />
+    CP : high popularity (인기도순)<br />
+    A : cumulative sales volume (누적판매순) <br />
+    G : highest rating (평가높은순)<br />
+    I : amount of reviews (후기/리뷰많은순)<br />
+    L : price : low to high (낮은가격순)<br />
+    H : price : high to low (높은가격순)<br />
+    N : time : newly listed (최신등록순)<br />
+    <br />
+    <b>option (ProductSearch, CategoryInfo)</b><br />
+    * additional information request <br />
+    Categories : Request for search results by categories (카테고리별 검색 결과
+    요청)<br />
+    <br />
+    <b>option (ProductInfo) </b><br />
+    * additional information request<br />
+    QAs : Request for a Q&A list of products (상품Q&A 조회 결과 요청)<br />
+    PostScripts : Request for reviews of products (사용후기 조회 결과 요청)<br />
+    PdOption : Request product option info (상품 옵션 정보 조회 결과 요청)<br />
+  </div>
+</script>
+<script type="text/javascript">
+  RED.nodes.registerType("sk11st-shopping", {
+    category: "Samsung AutomationStudio",
+    color: "#F3B567",
+    defaults: {
+      name: { value: "" },
+      creds: { type: "sk11st-credential", value: "", required: true },
+      apiCode: { value: "", required: true },
+      keyword: { value: "", type: "text" },
+      categoryCode: { value: "", type: "text" },
+      productCode: { value: "", type: "text" },
+      pagenum: { value: "1", type: "text" },
+      pagesize: { value: "50", type: "text" },
+      sortcd: { value: "", type: "text" },
+      option: { value: "", type: "text" },
+      targetSearchPrd: { value: "", type: "text" },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "11STREET_color.png",
+    label: function () {
+      return this.name || "sk11st-shopping";
+    },
+    oneditprepare: function () {
+      $("#node-input-apiCode").change(function () {
+        var type = $("#node-input-apiCode option:selected").val();
+        if (type == "CategoryInfo") {
+          $("#node-input-productCode-row").hide();
+          $("#node-input-targetSearchPrd-row").hide();
+          $("#node-input-keyword-row").hide();
+          $("#node-input-categoryCode-row").show();
+          $("#product-category-common").show();
+          $("#node-input-option-row").show();
+        } else if (type == "ProductImage") {
+          $("#node-input-categoryCode-row").hide();
+          $("#node-input-keyword-row").hide();
+          $("#product-category-common").hide();
+          $("#node-input-option-row").hide();
+          $("#node-input-targetSearchPrd-row").hide();
+          $("#node-input-productCode-row").show();
+        } else if (type == "ProductInfo") {
+          $("#node-input-categoryCode-row").hide();
+          $("#node-input-keyword-row").hide();
+          $("#product-category-common").hide();
+          $("#node-input-targetSearchPrd-row").hide();
+          $("#node-input-option-row").show();
+          $("#node-input-productCode-row").show();
+        } else {
+          //ProdcutSearch
+          $("#node-input-categoryCode-row").hide();
+          $("#node-input-productCode-row").hide();
+          $("#node-input-keyword-row").show();
+          $("#product-category-common").show();
+          $("#node-input-option-row").show();
+          $("#node-input-targetSearchPrd-row").show();
+        }
+      });
+      $("#node-input-apiCode").change();
+    },
+  });
+</script>
+
+<script type="text/html" data-help-name="sk11st-shopping">
+  <p>SSAFY</p>
+  <p>여기는 도움말 영역입니다.</p>
+</script>
