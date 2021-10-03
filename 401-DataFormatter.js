@@ -73,7 +73,7 @@ module.exports = function(RED) {
         return result;
     }
 
-    function XmlParser(xmlData, x_data) {
+    function XmlParser(xmlData, y_data) {
         //xml to json
         const xmlOptions = {
             attributeNamePrefix: '@_',
@@ -95,7 +95,7 @@ module.exports = function(RED) {
         };
 
         let result = xmlParser.parse(xmlData, xmlOptions);
-        XmlfindAllParents(result, x_data);
+        findAllParents(result, y_data);
 
         parents.forEach(key => {
             if (isNaN(key) === true) {
@@ -111,22 +111,40 @@ module.exports = function(RED) {
         return result;
     }
 
-    function XmlfindAllParents(jsonObj, x_data) {
+    function findAllParents(jsonObj, y_data) {
         if (jsonObj instanceof Object) {
             const keys = Object.keys(jsonObj);
-            if (keys.includes(x_data)) {
+            if (keys.includes(y_data)) {
                 return true;
             } else {
                 for (let i in keys) {
                     let key = keys[i];
                     parents.push(key);
-                    let res = XmlfindAllParents(jsonObj[key], x_data);
+                    let res = findAllParents(jsonObj[key], y_data);
                     if (res === false || res === undefined) {
                         parents.pop();
                     }
                 }
             }
         }
+    }
+
+    function jsonParser(jsonData, y_data) {
+        let result = jsonData;
+        findAllParents(result, y_data);
+
+        parents.forEach(key => {
+            if (isNaN(key) === true) {
+                result = result[key];
+            }
+        });
+
+        let root = Object.keys(result)[0];
+        if (isNaN(root)) {
+            result = result[root];
+        }
+
+        return result;
     }
 
     function getRawData(jsonData, x_data, y_data) {
@@ -276,7 +294,10 @@ module.exports = function(RED) {
             } else if (type === 'csv') {
                 jsonData = CsvParser(data);
             } else if (type === 'xml') {
-                jsonData = XmlParser(data, n.x_data);
+                jsonData = XmlParser(data, n.y_data);
+                parents = [];
+            } else {
+                jsonData = jsonParser(data, n.y_data);
                 parents = [];
             }
 
