@@ -30,7 +30,49 @@
 5. Node-red [http://127.0.0.1:1880/](http://127.0.0.1:1880/) 접속해서 Hands 확인하기
 
 
-## Reference
+### hand-find
+
+- input
+  - ``multiHandLandmarks`` : media pipe hands 모델의 아웃풋. 각 손의 1~21번 포인트까지의 x,y,z 좌표값
+  - ``mutiHandedness`` : media pipe hands 모델의 아웃풋. 각 손의 정보
+  - ``savedLeftHand`` : db에 저장되어 있는 왼손 좌표의 json 배열들을 저장한 배열
+  - ``savedRightHand`` : db에 저장되어 있는 오른손 좌표의 json 배열들을 저장한 배열
+  - ``savedNameList`` : db에 저장되어 있는 손동작의 이름을 저장하는 배열
+  - `` inputLeftHands`` : 캠으로 입력된 손동작에서 왼손의 1~21번 포인트까지의 x,y,z 좌표값
+  - ``inputRightHands`` : 캠으로 입력된 손동작에서 오른손의 1~21번 포인트까지의 x,y,z 좌표값
+- output
+  - ``status``: 해당 손동작의 존재 여부
+    - false: 없는 동작
+    - true: 있는 동작
+  - ``handName`` : status가 true인 경우 찾아낸 동작의 이름
+- desc
+  - hand-detect 노드로 부터 나온 payload
+
+
+
+
+
+
+
+### hand-register
+
+- input
+  - ``multiHandLandmarks`` : media pipe hands 모델의 아웃풋. 각 손의 1~21번 포인트까지의 x,y,z 좌표값
+  - ``mutiHandedness`` : media pipe hands 모델의 아웃풋. 각 손의 정보
+  - ``savedLeftHand`` : db에 저장되어 있는 왼손 좌표의 json 배열들을 저장한 배열
+  - ``savedRightHand`` : db에 저장되어 있는 오른손 좌표의 json 배열들을 저장한 배열
+  - ``savedNameList`` : db에 저장되어 있는 손동작의 이름을 저장하는 배열
+  - ``poseName`` : 새로 등록하려는 손동작의 명칭
+- output
+  - ``status`` : 등록 가능 여부
+    - true: 등록가능. 기존에 없는 손동작
+    - false: 등록불가
+  - ``handName`` : db에 등록되는 손동작 명칭
+  - ``inputLeftHand`` : db에 등록되는 손동작에서 왼손의 1~21번 포인트까지의 x,y,z 좌표값
+  - ``inputRightHand`` : db에 등록되는 손동작에서 오른손의 1~21번 포인트까지의 x,y,z 좌표값
+
+
+### Reference
 
 - [Node-RED Creating Nodes](https://nodered.org/docs/creating-nodes/)
 - [Google Mediapipe Repository](https://github.com/google/mediapipe)
