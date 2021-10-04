@@ -4,7 +4,7 @@ module.exports = function (RED) {
     var node = this;
 
     node.on('input', function (msg) {
-      if (config.vendor === 'naver') {
+      if (config.apiType === 'naver') {
         var list = msg.payload.items;
 
         if (config.minprice)
@@ -16,7 +16,7 @@ module.exports = function (RED) {
         if (config.sorttype === 'asc') list.sort(naverAscSort);
         else list.sort(naverDescSort);
         msg.payload.items = list;
-      } else if (config.vendor === '11st') {
+      } else if (config.apiType === '11st') {
         var list = msg.payload.ProductSearchResponse.Products.Product;
         if (config.minprice)
           list = list.filter((item) => Number(item.SalePrice._text) > Number(config.minprice));
@@ -41,7 +41,7 @@ module.exports = function (RED) {
 
     node.on('input', function (msg) {
       var list = [];
-      if (config.vendor === 'naver') {
+      if (config.apiType === 'naver') {
         var products = msg.payload.items;
         products.forEach(function (product, idx) {
           var item = {
@@ -58,7 +58,7 @@ module.exports = function (RED) {
           item.image = product.image;
           list.push(item);
         });
-      } else if (config.vendor === '11st') {
+      } else if (config.apiType === '11st') {
         var products = msg.payload.ProductSearchResponse.Products.Product;
         products.forEach(function (product, idx) {
           var item = {
