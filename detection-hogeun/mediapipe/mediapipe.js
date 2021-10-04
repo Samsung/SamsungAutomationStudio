@@ -238,7 +238,7 @@ module.exports = function(RED) {
                         isFail("[Fail] Keypoint not found. Show your hands on cam!");
                     }
                     else {
-                        onCapture(poseMotionName.value)
+                        onCapture(poseMotionName.value, document.getElementById("secondTimer").value)
                     }
                 })
             
@@ -264,12 +264,12 @@ module.exports = function(RED) {
             
                 dataWebSocket.onmessage = (msg) => {
                     if (msg.data != null) {
-                        onCapture(msg.data)
+                        onCapture(msg.data.name, msg.data.timer)
                     }
                 }
             
                 /* visualize and transmit registered data  */
-                function onCapture(motionName) {
+                function onCapture(motionName, timer) {
                     setTimeout((motionName) => {
                         captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height)
                         var detail = ""
@@ -301,7 +301,7 @@ module.exports = function(RED) {
                         poseData.poseName = motionName
                         dataWebSocket.send(JSON.stringify(poseData))
                         */
-                    }, document.getElementById("secondTimer").value * 1000, motionName)
+                    }, timer * 1000, motionName)
                 }
             
                 /* send pose data */
