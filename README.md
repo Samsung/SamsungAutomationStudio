@@ -30,7 +30,7 @@
 5. Node-red [http://127.0.0.1:1880/](http://127.0.0.1:1880/) 접속해서 Hands 확인하기
 
 
-### hand-find
+## hand-find
 
 - input
   - ``multiHandLandmarks`` : media pipe hands 모델의 아웃풋. 각 손의 1~21번 포인트까지의 x,y,z 좌표값
@@ -54,7 +54,7 @@
 
 
 
-### hand-register
+## hand-register
 
 - input
   - ``multiHandLandmarks`` : media pipe hands 모델의 아웃풋. 각 손의 1~21번 포인트까지의 x,y,z 좌표값
