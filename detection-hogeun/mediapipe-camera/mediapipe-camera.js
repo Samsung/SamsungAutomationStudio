@@ -126,8 +126,6 @@ module.exports = function(RED) {
 
             <body>
                 <div align="center" style="min-height: 800px;">
-                    <button id="btn">으악</button><br>
-                    <h1>Pose Detection Page</h1>
                     <div style="display: inline-block;" align="center" class="tooltip">
                         <canvas id="input-canvas" width="600px" height="340px" style="border:3px solid grey"></canvas><br>
                         <div class="tooltip-content">
@@ -266,15 +264,8 @@ module.exports = function(RED) {
                 const inputElement = document.getElementById('input-canvas')
                 const outputElement = document.getElementById('output-canvas')
                 const captureElement = document.getElementById('capture-canvas')
-                // const inputCtx = inputElement.getContext('2d')
                 const outputCtx = outputElement.getContext('2d')
                 const captureCtx = captureElement.getContext('2d')
-
-
-                // 최초 Canvas -> AudioContext 시작하기 위한 클릭 유도
-                // inputCtx.font = '30px sans-serif'
-                // inputCtx.textAlign = 'center'
-                // inputCtx.fillText('Click to start!', 300, 185)
 
 
                 // Detection 데이터 전송할 웹소켓 인스턴스 생성
@@ -444,72 +435,36 @@ module.exports = function(RED) {
                 // https://www.npmjs.com/package/node-rtsp-stream
                 // https://webnautes.tistory.com/1476
                 const rtspPort = ${config.rtspPort}
-                const rtspClient = new WebSocket('ws://localhost:' + rtspPort)
-                // const player = new jsmpeg(rtspClient, {
-                //     canvas: inputElement
-                // })
+                const rtspTest = new WebSocket('ws://localhost:' + rtspPort)
+                rtspTest.onmessage = function (e) {
+                    
+                    // RTSP 웹소켓으로부터 충분한 데이터가 오면 렌더링 시작
+                    if (e.data.size > 8) {
+                        rtspTest.close()
+    
+                        // RTSP 클라이언트 생성 및 렌더링
+                        const rtspClient = new WebSocket('ws://localhost:' + rtspPort)
+                        const player = new jsmpeg(rtspClient, {
+                            canvas: inputElement,
+                            pauseWhenHidden: false
+                        })
 
-                const player = new jsmpeg(rtspClient, {
-                    canvas: inputElement,
-                    pauseWhenHidden: false
-                })
-
-                // let isStart = false
-                // rtspClient.onopen = function (e) {
-                //     if (!isStart) {
-                //         console.log('hello')
-                //         isStart = true
-
-                //         // const player = new jsmpeg(rtspClient, {
-                //         //     canvas: inputElement 
-                //         // })
-                //     }
-                // }
-            
-                // 아래 크롬 규정 때문에 사용자 인풋으로 시작되어야 하는 이슈가 있음
-                // https://developer.chrome.com/blog/autoplay/#webaudio
-                // const btn = document.getElementById('btn')
-                // btn.onclick = function() {
-                //     startDetect(render)
-                // }
-
-                // 미디어 장치 연결 및 Detection 시작
-                const mediaConstraints = {
-                    audio: false, // 음성 포함하려면 값을 'true'로 바꿔야 함
-                    video: true
+                        // AudioContext 시작하기 위한 장치 탐색
+                        const mediaConstraints = {
+                            audio: false, // 음성 포함하려면 값을 'true'로 바꿔야 함
+                            video: true
+                        }
+                        navigator.mediaDevices.getUserMedia(mediaConstraints)
+                            .then(stream => {
+                                startDetect(render)
+                            })
+                            .catch(err => {
+                                console.log(err)
+                            })
+                    }
                 }
-                navigator.mediaDevices.getUserMedia(mediaConstraints)
-                    .then(stream => {
-                        startDetect(render)
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
 
-                // let isStart = false
-                // let isDataReady = false
 
-                // rtspClient.onmessage = function (e) {
-                //     if (!isStart && e.data.size > 8) {
-                //         isDataReady = true
-                //     }
-                // }
-                
-                // const onclick = function () {
-                //     console.log('hello')
-                //     if (!isStart && isDataReady) {
-                //         console.log('hellow')
-                        
-                //         isFirst = true
-                //         // inputCtx.clearRect(0, 0, inputElement.width, inputElement.height)
-                //         // inputElement.classList.toggle('clickable')
-                //         // inputElement.removeEventListener('click', onclick)
-                //         startDetect(render)
-
-                //         document.getElementById('h1').removeEventListener('click', onclick)
-                //     }
-                // }
-                // document.getElementById('h1').addEventListener('click', onclick)
             </script>
             `
             return html
