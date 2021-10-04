@@ -1,4 +1,4 @@
-module.exports = function(RED) {
+module.exports = function (RED) {
     const xlsx = require('xlsx');
     const fs = require('fs-extra');
     const os = require('os');
@@ -12,7 +12,7 @@ module.exports = function(RED) {
         var min = Math.min.apply(Math, Y)
         if (nodeConfig && nodeConfig.yMin) {
             min = Number(nodeConfig.yMin)
-        } 
+        }
 
         let result = {
             type: type,
@@ -246,13 +246,13 @@ module.exports = function(RED) {
     }
 
     function stringToNumber(jsonData, y_data) {
-        if (typeof(jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
+        if (typeof (jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
             for (let row of jsonData) {
                 row[y_data] = Number(row[y_data].replace(/,/g, ''));
             }
         }
 
-        if (typeof(jsonData[0][y_data]) === 'string') {
+        if (typeof (jsonData[0][y_data]) === 'string') {
             for (let row of jsonData) {
                 row[y_data] = Number(row[y_data]);
             }
@@ -265,12 +265,12 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, n);
         let node = this;
 
-        node.on('input', function(msg) {
+        node.on('input', function (msg) {
             let type = n.data_type;
             let jsonData, data, cleanData;
 
             node.configId = n.config;
-            RED.nodes.eachNode(function(nn) {
+            RED.nodes.eachNode(function (nn) {
                 if (node.configId === nn.id) {
                     node.config = nn;
                 }
@@ -306,18 +306,20 @@ module.exports = function(RED) {
                 parents = [];
             }
 
-            jsonData = stringToNumber(jsonData, n.y_data);
-
             //data formatting
             if (n.result_data_type === 'totalByItems') {
+                jsonData = stringToNumber(jsonData, n.y_data);
                 cleanData = getTotalByItems(jsonData, n.x_data, n.y_data);
             } else if (n.result_data_type === 'countByItems') {
-                cleanData = getCountByItems(jsonData, n.y_data);
+                cleanData = getCountByItems(jsonData, n.x_data);
             } else if (n.result_data_type === 'averageByItems') {
+                jsonData = stringToNumber(jsonData, n.y_data);
                 cleanData = getAverageByItems(jsonData, n.x_data, n.y_data);
             } else if (n.result_data_type === 'overallStatistics') {
+                jsonData = stringToNumber(jsonData, n.y_data);
                 cleanData = getOverallStatistics(jsonData, n.x_data, n.y_data);
             } else {
+                jsonData = stringToNumber(jsonData, n.y_data);
                 cleanData = getRawData(jsonData, n.x_data, n.y_data);
             }
 
