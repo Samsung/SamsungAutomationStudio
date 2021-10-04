@@ -4,7 +4,7 @@
     color: '#ffffff',
     defaults: {
       name: { value: '' },
-      vendor: { value: '', required: false },
+      apiType: { value: '', required: false },
       sorttype: { value: '', required: false },
       minprice: { value: '', required: false },
       maxprice: { value: '', required: false },
@@ -22,7 +22,7 @@
     color: '#ffffff',
     defaults: {
       name: { value: '' },
-      vendor: { value: '' },
+      apiType: { value: '' },
     },
     inputs: 1,
     outputs: 1,
@@ -39,8 +39,8 @@
       <input type="text" id="node-input-name" placeholder="Name">
   </div>
   <div class="form-row">
-      <label for="node-input-vendor"><i class="icon-tag"></i> Vendor</label>
-      <select id="node-input-vendor" name="node-input-vendor">
+      <label for="node-input-apiType"><i class="icon-tag"></i> API Type</label>
+      <select id="node-input-apiType" name="node-input-apiType">
           <option value="naver">Naver</option>
           <option value="11st">11st</option>
       </select>
@@ -89,8 +89,8 @@
       <input type="text" id="node-input-name" placeholder="Name">
   </div>
   <div class="form-row">
-      <label for="node-input-vendor"><i class="icon-tag"></i> Vendor</label>
-      <select id="node-input-vendor" name="node-input-vendor">
+      <label for="node-input-apiType"><i class="icon-tag"></i> API Type</label>
+      <select id="node-input-apiType" name="node-input-apiType">
           <option value="naver">Naver</option>
           <option value="11st">11st</option>
       </select>
@@ -103,6 +103,8 @@
   <dl class="message-properties">
       <dt>Input JSON<span class="property-type">JSON Object</span></dt>
       <dd>Output from shopping nodes | 쇼핑 노드 검색 결과</dd>
+      <dt>API Type<span class="property-type">String</span></dt>
+      <dd>Input Shopping API Vendor | 쇼핑 API 종류</dd>
   </dl>
 
   <h3>Output Data</h3>
