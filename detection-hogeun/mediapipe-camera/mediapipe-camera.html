@@ -26,7 +26,6 @@
       height: {value: 6},
       isMirror: {value: 1, validate:RED.validators.number()},
       mirrorPort: {value: 1881, validate:RED.validators.number()},
-      rtspUrl: {value: ""},
       rtspPort: {value: 9999, validate:RED.validators.number()},
 
       // 한글자, id, type, wires, inputs, outputs 사용불가
@@ -68,11 +67,6 @@
   <div class="form-row">
     <label for="node-input-mirrorPort"><i class="fa fa-tag"></i> Mirror Port</label>
     <input type="text" id="node-input-mirrorPort" placeholder="(default) 1881">
-  </div>
-
-  <div class="form-row">
-    <label for="node-input-rtspUrl"><i class="fa fa-tag"></i> Rtsp Url</label>
-    <input type="text" id="node-input-rtspUrl" placeholder="'rtsp:// 혹은 rtsps://' 이후부터 적어주세요.">
   </div>
 
   <div class="form-row">
