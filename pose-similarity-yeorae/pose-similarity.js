@@ -21,6 +21,7 @@ module.exports = function(RED) {
             const keypointsNum = inputKeypoints[0].length
             let isExist = false
             let similarPoseName
+            let accuracy = 0.0
 
             // Input keypoints Preprocessing
             let inputVectors = []
@@ -54,6 +55,7 @@ module.exports = function(RED) {
                     isExist = true
                     similarLimit = meanValue
                     similarPoseName = name
+                    accuracy = meanValue
                 }
 
             }
@@ -62,12 +64,14 @@ module.exports = function(RED) {
             if ( isExist ) {
                 msg.payload = {
                 "result" : similarPoseName,
-                "keypoint" : savedKeypoints[similarPoseName]
+                "keypoint" : savedKeypoints[similarPoseName],
+                "accuracy" : accuracy
                 }
             } else {
                 msg.payload = {
                 "result" : null,
-                "keypoint" : inputKeypoints[0]
+                "keypoint" : inputKeypoints[0],
+                "accuracy" : accuracy
                 }
             }
             function keypoinstsPreprocessing(keypoints) {

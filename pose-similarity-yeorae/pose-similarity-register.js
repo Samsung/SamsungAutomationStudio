@@ -19,7 +19,7 @@ module.exports = function(RED) {
             // Input keypoint Accuracy Evaluation
             let accuracyCount = 0
             for ( let point of inputKeypoint) {
-                if ( point.score < 0.8) {
+                if ( point.visibility > 0.8) {
                     accuracyCount += 1
                 }
             }
@@ -40,9 +40,9 @@ module.exports = function(RED) {
                 matchingValue = (cosineMatching + weightedMatching) / 2
 
                 if ( matchingValue > 80 ) {
-                isExist = true
-                similarPoseName = name
-                break
+                    isExist = true
+                    similarPoseName = name
+                    break
                 }            
             }
 
@@ -125,7 +125,6 @@ module.exports = function(RED) {
                 return summation2 / summation1;
             }
 
-            
             node.send(msg)
             
             

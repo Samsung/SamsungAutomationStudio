@@ -5,7 +5,7 @@
 <!-- https://nodered.org/docs/creating-nodes/appearance -->
 <script type="text/javascript">
 
-  RED.nodes.registerType('monitor',{
+  RED.nodes.registerType('mediapipe-camera',{
     // https://nodered.org/docs/creating-nodes/node-html
     // category, defaults, credentials, ... 21 properties
 
@@ -24,15 +24,18 @@
       order: {value: 0},
       width: {value: 6},
       height: {value: 6},
-      port: {value: 1881, required:true, validate:RED.validators.number()},
+      isMirror: {value: 1, validate:RED.validators.number()},
+      mirrorPort: {value: 1881, validate:RED.validators.number()},
+      rtspUrl: {value: ""},
+      rtspPort: {value: 9999, validate:RED.validators.number()},
 
       // 한글자, id, type, wires, inputs, outputs 사용불가
     },
     inputs: 1,
     outputs: 1,
-    icon: "debug.png",
+    icon: "file.png",
     label: function() {
-        return this.name||"monitor"
+        return this.name||"mediapipe-camera"
     },
     oneditprepare: function() {
       // do something..
@@ -44,7 +47,7 @@
 <!-- the edit template -->
 <!-- https://nodered.org/docs/creating-nodes/edit-dialog -->
 <!-- it can be 'input', 'button', 'multi-line text' -->
-<script type="text/html" data-template-name="monitor">
+<script type="text/html" data-template-name="mediapipe-camera">
   <div class="form-row">
     <!-- normal nodes : node-input-<propertyname> -->
     <!-- config nodes : node-config-input-<propertyname> -->
@@ -58,13 +61,23 @@
   </div>
 
   <div class="form-row">
-    <label for="node-input-port"><i class="fa fa-tag"></i> Socket Port</label>
-    <input type="text" id="node-input-port" placeholder="(default) 1881">
+    <label for="node-input-mirrorPort"><i class="fa fa-tag"></i> Mirror Port</label>
+    <input type="text" id="node-input-mirrorPort" placeholder="(default) 1881">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-rtspUrl"><i class="fa fa-tag"></i> Rtsp Url</label>
+    <input type="text" id="node-input-rtspUrl" placeholder="'rtsp:// 혹은 rtsps://' 이후부터 적어주세요.">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-rtspPort"><i class="fa fa-tag"></i> Rtsp Port</label>
+    <input type="text" id="node-input-rtspPort" placeholder="(default) 9999">
   </div>
 </script>
 
 
 <!-- the help text -->
-<script type="text/html" data-help-name="monitor">
-  <p>A simple node for monitoring a mediapipe node</p>
+<script type="text/html" data-help-name="mediapipe-camera">
+  <p>A node for detecting body pose with smartthings IoT camera.</p>
 </script>
