@@ -8,17 +8,17 @@
     "nodes": {
       "hand-register": "hand-register.js",
       "hand-find": "hand-find.js",
-      "hand-detection": "hand-detection.js"
+      "hand-detection-webcam": "hand-detection-webcam.js",
+      "hand-detection-iotcam": "hand-detection-iotcam.js"
     }
   },
   "dependencies": {
     "compute-cosine-similarity": "^1.0.0",
-    "@mediapipe/camera_utils": "^0.3.1631210127",
-    "@mediapipe/control_utils": "^0.6.1629159505",
-    "@mediapipe/control_utils_3d": "^0.2.1625245254",
-    "@mediapipe/drawing_utils": "^0.3.1620248257",
-    "@mediapipe/pose": "^0.4.1630009814",
-    "jquery": "^3.6.0"
+    "node-rtsp-stream": "^0.0.9",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "ws": "^8.2.2"
   },
   "keywords": [
     "node-red",
