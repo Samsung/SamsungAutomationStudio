@@ -27,6 +27,7 @@
       isMirror: {value: 1, validate:RED.validators.number()},
       mirrorPort: {value: 1881, validate:RED.validators.number()},
       rtspPort: {value: 9999, validate:RED.validators.number()},
+      dataSocketUrl: {value: 'data'},
 
       // 한글자, id, type, wires, inputs, outputs 사용불가
     },
@@ -72,6 +73,11 @@
   <div class="form-row">
     <label for="node-input-rtspPort"><i class="fa fa-tag"></i> Rtsp Port</label>
     <input type="text" id="node-input-rtspPort" placeholder="(default) 9999">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
+    <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'data'">
   </div>
 </script>
 

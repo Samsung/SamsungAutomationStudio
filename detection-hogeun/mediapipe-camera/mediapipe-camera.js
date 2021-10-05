@@ -23,7 +23,6 @@ module.exports = function(RED) {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
@@ -269,7 +268,7 @@ module.exports = function(RED) {
 
 
                 // Detection 데이터 전송할 웹소켓 인스턴스 생성
-                const dataWebSocket = new WebSocket('ws://localhost:1880/ws/data')
+                const dataWebSocket = new WebSocket('ws://localhost:1880/ws/${config.dataSocketUrl}')
 
                 dataWebSocket.onmessage = (msg) => {
                     if (msg.data != null) {
