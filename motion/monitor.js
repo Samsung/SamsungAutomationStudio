@@ -60,7 +60,7 @@ module.exports = function(RED) {
 
             // construct socket server for monitoring.
             // 모니터 socket 서버 생성
-            const port = config.port
+            const port = config.monitorPort
             const app = express()
             const httpServer = http.createServer(app)
 
