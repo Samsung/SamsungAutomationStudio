@@ -12,11 +12,11 @@
   },
   "node-red": {
     "nodes": {
-      "mediapipe": "/detection-hogeun/mediapipe/mediapipe.js",
-      "monitor": "/detection-hogeun/monitor/monitor.js",
-      "socket-server": "/detection-hogeun/socket-server/socket-server.js",
-      "pose-similarity": "/pose-similarity-yeorae/pose-similarity.js",
-      "pose-similarity-register": "/pose-similarity-yeorae/pose-similarity-register.js"
+      "monitor": "/motion/monitor.js",
+      "pose-detection-webcam": "/motion/pose-detection-webcam.js",
+      "pose-detection-iotcam": "/motion/pose-detection-iotcam.js",
+      "pose-similarity-find": "/motion/pose-similarity-find.js",
+      "pose-similarity-register": "/motion/pose-similarity-register.js"
     }
   },
   "author": "",
@@ -25,13 +25,13 @@
     "url": "https://github.com/5FNSaaS/Motion-Pose-Node-Body/issues"
   },
   "dependencies": {
-    "@mediapipe/camera_utils": "^0.3.1631210127",
-    "@mediapipe/control_utils": "^0.6.1629159505",
-    "@mediapipe/drawing_utils": "^0.3.1620248257",
-    "@mediapipe/pose": "^0.4.1630009814",
     "compute-cosine-similarity": "^1.0.0",
+    "node-rtsp-stream": "^0.0.9",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "socket.io": "^4.2.0"
+    "socket.io": "^4.2.0",
+    "ws": "^8.2.2"
   },
   "homepage": "https://github.com/5FNSaaS/Motion-Pose-Node-Body#readme"
 }

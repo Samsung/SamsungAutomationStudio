@@ -1,0 +1,41 @@
+<script type="text/javascript">
+
+  RED.nodes.registerType('monitor',{
+    category: 'motion pose',
+    color: '#B2A1F4',
+    defaults: {
+      name: {value: ""},
+      serverUrl: {value: 'localhost'},
+      monitorPort: {value: 1881, validate:RED.validators.number()},
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-laptop",
+    label: function() {
+        return this.name||"monitor"
+    },
+    oneditprepare: function() {
+    },
+  })
+</script>
+
+<script type="text/html" data-template-name="monitor">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-serverUrl"><i class="fa fa-tag"></i> Server Url</label>
+    <input type="text" id="node-input-serverUrl" placeholder="(default) localhost">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-monitorPort"><i class="fa fa-tag"></i> Monitor Port</label>
+    <input type="text" id="node-input-monitorPort" placeholder="(default) 1881">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="monitor">
+  <p>A node for monitoring motion pose flows</p>
+</script>

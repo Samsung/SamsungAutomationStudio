@@ -3,7 +3,7 @@
 
 module.exports = function(RED) {
 
-    function MediapipeNode(config) {
+    function PoseDetectionWebcamNode(config) {
 
         function HTML() {
             const html = String.raw`
@@ -108,14 +108,14 @@ module.exports = function(RED) {
                 <div align="center" style="min-height: 800px;">
                     <h1>Pose Detection Page</h1>
                     <div style="display: inline-block;" align="center" class="tooltip">
-                        <video class="input_video" width="600px" height="340px" crossorigin="anonymous"
+                        <video id="input-video" width="600px" height="340px" crossorigin="anonymous"
                             style="border:3px solid grey"></video><br>
                         <div class="tooltip-content">
                             <p>Your Camera</p>
                         </div>
                     </div>
                     <div style="display: inline-block;" align="center" class="tooltip">
-                        <canvas class="output_canvas" width="600px" height="340px" style="border:3px solid #B2A1F4"></canvas><br>
+                        <canvas id="output-canvas" width="600px" height="340px" style="border:3px solid #B2A1F4"></canvas><br>
                         <div class="tooltip-content">
                             <p>Tracking your Pose</p>
                         </div>
@@ -135,7 +135,7 @@ module.exports = function(RED) {
                         <div id="regist-btn-bar" align="center">
                             <button id="regist-btn" class="btn">Regist</button> <button id="cancel-btn" class="btn">Cancel</button>
                           </div><br>          
-                        <canvas class="capture_canvas" width="480px" height="270px" style="border:1px solid black"></canvas>
+                        <canvas id="capture-canvas" width="480px" height="270px" style="border:1px solid black"></canvas>
                         <div id="motion-result-keypoint"></div>
                     </div>
                 </div>
@@ -162,32 +162,44 @@ module.exports = function(RED) {
                 // 관련 링크 : https://stackoverflow.com/questions/44156528/canvas-doesnt-repaint-when-tab-inactive-backgrounded-for-recording-webgl
             
             
+                // DOM 엘리먼트
+                const inputElement = document.getElementById('input-video')
+                const outputElement = document.getElementById('output-canvas')
+                const captureElement = document.getElementById('capture-canvas')
+                const outputCtx = outputElement.getContext('2d')
+                const captureCtx = captureElement.getContext('2d')
+            
+            
+                // Detection 데이터 전송할 웹소켓 인스턴스 생성
+                const dataWebSocket = new WebSocket('${config.dataSocketUrl}')
+
+
                 // 디텍션 시작 함수
                 function startDetect(renderFunc) {
                     // 최초의 오디오 트랙을 생성한다.
                     // (Loop 정지 함수는 현재 사용하지 않고 있음, 개발자의 취지에 따라 커스터마이징 가능)
-                    var fps = 60
-                    var stopLoop = audioTimerLoop(renderFunc, 1000 / fps)
+                    const fps = 60
+                    const stopLoop = audioTimerLoop(renderFunc, 1000 / fps)
                 }
             
             
                 // 오디오 트랙 Loop 생성자
                 function audioTimerLoop(renderFunc, frequency) {
-                    var freq = frequency / 1000  // AudioContext는 second 단위
-                    var aCtx = new AudioContext()
-                    var silence = aCtx.createGain()
+                    const freq = frequency / 1000  // AudioContext는 second 단위
+                    const aCtx = new AudioContext()
+                    const silence = aCtx.createGain()
                     silence.gain.value = 0
                     silence.connect(aCtx.destination)  // 오디오 트랙 비우기 (추측)
             
                     onOSCend()
             
-                    var stopped = false  // loop를 멈추기 위한 flag
+                    const stopped = false  // loop를 멈추기 위한 flag
                     async function onOSCend() {
                         // 캔버스 렌더링 (비동기)
                         await renderFunc()
             
                         // loop 생성
-                        var osc = aCtx.createOscillator()
+                        const osc = aCtx.createOscillator()
                         osc.onended = onOSCend  // loop가 되는 이유
                         osc.connect(silence)
                         osc.start()  // 당장 시작
@@ -210,25 +222,23 @@ module.exports = function(RED) {
             
                 /* motion regist timer */
                 const timerSecond = document.getElementById("secondTimer")
-                var second = timerSecond.options[timerSecond.selectedIndex].value
-                var poseData = null
-                var poseName = null
-            
+                let second = timerSecond.options[timerSecond.selectedIndex].value
+                let poseData = null
+                let poseName = null
+                let poseDataResult = null
             
                 document.getElementById("secondTimer").addEventListener('change', () => {
                     second = timerSecond.options[timerSecond.selectedIndex].value
                 })
             
             
-            
-            
                 /* motion name empty check */
-                var poseMotionName = document.getElementById("pose-motion-name")
+                const poseMotionName = document.getElementById("pose-motion-name")
                 document.getElementById("captrue-btn").addEventListener('click', () => {
                     if (poseMotionName.value === "" || poseMotionName.value === undefined) {
                         isFail("[Fail] Invalid Name : The motion name is empty.")
                     }else if(poseData==null){
-                        isFail("[Fail] Keypoint not found. Show your hands on cam!");
+                        isFail("[Fail] Keypoint not found. Show your hands on cam!")
                     }
                     else {
                         onCapture(poseMotionName.value, document.getElementById("secondTimer").value)
@@ -238,36 +248,24 @@ module.exports = function(RED) {
                 function isFail(message) {
                     document.getElementById("motion-result-message").style.color = "red"
                     document.getElementById("motion-result-message").textContent = message
-                    document.getElementsByClassName("capture_canvas")[0].style.display = "none"
+                    captureElement.style.display = "none"
                     document.getElementById("result-div").style.display = "block"
-                    document.getElementById("regist-btn-bar").style.display = "none";
+                    document.getElementById("regist-btn-bar").style.display = "none"
                 }
-            
-            
-                // DOM 엘리먼트
-                const videoElement = document.getElementsByClassName('input_video')[0]
-                const canvasElement = document.getElementsByClassName('output_canvas')[0]
-                const captureElement = document.getElementsByClassName('capture_canvas')[0]
-                const canvasCtx = canvasElement.getContext('2d')
-                const captureCtx = captureElement.getContext('2d')
-            
-            
-                // Detection 데이터 전송할 웹소켓 인스턴스 생성
-                const dataWebSocket = new WebSocket('ws://localhost:1880/ws/data')
 
             
                 /* visualize and transmit registered data  */
                 function onCapture(motionName, timer) {
                     setTimeout((motionName) => {
-                        captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height)
-                        var detail = ""
+                        captureCtx.drawImage(outputElement, 0, 0, captureElement.width, captureElement.height)
+                        let detail = ""
                         const fixed = 5
             
                         detail += "<table style='display:inline;margin:0px 5px;'>"
                         detail += "<caption>Estimated Pose</caption>"
                         detail += "<tr><th></th><th>x</th><th>y</th><th>z</th><th>visibility</th></tr>"
                         for (let idx = 0; idx < poseData.poseLandmarks.length; idx++) {
-                            detail += "<tr>";
+                            detail += "<tr>"
                             detail += "<td align='center'>" + idx + "</td>"
                             detail += "<td>" + poseData.poseLandmarks[idx].x.toFixed(fixed) + "</td>"
                             detail += "<td>" + poseData.poseLandmarks[idx].y.toFixed(fixed) + "</td>"
@@ -278,40 +276,42 @@ module.exports = function(RED) {
                         detail += "</table>"
 
                         /* Save data immediately after timer runs */
-                        poseData["regist"] = true;
-                        poseData["poseName"] = motionName;
-                        poseDataResult = poseData;
+                        poseData.regist = true
+                        poseData.poseName = motionName
+                        poseDataResult = poseData
             
                         document.getElementById("motion-result-keypoint").innerHTML = '<br><b>' + motionName + "</b> Motion Detail <br>" + detail
                         document.getElementById("motion-result-message").style.color = "green"
                         document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + motionName + "] motion"
-                        document.getElementsByClassName("capture_canvas")[0].style.display = "block"
+                        captureElement.style.display = "block"
                         document.getElementById("result-div").style.display = "block"
-                        document.getElementById("regist-btn-bar").style.display = "block";
+                        document.getElementById("regist-btn-bar").style.display = "block"
                     }, timer * 1000, motionName)
                 }
             
-                var poseDataResult;
+
                 /* send pose data */
                 document.getElementById("regist-btn").addEventListener('click', function(){
-                    document.getElementById("motion-result-message").style.color = "green";
-                    document.getElementById("motion-result-message").textContent = "[" + poseMotionName.value +"] Data sent successfully! Check out the registration results!";
-                    dataWebSocket.send(JSON.stringify(poseDataResult));
+                    document.getElementById("motion-result-message").style.color = "green"
+                    document.getElementById("motion-result-message").textContent = "[" + poseMotionName.value +"] Data sent successfully! Check out the registration results!"
+                    dataWebSocket.send(JSON.stringify(poseDataResult))
                 })
             
+
                 /* result message reset*/
-                document.getElementById("pose-motion-name").addEventListener('focus', onClear);
+                document.getElementById("pose-motion-name").addEventListener('focus', onClear)
                 document.getElementById("cancel-btn").addEventListener('click', function(){
-                document.getElementById("pose-motion-name").value = "";
-                onClear();
-                });
+                    document.getElementById("pose-motion-name").value = ""
+                    onClear()
+                })
             
                 function onClear(){
-                document.getElementById("motion-result-message").textContent = "";
-                document.getElementById("motion-result-keypoint").innerHTML = "";
-                document.getElementById("result-div").style.display = "none";
+                    document.getElementById("motion-result-message").textContent = ""
+                    document.getElementById("motion-result-keypoint").innerHTML = ""
+                    document.getElementById("result-div").style.display = "none"
                 }
             
+
                 // 미러링 관련 소켓 인스턴스 생성
                 const urlCreator = window.URL || window.webkitURL
                 const monitorUrl = 'http://${config.serverUrl}:${config.monitorPort}'
@@ -325,21 +325,21 @@ module.exports = function(RED) {
                 // 캔버스에 Pose Detection 결과값 렌더링하는 함수
                 function onResults(results) {
                     // 빈 캔버스 로드
-                    canvasCtx.save()
-                    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
+                    outputCtx.save()
+                    outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
             
                     // 캔버스에 비디오 화면 표시
-                    canvasCtx.globalCompositeOperation = 'destination-atop'
-                    canvasCtx.drawImage(
-                        results.image, 0, 0, canvasElement.width, canvasElement.height)
+                    outputCtx.globalCompositeOperation = 'destination-atop'
+                    outputCtx.drawImage(
+                        results.image, 0, 0, outputElement.width, outputElement.height)
             
                     // 캔버스에 디텍션 랜드마크 표시
-                    canvasCtx.globalCompositeOperation = 'source-over'
-                    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+                    outputCtx.globalCompositeOperation = 'source-over'
+                    drawConnectors(outputCtx, results.poseLandmarks, POSE_CONNECTIONS,
                         { color: '#f2d6ae', lineWidth: 5 })
-                    drawLandmarks(canvasCtx, results.poseLandmarks,
+                    drawLandmarks(outputCtx, results.poseLandmarks,
                         { color: '#b2a1f4', lineWidth: 1 })
-                    canvasCtx.restore()
+                    outputCtx.restore()
             
                     // 랜드마크 데이터 웹소켓으로 전송
                     if (results.poseLandmarks) {
@@ -356,9 +356,9 @@ module.exports = function(RED) {
                     // transport <canvas> data in form of blob. (I referenced the link below)
                     // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
                     // https://github.com/Infocatcher/Right_Links/issues/25
-                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLoutputElement/toBlob
                     if (monitorSocket.connected) {
-                        canvasElement.toBlob(function (blob) {
+                        outputElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
                             monitorSocket.emit('video', imageUrl)
                         }, 'image/webp')
@@ -388,7 +388,7 @@ module.exports = function(RED) {
             
                 // 렌더링 함수 (비동기)
                 async function render() {
-                    await pose.send({ image: videoElement })
+                    await pose.send({ image: inputElement })
                 }
             
             
@@ -397,11 +397,12 @@ module.exports = function(RED) {
                     audio: false, // 음성 포함하려면 값을 'true'로 바꿔야 함
                     video: { width: 1280, height: 720 }
                 }
+
                 navigator.mediaDevices.getUserMedia(mediaConstraints)
                     .then(stream => {
-                        videoElement.srcObject = stream
-                        videoElement.oncanplay = function (e) {
-                            videoElement.play()
+                        inputElement.srcObject = stream
+                        inputElement.oncanplay = function (e) {
+                            inputElement.play()
                                 .then(() => {
                                     startDetect(render)
                                 })
@@ -419,13 +420,14 @@ module.exports = function(RED) {
         
         // listener to receive messages from the up-stream nodes in a flow.
         this.on('input', (msg, send, done) => {
-            // Return HTML document to the client.
+
+            // return HTML document to the client.
             // 클라이언트에 HTML 문서 반환
             msg.payload = HTML()
             send = send || function() { this.send.apply(this, arguments )}
             send(msg)
         })
     }
-    RED.nodes.registerType("mediapipe", MediapipeNode)
+    RED.nodes.registerType("pose-detection-webcam", PoseDetectionWebcamNode)
 }
 
