@@ -461,6 +461,7 @@ module.exports = function(RED) {
 
         RED.nodes.createNode(this, config)
         let rtspStream
+        console.log('hjello')
 
         // .env variable
         // .env로부터 변수 호출

@@ -1,6 +1,13 @@
 "use strict"
 
 
+const ws = require('ws')
+const http = require('http')
+const cors = require('cors')
+const express = require('express')
+require("dotenv").config()
+
+
 module.exports = function(RED) {
 
     function PoseDetectionIotcamNode(config) {
@@ -14,10 +21,13 @@ module.exports = function(RED) {
                 <meta charset="utf-8">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+                
                 <link rel="shortcut icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1658/1658879.png">
                 <title>Pose Detection</title>
                     
@@ -101,6 +111,11 @@ module.exports = function(RED) {
                         background-color: #7557f0;
                         cursor: pointer;
                     }
+
+                    #input-canvas {
+                        width: 600px;
+                        height: 340px;
+                    }
                 </style>
             </head>
             
@@ -165,7 +180,7 @@ module.exports = function(RED) {
                 const inputElement = document.getElementById('input-canvas')
                 const outputElement = document.getElementById('output-canvas')
                 const captureElement = document.getElementById('capture-canvas')
-                const outputCtx = canvasElement.getContext('2d')
+                const outputCtx = outputElement.getContext('2d')
                 const captureCtx = captureElement.getContext('2d')
             
             
@@ -256,7 +271,7 @@ module.exports = function(RED) {
                 /* visualize and transmit registered data  */
                 function onCapture(motionName, timer) {
                     setTimeout((motionName) => {
-                        captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height)
+                        captureCtx.drawImage(outputElement, 0, 0, captureElement.width, captureElement.height)
                         let detail = ""
                         const fixed = 5
             
@@ -328,13 +343,13 @@ module.exports = function(RED) {
                     // clear canvas
                     // 빈 캔버스 로드
                     outputCtx.save()
-                    outputCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
+                    outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
             
                     // draw video image on canvas.
                     // 캔버스에 비디오 화면 표시
                     outputCtx.globalCompositeOperation = 'destination-atop'
                     outputCtx.drawImage(
-                        results.image, 0, 0, canvasElement.width, canvasElement.height)
+                        results.image, 0, 0, outputElement.width, outputElement.height)
 
                     // draw landmarks on canvas.
                     // 캔버스에 디텍션 랜드마크 표시
@@ -361,9 +376,9 @@ module.exports = function(RED) {
                     // transport <canvas> data in form of blob. (I referenced the link below)
                     // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
                     // https://github.com/Infocatcher/Right_Links/issues/25
-                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLoutputElement/toBlob
                     if (monitorSocket.connected) {
-                        canvasElement.toBlob(function (blob) {
+                        outputElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
                             monitorSocket.emit('video', imageUrl)
                         }, 'image/webp')
@@ -396,7 +411,7 @@ module.exports = function(RED) {
                 // rendering function (Asynchronous)
                 // 렌더링 함수 (비동기)
                 async function render() {
-                    await pose.send({ image: videoElement })
+                    await pose.send({ image: inputElement })
                 }
             
             
@@ -440,11 +455,13 @@ module.exports = function(RED) {
 
         RED.nodes.createNode(this, config)
         let rtspStream
-
+        console.log('hjello')
+        
         // .env variable
         // .env로부터 변수 호출
         const mnid = process.env.SAMSUNG_MNID
         const token = process.env.SAMSUNG_TOKEN
+        console.log(mnid, token)
         
         // listener to receive messages from the up-stream nodes in a flow.
         this.on('input', (msg, send, done) => {
