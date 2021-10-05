@@ -33,7 +33,8 @@ module.exports = function(RED) {
                     // construct socket client for monitoring.
                     // 소켓 클라이언트 인스턴스 생성
                     const mirrorPort = ${config.port}
-                    const mirrorSocket = io('http://localhost:' + mirrorPort)
+                    const mirrorSocket = io('http://team1.ssafy.dev.devground.io:1880/ws/monitor')
+                    // const mirrorSocket = io('http://localhost:' + mirrorPort)
                     mirrorSocket.on("connect", () => {
                         console.log("Connection to the socket server has been completed.")
                     });
