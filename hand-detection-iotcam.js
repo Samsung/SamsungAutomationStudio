@@ -273,7 +273,7 @@ module.exports = function(RED) {
                 /* hands motion capture used timer if sucess regist*/
                 function onCapture(motionName){
                     setTimeout(() => {
-                        captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height);    
+                        captureCtx.drawImage(outputElement, 0, 0, captureElement.width, captureElement.height);    
                         let detail = "";
                         const fixed = 5;
 
@@ -312,7 +312,7 @@ module.exports = function(RED) {
                 document.getElementById("regist-btn").addEventListener('click', function () {
                     document.getElementById("motion-result-message").style.color = "green";
                     document.getElementById("motion-result-message").textContent = "[" + handMotionName.value + "] Data sent successfully! Check out the registration results!";
-                    ws.send(JSON.stringify(poseDataResult));
+                    dataWebSocket.send(JSON.stringify(poseDataResult));
                 })
 
 
@@ -342,9 +342,9 @@ module.exports = function(RED) {
                 /* keypoint rendering function */
                 function onResults(results) {
                     outputCtx.save()
-                    outputCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
+                    outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
                     outputCtx.globalCompositeOperation = 'destination-atop'
-                    outputCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height)
+                    outputCtx.drawImage(results.image, 0, 0, outputElement.width, outputElement.height)
                     outputCtx.globalCompositeOperation = 'source-over'
                     if (results.multiHandLandmarks) {
                         for (const landmarks of results.multiHandLandmarks) {
@@ -353,7 +353,7 @@ module.exports = function(RED) {
                             drawLandmarks(outputCtx, landmarks, {color: '#b2a1f4', lineWidth: 1});
                             results.regist = false;
                             results.poseName = null;
-                            ws.send(JSON.stringify(results));
+                            dataWebSocket.send(JSON.stringify(results));
                             poseData = results;
                         }
                     }
@@ -387,7 +387,7 @@ module.exports = function(RED) {
 
                 /* async rendering function */
                 async function render() {
-                    await hands.send({ image: videoElement })
+                    await hands.send({ image: inputElement })
                 }
 
 

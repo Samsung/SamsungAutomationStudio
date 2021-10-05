@@ -165,7 +165,7 @@ module.exports = function(RED) {
             
             
                 // DOM 엘리먼트
-                const inputElement = document.getElementById('input-canvas')
+                const inputElement = document.getElementById('input-video')
                 const outputElement = document.getElementById('output-canvas')
                 const captureElement = document.getElementById('capture-canvas')
                 const outputCtx = outputElement.getContext('2d')
@@ -261,7 +261,7 @@ module.exports = function(RED) {
                 /* hands motion capture used timer if sucess regist*/
                 function onCapture(motionName){
                     setTimeout(() => {
-                        captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height);    
+                        captureCtx.drawImage(outputElement, 0, 0, captureElement.width, captureElement.height);    
                         let detail = "";
                         const fixed = 5;
 
@@ -300,7 +300,7 @@ module.exports = function(RED) {
                 document.getElementById("regist-btn").addEventListener('click', function () {
                     document.getElementById("motion-result-message").style.color = "green";
                     document.getElementById("motion-result-message").textContent = "[" + handMotionName.value + "] Data sent successfully! Check out the registration results!";
-                    ws.send(JSON.stringify(poseDataResult));
+                    dataWebSocket.send(JSON.stringify(poseDataResult));
                 })
 
 
@@ -329,23 +329,23 @@ module.exports = function(RED) {
 
                 /* keypoint rendering function */
                 function onResults(results) {
-                    canvasCtx.save()
-                    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
-                    canvasCtx.globalCompositeOperation = 'destination-atop'
-                    canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height)
-                    canvasCtx.globalCompositeOperation = 'source-over'
+                    outputCtx.save()
+                    outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
+                    outputCtx.globalCompositeOperation = 'destination-atop'
+                    outputCtx.drawImage(results.image, 0, 0, outputElement.width, outputElement.height)
+                    outputCtx.globalCompositeOperation = 'source-over'
                     if (results.multiHandLandmarks) {
                         for (const landmarks of results.multiHandLandmarks) {
-                            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
+                            drawConnectors(outputCtx, landmarks, HAND_CONNECTIONS,
                                             {color: '#f2d6ae', lineWidth: 5});
-                            drawLandmarks(canvasCtx, landmarks, {color: '#b2a1f4', lineWidth: 1});
+                            drawLandmarks(outputCtx, landmarks, {color: '#b2a1f4', lineWidth: 1});
                             results.regist = false;
                             results.poseName = null;
-                            ws.send(JSON.stringify(results));
+                            dataWebSocket.send(JSON.stringify(results));
                             poseData = results;
                         }
                     }
-                    canvasCtx.restore();
+                    outputCtx.restore();
             
                     // transport <canvas> data in form of blob. (I referenced the link below)
                     // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
@@ -375,7 +375,7 @@ module.exports = function(RED) {
 
                 /* async rendering function */
                 async function render() {
-                    await hands.send({ image: videoElement })
+                    await hands.send({ image: inputElement })
                 }
 
 
@@ -387,9 +387,9 @@ module.exports = function(RED) {
 
                 navigator.mediaDevices.getUserMedia(mediaConstraints)
                     .then(stream => {
-                        videoElement.srcObject = stream
-                        videoElement.oncanplay = function (e) {
-                            videoElement.play()
+                        inputElement.srcObject = stream
+                        inputElement.oncanplay = function (e) {
+                            inputElement.play()
                                 .then(() => {
                                     startDetect(render)
                                 })

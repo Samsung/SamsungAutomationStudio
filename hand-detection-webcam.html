@@ -6,15 +6,14 @@
     defaults: {
       name: {value: ""},
       serverUrl: {value: 'localhost'},
-      monitorPort: {value: 1881, validate:RED.validators.number()},
+      monitorPort: {value: 1883, validate:RED.validators.number()},
       dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
     },
     inputs: 1,
     outputs: 1,
     icon: "font-awesome/fa-hand-paper-o",
-    paletteLabel: "hand detect",
     label: function() {
-      return this.name||"hands detection"
+      return this.name||"hands-detection-webcam"
     },
     oneditprepare: function() {
       const inputVideo = document.getElementById('input-video')
@@ -37,7 +36,7 @@
   })
 </script>
 
-<script type="text/html" data-template-name="pose-detection-webcam">
+<script type="text/html" data-template-name="hand-detection-webcam">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name">
@@ -50,7 +49,7 @@
 
   <div class="form-row">
     <label for="node-input-monitorPort"><i class="fa fa-tag"></i> Monitor Port</label>
-    <input type="text" id="node-input-monitorPort" placeholder="(default) 1881">
+    <input type="text" id="node-input-monitorPort" placeholder="(default) 1883">
   </div>
 
   <div class="form-row">
@@ -67,7 +66,7 @@
   </div>
 </script>
 
-<script type="text/html" data-help-name="hand-detection-iotcam">
+<script type="text/html" data-help-name="hand-detection-webcam">
   <p>A simple node that recognizes and visualizes hand posture using a webcam.</p>
 
   <h3>Inputs</h3>

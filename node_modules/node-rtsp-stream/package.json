@@ -1,0 +1,22 @@
+{
+  "name": "node-rtsp-stream",
+  "version": "0.0.9",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "npm run test",
+    "test": "mocha test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kyriesent/node-rtsp-stream.git"
+  },
+  "author": "David Jsa <david@jsa.me>",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "ws": "^7.0.0"
+  }
+}
