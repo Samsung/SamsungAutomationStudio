@@ -363,7 +363,7 @@ module.exports = function(RED) {
                     // https://github.com/Infocatcher/Right_Links/issues/25
                     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
                     if (isMirror && mirrorSocket.connected) {
-                        outputElement.toBlob(function (blob) {
+                        canvasElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
                             mirrorSocket.emit('video', imageUrl)
                         }, 'image/webp')
