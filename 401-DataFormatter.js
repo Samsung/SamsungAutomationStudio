@@ -7,7 +7,7 @@ module.exports = function (RED) {
     const he = require('he');
     let parents = [];
 
-    function JsonFormatting(X, Y, title, type, y_label, nodeConfig) {
+    function JsonFormatting(X, Y, title, type, nodeConfig) {
         //json formatting
         var min = Math.min.apply(Math, Y)
         if (nodeConfig && nodeConfig.yMin) {
@@ -30,6 +30,7 @@ module.exports = function (RED) {
                 responsive: true,
                 legend: {
                     position: 'top',
+                    display: false,
                 },
                 title: {
                     display: true,
@@ -323,7 +324,7 @@ module.exports = function (RED) {
                 cleanData = getRawData(jsonData, n.x_data, n.y_data);
             }
 
-            msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, n.y_label, node.config);
+            msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, node.config);
             node.send(msg);
         })
     }
