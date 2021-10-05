@@ -25,7 +25,8 @@ module.exports = function(RED) {
 
             // Input keypoints Preprocessing
             let inputVectors = []
-            let similarLimit = 80
+            let similarLimit = config.similarSensitivity
+
             for ( let inputKeypoint of inputKeypoints) {
                 inputVectors.push(keypoinstsPreprocessing(inputKeypoint))
             } 

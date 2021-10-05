@@ -14,7 +14,7 @@ module.exports = function(RED) {
             let isExist = false
             let isUnAccurate = false
             let similarPoseName
-
+            let similarLimit = config.similarSensitivity
 
             // Input keypoint Accuracy Evaluation
             let accuracyCount = 0
@@ -39,7 +39,7 @@ module.exports = function(RED) {
 
                 matchingValue = (cosineMatching + weightedMatching) / 2
 
-                if ( matchingValue > 80 ) {
+                if ( matchingValue > similarLimit ) {
                     isExist = true
                     similarPoseName = name
                     break

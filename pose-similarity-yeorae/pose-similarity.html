@@ -3,7 +3,8 @@
       category: 'motion pose',
       color: '#B2A1F4',
       defaults: {
-          name: {value:""}
+          name: {value:""},
+          similarSensitivity: {value: 80, required:true, validate:RED.validators.number()},
       },
       inputs:1,
       outputs:1,
@@ -19,6 +20,10 @@
   <div class="form-row">
       <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
       <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-similarSensitivity"><i class="fa fa-tag"></i> Similar Sensitivity(%)</label>
+    <input type="text" id="node-input-similarSensitivity" placeholder="(default) 80">
   </div>
 </script>
 
