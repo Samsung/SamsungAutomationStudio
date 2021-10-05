@@ -5,6 +5,7 @@
     defaults: {
       name: { value: '' },
       apiType: { value: '', required: false },
+      format: { value: '', required: false },
       sorttype: { value: '', required: false },
       minprice: { value: '', required: false },
       maxprice: { value: '', required: false },
@@ -34,32 +35,39 @@
 </script>
 
 <script type="text/x-red" data-template-name="shopping-filter">
-  <div class="form-row">
-      <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-      <input type="text" id="node-input-name" placeholder="Name">
-  </div>
-  <div class="form-row">
-      <label for="node-input-apiType"><i class="icon-tag"></i> API Type</label>
-      <select id="node-input-apiType" name="node-input-apiType">
-          <option value="naver">Naver</option>
-          <option value="11st">11st</option>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-apiType"><i class="icon-tag"></i> apiType</label>
+        <select id="node-input-apiType" name="node-input-apiType">
+            <option value="naver" selected>Naver</option>
+            <option value="11st">11st</option>
+        </select>
+    </div>
+    <div class="form-row">
+      <label for="node-input-format"><i class="icon-tag"></i> Format</label>
+      <select id="node-input-format" name="node-input-format">
+          <option value="json" selected>JSON</option>
+          <option value="xml">XML</option>
       </select>
   </div>
-  <div class="form-row">
-      <label for="node-input-sorttype"><i class="icon-tag"></i> Sort Type</label>
-      <select id="node-input-sorttype" name="node-input-sorttype">
-          <option value="asc">asc</option>
-          <option value="desc">desc</option>
-      </select>
-  </div>
-  <div class="form-row">
-      <label for="node-input-minprice"><i class="icon-tag"></i> MinPrice</label>
-      <input type="text" id="node-input-minprice" placeholder="minprice">
-  </div>
-  <div class="form-row">
-      <label for="node-input-maxprice"><i class="icon-tag"></i> MaxPrice</label>
-      <input type="text" id="node-input-maxprice" placeholder="maxprice">
-  </div>
+    <div class="form-row">
+        <label for="node-input-sorttype"><i class="icon-tag"></i> Sort Type</label>
+        <select id="node-input-sorttype" name="node-input-sorttype">
+            <option value="asc" selected>asc</option>
+            <option value="desc">desc</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-minprice"><i class="icon-tag"></i> MinPrice</label>
+        <input type="text" id="node-input-minprice" placeholder="minprice">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxprice"><i class="icon-tag"></i> MaxPrice</label>
+        <input type="text" id="node-input-maxprice" placeholder="maxprice">
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="shopping-filter">
@@ -89,9 +97,9 @@
       <input type="text" id="node-input-name" placeholder="Name">
   </div>
   <div class="form-row">
-      <label for="node-input-apiType"><i class="icon-tag"></i> API Type</label>
+      <label for="node-input-apiType"><i class="icon-tag"></i> apiType</label>
       <select id="node-input-apiType" name="node-input-apiType">
-          <option value="naver">Naver</option>
+          <option value="naver" selected>Naver</option>
           <option value="11st">11st</option>
       </select>
   </div>
@@ -103,8 +111,6 @@
   <dl class="message-properties">
       <dt>Input JSON<span class="property-type">JSON Object</span></dt>
       <dd>Output from shopping nodes | 쇼핑 노드 검색 결과</dd>
-      <dt>API Type<span class="property-type">String</span></dt>
-      <dd>Input Shopping API Vendor | 쇼핑 API 종류</dd>
   </dl>
 
   <h3>Output Data</h3>
