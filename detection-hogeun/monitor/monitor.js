@@ -32,7 +32,7 @@ module.exports = function(RED) {
                 
                     // construct socket client for monitoring.
                     // 소켓 클라이언트 인스턴스 생성
-                    const monitorUrl = 'http://' + ${config.serverUrl} + ':' + ${config.monitorPort}
+                    const monitorUrl = 'http://${config.serverUrl}:${config.monitorPort}'
                     const monitorSocket = io(monitorUrl)
                     monitorSocket.on("connect", () => {
                         console.log("Connection to the socket server has been completed.")
@@ -60,7 +60,7 @@ module.exports = function(RED) {
 
             // construct socket server for monitoring.
             // 모니터 socket 서버 생성
-            const port = config.port
+            const port = config.monitorPort
             const app = express()
             const httpServer = http.createServer(app)
 

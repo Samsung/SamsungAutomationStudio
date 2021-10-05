@@ -314,7 +314,7 @@ module.exports = function(RED) {
             
                 // 미러링 관련 소켓 인스턴스 생성
                 const urlCreator = window.URL || window.webkitURL
-                const monitorUrl = 'http://' + ${config.serverUrl} + ':' + ${config.monitorPort}
+                const monitorUrl = 'http://${config.serverUrl}:${config.monitorPort}'
                 const monitorSocket = io(monitorUrl)
                 monitorSocket.on("connect", () => {
                     console.log("connection server")

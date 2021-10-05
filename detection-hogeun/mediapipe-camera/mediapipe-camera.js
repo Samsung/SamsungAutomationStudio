@@ -333,7 +333,7 @@ module.exports = function(RED) {
 
                 // 미러링 관련 소켓 인스턴스 생성
                 const urlCreator = window.URL || window.webkitURL
-                const monitorUrl = 'http://' + ${config.serverUrl} + ':' + ${config.monitorPort}
+                const monitorUrl = 'http://${config.serverUrl}:${config.monitorPort}'
                 const monitorSocket = io(monitorUrl)
                 monitorSocket.on("connect", () => {
                     console.log("connection server")
@@ -423,7 +423,7 @@ module.exports = function(RED) {
                 // 웹소켓 서버로부터 rtsps 스트리밍 데이터 받아서 canvas에 출력 (아래 링크를 참고하였음)
                 // https://www.npmjs.com/package/node-rtsp-stream
                 // https://webnautes.tistory.com/1476
-                const rtspUrl = 'ws://' + ${config.serverUrl} + ':' + ${config.rtspPort}
+                const rtspUrl = 'ws://${config.serverUrl}:${config.rtspPort}'
                 const rtspTest = new WebSocket(rtspUrl)
                 rtspTest.onmessage = function (e) {
                     
