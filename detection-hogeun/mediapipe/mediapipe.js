@@ -286,6 +286,11 @@ module.exports = function(RED) {
                             detail += "</tr>"
                         }
                         detail += "</table>"
+
+                        /* Save data immediately after timer runs */
+                        poseData["regist"] = true;
+                        poseData["poseName"] = handMotionName.value;
+                        poseDataResult = poseData;
             
                         document.getElementById("motion-result-keypoint").innerHTML = '<br><b>' + motionName + "</b> Motion Detail <br>" + detail
                         document.getElementById("motion-result-message").style.color = "green"
@@ -293,23 +298,15 @@ module.exports = function(RED) {
                         document.getElementsByClassName("capture_canvas")[0].style.display = "block"
                         document.getElementById("result-div").style.display = "block"
                         document.getElementById("regist-btn-bar").style.display = "block";
-            
-                        /*
-                        poseData.regist = true
-                        poseData.poseName = motionName
-                        dataWebSocket.send(JSON.stringify(poseData))
-                        */
                     }, timer * 1000, motionName)
                 }
             
+                var poseDataResult;
                 /* send pose data */
                 document.getElementById("regist-btn").addEventListener('click', function(){
                     document.getElementById("motion-result-message").style.color = "green";
                     document.getElementById("motion-result-message").textContent = "[" + poseMotionName.value +"] Data sent successfully! Check out the registration results!";
-                    poseData["regist"] = true;
-                    poseData["poseName"] = poseMotionName.value;
-                    dataWebSocket.send(JSON.stringify(poseData));
-                    document.getElementById("pose-motion-name").value = ""
+                    ws.send(JSON.stringify(poseDataResult));
                 })
             
                 /* result message reset*/
