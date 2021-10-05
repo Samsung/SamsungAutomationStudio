@@ -15,8 +15,8 @@
       "monitor": "/motion/monitor.js",
       "pose-detection-webcam": "/motion/pose-detection-webcam.js",
       "pose-detection-iotcam": "/motion/pose-detection-iotcam.js",
-      "pose-similarity": "/pose-similarity-yeorae/pose-similarity.js",
-      "pose-similarity-register": "/pose-similarity-yeorae/pose-similarity-register.js"
+      "pose-similarity-find": "/motion/pose-similarity-find.js",
+      "pose-similarity-register": "/motion/pose-similarity-register.js"
     }
   },
   "author": "",
