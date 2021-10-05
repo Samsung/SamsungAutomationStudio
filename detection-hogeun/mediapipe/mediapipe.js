@@ -296,7 +296,7 @@ module.exports = function(RED) {
                 document.getElementById("regist-btn").addEventListener('click', function(){
                     document.getElementById("motion-result-message").style.color = "green";
                     document.getElementById("motion-result-message").textContent = "[" + poseMotionName.value +"] Data sent successfully! Check out the registration results!";
-                    ws.send(JSON.stringify(poseDataResult));
+                    dataWebSocket.send(JSON.stringify(poseDataResult));
                 })
             
                 /* result message reset*/
