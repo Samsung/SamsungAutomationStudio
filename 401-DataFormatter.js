@@ -7,7 +7,7 @@ module.exports = function (RED) {
     const he = require('he');
     let parents = [];
 
-    function JsonFormatting(X, Y, title, type, nodeConfig) {
+    function JsonFormatting(X, Y, title, type, nodeConfig, isReverse) {
         //json formatting
         var min = Math.min.apply(Math, Y)
         if (nodeConfig && nodeConfig.yMin) {
@@ -17,13 +17,13 @@ module.exports = function (RED) {
         let result = {
             type: type,
             data: {
-                labels: X,
+                labels: isReverse ? X.reverse() : X,
                 datasets: [{
                     label: y_label,
                     backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || 'rgba(0, 0, 0, 0.1)'),
                     borderWidth: ((nodeConfig && nodeConfig.borderWidth || null)),
                     borderColor: ((nodeConfig && nodeConfig.borderColor) || 'rgba(0, 0, 0, 0.1)'),
-                    data: Y
+                    data: isReverse ? Y.reverse() : Y
                 }]
             },
             options: {
@@ -324,7 +324,7 @@ module.exports = function (RED) {
                 cleanData = getRawData(jsonData, n.x_data, n.y_data);
             }
 
-            msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, node.config);
+            msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, node.config, n.isReverse);
             node.send(msg);
         })
     }

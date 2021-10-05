@@ -56,9 +56,9 @@
         <label for="node-input-y_data"><i class="fa fa-line-chart"></i> Y-axes</label>
         <input type="text" id="node-input-y_data" placeholder="y_data">
     </div>
-    <div class="form-row" id = "node-input-y_label-row">
-        <label for="node-input-y_label"><i class="fa fa-tag"></i> y_label</label>
-        <input type="text" id="node-input-y_label" placeholder="y_label">
+    <div class="form-row">
+        <label for="node-input-isReverse"><i class="fa fa-sort-amount-desc"></i>Reverse</label>
+        <input type="checkbox" id="node-input-isReverse" style="width:5%!important;">
     </div>
     <div class="form-row">
         <label for="node-input-config"><i class="fa fa-user"></i> Chart Config</label>
@@ -140,7 +140,7 @@
             result_data_type: { value: "raw", required: true },
             x_data: { value: "", required: true },
             y_data: { value: "" },
-            y_label: { value: "" },
+            isReverse: {value:false},
         },
         inputs: 1,
         outputs: 1,
