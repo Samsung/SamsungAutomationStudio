@@ -1,25 +1,9 @@
-<!-- The node .html file defines how the node appears with the editor.
-  It contains three distinct part, each wrapped in its own <script> tag -->
-
-<!-- the main node definition -->
-<!-- https://nodered.org/docs/creating-nodes/appearance -->
 <script type="text/javascript">
 
   RED.nodes.registerType('pose-detection-view',{
-    // https://nodered.org/docs/creating-nodes/node-html
-    // category, defaults, credentials, ... 21 properties
-
     category: 'motion pose',
     color: '#B2A1F4',
     defaults: {
-      // A node’s properties are defined by the defaults object in its html definition.
-
-      // https://nodered.org/docs/creating-nodes/properties
-      // { value, required, validate, type }
-      
-      // https://nodered.org/docs/creating-nodes/config-nodes
-      // type 은 configuration node 가 필요할 때의 해당 노드 타입
-
       name: {value: ""},
       order: {value: 0},
       width: {value: 6},
@@ -27,8 +11,6 @@
       isMirror: {value: 1, required:true, validate:RED.validators.number()},
       mirrorPort: {value: 1881, required:true, validate:RED.validators.number()},
       dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
-
-      // 한글자, id, type, wires, inputs, outputs 사용불가
     },
     inputs: 1,
     outputs: 1,
@@ -37,8 +19,6 @@
         return this.name||"pose-detection-view"
     },
     oneditprepare: function() {
-      // do something..
-
       const inputVideo = document.getElementById('input-video')
       const constraints = {
         audio: false, // if you want test audio, give the value 'true'.
@@ -59,21 +39,10 @@
   })
 </script>
 
-
-<!-- the edit template -->
-<!-- https://nodered.org/docs/creating-nodes/edit-dialog -->
-<!-- it can be 'input', 'button', 'multi-line text' -->
 <script type="text/html" data-template-name="pose-detection-view">
-  <div class="form-row">
-    <!-- normal nodes : node-input-<propertyname> -->
-    <!-- config nodes : node-config-input-<propertyname> -->
-    
+  <div class="form-row">    
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <!-- <i> elements support https://fontawesome.com/v4.7/icons/ -->
-
     <input type="text" id="node-input-name" placeholder="Name">
-    <!-- 'text' for string/number properties, or 'checkbox' for boolean properties. -->
-    <!--  a <select> element can be used if there is a restricted set of choices. -->
   </div>
 
   <div class="form-row">
@@ -100,8 +69,20 @@
   </div>
 </script>
 
-
-<!-- the help text -->
 <script type="text/html" data-help-name="pose-detection-view">
-  <p>A simple node that related to mediapipe</p>
+  <p>A simple node that recognizes and visualizes posture</p>
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>Name</dt>
+    <dd>The label of the Node assigned by the user.</dd>
+    <dt>Is Mirror</dt>
+    <dd>Whether access from other resources is allowed.</dd>
+    <dt>Mirror Port</dt>
+    <dd>Port number to allow access.</dd>
+    <dt>Data Socket Url</dt>
+    <dd>Socket URI to send and receive data.(ex. 'ws://localhost:1880/ws/data')</dd>
+    <dt>Camera Test</dt>
+    <dd>Preview webcam camera.</dd>
+  </dl>
 </script>
