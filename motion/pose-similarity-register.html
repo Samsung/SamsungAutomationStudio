@@ -28,5 +28,27 @@
 </script>
 
 <script type="text/html" data-help-name="pose-similarity-register">
-  <p>A simple node that converts the message payloads into all pose-similarity characters</p>
+  <p>Find a posture similar to the input posture and return the similarity.</p>
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>Name</dt>
+    <dd>The label of the Node assigned by the user.</dd>
+    <dt>Similar Sensitivity</dt>
+    <dd>The percentage of sensitivity of the criteria for determining similarity.</dd>
+  </dl>
+
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>result</dt>
+    <dd>
+      <ul>
+        <li>'UnAccurate': Occurs when the input value is an invalid posture.</li>
+        <li>[Name of specific pose]: Occurs when registering a posture similar to hat already saved.</li>
+        <li>null: Occurs when the input value is valid and can be saved.</li>
+      </ul>
+    </dd>
+    <dt>keypoint</dt>
+    <dd>If a similar posture already exists, return the keypoint array of the posture.(in other case, return null)</dd>
+  </dl>
 </script>
