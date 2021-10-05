@@ -17,15 +17,14 @@ module.exports = function(RED) {
                 node.send(msg)
                 return
             }
-
             const keypointsNum = inputKeypoints[0].length
             let isExist = false
             let similarPoseName
             let accuracy = 0.0
+            let similarLimit = config.similarSensitivity
 
             // Input keypoints Preprocessing
             let inputVectors = []
-            let similarLimit = config.similarSensitivity
 
             for ( let inputKeypoint of inputKeypoints) {
                 inputVectors.push(keypoinstsPreprocessing(inputKeypoint))
@@ -139,5 +138,5 @@ module.exports = function(RED) {
 
         })
     }
-    RED.nodes.registerType("pose-similarity-find", PoseSimilarity)
+    RED.nodes.registerType("pose-similarity", PoseSimilarity)
 }
