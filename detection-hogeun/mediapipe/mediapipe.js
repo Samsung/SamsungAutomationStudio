@@ -313,19 +313,13 @@ module.exports = function(RED) {
                 }
             
                 // 미러링 관련 소켓 인스턴스 생성
-                let urlCreator
-                let monitorSocket
-                const isMonitor = ${config.isMonitor}
-                const monitorUrl = ${config.monitorUrl}
-                if (isMonitor) {
-                    urlCreator = window.URL || window.webkitURL
-                    // monitorSocket = io(monitorUrl)
-                    monitorSocket = io('http://team1.ssafy.dev.devground.io:1880/ws/monitor')
-                    monitorSocket.on("connect", () => {
-                        console.log("connection server")
-                        monitorSocket.emit("echo", "echo from mediapipe")
-                    })
-                }
+                const urlCreator = window.URL || window.webkitURL
+                const monitorUrl = 'http://' + ${config.serverUrl} + ':' + ${config.monitorPort}
+                const monitorSocket = io(monitorUrl)
+                monitorSocket.on("connect", () => {
+                    console.log("connection server")
+                    monitorSocket.emit("echo", "echo from mediapipe")
+                })
             
             
                 // 캔버스에 Pose Detection 결과값 렌더링하는 함수
@@ -363,7 +357,7 @@ module.exports = function(RED) {
                     // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
                     // https://github.com/Infocatcher/Right_Links/issues/25
                     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-                    if (isMonitor && monitorSocket.connected) {
+                    if (monitorSocket.connected) {
                         canvasElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
                             monitorSocket.emit('video', imageUrl)

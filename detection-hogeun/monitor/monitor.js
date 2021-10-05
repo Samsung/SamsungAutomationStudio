@@ -32,17 +32,15 @@ module.exports = function(RED) {
                 
                     // construct socket client for monitoring.
                     // 소켓 클라이언트 인스턴스 생성
-                    const mirrorPort = ${config.port}
-                    const mirrorSocket = io('http://team1.ssafy.dev.devground.io:1880/ws/monitor')
-                    // const mirrorSocket = io('http://team1.ssafy.dev.devground.io:' + mirrorPort)
-                    // const mirrorSocket = io('http://localhost:' + mirrorPort)
-                    mirrorSocket.on("connect", () => {
+                    const monitorUrl = 'http://' + ${config.serverUrl} + ':' + ${config.monitorPort}
+                    const monitorSocket = io(monitorUrl)
+                    monitorSocket.on("connect", () => {
                         console.log("Connection to the socket server has been completed.")
                     });
 
                     // delivering data from socket server to DOM element.
                     // 소켓 서버로부터 수신한 데이터를 화면에 출력
-                    mirrorSocket.on("video", (msg) => {
+                    monitorSocket.on("video", (msg) => {
                         videoElem.src = msg
                     })
                 </script>
@@ -86,7 +84,7 @@ module.exports = function(RED) {
                     cors: {
                         origin: [
                             "http://localhost:1880",
-                            "http://team1.ssafy.dev.devground.io:1880",
+                            `http://${config.serverUrl}:1880`,
                         ],
                         methods: ["GET", "POST"]
                     }

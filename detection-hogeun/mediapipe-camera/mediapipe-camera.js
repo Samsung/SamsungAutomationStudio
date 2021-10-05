@@ -332,19 +332,13 @@ module.exports = function(RED) {
 
 
                 // 미러링 관련 소켓 인스턴스 생성
-                let urlCreator
-                let monitorSocket
-                const isMonitor = ${config.isMonitor}
-                const monitorUrl = ${config.monitorUrl}
-                if (isMonitor) {
-                    urlCreator = window.URL || window.webkitURL
-                    // monitorSocket = io(monitorUrl)
-                    monitorSocket = io('http://team1.ssafy.dev.devground.io:1880/ws/monitor')
-                    monitorSocket.on("connect", () => {
-                        console.log("connection server")
-                        monitorSocket.emit("echo", "echo from mediapipe")
-                    })
-                }
+                const urlCreator = window.URL || window.webkitURL
+                const monitorUrl = 'http://' + ${config.serverUrl} + ':' + ${config.monitorPort}
+                const monitorSocket = io(monitorUrl)
+                monitorSocket.on("connect", () => {
+                    console.log("connection server")
+                    monitorSocket.emit("echo", "echo from mediapipe")
+                })
 
 
                 // Pose Detection result function
@@ -387,7 +381,7 @@ module.exports = function(RED) {
                     // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
                     // https://github.com/Infocatcher/Right_Links/issues/25
                     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-                    if (isMonitor && monitorSocket.connected) {
+                    if (monitorSocket.connected) {
                         outputElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
                             monitorSocket.emit('video', imageUrl)
@@ -429,8 +423,8 @@ module.exports = function(RED) {
                 // 웹소켓 서버로부터 rtsps 스트리밍 데이터 받아서 canvas에 출력 (아래 링크를 참고하였음)
                 // https://www.npmjs.com/package/node-rtsp-stream
                 // https://webnautes.tistory.com/1476
-                const rtspPort = ${config.rtspPort}
-                const rtspTest = new WebSocket('ws://localhost:' + rtspPort)
+                const rtspUrl = 'ws://' + ${config.serverUrl} + ':' + ${config.rtspPort}
+                const rtspTest = new WebSocket(rtspUrl)
                 rtspTest.onmessage = function (e) {
                     
                     // RTSP 웹소켓으로부터 충분한 데이터가 오면 렌더링 시작
@@ -438,7 +432,7 @@ module.exports = function(RED) {
                         rtspTest.close()
     
                         // RTSP 클라이언트 생성 및 렌더링
-                        const rtspClient = new WebSocket('ws://localhost:' + rtspPort)
+                        const rtspClient = new WebSocket(rtspUrl)
                         const player = new jsmpeg(rtspClient, {
                             canvas: inputElement,
                             pauseWhenHidden: false
