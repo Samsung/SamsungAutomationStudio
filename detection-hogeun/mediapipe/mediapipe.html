@@ -26,7 +26,7 @@
       height: {value: 6},
       isMirror: {value: 1, required:true, validate:RED.validators.number()},
       mirrorPort: {value: 1881, required:true, validate:RED.validators.number()},
-      dataSocketUrl: {value: 'data'},
+      dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
 
       // 한글자, id, type, wires, inputs, outputs 사용불가
     },
@@ -88,7 +88,7 @@
 
   <div class="form-row">
     <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
-    <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'data'">
+    <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/data'">
   </div>
 
   <div class="form-row" style="text-align: left;">
