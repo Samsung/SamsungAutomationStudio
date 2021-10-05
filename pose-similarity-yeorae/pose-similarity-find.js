@@ -4,19 +4,19 @@ module.exports = function(RED) {
         var node = this;
         node.on('input', function(msg, send, done) {
             const similarity = require("compute-cosine-similarity");
-            const inputData = msg.payload
-            const inputKeypoints =  inputData.inputKeypoints
-            const savedKeypoints = inputData.savedKeypoints
+            const inputKeypoints =  msg.inputKeypoints
+            const savedKeypoints = msg.savedKeypoints
 
             // Kepoints Number Check
             if (inputKeypoints.length == 0) {
-                msg.payload = {
-                    "result" : null,
-                    "keypoint" : null
-                }
+                msg.status = false
+                msg.poseName = null
+                msg.accuracy = 0
                 node.send(msg)
                 return
             }
+
+            //Define Initial Variable
             const keypointsNum = inputKeypoints[0].length
             let isExist = false
             let similarPoseName
@@ -62,17 +62,13 @@ module.exports = function(RED) {
 
             // Return Value
             if ( isExist ) {
-                msg.payload = {
-                "result" : similarPoseName,
-                "keypoint" : savedKeypoints[similarPoseName],
-                "accuracy" : accuracy
-                }
+                msg.status = true
+                msg.poseName = similarPoseName
+                msg.accuracy = accuracy
             } else {
-                msg.payload = {
-                "result" : null,
-                "keypoint" : inputKeypoints[0],
-                "accuracy" : accuracy
-                }
+                msg.status = false
+                msg.poseName = null
+                msg.accuracy = 0
             }
             function keypoinstsPreprocessing(keypoints) {
                 // Pre-processing : Nomalization and Making Vector

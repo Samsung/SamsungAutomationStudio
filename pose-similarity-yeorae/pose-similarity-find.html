@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  RED.nodes.registerType('pose-similarity-register',{
+  RED.nodes.registerType('pose-similarity-find',{
       category: 'motion pose',
       color: '#B2A1F4',
       defaults: {
@@ -9,14 +9,14 @@
       inputs:1,
       outputs:1,
       icon: "font-awesome/fa-male",
-      paletteLabel: "pose register",
+      paletteLabel: "pose find",
       label: function() {
-          return this.name||"pose register";
+          return this.name||"pose find";
       }
   });
 </script>
 
-<script type="text/html" data-template-name="pose-similarity-register">
+<script type="text/html" data-template-name="pose-similarity">
   <div class="form-row">
       <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
       <input type="text" id="node-input-name" placeholder="Name">
@@ -26,8 +26,7 @@
     <input type="text" id="node-input-similarSensitivity" placeholder="(default) 80">
   </div>
 </script>
-
-<script type="text/html" data-help-name="pose-similarity-register">
+<script type="text/html" data-help-name="pose-similarity-find">
   <p>Find a posture similar to the input posture and return the similarity.</p>
 
   <h3>Inputs</h3>
@@ -41,14 +40,10 @@
   <h3>Outputs</h3>
   <dl class="message-properties">
     <dt>result</dt>
-    <dd>
-      <ul>
-        <li>'UnAccurate': Occurs when the input value is an invalid posture.</li>
-        <li>[Name of specific pose]: Occurs when registering a posture similar to hat already saved.</li>
-        <li>null: Occurs when the input value is valid and can be saved.</li>
-      </ul>
-    </dd>
+    <dd>Name of the posture that was judged to be similar.</dd>
     <dt>keypoint</dt>
-    <dd>If a similar posture already exists, return the keypoint array of the posture.(in other case, return null)</dd>
+    <dd>Coordinate values of similar postures.</dd>
+    <dt>accuracy</dt>
+    <dd>Accuracy with the posture (determined to be similar)</dd>
   </dl>
 </script>
