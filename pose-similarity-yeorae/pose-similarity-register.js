@@ -6,7 +6,6 @@ module.exports = function(RED) {
             const similarity = require("compute-cosine-similarity");
             
             const inputData = msg.payload
-
             const inputKeypoint =  inputData.inputKeypoint
             const savedKeypoints = inputData.savedKeypoints
             const keypointsNum = inputKeypoint.length
