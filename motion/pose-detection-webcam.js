@@ -166,7 +166,7 @@ module.exports = function(RED) {
                 const inputElement = document.getElementById('input-video')
                 const outputElement = document.getElementById('output-canvas')
                 const captureElement = document.getElementById('capture-canvas')
-                const outputCtx = canvasElement.getContext('2d')
+                const outputCtx = outputElement.getContext('2d')
                 const captureCtx = captureElement.getContext('2d')
             
             
@@ -257,7 +257,7 @@ module.exports = function(RED) {
                 /* visualize and transmit registered data  */
                 function onCapture(motionName, timer) {
                     setTimeout((motionName) => {
-                        captureCtx.drawImage(canvasElement, 0, 0, captureElement.width, captureElement.height)
+                        captureCtx.drawImage(outputElement, 0, 0, captureElement.width, captureElement.height)
                         let detail = ""
                         const fixed = 5
             
@@ -326,12 +326,12 @@ module.exports = function(RED) {
                 function onResults(results) {
                     // 빈 캔버스 로드
                     outputCtx.save()
-                    outputCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
+                    outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
             
                     // 캔버스에 비디오 화면 표시
                     outputCtx.globalCompositeOperation = 'destination-atop'
                     outputCtx.drawImage(
-                        results.image, 0, 0, canvasElement.width, canvasElement.height)
+                        results.image, 0, 0, outputElement.width, outputElement.height)
             
                     // 캔버스에 디텍션 랜드마크 표시
                     outputCtx.globalCompositeOperation = 'source-over'
@@ -356,9 +356,9 @@ module.exports = function(RED) {
                     // transport <canvas> data in form of blob. (I referenced the link below)
                     // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
                     // https://github.com/Infocatcher/Right_Links/issues/25
-                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLoutputElement/toBlob
                     if (monitorSocket.connected) {
-                        canvasElement.toBlob(function (blob) {
+                        outputElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
                             monitorSocket.emit('video', imageUrl)
                         }, 'image/webp')
