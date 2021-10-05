@@ -26,7 +26,24 @@
     <input type="text" id="node-input-similarSensitivity" placeholder="(default) 80">
   </div>
 </script>
-
 <script type="text/html" data-help-name="pose-similarity-find">
-  <p>A simple node that converts the message payloads into all pose-similarity characters</p>
+  <p>Find a posture similar to the input posture and return the similarity.</p>
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>Name</dt>
+    <dd>The label of the Node assigned by the user.</dd>
+    <dt>Similar Sensitivity</dt>
+    <dd>The percentage of sensitivity of the criteria for determining similarity.</dd>
+  </dl>
+
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>result</dt>
+    <dd>Name of the posture that was judged to be similar.</dd>
+    <dt>keypoint</dt>
+    <dd>Coordinate values of similar postures.</dd>
+    <dt>accuracy</dt>
+    <dd>Accuracy with the posture (determined to be similar)</dd>
+  </dl>
 </script>
