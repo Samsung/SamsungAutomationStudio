@@ -51,7 +51,7 @@ module.exports = function (RED) {
             })
             .catch((error) => {
               node.status({ fill: 'red', shape: 'dot', text: 'error' });
-              node.error('download failed: ' + error.toString(), msg);
+              node.error('Download failed: ' + error.toString(), msg);
             });
           break;
         case 'upload':
@@ -65,7 +65,7 @@ module.exports = function (RED) {
             })
             .catch((error) => {
               node.status({ fill: 'red', shape: 'dot', text: 'error' });
-              node.error('upload failed: ' + error.toString(), msg);
+              node.error('Upload failed: ' + error.toString(), msg);
             });
           break;
         case 'read':
@@ -78,7 +78,7 @@ module.exports = function (RED) {
             })
             .catch((error) => {
               node.status({ fill: 'red', shape: 'dot', text: 'error' });
-              node.error('read failed: ' + error.toString(), msg);
+              node.error('Read failed: ' + error.toString(), msg);
             });
       }
     });
