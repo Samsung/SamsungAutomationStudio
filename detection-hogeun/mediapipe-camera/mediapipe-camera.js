@@ -333,15 +333,16 @@ module.exports = function(RED) {
 
                 // 미러링 관련 소켓 인스턴스 생성
                 let urlCreator
-                let mirrorSocket
-                const isMirror = ${config.isMirror}
-                if (isMirror) {
-                    const mirrorPort = ${config.mirrorPort}
+                let monitorSocket
+                const isMonitor = ${config.isMonitor}
+                const monitorUrl = ${config.monitorUrl}
+                if (isMonitor) {
                     urlCreator = window.URL || window.webkitURL
-                    mirrorSocket = io('http://localhost:' + mirrorPort)
-                    mirrorSocket.on("connect", () => {
+                    // monitorSocket = io(monitorUrl)
+                    monitorSocket = io('http://team1.ssafy.dev.devground.io:1880/ws/monitor')
+                    monitorSocket.on("connect", () => {
                         console.log("connection server")
-                        mirrorSocket.emit("echo", "echo from mediapipe")
+                        monitorSocket.emit("echo", "echo from mediapipe")
                     })
                 }
 
@@ -386,10 +387,10 @@ module.exports = function(RED) {
                     // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
                     // https://github.com/Infocatcher/Right_Links/issues/25
                     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-                    if (isMirror && mirrorSocket.connected) {
+                    if (isMonitor && monitorSocket.connected) {
                         outputElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
-                            mirrorSocket.emit('video', imageUrl)
+                            monitorSocket.emit('video', imageUrl)
                         }, 'image/webp')
                     }
                 }
@@ -553,6 +554,7 @@ module.exports = function(RED) {
                 })
             })
 
+            // :1880/ws/monitor  >>  :1881
             httpServer.listen(rtspPort)
 
             // return HTML document to the client.
