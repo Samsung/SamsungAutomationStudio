@@ -23,7 +23,6 @@ module.exports = function(RED) {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
@@ -117,16 +116,15 @@ module.exports = function(RED) {
                         width: 600px;
                         height: 340px;
                     }
+
+                    .clickable:hover {
+                        cursor: pointer;
+                    }
                 </style>
             </head>
 
             <body>
                 <div align="center" style="min-height: 800px;">
-                
-                    <!-- test -->
-                    <button id="btn">조여래 짱</button>
-
-                    <h1>Pose Detection Page</h1>
                     <div style="display: inline-block;" align="center" class="tooltip">
                         <canvas id="input-canvas" width="600px" height="340px" style="border:3px solid grey"></canvas><br>
                         <div class="tooltip-content">
@@ -239,15 +237,13 @@ module.exports = function(RED) {
                 })
 
 
-
-
                 /* motion name empty check */
                 var poseMotionName = document.getElementById("pose-motion-name")
                 document.getElementById("captrue-btn").addEventListener('click', () => {
                     if (poseMotionName.value === "" || poseMotionName.value === undefined) {
                         isFail("[Fail] Invalid Name : The motion name is empty.")
                     }else if(poseData==null){
-                        isFail("[Fail] Keypoint not found. Show your hands on cam!");
+                        isFail("[Fail] Keypoint not found. Show your hands on cam!")
                     }
                     else {
                         onCapture(poseMotionName.value)
@@ -259,7 +255,7 @@ module.exports = function(RED) {
                     document.getElementById("motion-result-message").textContent = message
                     document.getElementById("capture-canvas").style.display = "none"
                     document.getElementById("result-div").style.display = "block"
-                    document.getElementById("regist-btn-bar").style.display = "none";
+                    document.getElementById("regist-btn-bar").style.display = "none"
                 }
 
 
@@ -267,12 +263,12 @@ module.exports = function(RED) {
                 const inputElement = document.getElementById('input-canvas')
                 const outputElement = document.getElementById('output-canvas')
                 const captureElement = document.getElementById('capture-canvas')
-                const canvasCtx = outputElement.getContext('2d')
+                const outputCtx = outputElement.getContext('2d')
                 const captureCtx = captureElement.getContext('2d')
 
 
                 // Detection 데이터 전송할 웹소켓 인스턴스 생성
-                const dataWebSocket = new WebSocket('ws://localhost:1880/ws/data')
+                const dataWebSocket = new WebSocket('ws://localhost:1880/ws/${config.dataSocketUrl}')
 
                 dataWebSocket.onmessage = (msg) => {
                     if (msg.data != null) {
@@ -291,7 +287,7 @@ module.exports = function(RED) {
                         detail += "<caption>Estimated Pose</caption>"
                         detail += "<tr><th></th><th>x</th><th>y</th><th>z</th><th>visibility</th></tr>"
                         for (let idx = 0; idx < poseData.poseLandmarks.length; idx++) {
-                            detail += "<tr>";
+                            detail += "<tr>"
                             detail += "<td align='center'>" + idx + "</td>"
                             detail += "<td>" + poseData.poseLandmarks[idx].x.toFixed(fixed) + "</td>"
                             detail += "<td>" + poseData.poseLandmarks[idx].y.toFixed(fixed) + "</td>"
@@ -306,7 +302,7 @@ module.exports = function(RED) {
                         document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + motionName + "] motion"
                         document.getElementsByClassName("capture_canvas")[0].style.display = "block"
                         document.getElementById("result-div").style.display = "block"
-                        document.getElementById("regist-btn-bar").style.display = "block";
+                        document.getElementById("regist-btn-bar").style.display = "block"
 
                         /*
                         poseData.regist = true
@@ -318,25 +314,25 @@ module.exports = function(RED) {
 
                 /* send pose data */
                 document.getElementById("regist-btn").addEventListener('click', function(){
-                    document.getElementById("motion-result-message").style.color = "green";
+                    document.getElementById("motion-result-message").style.color = "green"
                     document.getElementById("motion-result-message").textContent = "[" + poseMotionName.value +"] Data sent successfully! Check out the registration results!";
-                    poseData["regist"] = true;
-                    poseData["poseName"] = poseMotionName.value;
-                    dataWebSocket.send(JSON.stringify(poseData));
+                    poseData["regist"] = true
+                    poseData["poseName"] = poseMotionName.value
+                    dataWebSocket.send(JSON.stringify(poseData))
                     document.getElementById("pose-motion-name").value = ""
                 })
 
                 /* result message reset*/
-                document.getElementById("pose-motion-name").addEventListener('focus', onClear);
+                document.getElementById("pose-motion-name").addEventListener('focus', onClear)
                 document.getElementById("cancel-btn").addEventListener('click', function(){
-                    document.getElementById("pose-motion-name").value = "";
-                    onClear();
+                    document.getElementById("pose-motion-name").value = ""
+                    onClear()
                 });
 
                 function onClear(){
-                    document.getElementById("motion-result-message").textContent = "";
-                    document.getElementById("motion-result-keypoint").innerHTML = "";
-                    document.getElementById("result-div").style.display = "none";
+                    document.getElementById("motion-result-message").textContent = ""
+                    document.getElementById("motion-result-keypoint").innerHTML = ""
+                    document.getElementById("result-div").style.display = "none"
                 }
 
 
@@ -360,23 +356,23 @@ module.exports = function(RED) {
                 function onResults(results) {
                     // clear canvas
                     // 빈 캔버스 로드
-                    canvasCtx.save()
-                    canvasCtx.clearRect(0, 0, outputElement.width, outputElement.height)
+                    outputCtx.save()
+                    outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
 
                     // draw video image on canvas.
                     // 캔버스에 비디오 화면 표시
-                    canvasCtx.globalCompositeOperation = 'destination-atop'
-                    canvasCtx.drawImage(
+                    outputCtx.globalCompositeOperation = 'destination-atop'
+                    outputCtx.drawImage(
                         results.image, 0, 0, outputElement.width, outputElement.height)
 
                     // draw landmarks on canvas.
                     // 캔버스에 랜드마크 표시
-                    canvasCtx.globalCompositeOperation = 'source-over'
-                    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+                    outputCtx.globalCompositeOperation = 'source-over'
+                    drawConnectors(outputCtx, results.poseLandmarks, POSE_CONNECTIONS,
                         { color: '#f2d6ae', lineWidth: 5 })
-                    drawLandmarks(canvasCtx, results.poseLandmarks,
+                    drawLandmarks(outputCtx, results.poseLandmarks,
                         { color: '#b2a1f4', lineWidth: 1 })
-                    canvasCtx.restore()
+                    outputCtx.restore()
 
                     // transport landmark data via web socket.
                     // 랜드마크 데이터 웹소켓으로 전송
@@ -432,24 +428,42 @@ module.exports = function(RED) {
                     await pose.send({ image: inputElement })
                 }
 
-                
-                // start Detection.
-                // Detection 시작
-                const btn = document.getElementById('btn')
-                btn.onclick = function() {
 
-                    // deliver rtsp streaming data from WebSocket server to <canvas>. (I referenced the link below)
-                    // 웹소켓 서버로부터 rtsps 스트리밍 데이터 받아서 canvas에 출력 (아래 링크를 참고하였음)
-                    // https://www.npmjs.com/package/node-rtsp-stream
-                    // https://webnautes.tistory.com/1476
-                    const rtspPort = ${config.rtspPort}
-                    const rtspSocket = new WebSocket('ws://localhost:' + rtspPort)
-                    const player = new jsmpeg(rtspSocket, {
-                        canvas: inputElement
-                    });
+                // deliver rtsp streaming data from WebSocket server to <canvas>. (I referenced the link below)
+                // 웹소켓 서버로부터 rtsps 스트리밍 데이터 받아서 canvas에 출력 (아래 링크를 참고하였음)
+                // https://www.npmjs.com/package/node-rtsp-stream
+                // https://webnautes.tistory.com/1476
+                const rtspPort = ${config.rtspPort}
+                const rtspTest = new WebSocket('ws://localhost:' + rtspPort)
+                rtspTest.onmessage = function (e) {
+                    
+                    // RTSP 웹소켓으로부터 충분한 데이터가 오면 렌더링 시작
+                    if (e.data.size > 8) {
+                        rtspTest.close()
+    
+                        // RTSP 클라이언트 생성 및 렌더링
+                        const rtspClient = new WebSocket('ws://localhost:' + rtspPort)
+                        const player = new jsmpeg(rtspClient, {
+                            canvas: inputElement,
+                            pauseWhenHidden: false
+                        })
 
-                    startDetect(render)
+                        // AudioContext 시작하기 위한 장치 탐색
+                        const mediaConstraints = {
+                            audio: false, // 음성 포함하려면 값을 'true'로 바꿔야 함
+                            video: true
+                        }
+                        navigator.mediaDevices.getUserMedia(mediaConstraints)
+                            .then(stream => {
+                                startDetect(render)
+                            })
+                            .catch(err => {
+                                console.log(err)
+                            })
+                    }
                 }
+
+
             </script>
             `
             return html
@@ -469,8 +483,8 @@ module.exports = function(RED) {
 
             // construct socket server for RTSP.
             // RTSP socket 서버 생성
+            const rtspUrl = msg.payload.components.main.videoStream.stream.value.OutHomeURL.split('//')[1]
             const rtspPort = config.rtspPort || 9999
-            const rtspUrl = config.rtspUrl
             const app = express()
 
             // CORS config
@@ -516,8 +530,7 @@ module.exports = function(RED) {
                         return this.onSocketConnect(socket, request)
                     })
                     this.wsServer.broadcast = function(data, opts) {
-                        var results
-                        results = []
+                        var results = []
                         for (let client of this.clients) {
                             if (client.readyState === 1) {
                                 results.push(client.send(data, opts))

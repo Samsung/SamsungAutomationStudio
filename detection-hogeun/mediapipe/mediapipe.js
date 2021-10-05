@@ -14,15 +14,10 @@ module.exports = function(RED) {
                 <meta charset="utf-8">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"
-                    crossorigin="anonymous"></script>
-                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
-                    crossorigin="anonymous"></script>
+                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+                <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-                <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"
-                    integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg"
-                    crossorigin="anonymous"></script>
+                <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
                 <link rel="shortcut icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1658/1658879.png">
                 <title>Pose Detection</title>
                     
@@ -258,7 +253,7 @@ module.exports = function(RED) {
             
             
                 // Detection 데이터 전송할 웹소켓 인스턴스 생성
-                const dataWebSocket = new WebSocket('ws://team1.ssafy.dev.devground.io:1880/ws/data')
+                const dataWebSocket = new WebSocket('ws://localhost:1880/ws/${config.dataSocketUrl}')
             
                 dataWebSocket.onmessage = (msg) => {
                     if (msg.data != null) {
