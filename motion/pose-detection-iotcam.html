@@ -1,0 +1,53 @@
+<script type="text/javascript">
+
+  RED.nodes.registerType('pose-detection-iotcam',{
+    category: 'motion pose',
+    color: '#B2A1F4',
+    defaults: {
+      name: {value: ""},
+      serverUrl: {value: 'localhost'},
+      monitorPort: {value: 1882, validate:RED.validators.number()},
+      rtspPort: {value: 1886, validate:RED.validators.number()},
+      dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-male",
+    label: function() {
+        return this.name||"pose-detection-iotcam"
+    },
+    oneditprepare: function() {
+    },
+  })
+</script>
+
+<script type="text/html" data-template-name="pose-detection-iotcam">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-serverUrl"><i class="fa fa-tag"></i> Server Url</label>
+    <input type="text" id="node-input-serverUrl" placeholder="(default) localhost">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-monitorPort"><i class="fa fa-tag"></i> Monitor Port</label>
+    <input type="text" id="node-input-monitorPort" placeholder="(default) 1882">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-rtspPort"><i class="fa fa-tag"></i> Rtsp Port</label>
+    <input type="text" id="node-input-rtspPort" placeholder="(default) 1886">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
+    <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/data'">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="pose-detection-iotcam">
+  <p>A node for detecting body pose with a smartthings IoT camera.</p>
+</script>
