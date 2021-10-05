@@ -8,26 +8,29 @@ module.exports = function (RED) {
 		RED.nodes.createNode(this, config);
 		const node = this;
 		node.clientId = RED.nodes.getNode(config.creds).credentials.clientId;
-		node.clientSecret = RED.nodes.getNode(config.creds).credentials.clientSecret;
+		node.clientSecret = RED.nodes.getNode(
+			config.creds
+		).credentials.clientSecret;
 		node.name = config.name;
 
 		node.on('input', (msg) => {
 			const queries = config.query.split(',');
 			queries.forEach((item) => {
-				node.url = config.returnType === 'json' ? NAVER_API_URL_JSON : NAVER_API_URL_XML;
+				node.url =
+					config.returnType === 'json' ? NAVER_API_URL_JSON : NAVER_API_URL_XML;
 				node.options = {
-                    headers : {
-                    'X-Naver-Client-Id':node.clientId,
-                    'X-Naver-Client-Secret':node.clientSecret,
-                    },
-                    params : {
-                    "query": item,
-                    "display": config.display,
-                    "start": config.start,
-                    "sort": config.sort,
-                    }
-                };
-								
+					headers: {
+						'X-Naver-Client-Id': node.clientId,
+						'X-Naver-Client-Secret': node.clientSecret,
+					},
+					params: {
+						'query': item,
+						'display': config.display,
+						'start': config.start,
+						'sort': config.sort,
+					},
+				};
+
 				axios
 					.get(node.url, node.options)
 					.then((response) => {
