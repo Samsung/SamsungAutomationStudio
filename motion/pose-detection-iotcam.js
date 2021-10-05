@@ -396,7 +396,7 @@ module.exports = function(RED) {
                 // rendering function (Asynchronous)
                 // 렌더링 함수 (비동기)
                 async function render() {
-                    await pose.send({ image: videoElement })
+                    await pose.send({ image: inputElement })
                 }
             
             

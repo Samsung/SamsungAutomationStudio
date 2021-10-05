@@ -388,7 +388,7 @@ module.exports = function(RED) {
             
                 // 렌더링 함수 (비동기)
                 async function render() {
-                    await pose.send({ image: videoElement })
+                    await pose.send({ image: inputElement })
                 }
             
             
@@ -400,9 +400,9 @@ module.exports = function(RED) {
 
                 navigator.mediaDevices.getUserMedia(mediaConstraints)
                     .then(stream => {
-                        videoElement.srcObject = stream
-                        videoElement.oncanplay = function (e) {
-                            videoElement.play()
+                        inputElement.srcObject = stream
+                        inputElement.oncanplay = function (e) {
+                            inputElement.play()
                                 .then(() => {
                                     startDetect(render)
                                 })
