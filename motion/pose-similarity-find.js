@@ -64,11 +64,11 @@ module.exports = function(RED) {
             if ( isExist ) {
                 msg.status = true
                 msg.poseName = similarPoseName
-                msg.accuracy = accuracy
+                msg.similarity = accuracy
             } else {
                 msg.status = false
                 msg.poseName = null
-                msg.accuracy = 0
+                msg.similarity = 0
             }
             function keypoinstsPreprocessing(keypoints) {
                 // Pre-processing : Nomalization and Making Vector
