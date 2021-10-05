@@ -319,7 +319,8 @@ module.exports = function(RED) {
                 const monitorUrl = ${config.monitorUrl}
                 if (isMonitor) {
                     urlCreator = window.URL || window.webkitURL
-                    monitorSocket = io(monitorUrl)
+                    // monitorSocket = io(monitorUrl)
+                    monitorSocket = io('http://team1.ssafy.dev.devground.io:1880/ws/monitor')
                     monitorSocket.on("connect", () => {
                         console.log("connection server")
                         monitorSocket.emit("echo", "echo from mediapipe")
