@@ -320,6 +320,7 @@ module.exports = function(RED) {
                     const mirrorPort = ${config.mirrorPort}
                     urlCreator = window.URL || window.webkitURL
                     mirrorSocket = io('http://team1.ssafy.dev.devground.io:1880/ws/monitor')
+                    console.log(mirrorSocket)
                     // mirrorSocket = io('http://localhost:' + mirrorPort)
                     mirrorSocket.on("connect", () => {
                         console.log("connection server")
