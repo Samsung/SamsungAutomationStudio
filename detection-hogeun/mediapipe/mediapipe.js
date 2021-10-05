@@ -254,7 +254,7 @@ module.exports = function(RED) {
             
                 // Detection 데이터 전송할 웹소켓 인스턴스 생성
                 const dataWebSocket = new WebSocket('ws://localhost:1880/ws/${config.dataSocketUrl}')
-                
+
             
                 /* visualize and transmit registered data  */
                 function onCapture(motionName, timer) {
@@ -279,7 +279,7 @@ module.exports = function(RED) {
 
                         /* Save data immediately after timer runs */
                         poseData["regist"] = true;
-                        poseData["poseName"] = handMotionName.value;
+                        poseData["poseName"] = motionName;
                         poseDataResult = poseData;
             
                         document.getElementById("motion-result-keypoint").innerHTML = '<br><b>' + motionName + "</b> Motion Detail <br>" + detail
