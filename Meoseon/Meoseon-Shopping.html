@@ -1,326 +1,456 @@
 <script type="text/html" data-template-name="shopping">
+  <div class="form-row">
     <div class="form-row">
-        <div class="form-row">
-            <label for="node-input-name">
-                <i class="fa fa-tag"></i> Name
-            </label>
-            <input type="text" id="node-input-name" data-i18n="[placeholder]Name">
-        </div>
-        <label for="node-input-apiType">
-            <i class="fa fa-cube fa-fw"></i> API Type
-        </label>
-        <select type="text" id="node-input-apiType" style="width:70%!important;">
-            <option value="naverShopping">Naver Shopping</option>
-            <option value="sk11st">sk11st</option>
-        </select>
+      <label for="node-input-name"> <i class="fa fa-tag"></i> Name </label>
+      <input type="text" id="node-input-name" data-i18n="[placeholder]Name" />
     </div>
+    <label for="node-input-apiType">
+      <i class="fa fa-cube fa-fw"></i> API Type
+    </label>
+    <select type="text" id="node-input-apiType" style="width:70%!important;">
+      <option value="naverShopping">Naver Shopping</option>
+      <option value="sk11st">sk11st</option>
+    </select>
+  </div>
 
-    <!-- naver shopping -->
-    <div id="naver-shopping-area">
-        <div class="form-row">
-            <label for="node-input-naverShoppingCreds">
-                <i class="fa fa-key fa-fw"></i> API Key
-            </label>
-            <input type="text" id="node-input-naverShoppingCreds">
-        </div>
-        <div class="form-row">
-            <label for="node-input-naverShoppingReturnType">
-                <i class="fa fa-file-text-o fa-fw"></i> Return Type
-            </label>
-            <select type="text" id="node-input-naverShoppingReturnType" style="width:70%!important;">
-                <option value="json" selected>JSON</option>
-                <option value="xml">XML</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <label for="node-input-naverShoppingQuery">
-                <i class="fa fa-search fa-fw"></i> Query*
-            </label>
-            <input type="text" id="node-input-naverShoppingQuery" data-i18n="[placeholder]word1,word2,word3...">
-        </div>
-        <div class="form-row">
-            <label for="node-input-naverShoppingSort">
-                <i class="fa fa-cog fa-fw"></i> Option
-            </label>
-            <select type="text" id="node-input-naverShoppingSort" style="width:70%!important;">
-                <option value="sim">sim</option>
-                <option value="date">date</option>
-                <option value="asc">asc</option>
-                <option value="dsc">dsc</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <label for="node-input-naverShoppingStart">
-                <i class="fa fa-play fa-fw"></i> Start*
-            </label>
-            <input type="text" id="node-input-naverShoppingStart" data-i18n="[placeholder]1 ~ 1000">
-        </div>
-        <div class="form-row">
-            <label for="node-input-naverShoppingDisplay">
-                <i class="fa fa-list fa-fw"></i> Display*
-            </label>
-            <input type="text" id="node-input-naverShoppingDisplay" data-i18n="[placeholder]10 ~ 100">
-        </div>
-        <div class="form-row">
-            <label for="node-input-naverShoppingFilter">
-                <i class="fa fa-filter fa-fw"></i> Mall Filter
-            </label>
-            <input type="text" id="node-input-naverShoppingFilter" data-i18n="[placeholder]선택 옵션">
-        </div>
+  <!-- naver shopping -->
+  <div id="naver-shopping-area">
+    <div class="form-row">
+      <label for="node-input-naverShoppingCreds">
+        <i class="fa fa-key fa-fw"></i> API Key
+      </label>
+      <input type="text" id="node-input-naverShoppingCreds" />
     </div>
+    <div class="form-row">
+      <label for="node-input-naverShoppingReturnType">
+        <i class="fa fa-file-text-o fa-fw"></i> Return Type
+      </label>
+      <select
+        type="text"
+        id="node-input-naverShoppingReturnType"
+        style="width:70%!important;"
+      >
+        <option value="json" selected>JSON</option>
+        <option value="xml">XML</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="node-input-naverShoppingQuery">
+        <i class="fa fa-search fa-fw"></i> Query*
+      </label>
+      <input
+        type="text"
+        id="node-input-naverShoppingQuery"
+        data-i18n="[placeholder]word1,word2,word3..."
+      />
+    </div>
+    <div class="form-row">
+      <label for="node-input-naverShoppingSort">
+        <i class="fa fa-cog fa-fw"></i> Option
+      </label>
+      <select
+        type="text"
+        id="node-input-naverShoppingSort"
+        style="width:70%!important;"
+      >
+        <option value="sim">sim</option>
+        <option value="date">date</option>
+        <option value="asc">asc</option>
+        <option value="dsc">dsc</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="node-input-naverShoppingStart">
+        <i class="fa fa-play fa-fw"></i> Start*
+      </label>
+      <input
+        type="text"
+        id="node-input-naverShoppingStart"
+        data-i18n="[placeholder]1 ~ 1000"
+      />
+    </div>
+    <div class="form-row">
+      <label for="node-input-naverShoppingDisplay">
+        <i class="fa fa-list fa-fw"></i> Display*
+      </label>
+      <input
+        type="text"
+        id="node-input-naverShoppingDisplay"
+        data-i18n="[placeholder]10 ~ 100"
+      />
+    </div>
+    <div class="form-row">
+      <label for="node-input-naverShoppingFilter">
+        <i class="fa fa-filter fa-fw"></i> Mall Filter
+      </label>
+      <input
+        type="text"
+        id="node-input-naverShoppingFilter"
+        data-i18n="[placeholder]선택 옵션"
+      />
+    </div>
+  </div>
 
-    <!-- sk11st -->
-    <div id="sk11st-area">
-        <div class="form-row">
-            <label for="node-input-sk11stCreds"> <i class="fa fa-key"></i> API Key </label>
-            <input type="text" id="node-input-sk11stCreds" />
-        </div>
-        <div class="form-row">
-            <label for="node-input-sk11stApiCode">
-                <i class="fa fa-list"></i> API Code
-            </label>
-            <select type="text" id="node-input-sk11stApiCode" style="display: inline-block; vertical-align: middle; width:60%;">
-                <option value="ProductSearch">ProductSearch(상품검색)</option>
-                <option value="CategoryInfo">CategoryInfo(카테고리)</option>
-                <option value="ProductInfo">ProductInfo(상품정보조회)</option>
-                <option value="ProductImage">ProductImage(상품이미지조회)</option>
-            </select>
-        </div>
-        <form id="node-input-sk11stParams">
-            <div class="form-row" id="node-input-sk11stKeyword-row">
-                <label for="node-input-sk11stKeyword"> Keyword* </label>
-                <input type="text" id="node-input-sk11stKeyword" />
-            </div>
-            <div class="form-row" id="node-input-sk11stCategoryCode-row">
-                <label for="node-input-sk11stCategoryCode"> categoryCode* </label>
-                <input type="text" id="node-input-sk11stCategoryCode" />
-            </div>
-            <div class="form-row" id="node-input-sk11stProductCode-row">
-                <label for="node-input-sk11stProductCode"> productCode* </label>
-                <input type="text" id="node-input-sk11stProductCode" />
-            </div>
-            <div id="sk11st-product-category-common">
-                <div class="form-row" id="node-input-sk11stPagenum-row">
-                    <label for="node-input-sk11stPagenum"> pageNum </label>
-                    <input type="text" id="node-input-sk11stPagenum" />
-                </div>
-                <div class="form-row">
-                    <label for="node-input-sk11stPagesize"> pageSize </label>
-                    <input type="text" id="node-input-sk11stPagesize" />
-                </div>
-                <div class="form-row">
-                    <label for="node-input-sk11stSortcd"> sortCd </label>
-                    <input type="text" id="node-input-sk11stSortcd" />
-                </div>
-            </div>
-            <div class="form-row" id="node-input-sk11stOption-row">
-                <label for="node-input-sk11stOption"> option </label>
-                <input type="text" id="node-input-sk11stOption" />
-            </div>
-            <div class="form-row" id="node-input-sk11stTargetSearchPrd-row">
-                <label for="node-input-sk11stTargetSearchPrd"> targetSearchPrd</label>
-                <input type="text" id="node-input-sk11stTargetSearchPrd" />
-            </div>
-        </form>
+  <!-- sk11st -->
+  <div id="sk11st-area">
+    <div class="form-row">
+      <label for="node-input-sk11stCreds">
+        <i class="fa fa-key"></i> API Key
+      </label>
+      <input type="text" id="node-input-sk11stCreds" />
     </div>
+    <div class="form-row">
+      <label for="node-input-sk11stApiCode">
+        <i class="fa fa-list"></i> API Code
+      </label>
+      <select
+        type="text"
+        id="node-input-sk11stApiCode"
+        style="display: inline-block; vertical-align: middle; width:60%;"
+      >
+        <option value="ProductSearch">ProductSearch(상품검색)</option>
+        <option value="CategoryInfo">CategoryInfo(카테고리)</option>
+        <option value="ProductInfo">ProductInfo(상품정보조회)</option>
+        <option value="ProductImage">ProductImage(상품이미지조회)</option>
+      </select>
+    </div>
+    <div class="form-row" id="node-input-sk11stKeyword-row">
+      <label for="node-input-sk11stKeyword"> Keyword* </label>
+      <input type="text" id="node-input-sk11stKeyword" />
+    </div>
+    <div class="form-row" id="node-input-sk11stCategoryCode-row">
+      <label for="node-input-sk11stCategoryCode"> categoryCode* </label>
+      <input type="text" id="node-input-sk11stCategoryCode" />
+    </div>
+    <div class="form-row" id="node-input-sk11stProductCode-row">
+      <label for="node-input-sk11stProductCode"> productCode* </label>
+      <input type="text" id="node-input-sk11stProductCode" />
+    </div>
+    <div id="sk11st-product-category-common">
+      <div class="form-row" id="node-input-sk11stPagenum-row">
+        <label for="node-input-sk11stPagenum"> pageNum </label>
+        <input type="text" id="node-input-sk11stPagenum" />
+      </div>
+      <div class="form-row">
+        <label for="node-input-sk11stPagesize"> pageSize </label>
+        <input type="text" id="node-input-sk11stPagesize" />
+      </div>
+      <div class="form-row">
+        <label for="node-input-sk11stSortcd"> sortCd </label>
+        <input type="text" id="node-input-sk11stSortcd" />
+      </div>
+    </div>
+    <div class="form-row" id="node-input-sk11stOption-row">
+      <label for="node-input-sk11stOption"> option </label>
+      <input type="text" id="node-input-sk11stOption" />
+    </div>
+    <div class="form-row" id="node-input-sk11stTargetSearchPrd-row">
+      <label for="node-input-sk11stTargetSearchPrd"> targetSearchPrd</label>
+      <input type="text" id="node-input-sk11stTargetSearchPrd" />
+    </div>
+    <div class="form-tips">
+      <b>Tips: </b> Here is to give users guidelines for input. <br />
+      <b>sortCd</b><br />
+      * sort type<br />
+      CP : high popularity (인기도순)<br />
+      A : cumulative sales volume (누적판매순) <br />
+      G : highest rating (평가높은순)<br />
+      I : amount of reviews (후기/리뷰많은순)<br />
+      L : price : low to high (낮은가격순)<br />
+      H : price : high to low (높은가격순)<br />
+      N : time : newly listed (최신등록순)<br />
+      <br />
+      <b>option (ProductSearch, CategoryInfo)</b><br />
+      * additional information request <br />
+      Categories : Request for search results by categories (카테고리별 검색
+      결과 요청)<br />
+      <br />
+      <b>option (ProductInfo) </b><br />
+      * additional information request<br />
+      QAs : Request for a Q&A list of products (상품Q&A 조회 결과 요청)<br />
+      PostScripts : Request for reviews of products (사용후기 조회 결과 요청)<br />
+      PdOption : Request product option info (상품 옵션 정보 조회 결과 요청)<br />
+    </div>
+  </div>
 </script>
 
-<script type="text/html" data-help-name="shopping">
-    <p>Summary of the node.</p>
-    <h3>Inputs</h3>
-    <dl class="message-properties">
-        <dt>API Key<span class="property-type">naver-shopping-api-key</span></dt>
-        <dd>네이버 쇼핑 API Key</dd>
-        <dt>Return Type<span class="property-type">select</span></dt>
-        <dd>JSON/XML 형식 지원</dd>
-        <dt>Query<span class="property-type">string</span></dt>
-        <dd>네이버 쇼핑에서 검색할 단어 입력. "," 로 구분하여 여러 단어 검색가능</dd>
-        <dt>Option<span class="property-type">select</span></dt>
-        <dd>검색 시 사용할 옵션 (sim: 유사도 순, date: 날짜 순, asc: 가격 오름차순, dsc: 가격 내림차순)</dd>
-        <dt>Start<span class="property-type">integer</span></dt>
-        <dd>검색 시작 위치 (1 ~ 1000)</dd>
-        <dt>Display<span class="property-type">integer</span></dt>
-        <dd>검색 결과 출력 건수 (10 ~ 100)</dd>
-        <dt class="optional">Mall Filter<span class="property-type">string</span></dt>
-        <dd>검색 결과에서 입력한 텍스트로 mall 필터링 (부분 일치)</dd>
-    </dl>
-    <h3>Outputs</h3>
-    <dl class="message-properties">
-        <dt>payload<span class="property-type">object</span></dt>
-        <dd>네이버 쇼핑 검색 API에서 얻어온 결과 데이터 반환 (JSON/XML)</dd>
-    </dl>
-    <h3>Details</h3>
-    <p>Explanation of the details.</p>
-    <p><b>Note</b>: Note of the node.</p>
+<script type="text/html" data-help-name="sk11st-shopping">
+  <p>
+    This is the node to search for products using various shopping mall APIs.<br />
+    다양한 쇼핑몰 API를 사용하여 상품을 검색하는 node 입니다.
+  </p>
+  <h3>Inputs - naver</h3>
+  <dl class="message-properties">
+    <dt>API Type<span class="property-type">select</span></dt>
+    <dd>쇼핑몰 API 선택</dd>
+    <dt>API Key<span class="property-type">naver-shopping-api-key</span></dt>
+    <dd>네이버 쇼핑 API Key</dd>
+    <dt>Return Type<span class="property-type">select</span></dt>
+    <dd>JSON/XML 형식 지원</dd>
+    <dt>Query<span class="property-type">string</span></dt>
+    <dd>
+      네이버 쇼핑에서 검색할 단어 입력. "," 로 구분하여 여러 단어 검색가능
+    </dd>
+    <dt>Option<span class="property-type">select</span></dt>
+    <dd>
+      검색 시 사용할 옵션 (sim: 유사도 순, date: 날짜 순, asc: 가격 오름차순,
+      dsc: 가격 내림차순)
+    </dd>
+    <dt>Start<span class="property-type">integer</span></dt>
+    <dd>검색 시작 위치 (1 ~ 1000)</dd>
+    <dt>Display<span class="property-type">integer</span></dt>
+    <dd>검색 결과 출력 건수 (10 ~ 100)</dd>
+    <dt class="optional">
+      Mall Filter<span class="property-type">string</span>
+    </dt>
+    <dd>검색 결과에서 입력한 텍스트로 mall 필터링 (부분 일치)</dd>
+  </dl>
+  <h3>Inputs - sk11st</h3>
+  <dl class="message-properties">
+    <dt>API Type<span class="property-type">select</span></dt>
+    <dd>쇼핑몰 API 선택</dd>
+    <dt>API Key<span class="property-type">sk11st-shopping-api-key</span></dt>
+    <dd>11번가 API Key</dd>
+    <dt>API Code<span class="property-type">select</span></dt>
+    <dd>
+      검색 요청 유형 선택<br />
+      ProductSearch : 상품 검색<br />
+      CategoryInfo : 카테고리 검색<br />
+      ProductInfo : 상품 정보 조회<br />
+      ProductImage : 상품 이미지 조회<br />
+    </dd>
+    <dt>Keyword<span class="property-type">string</span></dt>
+    <dd>11번가 쇼핑에서 검색할 단어 입력</dd>
+    <dt>pageNum<span class="property-type">String</span></dt>
+    <dd>검색 결과 페이지 수 (default 1)</dd>
+    <dt>pageSize<span class="property-type">String</span></dt>
+    <dd>한 페이지 당 출력될 검색 결과의 수 (default 50)</dd>
+    <dt>sortCd<span class="property-type">string</span></dt>
+    <dd>
+      검색 결과 정렬 옵션 <br />
+      CP : high popularity (인기도순) <br />
+      A : cumulative sales volume (누적판매순)<br />
+      G : highest rating (평가높은순)<br />
+      I : amount of reviews (후기/리뷰많은순) <br />
+      L : price : low to high (낮은가격순)<br />
+      H : price : high to low (높은가격순)<br />
+      N : time : newly listed (최신등록순)
+    </dd>
+    <dt>option<span class="property-type">string</span></dt>
+    <dd>
+      상품리스트 이외의 부가정보 요청 <br />
+      1. apiCode -> ProductSearch, CategoryInfo <br />
+      Categories : 카테고리 분류 검색 결과 요청 <br /><br />
+      2. apiCode -> ProdcutInfo <br />
+      QAs : 상품Q&A 조회 결과 요청 <br />
+      PostScripts : 사용후기 조회 결과 요청<br />
+      PdOption : 상품 옵션 정보 조회 결과 요청<br />
+    </dd>
+    <dt>targetSearchPrd<span class="property-type">string</span></dt>
+    <dd>
+      상품 검색 대상(Default KOR)<br />
+      ENG : 영문상품<br />
+      KOR : 국문상품
+    </dd>
+  </dl>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>payload<span class="property-type">object</span></dt>
+    <dd>
+      1. 네이버 쇼핑 검색 API에서 얻어온 결과 데이터 반환 (JSON/XML)<br />
+      참조 :
+      <a href="https://developers.naver.com/docs/search/shopping/"
+        >네이버 쇼핑 API 링크</a
+      ><br /><br />
+      2. 11번가 쇼핑 검색 API에서 얻어온 XML결과를 JSON 형식으로 바꾸어 데이터
+      반환<br />
+      참조 :
+      <a href="https://openapi.11st.co.kr/openapi/OpenApiGuide.tmall"
+        >11번가 API 링크</a
+      >
+    </dd>
+  </dl>
+  <h3>Details</h3>
+  <p>Explanation of the details.</p>
+  <p><b>Note</b>: Note of the node.</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType("shopping", {
-        color: "#04cf5c",
-        category: "SASM Ecommerce Extensions Pack",
-        defaults: {
-            name: { value: "Shopping" },
-            apiType: { value: "naverShopping", required: true },
+  RED.nodes.registerType("shopping", {
+    color: "#04cf5c",
+    category: "SASM Ecommerce Extensions Pack",
+    defaults: {
+      name: { value: "Shopping" },
+      apiType: { value: "naverShopping", required: true },
 
-            // naver shopping
-            naverShoppingReturnType: { value: "json", required: true },
-            naverShoppingQuery: { value: "", required: true },
-            naverShoppingDisplay: { value: "10", required: true },
-            naverShoppingSort: { value: "sim", required: true },
-            naverShoppingStart: { value: "1", required: true },
-            naverShoppingFilter: { value: "", required: false },
-            naverShoppingCreds: {
-                value: "",
-                type: "naverShoppingApiKey",
-                required: true
-            },
+      // naver shopping
+      naverShoppingReturnType: { value: "json", required: true },
+      naverShoppingQuery: { value: "", required: true },
+      naverShoppingDisplay: { value: "10", required: true },
+      naverShoppingSort: { value: "sim", required: true },
+      naverShoppingStart: { value: "1", required: true },
+      naverShoppingFilter: { value: "", required: false },
+      naverShoppingCreds: {
+        value: "",
+        type: "naverShoppingApiKey",
+        required: true,
+      },
 
-            // sk11st
-            sk11stApiCode: { value: "", required: true },
-            sk11stKeyword: { value: "", type: "text", required: false },
-            sk11stCategoryCode: { value: "", type: "text", required: false },
-            sk11stProductCode: { value: "", type: "text", required: false },
-            sk11stPagenum: { value: "1", type: "text", required: false },
-            sk11stPagesize: { value: "50", type: "text", required: false },
-            sk11stSortcd: { value: "", type: "text", required: false },
-            sk11stOption: { value: "", type: "text", required: false },
-            sk11stTargetSearchPrd: { value: "", type: "text", required: false },
-            sk11stCreds: {
-                value: "",
-                type: "sk11stApiKey",
-                required: true
-            },
-        },
-        inputs: 1,
-        outputs: 1,
-        paletteLabel: "Shopping",
-        icon: "Shopping.png",
-        label: function () {
-            return this.name || 'Shopping';
-        },
+      // sk11st
+      sk11stApiCode: { value: "", required: true },
+      sk11stKeyword: { value: "", type: "text", required: false },
+      sk11stCategoryCode: { value: "", type: "text", required: false },
+      sk11stProductCode: { value: "", type: "text", required: false },
+      sk11stPagenum: { value: "1", type: "text", required: false },
+      sk11stPagesize: { value: "50", type: "text", required: false },
+      sk11stSortcd: { value: "", type: "text", required: false },
+      sk11stOption: { value: "", type: "text", required: false },
+      sk11stTargetSearchPrd: { value: "", type: "text", required: false },
+      sk11stCreds: {
+        value: "",
+        type: "sk11stApiKey",
+        required: true,
+      },
+    },
+    inputs: 1,
+    outputs: 1,
+    paletteLabel: "Shopping",
+    icon: "Shopping.png",
+    label: function () {
+      return this.name || "Shopping";
+    },
 
-        oneditprepare: function () {
-            $("#node-input-apiType").change(function () {
-                var type = $("#node-input-apiType option:selected").val();
-                switch(type) {
-                    case "naverShopping":
-                        $("#naver-shopping-area").show();
-                        $("#sk11st-area").hide();
-                        break;
+    oneditprepare: function () {
+      $("#node-input-apiType").change(function () {
+        var type = $("#node-input-apiType option:selected").val();
+        switch (type) {
+          case "naverShopping":
+            $("#naver-shopping-area").show();
+            $("#sk11st-area").hide();
+            break;
 
-                    case "sk11st":
-                        $("#naver-shopping-area").hide();
-                        $("#sk11st-area").show();
-                        break;
+          case "sk11st":
+            $("#naver-shopping-area").hide();
+            $("#sk11st-area").show();
+            break;
 
-                    default:
-                        break;
-                }
-            });
-            $("#node-input-apiType").change();
+          default:
+            break;
+        }
+      });
+      $("#node-input-apiType").change();
 
-            // sk11st
-            $("#node-input-sk11stApiCode").change(function () {
-                var type = $("#node-input-sk11stApiCode option:selected").val();
-                if (type == "CategoryInfo") {
-                    $("#node-input-sk11stProductCode-row").hide();
-                    $("#node-input-sk11stTargetSearchPrd-row").hide();
-                    $("#node-input-sk11stKeyword-row").hide();
-                    $("#node-input-sk11stCategoryCode-row").show();
-                    $("#sk11st-product-category-common").show();
-                    $("#node-input-sk11stOption-row").show();
-                } else if (type == "ProductImage") {
-                    $("#node-input-sk11stCategoryCode-row").hide();
-                    $("#node-input-sk11stKeyword-row").hide();
-                    $("#sk11st-product-category-common").hide();
-                    $("#node-input-sk11stOption-row").hide();
-                    $("#node-input-sk11stTargetSearchPrd-row").hide();
-                    $("#node-input-sk11stProductCode-row").show();
-                } else if (type == "ProductInfo") {
-                    $("#node-input-sk11stCategoryCode-row").hide();
-                    $("#node-input-sk11stKeyword-row").hide();
-                    $("#sk11st-product-category-common").hide();
-                    $("#node-input-sk11stTargetSearchPrd-row").hide();
-                    $("#node-input-sk11stOption-row").show();
-                    $("#node-input-sk11stProductCode-row").show();
-                } else {
-                    //ProdcutSearch
-                    $("#node-input-sk11stCategoryCode-row").hide();
-                    $("#node-input-sk11stProductCode-row").hide();
-                    $("#node-input-sk11stKeyword-row").show();
-                    $("#sk11st-product-category-common").show();
-                    $("#node-input-sk11stOption-row").show();
-                    $("#node-input-sk11stTargetSearchPrd-row").show();
-                }
-            });
-            $("#node-input-sk11stApiCode").change();
-        },
-    });
+      // sk11st
+      $("#node-input-sk11stApiCode").change(function () {
+        var type = $("#node-input-sk11stApiCode option:selected").val();
+        if (type == "CategoryInfo") {
+          $("#node-input-sk11stProductCode-row").hide();
+          $("#node-input-sk11stTargetSearchPrd-row").hide();
+          $("#node-input-sk11stKeyword-row").hide();
+          $("#node-input-sk11stCategoryCode-row").show();
+          $("#sk11st-product-category-common").show();
+          $("#node-input-sk11stOption-row").show();
+        } else if (type == "ProductImage") {
+          $("#node-input-sk11stCategoryCode-row").hide();
+          $("#node-input-sk11stKeyword-row").hide();
+          $("#sk11st-product-category-common").hide();
+          $("#node-input-sk11stOption-row").hide();
+          $("#node-input-sk11stTargetSearchPrd-row").hide();
+          $("#node-input-sk11stProductCode-row").show();
+        } else if (type == "ProductInfo") {
+          $("#node-input-sk11stCategoryCode-row").hide();
+          $("#node-input-sk11stKeyword-row").hide();
+          $("#sk11st-product-category-common").hide();
+          $("#node-input-sk11stTargetSearchPrd-row").hide();
+          $("#node-input-sk11stOption-row").show();
+          $("#node-input-sk11stProductCode-row").show();
+        } else {
+          //ProdcutSearch
+          $("#node-input-sk11stCategoryCode-row").hide();
+          $("#node-input-sk11stProductCode-row").hide();
+          $("#node-input-sk11stKeyword-row").show();
+          $("#sk11st-product-category-common").show();
+          $("#node-input-sk11stOption-row").show();
+          $("#node-input-sk11stTargetSearchPrd-row").show();
+        }
+      });
+      $("#node-input-sk11stApiCode").change();
+    },
+  });
 </script>
 
 <!-- naver shopping API key -->
 <script type="text/html" data-template-name="naverShoppingApiKey">
-    <div class="form-row">
-        <label for="node-input-name"> <i class="fa fa-tag fa-fw"></i> Name</label>
-        <input type="text" id="node-config-input-name" placeholder="Name">
-    </div>
+  <div class="form-row">
+    <label for="node-input-name"> <i class="fa fa-tag fa-fw"></i> Name</label>
+    <input type="text" id="node-config-input-name" placeholder="Name" />
+  </div>
 
-    <div class="form-row">
-        <label for="node-config-input-clientId"> Client Id</label>
-        <input type="text" id="node-config-input-clientId" placeholder="Client Id">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-clientSecret"> Client Secret</label>
-        <input type="text" id="node-config-input-clientSecret" placeholder="Client Secret">
-    </div>
+  <div class="form-row">
+    <label for="node-config-input-clientId"> Client Id</label>
+    <input
+      type="text"
+      id="node-config-input-clientId"
+      placeholder="Client Id"
+    />
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-clientSecret"> Client Secret</label>
+    <input
+      type="text"
+      id="node-config-input-clientSecret"
+      placeholder="Client Secret"
+    />
+  </div>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType("naverShoppingApiKey", {
-        category: "config",
-        defaults: {
-            name: { value: "Naver Shopping API Key" },
-        },
-        credentials: {
-            clientId: {},
-            clientSecret: {},
-        },
-        paletteLabel: "Naver Shopping API Key",
-        label: function () {
-            return this.name || 'Naver Shopping API Key';
-        }
-    });
+  RED.nodes.registerType("naverShoppingApiKey", {
+    category: "config",
+    defaults: {
+      name: { value: "Naver Shopping API Key" },
+    },
+    credentials: {
+      clientId: {},
+      clientSecret: {},
+    },
+    paletteLabel: "Naver Shopping API Key",
+    label: function () {
+      return this.name || "Naver Shopping API Key";
+    },
+  });
 </script>
 
 <!-- sk11st API key -->
 <script type="text/html" data-template-name="sk11stApiKey">
-    <div class="form-row">
-        <label for="node-config-input-name">
-        <i class="fa fa-tag fa-fw"></i> Name</label>
-        <input type="text" id="node-config-input-name" placeholder="Name" />
-    </div>
-    
-    <div class="form-row">
-        <label for="node-config-input-apikey"> API Key</label>
-        <input type="text" id="node-config-input-apikey" placeholder="API Key" />
-    </div>
+  <div class="form-row">
+    <label for="node-config-input-name">
+      <i class="fa fa-tag fa-fw"></i> Name</label
+    >
+    <input type="text" id="node-config-input-name" placeholder="Name" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-apikey"> API Key</label>
+    <input type="text" id="node-config-input-apikey" placeholder="API Key" />
+  </div>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType("sk11stApiKey", {
-        category: "config",
-        defaults: {
-            name: { value: "sk11st API Key" },
-        },
-        credentials: {
-            apikey: {},
-        },
-        label: function () {
-            return this.name || "sk11st API Key";
-        },
-        oneditsave: function () {
-            var trimField = $("#node-config-input-apikey").val().trim();
-            $("#node-config-input-apikey").val(trimField);
-        },
-    });
+  RED.nodes.registerType("sk11stApiKey", {
+    category: "config",
+    defaults: {
+      name: { value: "sk11st API Key" },
+    },
+    credentials: {
+      apikey: {},
+    },
+    label: function () {
+      return this.name || "sk11st API Key";
+    },
+    oneditsave: function () {
+      var trimField = $("#node-config-input-apikey").val().trim();
+      $("#node-config-input-apikey").val(trimField);
+    },
+  });
 </script>
