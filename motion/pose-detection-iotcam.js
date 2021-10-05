@@ -1,6 +1,13 @@
 "use strict"
 
 
+const ws = require('ws')
+const http = require('http')
+const cors = require('cors')
+const express = require('express')
+require("dotenv").config()
+
+
 module.exports = function(RED) {
 
     function PoseDetectionIotcamNode(config) {
