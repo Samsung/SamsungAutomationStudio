@@ -447,11 +447,13 @@ module.exports = function(RED) {
 
         RED.nodes.createNode(this, config)
         let rtspStream
-
+        console.log('hjello')
+        
         // .env variable
         // .env로부터 변수 호출
         const mnid = process.env.SAMSUNG_MNID
         const token = process.env.SAMSUNG_TOKEN
+        console.log(mnid, token)
         
         // listener to receive messages from the up-stream nodes in a flow.
         this.on('input', (msg, send, done) => {
