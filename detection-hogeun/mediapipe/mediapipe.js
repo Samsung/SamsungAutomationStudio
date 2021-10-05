@@ -254,12 +254,7 @@ module.exports = function(RED) {
             
                 // Detection 데이터 전송할 웹소켓 인스턴스 생성
                 const dataWebSocket = new WebSocket('ws://localhost:1880/ws/${config.dataSocketUrl}')
-            
-                dataWebSocket.onmessage = (msg) => {
-                    if (msg.data != null) {
-                        onCapture(msg.data.name, msg.data.timer)
-                    }
-                }
+                
             
                 /* visualize and transmit registered data  */
                 function onCapture(motionName, timer) {
