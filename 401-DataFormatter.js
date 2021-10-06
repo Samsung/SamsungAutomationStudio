@@ -288,6 +288,7 @@ module.exports = function(RED) {
     }
 
     function stringToNumber(jsonData, y_data) {
+        console.log(jsonData);
         try {
             if (
                 typeof jsonData[0][y_data] === 'string' &&
