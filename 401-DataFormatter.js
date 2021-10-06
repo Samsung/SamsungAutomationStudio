@@ -321,10 +321,10 @@ module.exports = function(RED) {
             throw new Error('Invalid input') 
         }
         if ((n.borderWidth!=='' && isNaN(Number(n.borderWidth))) || (Number(n.borderWidth)<0)){
-            throw new Error('invalid input')
+            throw new Error('Invalid input')
         }
         if ((n.yMin!=='' && isNaN(Number(n.yMin)))) {
-            throw new Error('invalid input')
+            throw new Error('Invalid input')
         }
     }
 
