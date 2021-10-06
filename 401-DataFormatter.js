@@ -297,11 +297,21 @@ module.exports = function (RED) {
 
     function ChartConfig(n) {
         RED.nodes.createNode(this, n);
-        this.borderColor = n.borderColor
+        this.borderColor = n.borderColor;
         this.borderWidth = n.borderWidth;
-        this.backgroundColor = n.backgroundColor
+        this.backgroundColor = n.backgroundColor;
         this.yMin = n.yMin;
         this.yStepSize = n.yStepSize;
+
+        if ((Number(n.yStepSize) === NaN) || (Number(n.yStepSize) <= 0)){
+            throw new Error("Invalid input");
+        }
+        if ((Number(n.borderWidth) === NaN) || (Number(n.borderWidth) < 0)){
+            throw new Error("invalid input");
+        }
+        if (Number(n.yMin) === NaN) {
+            throw new Error("invalid input");
+        }
     }
 
     function DataFormatting(n) {
