@@ -1,0 +1,266 @@
+[
+    {
+        "id": "7cebc841e9dfdc78",
+        "type": "inject",
+        "z": "8fa2a3e54aeea70a",
+        "name": "Tick every 24 hours",
+        "props": [
+            {
+                "p": "topic",
+                "v": "{\"hooks\":\"https://hooks.slack.com/services/{Webhook}\",\"text\":\"재고 보충 기간입니다. <{Link}|Click here> \\\":eyes:\\\"\"}",
+                "vt": "json"
+            }
+        ],
+        "repeat": "86400",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "0.1",
+        "topic": "",
+        "x": 160,
+        "y": 900,
+        "wires": [
+            [
+                "09e437ed46dcf688"
+            ]
+        ]
+    },
+    {
+        "id": "716dd847bcfaed38",
+        "type": "http in",
+        "z": "8fa2a3e54aeea70a",
+        "name": "",
+        "url": "/naver",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 200,
+        "y": 840,
+        "wires": [
+            [
+                "5d32f6c7cb595142"
+            ]
+        ]
+    },
+    {
+        "id": "5d32f6c7cb595142",
+        "type": "template",
+        "z": "8fa2a3e54aeea70a",
+        "name": "naver shopping",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">\n    <title>SASM Reports</title>\n    <link rel=\"stylesheet\" href=\"https://unpkg.com/bulma@0.9.0/css/bulma.min.css\"/>\n    <script type=\"text/javascript\">\n        var ws;\n        var wsUri = \"ws:\";\n        var loc = window.location;\n        console.log(loc);\n        if (loc.protocol === \"https:\") { wsUri = \"wss:\"; }\n        wsUri += \"//\" + loc.host + loc.pathname.replace(\"naver\",\"ws/naver\");\n\n        function wsConnect() {\n            console.log(\"connect\",wsUri);\n            ws = new WebSocket(wsUri);\n            ws.onmessage = function(msg) {\n                var html = document.getElementById('contents').innerHTML;\n                console.log(msg.data);\n                var obj = JSON.parse(msg.data);\n                var items = obj.items;\n\n                html += `<div class=\"columns\">`;\n                for(var idx in items) {\n                    html += `\n                    <div class=\"card column is-3 mx-2 my-2\">\n                        <div class=\"card-image\">\n                            <figure class=\"image is-4by3\">\n                            <img src=\"` + items[idx].image + `\" alt=\"Placeholder image\">\n                            </figure>\n                        </div>\n                        <div class=\"card-content\">\n                            <div class=\"media\">\n                                <div class=\"media-content\">\n                                    <p class=\"title is-4\">` + items[idx].title + `</p>\n                                    <p class=\"subtitle is-6\">Brand / Maker: ` + items[idx].brand + ` / ` + items[idx].maker + `</p>\n                                </div>\n                            </div>\n                        \n                            <div class=\"content\">\n                            ₩ ` + items[idx].lprice.replace(/\\B(?<!\\.\\d*)(?=(\\d{3})+(?!\\d))/g, \",\") + ` ~ ` + items[idx].hprice.replace(/\\B(?<!\\.\\d*)(?=(\\d{3})+(?!\\d))/g, \",\") + `\n                            </div>\n                            <a class=\"button is-link\" href=\"` + items[idx].link + `\" target=\"_blank\">Click Here</a>\n                        </div>\n                    </div>\n                    `;\n                    if(idx % 4 == 3) html += `</div><div class=\"columns\">`;\n                }\n                html += `</div>`;\n                document.getElementById('contents').innerHTML = html;\n            }\n            ws.onopen = function() {\n                document.getElementById('status').innerHTML = \"(Connected)\";\n                console.log(\"connected\");\n                if (ws) { ws.send(\"start\"); }\n            }\n            ws.onclose = function() {\n                document.getElementById('status').innerHTML = \"(Not Connected)\";\n                setTimeout(wsConnect,3000);\n            }\n        }\n    </script>\n</head>\n<body onload=\"wsConnect();\" onunload=\"ws.disconnect();\">\n<!-- Navigation bar -->\n<nav class=\"navbar is-fixed-top m-4 is-link\">\n\n    <div id=\"navbarExampleTransparentExample\" class=\"navbar-menu\">\n        <div class=\"navbar-end\">\n            <a class=\"navbar-item\" href=\"https://sasm.developer.samsung.com/get-free-trial\">\n                <span class=\"icon\">\n                <i class=\"fas fa-info\"></i>\n                </span>\n            <h3 class=\"title is-3 has-text-white\">SASM</h3>\n            </a>\n            <a class=\"navbar-item\" href=\"https://sasm.developer.samsung.com/\">\n                <span class=\"icon\">\n                <i class=\"fas fa-bars\"></i>\n                </span>\n            <h3 class=\"title is-3 has-text-white\">SASM Developers</h3>\n            </a>\n        </div>\n    </div>\n</nav>\n<!-- Header -->\n<section class=\"hero is-fullheight is-fullheight-with-navbar bg-pan-left\">\n    <div class=\"hero-body\">\n        <div class=\"container\">\n            <h1 class=\"title is-1 is-inline-block\">SASM Naver Shopping Node</h1>\n            <h1 id=\"status\" class=\"subtitle is-4 is-inline-block has-text-grey-light\">(Connected)</h1>\n            <h2 class=\"subtitle is-3\">Search Results</h2>\n            <div id=\"contents\" class=\"mt-4\"></div>\n        </div>\n    </div>\n</section>\n</body>\n</html>",
+        "output": "str",
+        "x": 580,
+        "y": 840,
+        "wires": [
+            [
+                "6f6dd9fda253306b"
+            ]
+        ]
+    },
+    {
+        "id": "6f6dd9fda253306b",
+        "type": "http response",
+        "z": "8fa2a3e54aeea70a",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 770,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "54f9b4325d0aa2dd",
+        "type": "websocket out",
+        "z": "8fa2a3e54aeea70a",
+        "name": "",
+        "server": "d407fb1dfe1b6202",
+        "client": "",
+        "x": 800,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "aa6152ebb36221e6",
+        "type": "debug",
+        "z": "8fa2a3e54aeea70a",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "88654c7c7b91dfee",
+        "type": "websocket in",
+        "z": "8fa2a3e54aeea70a",
+        "name": "",
+        "server": "d407fb1dfe1b6202",
+        "client": "",
+        "x": 170,
+        "y": 1000,
+        "wires": [
+            [
+                "d4ef7c0c1a48f8c8",
+                "2e5d44d6a40b290c"
+            ]
+        ]
+    },
+    {
+        "id": "09e437ed46dcf688",
+        "type": "template",
+        "z": "8fa2a3e54aeea70a",
+        "name": "Query",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "초콜릿",
+        "output": "str",
+        "x": 370,
+        "y": 900,
+        "wires": [
+            [
+                "d95148d6f51bc07a"
+            ]
+        ]
+    },
+    {
+        "id": "d95148d6f51bc07a",
+        "type": "shopping",
+        "z": "8fa2a3e54aeea70a",
+        "name": "Shopping",
+        "apiType": "naverShopping",
+        "naverShoppingReturnType": "json",
+        "naverShoppingQuery": "{{payload}}",
+        "naverShoppingDisplay": "10",
+        "naverShoppingSort": "sim",
+        "naverShoppingStart": "1",
+        "naverShoppingFilter": "",
+        "naverShoppingCreds": "",
+        "sk11stApiCode": "ProductSearch",
+        "sk11stKeyword": "",
+        "sk11stCategoryCode": "",
+        "sk11stProductCode": "",
+        "sk11stPagenum": "1",
+        "sk11stPagesize": "50",
+        "sk11stSortcd": "",
+        "sk11stOption": "",
+        "sk11stTargetSearchPrd": "",
+        "sk11stCreds": "",
+        "x": 560,
+        "y": 900,
+        "wires": [
+            [
+                "54f9b4325d0aa2dd",
+                "aa6152ebb36221e6",
+                "9ae2e459b56d1d9c"
+            ]
+        ]
+    },
+    {
+        "id": "9ae2e459b56d1d9c",
+        "type": "slack-notification",
+        "z": "8fa2a3e54aeea70a",
+        "name": "",
+        "notificationtype": "slack",
+        "datatype": "msg",
+        "datavalue": "topic",
+        "x": 790,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "d4ef7c0c1a48f8c8",
+        "type": "debug",
+        "z": "8fa2a3e54aeea70a",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 390,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "2e5d44d6a40b290c",
+        "type": "template",
+        "z": "8fa2a3e54aeea70a",
+        "name": "Query",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "초콜릿",
+        "output": "str",
+        "x": 370,
+        "y": 1140,
+        "wires": [
+            [
+                "c00faf8cb73ccf85"
+            ]
+        ]
+    },
+    {
+        "id": "c00faf8cb73ccf85",
+        "type": "shopping",
+        "z": "8fa2a3e54aeea70a",
+        "name": "Shopping",
+        "apiType": "naverShopping",
+        "naverShoppingReturnType": "json",
+        "naverShoppingQuery": "{{payload}}",
+        "naverShoppingDisplay": "10",
+        "naverShoppingSort": "sim",
+        "naverShoppingStart": "1",
+        "naverShoppingFilter": "",
+        "naverShoppingCreds": "",
+        "sk11stApiCode": "ProductSearch",
+        "sk11stKeyword": "",
+        "sk11stCategoryCode": "",
+        "sk11stProductCode": "",
+        "sk11stPagenum": "1",
+        "sk11stPagesize": "50",
+        "sk11stSortcd": "",
+        "sk11stOption": "",
+        "sk11stTargetSearchPrd": "",
+        "sk11stCreds": "",
+        "x": 520,
+        "y": 1140,
+        "wires": [
+            [
+                "f7c04a1cf031c398"
+            ]
+        ]
+    },
+    {
+        "id": "f7c04a1cf031c398",
+        "type": "websocket out",
+        "z": "8fa2a3e54aeea70a",
+        "name": "",
+        "server": "d407fb1dfe1b6202",
+        "client": "",
+        "x": 800,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "d407fb1dfe1b6202",
+        "type": "websocket-listener",
+        "path": "/ws/naver",
+        "wholemsg": "false"
+    }
+]
