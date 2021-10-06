@@ -1,0 +1,48 @@
+{
+  "name": "node-red-contrib-motion-pose",
+  "version": "1.0.0",
+  "description": "used tensorflow mediapipe hands and pose model in real-time webcam in node red",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/5FNSaaS/node-red-contrib-motion-pose.git"
+  },
+  "node-red": {
+    "nodes": {
+      "monitor": "/monitor/monitor.js",
+      "pose-detection-webcam": "/body/pose-detection-webcam/pose-detection-webcam.js",
+      "pose-detection-iotcam": "/body/pose-detection-iotcam/pose-detection-iotcam.js",
+      "pose-similarity-find": "/body/pose-similarity-find/pose-similarity-find.js",
+      "pose-similarity-register": "/body/pose-similarity-register/pose-similarity-register.js",
+      "hand-register": "/hand/hand-register/hand-register.js",
+      "hand-find": "/hand/hand-find/hand-find.js",
+      "hand-detection-webcam": "/hand/hand-detection-webcam/hand-detection-webcam.js",
+      "hand-detection-iotcam": "/hand/hand-detection-iotcam/hand-detection-iotcam.js"
+    }
+  },
+  "author": "5FNSaaS - Team. Hands",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/5FNSaaS/node-red-contrib-motion-pose/issues"
+  },
+  "dependencies": {
+    "compute-cosine-similarity": "^1.0.0",
+    "node-rtsp-stream": "^0.0.9",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "socket.io": "^4.2.0",
+    "ws": "^8.2.2"
+  },
+  "keywords": [
+    "node-red",
+    "mediapipe",
+    "pose-detection",
+    "hands-detection",
+    "hands motion"
+  ],
+  "homepage": "https://github.com/5FNSaaS/node-red-contrib-motion-pose#readme"
+}
