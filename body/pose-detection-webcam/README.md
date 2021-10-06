@@ -36,9 +36,6 @@ This is an example of a JSON string of data from a browser through a websocket. 
 
 ```json
 {
-  "_id": {
-    "$oid": "61556cca67071c068857a170"
-  },
   "image": {},
   "poseLandmarks": [
     {
