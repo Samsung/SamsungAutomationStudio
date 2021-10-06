@@ -28,7 +28,7 @@ These nodes require Node.js version 14.17.0 and Node-RED 2.0.6.
 - [pose-similarity-find](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-similarity-find) : This node receives a number of input key points and determines the similarity to the saved pose, and derives the most similar pose.
 - [pose-similarity-register](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-similarity-register) : This node accepts a single key point, determines similarity of the saved pose , and derives whether registration is possible.
 - [hand-register](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-register) : This node receives a number of input key points and determines the similarity to the saved hands pose, and whether registration is possible.
-- [hand-find](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-find) : This node receives a number of input key points (ex: sequence of continuous time) and determines the similarity to the saved hands pose, and derives the most similar pose.
+- [hand-find](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-find) : This node receives a number of input key points and determines the similarity to the saved hands pose, and derives the most similar pose.
 - [hand-detection-webcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-detection-webcam) : A simple node that recognizes and visualizes hand using a webcam.
 - [hand-detection-iotcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-detection-iotcam) : A simple node that recognizes and visualizes hand using a external camera device which support Samsung Smartthings.
 
