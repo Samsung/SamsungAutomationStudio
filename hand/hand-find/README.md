@@ -14,17 +14,17 @@ Key point : [ ... ,{"x": float, "y":float, "z":float}, ...]
 
 ## Usage
 
-This node finds a pose similar to the pose model that enters in real-time input. Criteria to determine that they are similar can be set sensitivity through the properties of the node. 
+This node finds a pose similar to the hands pose model that is entered in real time. If the user maintains his or her behavior for a certain period of time, it is determined that he or she has taken a specific pose.
 
-To this end, nodes must receive an arrangement of pose that has already been stored as input. 
+To this end, the node must receive a pose array that has already been stored as input and a pose array that has been maintained for a specific time. 
 
-If a similar pose exists, return the name and similarity of the pose. Refer to 'status' of the output data for the presence of similar poses.
+If there is a similar pose, return the similarity with the name of the pose. If you have a similar pose, refer to 'Status' of the output data.
 
 ## Input
 
 ### multiHandLandmarks
 
-It is the coordinate arrangement of the recognized hand. Each hand is marked with a list of 21 landmarks and has values of {x, y, z}.
+It is the coordinate array of the recognized hand. Each hand is marked with a list of 21 landmarks and has values of {x, y, z}.
 
 ### multiHandedness
 
@@ -32,15 +32,15 @@ It is an attribute of the recognized hand information. Each hand has a `label` v
 
 ### savedLeftHand / savedRightHand
 
-It is an arrangement in which the coordinates of the left/right hand are stored to compare the similarity with the input hand pose.
+It is an array in which the coordinates of the left/right hand are stored to compare the similarity with the input hand pose.
 
 ### savedNameList
 
-This is an arrangement in which the name of the hand coordinates is stored to compare the similarity with the input hand pose. The order of indexes matches the coordinate order of `savedLeft(Right)Hand`.
+This is an array in which the name of the hand coordinates is stored to compare the similarity with the input hand pose. The order of indexes matches the coordinate order of `savedLeft(Right)Hand`.
 
-### handName
+### inputLeftHand / inputRightHand
 
-This is the name of the pose the user wishes to save the hand pose.
+A pose array to calculate whether a pose has been maintained for a specific time. It records 30 times of the recently entered hands pose.
 
 ## Output
 
@@ -51,7 +51,3 @@ Returns whether there is a pose similar to the pose entered in real-time. In oth
 ### handName
 
 Returns the name of the most similar pose if there is a similar action. However, if there is no action that is judged to be similar, null is returned. In other words, it represents a meaningful value only when status is true.
-
-### inputLeftHand / inputRightHand
-
-This is the coordinate value of each hand that is returned when the hand pose can be registered (not already registered). It completely matches the input value of this node, `(left/right)_hand_landmarks` of `multiHandLandmarks`.
