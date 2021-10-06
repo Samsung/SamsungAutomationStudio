@@ -117,6 +117,7 @@ module.exports = function(RED) {
             };
 
             let result = xmlParser.parse(xmlData, xmlOptions);
+            parents = [];
             findAllParents(result, y_data);
 
             parents.forEach((key) => {
@@ -137,7 +138,8 @@ module.exports = function(RED) {
 
     function jsonParser(jsonData, y_data) {
         try {
-            let result = jsonData;
+            let result = JSON.parse(jsonData);;
+            parents = [];
             findAllParents(result, y_data);
 
             parents.forEach((key) => {
@@ -158,8 +160,6 @@ module.exports = function(RED) {
 
     function findAllParents(jsonObj, y_data) {
         try {
-            parents = [];
-
             if (jsonObj instanceof Object) {
                 const keys = Object.keys(jsonObj);
                 if (keys.includes(y_data)) {
