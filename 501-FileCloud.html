@@ -20,9 +20,6 @@
         value: '',
         type: 'text',
       },
-      doType: {
-        value: 'download',
-      },
       cloudType: {
         value: 'google',
       },
@@ -30,10 +27,6 @@
         value: '',
         type: 'text',
         required: true,
-      },
-      filePath: {
-        value: '',
-        type: 'text',
       },
     },
     inputs: 1,
@@ -43,16 +36,6 @@
       return this.name || 'File Cloud';
     },
     oneditprepare: function () {
-      $('#node-input-doType').on('change', function () {
-        const val = $(this).val();
-        switch (val) {
-          case 'read':
-            $('#node-input-filePath-row').hide();
-            break;
-          default:
-            $('#node-input-filePath-row').show();
-        }
-      });
       $('#node-input-cloudType').on('change', function () {
         const val = $(this).val();
         switch (val) {
@@ -123,27 +106,11 @@
     >
     <input type="text" id="node-input-accessToken" placeholder="Access Token" />
   </div>
-  <div class="form-row">
-    <label for="node-input-doType"
-      ><i class="fa fa-hdd-o"></i> What to do</label
-    >
-    <select name="doType" id="node-input-doType">
-      <option value="download">Download to Local</option>
-      <option value="upload">Upload to Cloud</option>
-      <option value="read">Read a File</option>
-    </select>
-  </div>
   <div class="form-row" id="node-input-fileName-row">
     <label for="node-input-fileName"
       ><i class="fa fa-file-text-o"></i> File Name</label
     >
     <input type="text" id="node-input-fileName" placeholder="example.png" />
-  </div>
-  <div class="form-row" id="node-input-filePath-row">
-    <label for="node-input-filePath"
-      ><i class="fa fa-folder-o"></i> File Path</label
-    >
-    <input type="text" id="node-input-filePath" placeholder="C:/" />
   </div>
 </script>
 
@@ -197,12 +164,8 @@
         optionally other tokens which your app can use to access the API.
       </p>
     </dd>
-    <dt>What to do</dt>
-    <dd>You can choose download or upload, read a file.</dd>
     <dt>File Name</dt>
     <dd>Input file name in cloud</dd>
-    <dt>File Path</dt>
-    <dd>Input the path without file name</dd>
   </dl>
   <h3>Outputs</h3>
   <dl class="message-properties">
