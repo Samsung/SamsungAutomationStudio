@@ -317,13 +317,13 @@ module.exports = function(RED) {
         this.yMin = n.yMin;
         this.yStepSize = n.yStepSize;
 
-        if ((n.yStepSize!=='' && isNaN(Number(n.yStepSize))) || (n.yStepSize!=='' && (Number(n.yStepSize)<=0))){
+        if ((n.yStepSize !== '' && isNaN(Number(n.yStepSize))) || (n.yStepSize !== '' && (Number(n.yStepSize)<=0))){
             throw new Error('Invalid input') 
         }
-        if ((n.borderWidth!=='' && isNaN(Number(n.borderWidth))) || (Number(n.borderWidth)<0)){
+        if ((n.borderWidth !== '' && isNaN(Number(n.borderWidth))) || (Number(n.borderWidth)<0)){
             throw new Error('Invalid input')
         }
-        if ((n.yMin!=='' && isNaN(Number(n.yMin)))) {
+        if ((n.yMin !== '' && isNaN(Number(n.yMin)))) {
             throw new Error('Invalid input')
         }
     }
