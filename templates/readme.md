@@ -7,3 +7,9 @@
 ### kcal.json
 
 - 음식별 칼로리에 대한 엑셀 파일을 구글 드라이브에 저장하였으며 File Cloud Node를 통해 해당 파일을 읽어 Data Formatter Node에 전달합니다. 이후 Data Formatter Node에서는 엑셀 형태의 데이터를 Javascript Object로 변환하여 HTML-OUT 노드의 chart.js로 전달합니다. 이를 통해 시각화된 음식별 칼로리를 볼 수 있습니다.
+
+
+
+### outing.json
+
+- OPEN API와 File Cloud Node에서 받아온 데이터를 Data Formatter Node로 연결하여 기온, 강수량, 코로나 확진자 수, 지하철 혼잡도, 미세먼지를 시각화하여 웹 페이지에 렌더링하는 플로우입니다.

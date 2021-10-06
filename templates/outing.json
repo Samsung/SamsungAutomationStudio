@@ -1,0 +1,609 @@
+[
+    {
+        "id": "67036d6fab58352b",
+        "type": "tab",
+        "label": "SmartThings(외출)",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "65f09b516cef3449",
+        "type": "http in",
+        "z": "67036d6fab58352b",
+        "name": "",
+        "url": "/html/sotaeji",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 100,
+        "wires": [
+            [
+                "fc7b4cc370a4142b"
+            ]
+        ]
+    },
+    {
+        "id": "fc7b4cc370a4142b",
+        "type": "html-out",
+        "z": "67036d6fab58352b",
+        "name": "레이아웃",
+        "base": "frame",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [
+            {
+                "id": "n054wvhwl",
+                "type": "menu",
+                "value": [
+                    "/sotaeji/navbar"
+                ]
+            },
+            {
+                "id": "xh4jpturl",
+                "type": "1x1",
+                "value": [
+                    "/covid"
+                ]
+            },
+            {
+                "id": "tapcm9gzx",
+                "type": "1x2",
+                "value": [
+                    "/weather1",
+                    "/weather2"
+                ]
+            },
+            {
+                "id": "5vjhu1rha",
+                "type": "1x2",
+                "value": [
+                    "/pm10",
+                    "/subway"
+                ]
+            },
+            {
+                "id": "ztd2srnqi",
+                "type": "1x1",
+                "value": [
+                    "/sotaeji/footer"
+                ]
+            }
+        ],
+        "links": {},
+        "x": 380,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "6219806c42299d27",
+        "type": "http in",
+        "z": "67036d6fab58352b",
+        "name": "subway",
+        "url": "/subway",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 220,
+        "wires": [
+            [
+                "5fe06651215f144c"
+            ]
+        ]
+    },
+    {
+        "id": "5fe06651215f144c",
+        "type": "FileCloud",
+        "z": "67036d6fab58352b",
+        "name": "",
+        "clientId": "298614016002-vpd5k534dc9fs1op2n5h47rdtnkva4cu.apps.googleusercontent.com",
+        "clientSecret": "cKmfGcsqFM234aA1Knat39Sb",
+        "refreshToken": "1//04286XMCvyWFzCgYIARAAGAQSNwF-L9Ir13iEV2rlCo6bY6UwsK9UaKtkK03BsJ4ivv8EZPa_YCVYGpNeH-ZmpYotMotM6v7rsTM",
+        "accessToken": "",
+        "cloudType": "google",
+        "fileName": "서울역 상선 혼잡도.xlsx",
+        "x": 340,
+        "y": 220,
+        "wires": [
+            [
+                "8604564c0bcdb2dd"
+            ]
+        ]
+    },
+    {
+        "id": "8604564c0bcdb2dd",
+        "type": "data-formatter",
+        "z": "67036d6fab58352b",
+        "config": "5d8e3cd79ab29ad9",
+        "name": "Data Formatter",
+        "title": "[평일] 서울역 상선 시간별 혼잡도",
+        "data_entry_point": "binary",
+        "data_path": "",
+        "data_type": "xlsx",
+        "chart_type": "line",
+        "result_data_type": "raw",
+        "x_data": "시간",
+        "y_data": "혼잡도",
+        "y_label": "",
+        "isReverse": false,
+        "x": 560,
+        "y": 220,
+        "wires": [
+            [
+                "c17de791d476d151"
+            ]
+        ]
+    },
+    {
+        "id": "c17de791d476d151",
+        "type": "html-out",
+        "z": "67036d6fab58352b",
+        "name": "지하철 혼잡도",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [],
+        "links": {},
+        "x": 800,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "5d8e3cd79ab29ad9",
+        "type": "chart-config",
+        "z": "67036d6fab58352b",
+        "name": "Chart Config Red2",
+        "borderColor": "rgb(255, 99, 132)",
+        "borderWidth": "",
+        "backgroundColor": "rgba(255, 99, 132, 0.6)",
+        "yMin": 0,
+        "yStepSize": "",
+        "x": 570,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "3862ea91e5116c30",
+        "type": "http in",
+        "z": "67036d6fab58352b",
+        "name": "Navbar",
+        "url": "/sotaeji/navbar",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "09da61be35241232"
+            ]
+        ]
+    },
+    {
+        "id": "2d732f304183bcb0",
+        "type": "http in",
+        "z": "67036d6fab58352b",
+        "name": "pm10",
+        "url": "/pm10",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 320,
+        "wires": [
+            [
+                "f2b60e0236f9a511"
+            ]
+        ]
+    },
+    {
+        "id": "f2b60e0236f9a511",
+        "type": "http request",
+        "z": "67036d6fab58352b",
+        "name": "미세먼지",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=종로구&dataTerm=month&pageNo=1&numOfRows=100&returnType=xml&serviceKey=1Zw%2FMo1AxO7z0HUNlYkqHlGVkAkJETBYy99%2FLH5Irboh4%2F6aKwi9rSQTGpgOCu%2F9dg7bZe1eT06W%2FlqED1B%2BiA%3D%3D",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 310,
+        "y": 320,
+        "wires": [
+            [
+                "7b27e62ad9f352a8"
+            ]
+        ]
+    },
+    {
+        "id": "7b27e62ad9f352a8",
+        "type": "data-formatter",
+        "z": "67036d6fab58352b",
+        "config": "4aae486ece468aaf",
+        "name": "Data Formatter",
+        "title": "실시간 미세먼지",
+        "data_entry_point": "string",
+        "data_path": "",
+        "data_type": "xml",
+        "chart_type": "line",
+        "result_data_type": "raw",
+        "x_data": "dataTime",
+        "y_data": "pm10Value",
+        "y_label": "",
+        "x": 560,
+        "y": 320,
+        "wires": [
+            [
+                "47ccb054c796e923"
+            ]
+        ]
+    },
+    {
+        "id": "4aae486ece468aaf",
+        "type": "chart-config",
+        "z": "67036d6fab58352b",
+        "name": "Chart Config Green",
+        "borderColor": "rgb(75, 192, 192)",
+        "borderWidth": "1",
+        "backgroundColor": "rgba(75, 192, 192, 0.6)",
+        "yMin": 0,
+        "yStepSize": "",
+        "x": 570,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "47ccb054c796e923",
+        "type": "html-out",
+        "z": "67036d6fab58352b",
+        "name": "미세먼지",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [],
+        "links": {},
+        "x": 780,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "580b1d33a23d6590",
+        "type": "http request",
+        "z": "67036d6fab58352b",
+        "name": "openweaher",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://api.openweathermap.org/data/2.5/onecall?lat=37.5642135&lon=127.0016985&exclude=current,minutely,daily,alerts&appid=97a4f31d8358f05d00c34eeca06912fb&units=metric",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 410,
+        "y": 440,
+        "wires": [
+            [
+                "106dbe761c5c916a"
+            ]
+        ]
+    },
+    {
+        "id": "106dbe761c5c916a",
+        "type": "data-formatter",
+        "z": "67036d6fab58352b",
+        "config": "3ab61fdd8bd78896",
+        "name": "",
+        "title": "기온",
+        "data_entry_point": "string",
+        "data_path": "",
+        "data_type": "json",
+        "chart_type": "bar",
+        "result_data_type": "raw",
+        "x_data": "dt",
+        "y_data": "temp",
+        "y_label": "",
+        "isReverse": false,
+        "x": 640,
+        "y": 440,
+        "wires": [
+            [
+                "43762c2e4f6471f6"
+            ]
+        ]
+    },
+    {
+        "id": "43762c2e4f6471f6",
+        "type": "html-out",
+        "z": "67036d6fab58352b",
+        "name": "기온",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [],
+        "links": {},
+        "x": 870,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "e33d12aff2c145ec",
+        "type": "http in",
+        "z": "67036d6fab58352b",
+        "name": "Temperatures",
+        "url": "/weather1",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 440,
+        "wires": [
+            [
+                "580b1d33a23d6590"
+            ]
+        ]
+    },
+    {
+        "id": "23e8ef2a9ecd5c5f",
+        "type": "http request",
+        "z": "67036d6fab58352b",
+        "name": "openweaher",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://api.openweathermap.org/data/2.5/onecall?lat=37.5642135&lon=127.0016985&exclude=current,minutely,daily,alerts&appid=97a4f31d8358f05d00c34eeca06912fb&units=metric",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 410,
+        "y": 480,
+        "wires": [
+            [
+                "1ab0c024c0cff787"
+            ]
+        ]
+    },
+    {
+        "id": "1ab0c024c0cff787",
+        "type": "data-formatter",
+        "z": "67036d6fab58352b",
+        "config": "3ab61fdd8bd78896",
+        "name": "",
+        "title": "강수 확률",
+        "data_entry_point": "string",
+        "data_path": "",
+        "data_type": "json",
+        "chart_type": "bar",
+        "result_data_type": "raw",
+        "x_data": "dt",
+        "y_data": "pop",
+        "y_label": "",
+        "isReverse": false,
+        "x": 640,
+        "y": 480,
+        "wires": [
+            [
+                "d4cc807ef5571f27"
+            ]
+        ]
+    },
+    {
+        "id": "d4cc807ef5571f27",
+        "type": "html-out",
+        "z": "67036d6fab58352b",
+        "name": "강수 확률",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [],
+        "links": {},
+        "x": 880,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "66c742efb460a92a",
+        "type": "http in",
+        "z": "67036d6fab58352b",
+        "name": "Precipitation Probability",
+        "url": "/weather2",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 480,
+        "wires": [
+            [
+                "23e8ef2a9ecd5c5f"
+            ]
+        ]
+    },
+    {
+        "id": "043f58afd6797293",
+        "type": "chart-config",
+        "z": "67036d6fab58352b",
+        "name": "Weather Config",
+        "borderColor": "rgb(54, 162, 235)",
+        "borderWidth": "",
+        "backgroundColor": "rgba(54, 162, 235, 0.6)",
+        "yMin": "",
+        "yStepSize": "",
+        "x": 640,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "09da61be35241232",
+        "type": "html-out",
+        "z": "67036d6fab58352b",
+        "name": "Navbar",
+        "base": "navbar",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "https://drive.google.com/uc?id=1nfBRbvtrOHt4mY8Sueb6-mVsauYO2bZE",
+        "video": "",
+        "html": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Document</title>\n  </head>\n  <style>\n  </style>\n  <body>\n    <script>\n      const now = new Date();\n      const today = String(now).split(\" \");\n      const div = document.querySelector(\"#today\");\n      div.innerText = `${today[0]}/${today[2]}/${today[1]}/${today[3]}`;\n    </script>\n    <header\n      style=\"\n        background-color: navy;\n        padding: 1rem;\n        display: flex;\n        justify-content: space-between;\n      \"\n    >\n      <div id=\"today\" style=\"color: white\"></div>\n\n      <div style=\"display: flex; color: white\">\n        <img\n          src=\"https://drive.google.com/uc?id=1nfBRbvtrOHt4mY8Sueb6-mVsauYO2bZE\"\n          alt=\"sptaeji\"\n          style=\"\n            width: 30px;\n            height: 30px;\n            border-radius: 12px;\n            margin-right: 0.5rem;\n          \"\n        />\n        SOTAEJ\n      </div>\n    </header>\n  </body>\n</html>\n",
+        "frames": [],
+        "links": {
+            "SOTAEJI": "/html/sotaeji"
+        },
+        "x": 360,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "cfa6868f6f1dc530",
+        "type": "http in",
+        "z": "67036d6fab58352b",
+        "name": "Footer",
+        "url": "/sotaeji/footer",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 530,
+        "y": 100,
+        "wires": [
+            [
+                "1183c7d4a014d5eb"
+            ]
+        ]
+    },
+    {
+        "id": "1183c7d4a014d5eb",
+        "type": "html-out",
+        "z": "67036d6fab58352b",
+        "name": "Footer",
+        "base": "html",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "<div style=\"width:100%;background:#ffffff;text-align:center;\">\n<br/>\n<p style=\"font-size:24px;line-height:64px;color:#ccc;font-weight:600px;\">Thank you for SOTAEJI</p>\n</div>",
+        "frames": [],
+        "links": {},
+        "x": 770,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "cceb90ab0ae37777",
+        "type": "comment",
+        "z": "67036d6fab58352b",
+        "name": "Flow1",
+        "info": "",
+        "x": 130,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "3ed84150295947ba",
+        "type": "http request",
+        "z": "67036d6fab58352b",
+        "name": "코로나 확진자 수",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://openapi.data.go.kr/openapi/service/rest/Covid19/getCovid19SidoInfStateJson?serviceKey=s%2F0cNQXXjnMPpcSsCeJOaSSIueSb4E%2BxrJw5gybVXXGhQTCMg9xl6ypcIv6mK8WAYdm6Wua1PHD3WdVVRSb%2BBA%3D%3D&pageNo=1&numOfRows=10&startCreateDt=20211003&endCreateDt=20211003",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 310,
+        "y": 600,
+        "wires": [
+            [
+                "298cbec1f34c4a37"
+            ]
+        ]
+    },
+    {
+        "id": "298cbec1f34c4a37",
+        "type": "data-formatter",
+        "z": "67036d6fab58352b",
+        "config": "f749eebe1159c2f1",
+        "name": "",
+        "title": "지역별 일일 확진자 수",
+        "data_entry_point": "string",
+        "data_path": "",
+        "data_type": "xml",
+        "chart_type": "bar",
+        "result_data_type": "raw",
+        "x_data": "gubun",
+        "y_data": "localOccCnt",
+        "y_label": "",
+        "isReverse": false,
+        "x": 530,
+        "y": 600,
+        "wires": [
+            [
+                "28697fc37ef76d12"
+            ]
+        ]
+    },
+    {
+        "id": "28697fc37ef76d12",
+        "type": "html-out",
+        "z": "67036d6fab58352b",
+        "name": "코로나 확진자 수",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [],
+        "links": {},
+        "x": 780,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "f749eebe1159c2f1",
+        "type": "chart-config",
+        "z": "67036d6fab58352b",
+        "name": "Chart Config Yellow",
+        "borderColor": "rgb(255, 205, 86)",
+        "borderWidth": "",
+        "backgroundColor": "rgba(255, 205, 86, 0.6)",
+        "yMin": 0,
+        "yStepSize": "",
+        "x": 540,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "88f32b9bfec3deb9",
+        "type": "http in",
+        "z": "67036d6fab58352b",
+        "name": "covid",
+        "url": "/covid",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 600,
+        "wires": [
+            [
+                "3ed84150295947ba"
+            ]
+        ]
+    }
+]
