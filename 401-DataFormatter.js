@@ -317,14 +317,14 @@ module.exports = function(RED) {
         this.yMin = n.yMin;
         this.yStepSize = n.yStepSize;
 
-        if (isNaN(Number(n.yStepSize)) || Number(n.yStepSize) <= 0) {
-            throw new Error('Invalid input1');
+        if ((n.yStepSize !== '' && isNaN(Number(n.yStepSize))) || (n.yStepSize !== '' && (Number(n.yStepSize)<=0))){
+            throw new Error('Invalid yStepSize') 
         }
-        if (isNaN(Number(n.borderWidth)) || Number(n.borderWidth) < 0) {
-            throw new Error('invalid input2');
+        if ((n.borderWidth !== '' && isNaN(Number(n.borderWidth))) || (Number(n.borderWidth)<0)){
+            throw new Error('Invalid borderWidth')
         }
-        if (isNaN(Number(n.yMin))) {
-            throw new Error('invalid input3');
+        if ((n.yMin !== '' && isNaN(Number(n.yMin)))) {
+            throw new Error('Invalid yMin')
         }
     }
 
@@ -343,6 +343,13 @@ module.exports = function(RED) {
                     node.config = nn;
                 }
             });
+
+            if (n.result_data_type !== 'overallStatistics' && !n.x_data) {
+                throw new Error('Missing X-axes');
+            }
+            if (n.result_data_typepe !== 'countByItems' && !n.y_data) {
+                throw new Error('Missing Y-axes');
+            }
 
             try {
                 if (n.data_entry_point === 'binary' && type !== msg.dataFormat) {

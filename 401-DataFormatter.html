@@ -125,15 +125,6 @@
         defaults: {
             config: {
                 value: '',
-                validate: function(val) {
-                    var isValidChartConfig = false;
-                    RED.nodes.eachNode(function(node) {
-                        if (node.id == val) {
-                            isValidChartConfig = true
-                        }
-                    })
-                    return !!val && isValidChartConfig
-                }
             },
             name: {
                 value: "Data Formatter"
@@ -162,7 +153,6 @@
             },
             x_data: {
                 value: "",
-                required: true
             },
             y_data: {
                 value: ""
