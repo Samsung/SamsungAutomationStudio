@@ -1,4 +1,4 @@
-<script type='text/javascript'>
+<script type="text/javascript">
   RED.nodes.registerType('FileCloud', {
     category: 'sotaeji',
     color: '#0099ff',
@@ -20,18 +20,10 @@
         value: '',
         type: 'text',
       },
-      doType: {
-        value: 'download',
-      },
       cloudType: {
         value: 'google',
       },
       fileName: {
-        value: '',
-        type: 'text',
-        required: true,
-      },
-      filePath: {
         value: '',
         type: 'text',
         required: true,
@@ -44,16 +36,6 @@
       return this.name || 'File Cloud';
     },
     oneditprepare: function () {
-      $('#node-input-doType').on('change', function () {
-        const val = $(this).val();
-        switch (val) {
-          case 'read':
-            $('#node-input-filePath-row').hide();
-            break;
-          default:
-            $('#node-input-filePath-row').show();
-        }
-      });
       $('#node-input-cloudType').on('change', function () {
         const val = $(this).val();
         switch (val) {
@@ -80,63 +62,69 @@
   });
 </script>
 
-<script type='text/html' data-template-name='FileCloud'>
-  <div class='form-row'>
-    <label for='node-input-name'><i class='fa fa-tag'></i> Name</label>
-    <input type='text' id='node-input-name' placeholder='Name' />
+<script type="text/html" data-template-name="FileCloud">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
   </div>
-  <div class='form-row'>
-    <label for='node-input-cloudType'><i class='fa fa-hdd-o'></i> Cloud Type</label>
-    <select name='cloudType' id='node-input-cloudType'>
-      <option value='google'>Goole Drvie</option>
-      <option value='one'>OneDrive</option>
+  <div class="form-row">
+    <label for="node-input-cloudType"
+      ><i class="fa fa-hdd-o"></i> Cloud Type</label
+    >
+    <select name="cloudType" id="node-input-cloudType">
+      <option value="google">Goole Drvie</option>
+      <option value="one">OneDrive</option>
     </select>
   </div>
-  <div class='form-row' id='node-input-google-clientId-row'>
-    <label for='node-input-clientId'><i class='fa fa-tag'></i> Client ID</label>
-    <input type='text' id='node-input-clientId' placeholder='Client ID' />
+  <div class="form-row" id="node-input-google-clientId-row">
+    <label for="node-input-clientId"><i class="fa fa-tag"></i> Client ID</label>
+    <input type="text" id="node-input-clientId" placeholder="Client ID" />
   </div>
-  <div class='form-row' id='node-input-google-secretKey-row'>
-    <label for='node-input-clientSecret'><i class='fa fa-tag'></i> Client Secret Key</label>
-    <input type='text' id='node-input-clientSecret' placeholder='Client Secret Key'/>
+  <div class="form-row" id="node-input-google-secretKey-row">
+    <label for="node-input-clientSecret"
+      ><i class="fa fa-tag"></i> Client Secret Key</label
+    >
+    <input
+      type="text"
+      id="node-input-clientSecret"
+      placeholder="Client Secret Key"
+    />
   </div>
-  <div class='form-row' id='node-input-google-refreshToken-row'>
-    <label for='node-input-refreshToken'><i class='fa fa-tag'></i> Refresh Token</label>
-    <input type='text' id='node-input-refreshToken' placeholder='Refresh Token'/>
+  <div class="form-row" id="node-input-google-refreshToken-row">
+    <label for="node-input-refreshToken"
+      ><i class="fa fa-tag"></i> Refresh Token</label
+    >
+    <input
+      type="text"
+      id="node-input-refreshToken"
+      placeholder="Refresh Token"
+    />
   </div>
-  <div class='form-row' id='node-input-one-row'>
-    <label for='node-input-accessToken'><i class='fa fa-tag'></i> Access Token</label>
-    <input type='text' id='node-input-accessToken' placeholder='Access Token' />
+  <div class="form-row" id="node-input-one-row">
+    <label for="node-input-accessToken"
+      ><i class="fa fa-tag"></i> Access Token</label
+    >
+    <input type="text" id="node-input-accessToken" placeholder="Access Token" />
   </div>
-  <div class='form-row'>
-    <label for='node-input-doType'><i class='fa fa-hdd-o'></i> What to do</label>
-    <select name='doType' id='node-input-doType'>
-      <option value='download'>Download to Local</option>
-      <option value='upload'>Upload to Cloud</option>
-      <option value='read'>Read a File</option>
-    </select>
-  </div>
-  <div class='form-row' id='node-input-fileName-row'>
-    <label for='node-input-fileName'><i class='fa fa-file-text-o'></i> File Name</label>
-    <input type='text' id='node-input-fileName' placeholder='example.png' />
-  </div>
-  <div class='form-row' id='node-input-filePath-row'>
-    <label for='node-input-filePath'><i class='fa fa-folder-o'></i> File Path</label>
-    <input type='text' id='node-input-filePath' placeholder='C:/' />
+  <div class="form-row" id="node-input-fileName-row">
+    <label for="node-input-fileName"
+      ><i class="fa fa-file-text-o"></i> File Name</label
+    >
+    <input type="text" id="node-input-fileName" placeholder="example.png" />
   </div>
 </script>
 
-<style type='text/css'>
+<style type="text/css">
   .form-row.flex {
     display: flex;
     align-items: center;
   }
 </style>
 
-<script type='text/html' data-help-name='FileCloud'>
+<script type="text/html" data-help-name="FileCloud">
   <p>This node access Google Drive for Download or Upload API</p>
   <h3>Inputs</h3>
-  <dl class='message-properties'>
+  <dl class="message-properties">
     <h5>Google Drive</h5>
     <dt>Client ID & Client Secret Key</dt>
     <dd>
@@ -160,21 +148,27 @@
     <h5>One Drive</h5>
     <dt>Access Token</dt>
     <dd>
-      <p>To use the OneDrive, you need to have an access token that authorizes your app with a particular set of permissions for a user. 
-      You can get a access token by going to 'https://docs.microsoft.com/ko-kr/onedrive/developer/rest-api/getting-started/graph-oauth?view=odsp-graph-online'.</p>
+      <p>
+        To use the OneDrive, you need to have an access token that authorizes
+        your app with a particular set of permissions for a user. You can get a
+        access token by going to
+        'https://docs.microsoft.com/ko-kr/onedrive/developer/rest-api/getting-started/graph-oauth?view=odsp-graph-online'.
+      </p>
       <p>1. Register your application to get an application ID.</p>
-      <p>2. Sign your user in with the specified scopes using the token flow or code flow.</p>
-      <p>3. The result of the authorization flow will return an access token and optionally other tokens which your app can use to access the API.</p>
+      <p>
+        2. Sign your user in with the specified scopes using the token flow or
+        code flow.
+      </p>
+      <p>
+        3. The result of the authorization flow will return an access token and
+        optionally other tokens which your app can use to access the API.
+      </p>
     </dd>
-    <dt>What to do</dt>
-    <dd>You can choose download or upload, read a file.</dd>
     <dt>File Name</dt>
     <dd>Input file name in cloud</dd>
-    <dt>File Path</dt>
-    <dd>Input the path without file name</dd>
   </dl>
   <h3>Outputs</h3>
-  <dl class='message-properties'>
+  <dl class="message-properties">
     <dt>msg.data</dt>
     <dt>msg.filePath</dt>
   </dl>
