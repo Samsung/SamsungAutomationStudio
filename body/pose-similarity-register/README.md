@@ -28,12 +28,12 @@ This attribute is a criterion (percentage) to determine that a particular two po
 
 ## Input
 
-### inputKeypoints
+### inputKeypoint
 
-This is the coordinate data of the pose you wish to register anew.
+This is the coordinate data of the pose you wish to register a new pose.
 
 ```json
-inputKeypoints : [    {
+inputKeypoint : [    {
       "x": 0.49571552872657776,
       "y": 0.7027847766876221,
       "z": -0.4364425241947174,

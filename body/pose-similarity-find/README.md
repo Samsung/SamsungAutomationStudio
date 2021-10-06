@@ -30,22 +30,11 @@ This attribute is a criterion (percentage) to determine that a particular two po
 
 ### inputKeypoints
 
-This is the coordinate detection value of the pose being recognized in real time.
+This array is the coordinate detection values of the pose being recognized by Detection Node. This array can have multiple frame data, because multiple frame data accumulated over time can be need to determine the similarity. 
 
 ```json
-inputKeypoints : [    {
-      "x": 0.49571552872657776,
-      "y": 0.7027847766876221,
-      "z": -0.4364425241947174,
-      "visibility": 0.999972939491272
-    },
-    {
-      "x": 0.5213351845741272,
-      "y": 0.6515322923660278,
-      "z": -0.4486660063266754,
-      "visibility": 0.9999632239341736
-    },
-    // ...
+inputKeypoints : [
+	keypoint1, keypoint2, keypoint3,...
 ]
 ```
 
