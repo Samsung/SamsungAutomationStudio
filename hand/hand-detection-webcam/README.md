@@ -16,11 +16,11 @@ Specify the hands pose to save and press the capture button to record the pose m
 
 ### Server Url
 
-URL address of your websocket server. Server receives the user's hands pose recognition result in real time using a WebSocket. Do not include a prefix such as 'http://'. This is an attribute input item to facilitate both local and deployment environments.
+URL address of your websocket server for monitoring. Do not include a prefix such as 'http://'. This is an attribute input item to facilitate both local and deployment environments. (default: 'localhost')
 
-### Mirror Port
+### Monitor Port
 
-Port number to be used to monitor hands pose recognition results from other resources. (default: 1881)
+Port number to be used to monitor pose recognition results from other resources. To use properly, you need to match this value with `Monitor Port` attribute of [the monitor node](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/monitor). (default: 1883)
 
 ### Data Socket Url
 
