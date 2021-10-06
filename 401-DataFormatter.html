@@ -173,7 +173,7 @@
         },
         oneditprepare: function() {
             var NODE = this;
-            $("#node-input-config").html('<option value = ""> Select Config</>');
+            $("#node-input-config").html('<option value = ""> Default</>');
             RED.nodes.eachNode(function(node) {
                 if (node.name && node.type == 'chart-config') {
                     $("#node-input-config").append($("<option></option>").val(node.id).text(node.name + " (" + node.id + ")"));

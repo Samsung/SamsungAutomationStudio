@@ -1,0 +1,147 @@
+[
+    {
+        "id": "a165043f80fbab25",
+        "type": "tab",
+        "label": "플로우 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "80e631a86b3e91b5",
+        "type": "FileCloud",
+        "z": "a165043f80fbab25",
+        "name": "",
+        "clientId": "298614016002-vpd5k534dc9fs1op2n5h47rdtnkva4cu.apps.googleusercontent.com",
+        "clientSecret": "cKmfGcsqFM234aA1Knat39Sb",
+        "refreshToken": "1//04286XMCvyWFzCgYIARAAGAQSNwF-L9Ir13iEV2rlCo6bY6UwsK9UaKtkK03BsJ4ivv8EZPa_YCVYGpNeH-ZmpYotMotM6v7rsTM",
+        "accessToken": "",
+        "cloudType": "google",
+        "fileName": "kcal.xlsx",
+        "x": 340,
+        "y": 160,
+        "wires": [
+            [
+                "4a7dc78e1d0fce62",
+                "49c7353a00dac1b0"
+            ]
+        ]
+    },
+    {
+        "id": "6570c88095c288fc",
+        "type": "inject",
+        "z": "a165043f80fbab25",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 160,
+        "wires": [
+            [
+                "80e631a86b3e91b5"
+            ]
+        ]
+    },
+    {
+        "id": "4a7dc78e1d0fce62",
+        "type": "data-formatter",
+        "z": "a165043f80fbab25",
+        "config": "738c7e917b981774",
+        "name": "Data Formatter",
+        "title": "음식별 칼로리",
+        "data_entry_point": "binary",
+        "data_path": "",
+        "data_type": "xlsx",
+        "chart_type": "bar",
+        "result_data_type": "raw",
+        "x_data": "상품명",
+        "y_data": "칼로리(kcal)",
+        "y_label": "kcal",
+        "isReverse": false,
+        "x": 540,
+        "y": 240,
+        "wires": [
+            [
+                "5aa40e92b4fb3019"
+            ]
+        ]
+    },
+    {
+        "id": "5aa40e92b4fb3019",
+        "type": "html-out",
+        "z": "a165043f80fbab25",
+        "name": "",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [],
+        "links": {},
+        "x": 790,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "979b7779408922f1",
+        "type": "http in",
+        "z": "a165043f80fbab25",
+        "name": "",
+        "url": "/kcal",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 240,
+        "wires": [
+            [
+                "80e631a86b3e91b5"
+            ]
+        ]
+    },
+    {
+        "id": "738c7e917b981774",
+        "type": "chart-config",
+        "z": "a165043f80fbab25",
+        "name": "Chart Config",
+        "borderColor": "rgb(54, 162, 235)",
+        "borderWidth": "",
+        "backgroundColor": "rgba(255, 99, 132, 0.6)",
+        "yMin": 0,
+        "yStepSize": "",
+        "x": 530,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "49c7353a00dac1b0",
+        "type": "debug",
+        "z": "a165043f80fbab25",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 160,
+        "wires": []
+    }
+]
