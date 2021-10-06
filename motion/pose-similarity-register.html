@@ -30,25 +30,29 @@
 <script type="text/html" data-help-name="pose-similarity-register">
   <p>Find a posture similar to the input posture and return the similarity.</p>
 
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>Name<span class="property-type">optional</span></dt>
+    <dd>The label of the Node assigned by the user.</dd>
+    <dt>Similar Sensitivity<span class="property-type">required</span></dt>
+    <dd>The percentage that can be determined as similar (default: 80)</dd>
+  </dl>
+
   <h3>Inputs</h3>
   <dl class="message-properties">
-    <dt>Name</dt>
-    <dd>The label of the Node assigned by the user.</dd>
-    <dt>Similar Sensitivity</dt>
-    <dd>The percentage of sensitivity of the criteria for determining similarity.</dd>
+    <dt>inputKeypoints</dt>
+    <dd>Key points to register</dd>
+    <dt>savedKeypoints</dt>
+    <dd>Target key points to detect similarity ("name" is free to write a pose name)</dd>
   </dl>
 
   <h3>Outputs</h3>
   <dl class="message-properties">
-    <dt>result</dt>
-    <dd>
-      <ul>
-        <li>'UnAccurate': Occurs when the input value is an invalid posture.</li>
-        <li>[Name of specific pose]: Occurs when registering a posture similar to hat already saved.</li>
-        <li>null: Occurs when the input value is valid and can be saved.</li>
-      </ul>
-    </dd>
-    <dt>keypoint</dt>
-    <dd>If a similar posture already exists, return the keypoint array of the posture.(in other case, return null)</dd>
+    <dt>status</dt>
+    <dd>true if there is a similar pose, false if not (boolean)</dd>
+    <dt>poseName</dt>
+    <dd>The name of the most similar pose if there is a similar action, null if not (string)</dd>
+    <dt>isAccurate</dt>
+    <dd>true if the correctness of the action to be registered is sufficient, false otherwise (boolean)</dd>
   </dl>
 </script>
