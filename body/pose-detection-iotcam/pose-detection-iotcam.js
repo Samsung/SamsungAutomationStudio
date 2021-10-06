@@ -20,13 +20,11 @@ module.exports = function(RED) {
                 <meta charset="utf-8">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
                 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
-                
                 <link rel="shortcut icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1658/1658879.png">
                 <title>Pose Detection</title>
                     
@@ -169,56 +167,36 @@ module.exports = function(RED) {
             </html>
             
             <script type="module">
-                // 비활성화된 탭에서도 캔버스가 지속적으로 업데이트되도록 하기 위해
-                // 재귀적으로 생성되는 빈 오디오 트랙의 Loop를 사용합니다. (각 오디오 트랙의 지속시간은 10fps 기준 0.1초)
-                // 빈 오디오 트랙의 생성자 함수에 캔버스 렌더링 메소드를 포함해 지속적 렌더링이 가능해집니다.
-                // 관련 링크 : https://stackoverflow.com/questions/44156528/canvas-doesnt-repaint-when-tab-inactive-backgrounded-for-recording-webgl
-            
-            
-                // DOM 엘리먼트
                 const inputElement = document.getElementById('input-canvas')
                 const outputElement = document.getElementById('output-canvas')
                 const captureElement = document.getElementById('capture-canvas')
                 const outputCtx = outputElement.getContext('2d')
                 const captureCtx = captureElement.getContext('2d')
-            
-            
-                // Detection 데이터 전송할 웹소켓 인스턴스 생성
                 const dataWebSocket = new WebSocket('${config.dataSocketUrl}')
 
-
-                // 디텍션 시작 함수
                 function startDetect(renderFunc) {
-                    // 최초의 오디오 트랙을 생성한다.
-                    // (Loop 정지 함수는 현재 사용하지 않고 있음, 개발자의 취지에 따라 커스터마이징 가능)
                     const fps = 60
                     const stopLoop = audioTimerLoop(renderFunc, 1000 / fps)
                 }
-            
-            
-                // 오디오 트랙 Loop 생성자
+                
                 function audioTimerLoop(renderFunc, frequency) {
-                    const freq = frequency / 1000  // AudioContext는 second 단위
+                    const freq = frequency / 1000
                     const aCtx = new AudioContext()
                     const silence = aCtx.createGain()
                     silence.gain.value = 0
-                    silence.connect(aCtx.destination)  // 오디오 트랙 비우기 (추측)
+                    silence.connect(aCtx.destination)
             
                     onOSCend()
             
-                    const stopped = false  // loop를 멈추기 위한 flag
+                    const stopped = false
                     async function onOSCend() {
-                        // 캔버스 렌더링 (비동기)
                         await renderFunc()
-            
-                        // loop 생성
                         const osc = aCtx.createOscillator()
-                        osc.onended = onOSCend  // loop가 되는 이유
+                        osc.onended = onOSCend 
                         osc.connect(silence)
-                        osc.start()  // 당장 시작
-                        osc.stop(aCtx.currentTime + freq)  // 한 프레임 이후 정지
+                        osc.start()
+                        osc.stop(aCtx.currentTime + freq)
             
-                        // loop 정지
                         if (stopped) {
                             osc.onended = function () {
                                 aCtx.close()
@@ -226,14 +204,12 @@ module.exports = function(RED) {
                             }
                         }
                     }
-                    // loop를 정지하기 위한 함수를 반환한다.
+                    
                     return function () {
                         stopped = true
                     }
                 }
-            
-            
-                /* motion regist timer */
+                
                 const timerSecond = document.getElementById("secondTimer")
                 let second = timerSecond.options[timerSecond.selectedIndex].value
                 let poseData = null
@@ -243,9 +219,7 @@ module.exports = function(RED) {
                 document.getElementById("secondTimer").addEventListener('change', () => {
                     second = timerSecond.options[timerSecond.selectedIndex].value
                 })
-            
-            
-                /* motion name empty check */
+                
                 const poseMotionName = document.getElementById("pose-motion-name")
                 document.getElementById("captrue-btn").addEventListener('click', () => {
                     if (poseMotionName.value === "" || poseMotionName.value === undefined) {
@@ -287,8 +261,7 @@ module.exports = function(RED) {
                             detail += "</tr>"
                         }
                         detail += "</table>"
-
-                        /* Save data immediately after timer runs */
+                        
                         poseData.regist = true
                         poseData.poseName = motionName
                         poseDataResult = poseData
@@ -301,17 +274,13 @@ module.exports = function(RED) {
                         document.getElementById("regist-btn-bar").style.display = "block"
                     }, timer * 1000, motionName)
                 }
-            
-
-                /* send pose data */
+                
                 document.getElementById("regist-btn").addEventListener('click', function(){
                     document.getElementById("motion-result-message").style.color = "green"
                     document.getElementById("motion-result-message").textContent = "[" + poseMotionName.value +"] Data sent successfully! Check out the registration results!"
                     dataWebSocket.send(JSON.stringify(poseDataResult))
                 })
-            
-
-                /* result message reset*/
+                
                 document.getElementById("pose-motion-name").addEventListener('focus', onClear)
                 document.getElementById("cancel-btn").addEventListener('click', function(){
                     document.getElementById("pose-motion-name").value = ""
@@ -323,44 +292,27 @@ module.exports = function(RED) {
                     document.getElementById("motion-result-keypoint").innerHTML = ""
                     document.getElementById("result-div").style.display = "none"
                 }
-            
-
-                // 미러링 관련 소켓 인스턴스 생성
+                
                 const urlCreator = window.URL || window.webkitURL
                 const monitorUrl = 'http://${config.serverUrl}:${config.monitorPort}'
                 const monitorSocket = io(monitorUrl)
                 monitorSocket.on("connect", () => {
                     console.log("connection server")
                     monitorSocket.emit("echo", "echo from mediapipe")
-                })
-            
+                })            
             
                 // Pose Detection result function
-                // 캔버스에 Pose Detection 결과값 렌더링하는 함수
                 function onResults(results) {
-
-                    // clear canvas
-                    // 빈 캔버스 로드
                     outputCtx.save()
                     outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
-            
-                    // draw video image on canvas.
-                    // 캔버스에 비디오 화면 표시
                     outputCtx.globalCompositeOperation = 'destination-atop'
-                    outputCtx.drawImage(
-                        results.image, 0, 0, outputElement.width, outputElement.height)
-
-                    // draw landmarks on canvas.
-                    // 캔버스에 디텍션 랜드마크 표시
+                    outputCtx.drawImage(results.image, 0, 0, outputElement.width, outputElement.height)
                     outputCtx.globalCompositeOperation = 'source-over'
-                    drawConnectors(outputCtx, results.poseLandmarks, POSE_CONNECTIONS,
-                        { color: '#f2d6ae', lineWidth: 5 })
-                    drawLandmarks(outputCtx, results.poseLandmarks,
-                        { color: '#b2a1f4', lineWidth: 1 })
+                    drawConnectors(outputCtx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#f2d6ae', lineWidth: 5 })
+                    drawLandmarks(outputCtx, results.poseLandmarks, { color: '#b2a1f4', lineWidth: 1 })
                     outputCtx.restore()
             
                     // transport landmark data via web socket.
-                    // 랜드마크 데이터 웹소켓으로 전송
                     if (results.poseLandmarks) {
                         if (dataWebSocket.readyState === 1) {
                             results.regist = false
@@ -371,11 +323,7 @@ module.exports = function(RED) {
                             poseName = null
                         }
                     }
-            
-                    // transport <canvas> data in form of blob. (I referenced the link below)
-                    // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
-                    // https://github.com/Infocatcher/Right_Links/issues/25
-                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLoutputElement/toBlob
+                    
                     if (monitorSocket.connected) {
                         outputElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
@@ -383,19 +331,13 @@ module.exports = function(RED) {
                         }, 'image/webp')
                     }
                 }
-            
-            
-                // construct Mediapipe Pose instance.
-                // Mediapipe의 Pose 인스턴스 생성
+                
+                // construct Mediapipe Pose instance
                 const pose = new Pose({
                     locateFile: (file) => {
                         return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
                     }
                 })
-            
-            
-                // setup Pose instance.
-                // Pose 인스턴스 설정
                 pose.setOptions({
                     modelComplexity: 1,
                     smoothLandmarks: true,
@@ -405,46 +347,33 @@ module.exports = function(RED) {
                     minTrackingConfidence: 0.5
                 })
                 pose.onResults(onResults)
-            
-            
-                // rendering function (Asynchronous)
-                // 렌더링 함수 (비동기)
+                
                 async function render() {
                     await pose.send({ image: inputElement })
                 }
-            
-            
-                // deliver rtsp streaming data from WebSocket server to <canvas>. (I referenced the link below)
-                // 웹소켓 서버로부터 rtsps 스트리밍 데이터 받아서 canvas에 출력 (아래 링크를 참고하였음)
-                // https://www.npmjs.com/package/node-rtsp-stream
-                // https://webnautes.tistory.com/1476
+                
                 const rtspUrl = 'ws://${config.serverUrl}:${config.rtspPort}'
                 const rtspTest = new WebSocket(rtspUrl)
                 rtspTest.onmessage = function (e) {
-                    
-                    // RTSP 웹소켓으로부터 충분한 데이터가 오면 렌더링 시작
                     if (e.data.size > 8) {
                         rtspTest.close()
-    
-                        // RTSP 클라이언트 생성 및 렌더링
                         const rtspClient = new WebSocket(rtspUrl)
                         const player = new jsmpeg(rtspClient, {
                             canvas: inputElement,
                             pauseWhenHidden: false
                         })
-
-                        // AudioContext 시작하기 위한 장치 탐색
+                        
                         const mediaConstraints = {
-                            audio: false, // 음성 포함하려면 값을 'true'로 바꿔야 함
+                            audio: false,
                             video: true
                         }
                         navigator.mediaDevices.getUserMedia(mediaConstraints)
-                            .then(stream => {
-                                startDetect(render)
-                            })
-                            .catch(err => {
-                                console.log(err)
-                            })
+                        .then(stream => {
+                            startDetect(render)
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
                     }
                 }
             </script>
@@ -457,7 +386,6 @@ module.exports = function(RED) {
         
         // listener to receive messages from the up-stream nodes in a flow.
         this.on('input', (msg, send, done) => {
-
             // construct socket server for RTSP.
             // RTSP socket 서버 생성
             const rtspUrl = msg.payload.components.main.videoStream.stream.value.OutHomeURL.split('//')[1]
@@ -471,9 +399,7 @@ module.exports = function(RED) {
                 credentials: true
             }))
             const httpServer = http.createServer(app)
-
-            // if port is busy, don't do anything but return html document.
-            // port 사용 중이면 HTML 문서만 반환
+            
             httpServer.once('error', err => {
                 if (err.code === 'EADDRINUSE') {
                     console.log(`Socket.io [RTSP] : port ${rtspPort} is busy.`)
@@ -484,11 +410,6 @@ module.exports = function(RED) {
             // port 사용 가능할 경우, socket 서버 실행
             httpServer.once('listening', () => {
                 console.log(`Socket.io [RTSP] : port ${rtspPort} is now ready.`)
-
-                // rtsp-stream class inheritance. (I refered the links below)
-                // rtsp-stream 클랙스 상속 (아래 링크를 참고하였음)
-                // https://webclub.tistory.com/404
-                // https://developer.mozilla.org/ko/docs/Web/JavaScript/Inheritance_and_the_prototype_chain
                 const Stream = require('node-rtsp-stream')
                 const newStream = Stream
                 newStream.prototype = Stream.prototype
@@ -522,30 +443,24 @@ module.exports = function(RED) {
                     })
                 }
                 
-                // construct newStream.
-                // newStream 생성
                 rtspStream = new newStream({
                     name: 'name',
                     streamUrl: `rtsps://${config.smartthingsMnid}:${config.smartthingsPat}@${rtspUrl}`,
                     wsPort: rtspPort,
-                    ffmpegOptions: { // options ffmpeg flags
-                        '-stats': '', // an option with no neccessary value uses a blank string
-                        '-r': 30 // options with required values specify the value after the key
+                    ffmpegOptions: { 
+                        '-stats': '', 
+                        '-r': 30 
                     }
                 })
             })
 
             httpServer.listen(rtspPort)
-
-            // return HTML document to the client.
-            // 클라이언트에 HTML 문서 반환
+            
             msg.payload = HTML()
             send = send || function() { this.send.apply(this, arguments )}
             send(msg)
         })
         
-        // if flow is closed, rtspStream would be closed.
-        // flow 중단되면, rtspStream 종료
         this.on('close', function() {
             rtspStream.stop()
         })

@@ -158,58 +158,36 @@ module.exports = function(RED) {
             </html>
 
             <script type="module">
-                // 비활성화된 탭에서도 캔버스가 지속적으로 업데이트되도록 하기 위해
-                // 재귀적으로 생성되는 빈 오디오 트랙의 Loop를 사용합니다. (각 오디오 트랙의 지속시간은 10fps 기준 0.1초)
-                // 빈 오디오 트랙의 생성자 함수에 캔버스 렌더링 메소드를 포함해 지속적 렌더링이 가능해집니다.
-                // 관련 링크 : https://stackoverflow.com/questions/44156528/canvas-doesnt-repaint-when-tab-inactive-backgrounded-for-recording-webgl
-            
-            
-                // DOM 엘리먼트
                 const inputElement = document.getElementById('input-video')
                 const outputElement = document.getElementById('output-canvas')
                 const captureElement = document.getElementById('capture-canvas')
                 const outputCtx = outputElement.getContext('2d')
                 const captureCtx = captureElement.getContext('2d')
-            
-            
-                // Detection 데이터 전송할 웹소켓 인스턴스 생성
                 const dataWebSocket = new WebSocket('${config.dataSocketUrl}')
 
-
-                /* detection start */
-                // 디텍션 시작 함수
                 function startDetect(renderFunc) {
-                    // 최초의 오디오 트랙을 생성한다.
-                    // (Loop 정지 함수는 현재 사용하지 않고 있음, 개발자의 취지에 따라 커스터마이징 가능)
                     const fps = 60
                     const stopLoop = audioTimerLoop(renderFunc, 1000 / fps)
                 }
-
-
-                /* audio Timer Loop function */
-                // 오디오 트랙 Loop 생성자
+                
                 function audioTimerLoop(renderFunc, frequency) {
-                    const freq = frequency / 1000  // AudioContext는 second 단위
+                    const freq = frequency / 1000  
                     const aCtx = new AudioContext()
                     const silence = aCtx.createGain()
                     silence.gain.value = 0
-                    silence.connect(aCtx.destination)  // 오디오 트랙 비우기 (추측)
+                    silence.connect(aCtx.destination)  
             
                     onOSCend()
             
-                    let stopped = false  // loop를 멈추기 위한 flag
+                    let stopped = false
                     async function onOSCend() {
-                        // 캔버스 렌더링 (비동기)
                         await renderFunc()
-            
-                        // loop 생성
                         const osc = aCtx.createOscillator()
-                        osc.onended = onOSCend  // loop가 되는 이유
+                        osc.onended = onOSCend
                         osc.connect(silence)
                         osc.start()  // 당장 시작
-                        osc.stop(aCtx.currentTime + freq)  // 한 프레임 이후 정지
-            
-                        // loop 정지
+                        osc.stop(aCtx.currentTime + freq)
+
                         if (stopped) {
                             osc.onended = function () {
                                 aCtx.close()
@@ -217,14 +195,12 @@ module.exports = function(RED) {
                             }
                         }
                     }
-                    // loop를 정지하기 위한 함수를 반환한다.
+                    
                     return function () {
                         stopped = true
                     }
                 }
-
-
-                /* motion regist timer */
+                
                 const timerSecond = document.getElementById("secondTimer")
                 let second = timerSecond.options[timerSecond.selectedIndex].value
                 let poseData = null
@@ -234,9 +210,7 @@ module.exports = function(RED) {
                 document.getElementById("secondTimer").addEventListener('change', () => {
                     second = timerSecond.options[timerSecond.selectedIndex].value
                 })
-
-
-                /* motion name empty check */
+                
                 var handMotionName = document.getElementById("hand-motion-name")
                 document.getElementById("captrue-btn").addEventListener('click', () => {
                     if (handMotionName.value === "" || handMotionName.value === undefined) {
@@ -294,17 +268,13 @@ module.exports = function(RED) {
                         document.getElementById("result-div").style.display = "block";
                     }, second*1000);
                 }
-
-
-                /* send pose data */
+                
                 document.getElementById("regist-btn").addEventListener('click', function () {
                     document.getElementById("motion-result-message").style.color = "green";
                     document.getElementById("motion-result-message").textContent = "[" + handMotionName.value + "] Data sent successfully! Check out the registration results!";
                     dataWebSocket.send(JSON.stringify(poseDataResult));
                 })
-
-
-                /* result message reset*/
+                
                 document.getElementById("hand-motion-name").addEventListener('focus', onClear);
                 document.getElementById("cancel-btn").addEventListener('click', function () {
                     document.getElementById("hand-motion-name").value = "";
@@ -316,18 +286,14 @@ module.exports = function(RED) {
                 document.getElementById("motion-result-keypoint").innerHTML = "";
                 document.getElementById("result-div").style.display = "none";
                 }
-            
-
-                // 모니터링 관련 소켓 인스턴스 생성
+                
                 const urlCreator = window.URL || window.webkitURL
                 const monitorUrl = 'http://${config.serverUrl}:${config.monitorPort}'
                 const monitorSocket = io(monitorUrl)
                 monitorSocket.on("connect", () => {
                     console.log("connection server")
                 })
-
-
-                /* keypoint rendering function */
+                
                 function onResults(results) {
                     outputCtx.save()
                     outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
@@ -346,11 +312,7 @@ module.exports = function(RED) {
                         }
                     }
                     outputCtx.restore();
-            
-                    // transport <canvas> data in form of blob. (I referenced the link below)
-                    // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
-                    // https://github.com/Infocatcher/Right_Links/issues/25
-                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLoutputElement/toBlob
+
                     if (monitorSocket.connected) {
                         outputElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
@@ -363,23 +325,17 @@ module.exports = function(RED) {
                 const hands = new Hands({locateFile: (file) => {
                     return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/'+file;
                 }});
-
-
                 hands.setOptions({
                     maxNumHands: 2,
                     minDetectionConfidence: 0.6,
                     minTrackingConfidence: 0.5
                 });
                 hands.onResults(onResults);
-
-
-                /* async rendering function */
+                
                 async function render() {
                     await hands.send({ image: inputElement })
                 }
-
-
-                /* media data setting */
+                
                 const mediaConstraints = {
                     audio: false, // modify change if you want audio data
                     video: { width: 600, height: 340 }
@@ -390,9 +346,9 @@ module.exports = function(RED) {
                         inputElement.srcObject = stream
                         inputElement.oncanplay = function (e) {
                             inputElement.play()
-                                .then(() => {
-                                    startDetect(render)
-                                })
+                            .then(() => {
+                                startDetect(render)
+                            })
                         }
                     })
                     .catch(err => {
@@ -407,9 +363,6 @@ module.exports = function(RED) {
         
         // listener to receive messages from the up-stream nodes in a flow.
         this.on('input', (msg, send, done) => {
-
-            // return HTML document to the client.
-            // 클라이언트에 HTML 문서 반환
             msg.payload = HTML()
             send = send || function() { this.send.apply(this, arguments )}
             send(msg)

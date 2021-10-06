@@ -156,56 +156,36 @@ module.exports = function(RED) {
             </html>
             
             <script type="module">
-                // 비활성화된 탭에서도 캔버스가 지속적으로 업데이트되도록 하기 위해
-                // 재귀적으로 생성되는 빈 오디오 트랙의 Loop를 사용합니다. (각 오디오 트랙의 지속시간은 10fps 기준 0.1초)
-                // 빈 오디오 트랙의 생성자 함수에 캔버스 렌더링 메소드를 포함해 지속적 렌더링이 가능해집니다.
-                // 관련 링크 : https://stackoverflow.com/questions/44156528/canvas-doesnt-repaint-when-tab-inactive-backgrounded-for-recording-webgl
-            
-            
-                // DOM 엘리먼트
                 const inputElement = document.getElementById('input-video')
                 const outputElement = document.getElementById('output-canvas')
                 const captureElement = document.getElementById('capture-canvas')
                 const outputCtx = outputElement.getContext('2d')
                 const captureCtx = captureElement.getContext('2d')
-            
-            
-                // Detection 데이터 전송할 웹소켓 인스턴스 생성
                 const dataWebSocket = new WebSocket('${config.dataSocketUrl}')
 
-
-                // 디텍션 시작 함수
                 function startDetect(renderFunc) {
-                    // 최초의 오디오 트랙을 생성한다.
-                    // (Loop 정지 함수는 현재 사용하지 않고 있음, 개발자의 취지에 따라 커스터마이징 가능)
                     const fps = 60
                     const stopLoop = audioTimerLoop(renderFunc, 1000 / fps)
                 }
-            
-            
-                // 오디오 트랙 Loop 생성자
+
                 function audioTimerLoop(renderFunc, frequency) {
-                    const freq = frequency / 1000  // AudioContext는 second 단위
+                    const freq = frequency / 1000  
                     const aCtx = new AudioContext()
                     const silence = aCtx.createGain()
                     silence.gain.value = 0
-                    silence.connect(aCtx.destination)  // 오디오 트랙 비우기 (추측)
+                    silence.connect(aCtx.destination)  
             
                     onOSCend()
             
-                    const stopped = false  // loop를 멈추기 위한 flag
+                    const stopped = false  
                     async function onOSCend() {
-                        // 캔버스 렌더링 (비동기)
                         await renderFunc()
-            
-                        // loop 생성
                         const osc = aCtx.createOscillator()
-                        osc.onended = onOSCend  // loop가 되는 이유
+                        osc.onended = onOSCend 
                         osc.connect(silence)
-                        osc.start()  // 당장 시작
-                        osc.stop(aCtx.currentTime + freq)  // 한 프레임 이후 정지
+                        osc.start()
+                        osc.stop(aCtx.currentTime + freq)
             
-                        // loop 정지
                         if (stopped) {
                             osc.onended = function () {
                                 aCtx.close()
@@ -213,14 +193,12 @@ module.exports = function(RED) {
                             }
                         }
                     }
-                    // loop를 정지하기 위한 함수를 반환한다.
+                    
                     return function () {
                         stopped = true
                     }
                 }
-            
-            
-                /* motion regist timer */
+                
                 const timerSecond = document.getElementById("secondTimer")
                 let second = timerSecond.options[timerSecond.selectedIndex].value
                 let poseData = null
@@ -230,9 +208,7 @@ module.exports = function(RED) {
                 document.getElementById("secondTimer").addEventListener('change', () => {
                     second = timerSecond.options[timerSecond.selectedIndex].value
                 })
-            
-            
-                /* motion name empty check */
+                
                 const poseMotionName = document.getElementById("pose-motion-name")
                 document.getElementById("captrue-btn").addEventListener('click', () => {
                     if (poseMotionName.value === "" || poseMotionName.value === undefined) {
@@ -274,8 +250,7 @@ module.exports = function(RED) {
                             detail += "</tr>"
                         }
                         detail += "</table>"
-
-                        /* Save data immediately after timer runs */
+                        
                         poseData.regist = true
                         poseData.poseName = motionName
                         poseDataResult = poseData
@@ -288,17 +263,13 @@ module.exports = function(RED) {
                         document.getElementById("regist-btn-bar").style.display = "block"
                     }, timer * 1000, motionName)
                 }
-            
-
-                /* send pose data */
+                
                 document.getElementById("regist-btn").addEventListener('click', function(){
                     document.getElementById("motion-result-message").style.color = "green"
                     document.getElementById("motion-result-message").textContent = "[" + poseMotionName.value +"] Data sent successfully! Check out the registration results!"
                     dataWebSocket.send(JSON.stringify(poseDataResult))
                 })
-            
-
-                /* result message reset*/
+                
                 document.getElementById("pose-motion-name").addEventListener('focus', onClear)
                 document.getElementById("cancel-btn").addEventListener('click', function(){
                     document.getElementById("pose-motion-name").value = ""
@@ -310,9 +281,7 @@ module.exports = function(RED) {
                     document.getElementById("motion-result-keypoint").innerHTML = ""
                     document.getElementById("result-div").style.display = "none"
                 }
-            
-
-                // 미러링 관련 소켓 인스턴스 생성
+                
                 const urlCreator = window.URL || window.webkitURL
                 const monitorUrl = 'http://${config.serverUrl}:${config.monitorPort}'
                 const monitorSocket = io(monitorUrl)
@@ -321,27 +290,18 @@ module.exports = function(RED) {
                     monitorSocket.emit("echo", "echo from mediapipe")
                 })
             
-            
-                // 캔버스에 Pose Detection 결과값 렌더링하는 함수
+                // Pose Detection result function
                 function onResults(results) {
-                    // 빈 캔버스 로드
                     outputCtx.save()
                     outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
-            
-                    // 캔버스에 비디오 화면 표시
                     outputCtx.globalCompositeOperation = 'destination-atop'
-                    outputCtx.drawImage(
-                        results.image, 0, 0, outputElement.width, outputElement.height)
-            
-                    // 캔버스에 디텍션 랜드마크 표시
+                    outputCtx.drawImage(results.image, 0, 0, outputElement.width, outputElement.height)
                     outputCtx.globalCompositeOperation = 'source-over'
-                    drawConnectors(outputCtx, results.poseLandmarks, POSE_CONNECTIONS,
-                        { color: '#f2d6ae', lineWidth: 5 })
-                    drawLandmarks(outputCtx, results.poseLandmarks,
-                        { color: '#b2a1f4', lineWidth: 1 })
+                    drawConnectors(outputCtx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#f2d6ae', lineWidth: 5 })
+                    drawLandmarks(outputCtx, results.poseLandmarks, { color: '#b2a1f4', lineWidth: 1 })
                     outputCtx.restore()
             
-                    // 랜드마크 데이터 웹소켓으로 전송
+                    // transport landmark data via web socket.
                     if (results.poseLandmarks) {
                         if (dataWebSocket.readyState === 1) {
                             results.regist = false
@@ -352,29 +312,21 @@ module.exports = function(RED) {
                             poseName = null
                         }
                     }
-            
-                    // transport <canvas> data in form of blob. (I referenced the link below)
-                    // 캔버스 데이터를 블롭화하여 미러링 노드로 전송 (아래 링크 참고하였음)
-                    // https://github.com/Infocatcher/Right_Links/issues/25
-                    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLoutputElement/toBlob
+                    
                     if (monitorSocket.connected) {
                         outputElement.toBlob(function (blob) {
                             const imageUrl = urlCreator.createObjectURL(blob)
                             monitorSocket.emit('video', imageUrl)
                         }, 'image/webp')
                     }
-                }
+                }            
             
-            
-                // Mediapipe의 Pose 인스턴스 생성
+                // construct Mediapipe Pose instance
                 const pose = new Pose({
                     locateFile: (file) => {
                         return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
                     }
                 })
-            
-            
-                // Pose 인스턴스 설정
                 pose.setOptions({
                     modelComplexity: 1,
                     smoothLandmarks: true,
@@ -384,17 +336,13 @@ module.exports = function(RED) {
                     minTrackingConfidence: 0.5
                 })
                 pose.onResults(onResults)
-            
-            
-                // 렌더링 함수 (비동기)
+                
                 async function render() {
                     await pose.send({ image: inputElement })
                 }
-            
-            
-                // 미디어 장치 연결 및 Detection 시작
+                
                 const mediaConstraints = {
-                    audio: false, // 음성 포함하려면 값을 'true'로 바꿔야 함
+                    audio: false,
                     video: { width: 1280, height: 720 }
                 }
 
@@ -403,9 +351,9 @@ module.exports = function(RED) {
                         inputElement.srcObject = stream
                         inputElement.oncanplay = function (e) {
                             inputElement.play()
-                                .then(() => {
-                                    startDetect(render)
-                                })
+                            .then(() => {
+                                startDetect(render)
+                            })
                         }
                     })
                     .catch(err => {
