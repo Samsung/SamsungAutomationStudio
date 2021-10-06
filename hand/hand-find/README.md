@@ -40,7 +40,7 @@ This is an array in which the name of the hand coordinates is stored to compare 
 
 ### inputLeftHand / inputRightHand
 
-A pose array to calculate whether a pose has been maintained for a specific time. It records 30 times of the recently entered hands pose.
+A pose array to calculate whether a pose has been maintained for a specific time. The length of this array is set by the developer as desired.
 
 ## Output
 
