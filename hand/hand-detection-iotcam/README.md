@@ -4,7 +4,27 @@ A simple node that recognizes and visualizes hand using a external camera device
 
 ## Pre-requisites
 
-The hand-detection-iotcam node requires [FFmpeg](https://ffmpeg.org/) to be installed. This node uses FFmpeg to receive rtsp streaming data and display it to the screen.
+First, hand-detection-iotcam node requires [FFmpeg](https://ffmpeg.org/) to be installed. This node uses FFmpeg to receive rtsp streaming data and display it to the screen.
+
+Second, you need to update `node_modules/node-rtsp-stream/mpeg1muxer.js` like below.
+
+```JavaScript
+...
+ this.spawnOptions = [
+    "-rtsp_transport", "tcp", "-i",
+    this.url,
+    '-f',
+    'mpeg1video',
+    '-b:v', '1000k',
+    '-maxrate', '1000k',
+    '-bufsize', '1000k',
+     '-an', '-r', '24',
+    // additional ffmpeg options go here
+    ...this.additionalFlags,
+    '-'
+  ]
+...
+```
 
 ## Usage
 
