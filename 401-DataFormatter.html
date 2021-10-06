@@ -14,7 +14,7 @@
             <option value="path">Data Path</option>
         </select>
     </div>
-    <div class="form-row" id = "node-input-data_path-row">
+    <div class="form-row" id="node-input-data_path-row">
         <label for="node-input-data_path"><i class="fa fa-folder-open-o"></i> Data Path</label>
         <input type="text" id="node-input-data_path" placeholder="Data Path"><br>
     </div>
@@ -41,20 +41,24 @@
             <option value="totalByItems">Total By Items</option>
             <option value="countByItems">Count By Items</option>
             <option value="averageByItems">Average By Items</option>
-            <!-- <option value="overallStatistics">Overall Statistics</option> -->
+            <option value="overallStatistics">Overall Statistics</option>
         </select>
     </div>
     <div class="form-row">
         <label for="node-input-title"><i class="fa fa-tag"></i> Title</label>
         <input type="text" id="node-input-title" placeholder="title">
     </div>
-    <div class="form-row">
+    <div class="form-row" id="node-input-x_data-row">
         <label for="node-input-x_data"><i class="fa fa-line-chart"></i> X-axes</label>
         <input type="text" id="node-input-x_data" placeholder="x_data"><br>
     </div>
-    <div class="form-row" id = "node-input-y_data-row">
+    <div class="form-row" id="node-input-y_data-row">
         <label for="node-input-y_data"><i class="fa fa-line-chart"></i> Y-axes</label>
         <input type="text" id="node-input-y_data" placeholder="y_data">
+    </div>
+    <div class="form-row" id="node-input-y_label-row">
+        <label for="node-input-y_label"><i class="fa fa-tag"></i> Y-label</label>
+        <input type="text" id="node-input-y_label" placeholder="y_label">
     </div>
     <div class="form-row">
         <label for="node-input-isReverse"><i class="fa fa-sort-amount-desc"></i>Reverse</label>
@@ -121,45 +125,63 @@
         defaults: {
             config: {
                 value: '',
-                validate: function (val) {
-                    var isValidChartConfig = false;
-                    RED.nodes.eachNode(function (node) {
-                        if (node.id == val) {
-                            isValidChartConfig = true
-                        }
-                    })
-                    return !!val && isValidChartConfig
-                }
             },
-            name: { value: "Data Formatter" },
-            title: { value: "" },
-            data_entry_point: { value: "string", required: true },
-            data_path: { value: "" },
-            data_type: { value: "csv", required: true },
-            chart_type: { value: "line", required: true },
-            result_data_type: { value: "raw", required: true },
-            x_data: { value: "", required: true },
-            y_data: { value: "" },
-            isReverse: {value:false},
+            name: {
+                value: "Data Formatter"
+            },
+            title: {
+                value: ""
+            },
+            data_entry_point: {
+                value: "string",
+                required: true
+            },
+            data_path: {
+                value: ""
+            },
+            data_type: {
+                value: "csv",
+                required: true
+            },
+            chart_type: {
+                value: "line",
+                required: true
+            },
+            result_data_type: {
+                value: "raw",
+                required: true
+            },
+            x_data: {
+                value: "",
+            },
+            y_data: {
+                value: ""
+            },
+            y_label: {
+                value: ""
+            },
+            isReverse: {
+                value: false
+            },
         },
         inputs: 1,
         outputs: 1,
         icon: "font-awesome/fa-edit",
         paletteLabel: "Data Formatter",
-        label: function () {
+        label: function() {
             return this.name;
         },
-        oneditprepare: function () {
+        oneditprepare: function() {
             var NODE = this;
             $("#node-input-config").html('<option value = ""> Select Config</>');
-            RED.nodes.eachNode(function (node) {
+            RED.nodes.eachNode(function(node) {
                 if (node.name && node.type == 'chart-config') {
                     $("#node-input-config").append($("<option></option>").val(node.id).text(node.name + " (" + node.id + ")"));
                 }
             });
             $("#node-input-config").val(NODE.config);
 
-            $("#node-input-data_entry_point").on("change", function () {
+            $("#node-input-data_entry_point").on("change", function() {
                 var type = $(this).val();
                 if (type == "path") {
                     $("#node-input-data_path-row").show();
@@ -167,22 +189,28 @@
                 } else if (type == "string") {
                     $("#node-input-data_path-row").hide();
                     $("#node-input-data_type-xlsx").hide();
-                }
-                else {
+                } else {
                     $("#node-input-data_path-row").hide();
                     $("#node-input-data_type-xlsx").show();
                 }
             });
 
-            $("#node-input-result_data_type").on("change", function () {
+            $("#node-input-result_data_type").on("change", function() {
                 var type = $(this).val();
                 if (type == "countByItems") {
+                    $("#node-input-x_data-row").show();
                     $("#node-input-y_data-row").hide();
                     $("#node-input-y_label-row").hide();
-                }
-                else {
+
+                } else if (type == "overallStatistics") {
+                    $("#node-input-x_data-row").hide();
                     $("#node-input-y_data-row").show();
-                    $("#node-input-y_label-row").hide();
+                    $("#node-input-y_label-row").show();
+
+                } else {
+                    $("#node-input-x_data-row").show();
+                    $("#node-input-y_data-row").show();
+                    $("#node-input-y_label-row").show();
                 }
             });
         },
@@ -192,16 +220,28 @@
         category: 'sotaeji',
         color: '#FF9F43',
         defaults: {
-            name: { value: "Chart Config" },
-            borderColor: { value: "rgba(0, 0, 0, 0.1)" },
-            borderWidth: { value: "" },
-            backgroundColor: { value: "rgba(0, 0, 0, 0.1)" },
-            yMin: { value: "" },
-            yStepSize: { value: null },
+            name: {
+                value: "Chart Config"
+            },
+            borderColor: {
+                value: "rgba(0, 0, 0, 0.1)"
+            },
+            borderWidth: {
+                value: ""
+            },
+            backgroundColor: {
+                value: "rgba(0, 0, 0, 0.1)"
+            },
+            yMin: {
+                value: ""
+            },
+            yStepSize: {
+                value: null
+            },
         },
         icon: "font-awesome/fa-bar-chart-o",
         paletteLabel: "Chart Config",
-        label: function () {
+        label: function() {
             return this.name;
         }
     });

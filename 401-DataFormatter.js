@@ -1,16 +1,16 @@
-module.exports = function (RED) {
+module.exports = function(RED) {
     const xlsx = require('xlsx');
     const fs = require('fs-extra');
     const xmlParser = require('fast-xml-parser');
     const he = require('he');
     let parents = [];
 
-    function JsonFormatting(X, Y, title, type, nodeConfig, isReverse) {
+    function JsonFormatting(X, Y, title, type, nodeConfig, y_label, isReverse) {
         //json formatting
         try {
-            var min = Math.min.apply(Math, Y)
+            var min = Math.min.apply(Math, Y);
             if (nodeConfig && nodeConfig.yMin) {
-                min = Number(nodeConfig.yMin)
+                min = Number(nodeConfig.yMin);
             }
 
             let result = {
@@ -18,32 +18,37 @@ module.exports = function (RED) {
                 data: {
                     labels: isReverse ? X.reverse() : X,
                     datasets: [{
-                        backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || 'rgba(0, 0, 0, 0.1)'),
-                        borderWidth: ((nodeConfig && nodeConfig.borderWidth || null)),
-                        borderColor: ((nodeConfig && nodeConfig.borderColor) || 'rgba(0, 0, 0, 0.1)'),
-                        data: isReverse ? Y.reverse() : Y
-                    }]
+						label: y_label,
+                        backgroundColor:
+                            (nodeConfig && nodeConfig.backgroundColor) ||
+                            'rgba(0, 0, 0, 0.1)',
+                        borderWidth: (nodeConfig && nodeConfig.borderWidth) || null,
+                        borderColor:
+                            (nodeConfig && nodeConfig.borderColor) || 'rgba(0, 0, 0, 0.1)',
+                        data: isReverse ? Y.reverse() : Y,
+                    }, ],
                 },
                 options: {
                     responsive: true,
                     legend: {
                         position: 'top',
-                        display: false,
+						display: true,
                     },
                     title: {
                         display: true,
-                        text: title
+                        text: title,
                     },
                     scales: {
                         yAxes: [{
                             ticks: {
                                 min: min,
-                                stepSize: ((nodeConfig && Number(nodeConfig.yStepSize)) || null)
-                            }
-                        }]
-                    }
-                }
-            }
+                                stepSize:
+                                    (nodeConfig && Number(nodeConfig.yStepSize)) || null,
+                            },
+                        }, ],
+                    },
+                },
+            };
             return result;
         } catch (error) {
             throw new Error('Failed to formatting. ' + error);
@@ -77,7 +82,7 @@ module.exports = function (RED) {
 
     function XlsxParser(xlsxData) {
         //xlsx to json
-        try  {
+        try {
             let sheetnames = Object.keys(xlsxData.Sheets);
             let sheetname = sheetnames[0];
 
@@ -93,7 +98,7 @@ module.exports = function (RED) {
         try {
             const xmlOptions = {
                 attributeNamePrefix: '@_',
-                attrNodeName: 'attr', //default is 'false' 
+                attrNodeName: 'attr', //default is 'false'
                 textNodeName: '#text',
                 ignoreAttributes: true,
                 ignoreNameSpace: false,
@@ -101,24 +106,26 @@ module.exports = function (RED) {
                 parseNodeValue: true,
                 parseAttributeValue: false,
                 trimValues: true,
-                cdataTagName: '__cdata', //default is 'false' 
+                cdataTagName: '__cdata', //default is 'false'
                 cdataPositionChar: '\\c',
                 parseTrueNumberOnly: false,
-                arrayMode: false, //'strict' 
-                attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true }), //default is a=>a 
-                tagValueProcessor: (val, tagName) => he.decode(val), //default is a=>a 
-                stopNodes: ['parse-me-as-string']
+                arrayMode: false, //'strict'
+                attrValueProcessor: (val, attrName) =>
+                    he.decode(val, { isAttributeValue: true }), //default is a=>a
+                tagValueProcessor: (val, tagName) => he.decode(val), //default is a=>a
+                stopNodes: ['parse-me-as-string'],
             };
-    
+
             let result = xmlParser.parse(xmlData, xmlOptions);
+            parents = [];
             findAllParents(result, y_data);
-    
-            parents.forEach(key => {
+
+            parents.forEach((key) => {
                 if (isNaN(key) === true) {
                     result = result[key];
                 }
             });
-    
+
             let root = Object.keys(result)[0];
             if (isNaN(root)) {
                 result = result[root];
@@ -131,10 +138,11 @@ module.exports = function (RED) {
 
     function jsonParser(jsonData, y_data) {
         try {
-            let result = jsonData;
+            let result = JSON.parse(jsonData);;
+            parents = [];
             findAllParents(result, y_data);
 
-            parents.forEach(key => {
+            parents.forEach((key) => {
                 if (isNaN(key) === true) {
                     result = result[key];
                 }
@@ -152,8 +160,6 @@ module.exports = function (RED) {
 
     function findAllParents(jsonObj, y_data) {
         try {
-            parents = [];
-        
             if (jsonObj instanceof Object) {
                 const keys = Object.keys(jsonObj);
                 if (keys.includes(y_data)) {
@@ -178,7 +184,7 @@ module.exports = function (RED) {
         try {
             let X = [];
             let Y = [];
-    
+
             for (let row of jsonData) {
                 X.push(row[x_data]);
                 Y.push(row[y_data]);
@@ -200,7 +206,7 @@ module.exports = function (RED) {
                     totalByItems[row[x_data]] = row[y_data];
                 }
             }
-            return { X: (Object.keys(totalByItems)), Y: (Object.values(totalByItems)) };
+            return { X: Object.keys(totalByItems), Y: Object.values(totalByItems) };
         } catch (error) {
             throw new Error('Failed to get total by items. ' + error);
         }
@@ -219,7 +225,10 @@ module.exports = function (RED) {
                 }
             }
 
-            return { X: (Object.keys(countByItemsJson)), Y: (Object.values(countByItemsJson)) };
+            return {
+                X: Object.keys(countByItemsJson),
+                Y: Object.values(countByItemsJson),
+            };
         } catch (error) {
             throw new Error('Failed to get total by items. ' + error);
         }
@@ -234,7 +243,6 @@ module.exports = function (RED) {
                 if (averageByItems.hasOwnProperty(row[x_data])) {
                     averageByItems[row[x_data]] += row[y_data];
                     countByItems[row[x_data]] += 1;
-
                 } else {
                     averageByItems[row[x_data]] = row[y_data];
                     countByItems[row[x_data]] = 1;
@@ -245,7 +253,10 @@ module.exports = function (RED) {
                 averageByItems[key] /= countByItems[key];
             }
 
-            return { X: (Object.keys(averageByItems)), Y: (Object.values(averageByItems)) };
+            return {
+                X: Object.keys(averageByItems),
+                Y: Object.values(averageByItems),
+            };
         } catch (error) {
             throw new Error('Failed to get average by items. ' + error);
         }
@@ -267,8 +278,8 @@ module.exports = function (RED) {
 
             let average = total / count;
 
-            let X = ['min', 'max', 'count', 'total', 'average'];
-            let Y = [min, max, count, total, average];
+            let X = ['최소', '최대', '평균'];
+            let Y = [min, max, average];
 
             return { X: X, Y: Y };
         } catch (error) {
@@ -278,13 +289,16 @@ module.exports = function (RED) {
 
     function stringToNumber(jsonData, y_data) {
         try {
-            if (typeof (jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
+            if (
+                typeof jsonData[0][y_data] === 'string' &&
+                jsonData[0][y_data].includes(',')
+            ) {
                 for (let row of jsonData) {
                     row[y_data] = Number(row[y_data].replace(/,/g, ''));
                 }
             }
-    
-            if (typeof (jsonData[0][y_data]) === 'string') {
+
+            if (typeof jsonData[0][y_data] === 'string') {
                 for (let row of jsonData) {
                     row[y_data] = Number(row[y_data]);
                 }
@@ -319,18 +333,28 @@ module.exports = function (RED) {
         let node = this;
         node.status({});
 
-        node.on('input', function (msg) {
+        node.on('input', function(msg) {
             let type = n.data_type;
             let jsonData, data, cleanData;
 
             node.configId = n.config;
-            RED.nodes.eachNode(function (nn) {
+            RED.nodes.eachNode(function(nn) {
                 if (node.configId === nn.id) {
                     node.config = nn;
                 }
             });
 
+            if (n.result_data_type !== 'overallStatistics' && !n.x_data) {
+                throw new Error('Missing X-axes');
+            }
+            if (n.result_data_typepe !== 'countByItems' && !n.y_data) {
+                throw new Error('Missing Y-axes');
+            }
+
             try {
+                if (n.data_entry_point === 'binary' && type !== msg.dataFormat) {
+                    throw new Error('Invalid Data Format');
+                }
                 // get data
                 if (n.data_entry_point === 'path') {
                     if (type === 'xlsx') {
@@ -373,25 +397,27 @@ module.exports = function (RED) {
                         cleanData = getTotalByItems(jsonData, n.x_data, n.y_data);
                         break;
                     case 'countByItems':
+                        if (!n.xdata) throw new Error('Missing X-axes')
                         cleanData = getCountByItems(jsonData, n.x_data);
                         break;
                     case 'averageByItems':
                         cleanData = getAverageByItems(jsonData, n.x_data, n.y_data);
                         break;
                     case 'overallStatistics':
-                        cleanData = getOverallStatistics(jsonData, n.x_data, n.y_data);
+                        cleanData = getOverallStatistics(jsonData, n.y_data);
                 }
 
+				if (!n.y_label) n.y_label = n.y_data;
                 // formatting data
-                msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, node.config, n.isReverse);
+                msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, node.config, n.y_label, n.isReverse);
                 node.send(msg);
             } catch (error) {
                 node.status({ fill: 'red', shape: 'dot', text: 'error' });
                 node.error(error.toString(), msg);
             }
-        })
+        });
     }
 
     RED.nodes.registerType('data-formatter', DataFormatting);
     RED.nodes.registerType('chart-config', ChartConfig);
-}
+};
