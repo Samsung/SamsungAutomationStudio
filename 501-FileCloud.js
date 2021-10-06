@@ -14,7 +14,8 @@ module.exports = function (RED) {
       const cloudType = config.cloudType;
       const fileName = msg.payload.fileName || config.fileName;
       const filePath = msg.payload.filePath || config.filePath;
-
+      const dataFormat = fileName.split('.');
+      msg.dataFormat = dataFormat[dataFormat.length - 1];
       var param = {
         fileName,
         filePath,
