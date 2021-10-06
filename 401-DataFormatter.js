@@ -304,13 +304,13 @@ module.exports = function (RED) {
         this.yStepSize = n.yStepSize;
 
         if ((n.yStepSize!=='' && isNaN(Number(n.yStepSize))) || (n.yStepSize!=='' && (Number(n.yStepSize)<=0))){
-            throw new Error("Invalid input") 
+            throw new Error('Invalid input') 
         }
         if ((n.borderWidth!=='' && isNaN(Number(n.borderWidth))) || (Number(n.borderWidth)<0)){
-            throw new Error("invalid input")
+            throw new Error('invalid input')
         }
         if ((n.yMin!=='' && isNaN(Number(n.yMin)))) {
-            throw new Error("invalid input")
+            throw new Error('invalid input')
         }
     }
 
@@ -347,6 +347,12 @@ module.exports = function (RED) {
                     }
                 } else if (n.data_entry_point === 'string') {
                     data = msg.payload;
+                    if (typeof(data)==='string' && type==='json') {
+                        throw new Error('Invalid Data Format');
+                    }
+                    if (typeof(data)==='object' && type==='xml') {
+                        throw new Error('Invalid Data Format');
+                    }
                 }
 
                 // get entry
