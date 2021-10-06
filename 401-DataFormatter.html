@@ -21,10 +21,10 @@
     <div class="form-row">
         <label for="node-input-data_type"><i class="fa fa-file-text-o"></i> Data Format</label>
         <select id="node-input-data_type">
-            <option value="json">json</option>
-            <option value="xml">xml</option>
             <option value="csv">csv</option>
             <option value="xlsx" id = "node-input-data_type-xlsx">xlsx</option>
+            <option value="xml">xml</option>
+            <option value="json">json</option>
         </select>
     </div>
     <div class="form-row">
@@ -135,7 +135,7 @@
             title: { value: "" },
             data_entry_point: { value: "string", required: true },
             data_path: { value: "" },
-            data_type: { value: "json", required: true },
+            data_type: { value: "csv", required: true },
             chart_type: { value: "line", required: true },
             result_data_type: { value: "raw", required: true },
             x_data: { value: "", required: true },
