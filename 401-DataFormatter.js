@@ -316,16 +316,6 @@ module.exports = function(RED) {
         this.backgroundColor = n.backgroundColor;
         this.yMin = n.yMin;
         this.yStepSize = n.yStepSize;
-
-        if ((n.yStepSize !== '' && isNaN(Number(n.yStepSize))) || (n.yStepSize !== '' && (Number(n.yStepSize)<=0))){
-            throw new Error('Invalid yStepSize') 
-        }
-        if ((n.borderWidth !== '' && isNaN(Number(n.borderWidth))) || (Number(n.borderWidth)<0)){
-            throw new Error('Invalid borderWidth')
-        }
-        if ((n.yMin !== '' && isNaN(Number(n.yMin)))) {
-            throw new Error('Invalid yMin')
-        }
     }
 
     function DataFormatting(n) {
@@ -345,6 +335,16 @@ module.exports = function(RED) {
             });
 
             try {
+                // error handling
+                if ((n.yStepSize !== '' && isNaN(Number(n.yStepSize))) || (n.yStepSize !== '' && (Number(n.yStepSize)<=0))){
+                    throw new Error('Invalid yStepSize') 
+                }
+                if ((n.borderWidth !== '' && isNaN(Number(n.borderWidth))) || (Number(n.borderWidth)<0)){
+                    throw new Error('Invalid borderWidth')
+                }
+                if ((n.yMin !== '' && isNaN(Number(n.yMin)))) {
+                    throw new Error('Invalid yMin')
+                }
                 if (n.result_data_type !== 'overallStatistics' && !n.x_data) {
                     throw new Error('Missing X-axes');
                 }
@@ -407,6 +407,7 @@ module.exports = function(RED) {
                 }
 
 				if (!n.y_label) n.y_label = n.y_data;
+                
                 // formatting data
                 msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, node.config, n.y_label, n.isReverse);
                 node.send(msg);
