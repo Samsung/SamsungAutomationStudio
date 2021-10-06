@@ -9,6 +9,8 @@
       monitorPort: {value: 1882, validate:RED.validators.number()},
       rtspPort: {value: 1886, validate:RED.validators.number()},
       dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
+      smartthingsMnid: {value: ""},
+      smartthingsPat: {value: ""},
     },
     inputs: 1,
     outputs: 1,
@@ -22,6 +24,11 @@
 </script>
 
 <script type="text/html" data-template-name="pose-detection-iotcam">
+  <div class="form-tips" style="margin-bottom:10px;">
+    <b>Note:</b> You can check your Smartthings MNID on <b><a href="https://smartthings.developer.samsung.com/partner/dashboard" target="_blank">this page</a>.
+    And you can also generate your Smartthings Personal Access Token(PAT) on <b><a href="https://account.smartthings.com/tokens" target="_blank">this page</a>.</b>
+  </div>
+
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name">
@@ -45,6 +52,16 @@
   <div class="form-row">
     <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
     <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/data'">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-smartthingsMnid"><i class="fa fa-tag"></i> Smartthings MNID</label>
+    <input type="text" id="node-input-smartthingsMnid">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-smartthingsPat"><i class="fa fa-tag"></i> Smartthings PAT</label>
+    <input type="text" id="node-input-smartthingsPat">
   </div>
 </script>
 

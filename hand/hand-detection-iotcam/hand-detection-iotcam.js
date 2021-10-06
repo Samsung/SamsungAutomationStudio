@@ -5,7 +5,6 @@ const ws = require('ws')
 const http = require('http')
 const cors = require('cors')
 const express = require('express')
-require("dotenv").config()
 
 
 module.exports = function(RED) {
@@ -432,11 +431,6 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config)
         let rtspStream
         
-        // .env variable
-        // .env로부터 변수 호출
-        const mnid = process.env.SAMSUNG_MNID
-        const token = process.env.SAMSUNG_TOKEN
-        
         // listener to receive messages from the up-stream nodes in a flow.
         this.on('input', (msg, send, done) => {
 
@@ -508,7 +502,7 @@ module.exports = function(RED) {
                 // newStream 생성
                 rtspStream = new newStream({
                     name: 'name',
-                    streamUrl: `rtsps://${mnid}:${token}@${rtspUrl}`,
+                    streamUrl: `rtsps://${config.smartthingsMnid}:${config.smartthingsPat}@${rtspUrl}`,
                     wsPort: rtspPort,
                     ffmpegOptions: { // options ffmpeg flags
                         '-stats': '', // an option with no neccessary value uses a blank string
@@ -517,7 +511,6 @@ module.exports = function(RED) {
                 })
             })
 
-            // :1880/ws/monitor  >>  :1881
             httpServer.listen(rtspPort)
 
             // return HTML document to the client.
