@@ -397,7 +397,6 @@ module.exports = function(RED) {
                         cleanData = getTotalByItems(jsonData, n.x_data, n.y_data);
                         break;
                     case 'countByItems':
-                        if (!n.xdata) throw new Error('Missing X-axes')
                         cleanData = getCountByItems(jsonData, n.x_data);
                         break;
                     case 'averageByItems':
