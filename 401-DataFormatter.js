@@ -336,13 +336,15 @@ module.exports = function(RED) {
 
             try {
                 // error handling
-                if ((n.yStepSize !== '' && isNaN(Number(n.yStepSize))) || (n.yStepSize !== '' && (Number(n.yStepSize)<=0))){
+                if ((node.config.yStepSize !== '' && isNaN(Number(node.config.yStepSize))) 
+                    || (node.config.yStepSize !== '' && (Number(node.config.yStepSize)<=0))){
                     throw new Error('Invalid yStepSize') 
                 }
-                if ((n.borderWidth !== '' && isNaN(Number(n.borderWidth))) || (Number(n.borderWidth)<0)){
+                if ((node.config.borderWidth !== '' && isNaN(Number(node.config.borderWidth)))
+                    || (Number(node.config.borderWidth)<0)){
                     throw new Error('Invalid borderWidth')
                 }
-                if ((n.yMin !== '' && isNaN(Number(n.yMin)))) {
+                if ((node.config.yMin !== '' && isNaN(Number(node.config.yMin)))) {
                     throw new Error('Invalid yMin')
                 }
                 if (n.result_data_type !== 'overallStatistics' && !n.x_data) {
