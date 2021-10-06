@@ -1,0 +1,99 @@
+<script type="text/javascript">
+
+  RED.nodes.registerType('pose-detection-iotcam',{
+    category: 'motion pose',
+    color: '#B2A1F4',
+    defaults: {
+      name: {value: ""},
+      serverUrl: {value: 'localhost'},
+      monitorPort: {value: 1882, validate:RED.validators.number()},
+      rtspPort: {value: 1886, validate:RED.validators.number()},
+      dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
+      smartthingsMnid: {value: ""},
+      smartthingsPat: {value: ""},
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-male",
+    label: function() {
+        return this.name||"pose-detection-iotcam"
+    },
+    oneditprepare: function() {
+    },
+  })
+</script>
+
+<script type="text/html" data-template-name="pose-detection-iotcam">
+  <div class="form-tips" style="margin-bottom:10px;">
+    <b>Note:</b> You can check your Smartthings MNID on <b><a href="https://smartthings.developer.samsung.com/partner/dashboard" target="_blank">this page</a>.
+    And you can also generate your Smartthings Personal Access Token(PAT) on <b><a href="https://account.smartthings.com/tokens" target="_blank">this page</a>.</b>
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-serverUrl"><i class="fa fa-tag"></i> Server Url</label>
+    <input type="text" id="node-input-serverUrl" placeholder="(default) localhost">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-monitorPort"><i class="fa fa-tag"></i> Monitor Port</label>
+    <input type="text" id="node-input-monitorPort" placeholder="(default) 1882">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-rtspPort"><i class="fa fa-tag"></i> Rtsp Port</label>
+    <input type="text" id="node-input-rtspPort" placeholder="(default) 1886">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
+    <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/data'">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-smartthingsMnid"><i class="fa fa-tag"></i> Smartthings MNID</label>
+    <input type="text" id="node-input-smartthingsMnid">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-smartthingsPat"><i class="fa fa-tag"></i> Smartthings PAT</label>
+    <input type="text" id="node-input-smartthingsPat">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="pose-detection-iotcam">
+  <p>A simple node that recognizes and visualizes posture using external camera device.</p>
+
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>Name</dt>
+    <dd>The label of the Node assigned by the user.</dd>
+    <dt>Server Url</dt>
+    <dd>URL address of your websocket server. Do not include a prefix such as 'http://'. (default: 'localhost')</dd>
+    <dt>Mirror Port</dt>
+    <dd>Port number to allow monitoring from other resources. (default: 1882)</dd>
+    <dt>Rtsp Port</dt>
+    <dd>Port number to serve the IoT camera streaming. (default: 1886)</dd>
+    <dt>Data Socket Url</dt>
+    <dd>Socket URI to send and receive data. (default: 'ws://localhost:1880/ws/data')</dd>
+    <dt>Camera Test</dt>
+    <dd>Preview webcam camera.</dd>
+  </dl>
+  
+  <h3>Input</h3>
+  <dl class="message-properties">
+    <dt>HTTP In</dt>
+    <dd>Information about HTTP endpoints and methods.</dd>
+  </dl>
+  
+  <h3>Output</h3>
+  <dl class="message-properties">
+    <dt>HTTP Response Payload</dt>
+    <dd>HTML payload for forwarding to http response node.</dd>
+  </dl>
+  
+</script>
