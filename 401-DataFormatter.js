@@ -347,12 +347,6 @@ module.exports = function (RED) {
                     }
                 } else if (n.data_entry_point === 'string') {
                     data = msg.payload;
-                    if (typeof(data)==='string' && type==='json') {
-                        throw new Error('Invalid Data Format');
-                    }
-                    if (typeof(data)==='object' && type==='xml') {
-                        throw new Error('Invalid Data Format');
-                    }
                 }
 
                 // get entry
