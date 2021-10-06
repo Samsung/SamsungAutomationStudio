@@ -21,7 +21,7 @@ These nodes require Node.js version 14.17.0 and Node-RED 2.0.6.
 <br>
 
 ## Node
-> If you want a more detailed description of Node, see its Readme. For more detailed "Flow" and "Algorithms", check out the [Wiki](https://github.com/5FNSaaS/node-red-contrib-motion-pose/wiki)
+> If you want a more detailed description of Node, see its Readme. <br> For more detailed "Flow" and "Algorithms", check out the [Wiki](https://github.com/5FNSaaS/node-red-contrib-motion-pose/wiki)
 - [monitor](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/monitor) : A node for monitoring the pose/hand recognition screen in an external browser.
 - [pose-detection-webcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-detection-webcam) : A simple node that recognizes and visualizes pose using a webcam.
 - [pose-detection-iotcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-detection-iotcam) : A simple node that recognizes and visualizes pose using a external camera device which support Samsung Smartthings.
@@ -70,3 +70,4 @@ Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://
 - [Node-RED Creating Nodes](https://nodered.org/docs/creating-nodes/)
 - [Google Mediapipe Repository](https://github.com/google/mediapipe)
 - [Tensorflow Model Github Repository](https://github.com/tensorflow/tfjs-models)
+- [SamsungAutomationStudio Github Repository](https://github.com/Samsung/SamsungAutomationStudio)
