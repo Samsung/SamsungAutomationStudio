@@ -23,5 +23,37 @@
 </script>
 
 <script type="text/html" data-help-name="hand-find">
-  <p>hand-find</p>
+  <p>This node receives a number of input key points (ex: sequence of continuous time) and determines the similarity to the saved hand pose, and derives the most similar hand pose.</p>
+
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>Name<span class="property-type">optional</span></dt>
+    <dd>The label of the Node assigned by the user.</dd>
+  </dl>
+
+  <h3>Input</h3>
+  <dl class="message-properties">
+    <dt>multiHandLandmarks</dt>
+    <dd>Output of media pipe hands model. The x, y, z coordinate values from points 1 to 21 of each hand.</dd>
+    <dt>multiHandedness</dt>
+    <dd>Output of media pipe hands model. Information on each hand.</dd>
+    <dt>savedLeftHand</dt>
+    <dd>An array storing json arrays of left-handed coordinates stored in the database.</dd>
+    <dt>savedRightHand</dt>
+    <dd>An array that stores json arrays of right-hand coordinates stored in the database.</dd>
+    <dt>savedNameList</dt>
+    <dd>An array that stores the names of hand gestures stored in the database.</dd>
+    <dt>inputLeftHands</dt>
+    <dd>The x, y, z coordinate values from points 1 to 21 of the left hand in the hand motion input to the camera device.</dd>
+    <dt>inputRightHands</dt>
+    <dd>The x, y, z coordinate values from points 1 to 21 of the right hand in the hand gesture input to the camera device.</dd>
+  </dl>
+
+  <h3>Output</h3>
+  <dl class="message-properties">
+    <dt>status</dt>
+    <dd>true if there is a similar pose, false if not (boolean)</dd>
+    <dt>handName</dt>
+    <dd>The name of the most similar hand pose if there is a similar action, null if not (string)</dd>
+  </dl>
 </script>
