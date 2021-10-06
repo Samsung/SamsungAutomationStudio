@@ -38,7 +38,7 @@ It is an arrangement in which the coordinates of the left/right hand are stored 
 
 This is an arrangement in which the name of the hand coordinates is stored to compare the similarity with the input hand pose. The order of indexes matches the coordinate order of `savedLeft(Right)Hand`.
 
-### handName
+### poseName
 
 This is the name of the pose the user wishes to save the hand pose.
 
