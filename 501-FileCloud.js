@@ -12,7 +12,8 @@ module.exports = function (RED) {
     this.on("input", async (msg, send) => {
       const cloudType = config.cloudType;
       const fileName = msg.payload.fileName || config.fileName;
-
+      const dataFormat = fileName ? fileName.split('.') : '';
+      msg.dataFormat = dataFormat[dataFormat.length - 1];
       var param = {
         fileName,
       };

@@ -344,17 +344,17 @@ module.exports = function(RED) {
                 }
             });
 
-            if (n.result_data_type !== 'overallStatistics' && !n.x_data) {
-                throw new Error('Missing X-axes');
-            }
-            if (n.result_data_typepe !== 'countByItems' && !n.y_data) {
-                throw new Error('Missing Y-axes');
-            }
-
             try {
+                if (n.result_data_type !== 'overallStatistics' && !n.x_data) {
+                    throw new Error('Missing X-axes');
+                }
+                if (n.result_data_typepe !== 'countByItems' && !n.y_data) {
+                    throw new Error('Missing Y-axes');
+                }
                 if (n.data_entry_point === 'binary' && type !== msg.dataFormat) {
                     throw new Error('Invalid Data Format');
                 }
+
                 // get data
                 if (n.data_entry_point === 'path') {
                     if (type === 'xlsx') {
