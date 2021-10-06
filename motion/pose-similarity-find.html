@@ -27,23 +27,31 @@
   </div>
 </script>
 <script type="text/html" data-help-name="pose-similarity-find">
-  <p>Find a posture similar to the input posture and return the similarity.</p>
+  <p>This node receives a number of input key points (ex: sequence of continuous time) and determines the similarity to the saved pose, and derives the most similar pose.</p>
 
-  <h3>Inputs</h3>
+  <h3>Properties</h3>
   <dl class="message-properties">
-    <dt>Name</dt>
+    <dt>Name<span class="property-type">optional</span></dt>
     <dd>The label of the Node assigned by the user.</dd>
-    <dt>Similar Sensitivity</dt>
-    <dd>The percentage of sensitivity of the criteria for determining similarity.</dd>
+    <dt>Similar Sensitivity<span class="property-type">required</span></dt>
+    <dd>A value that can be determined as similar (default: 80)</dd>
   </dl>
 
-  <h3>Outputs</h3>
+  <h3>Input</h3>
   <dl class="message-properties">
-    <dt>result</dt>
-    <dd>Name of the posture that was judged to be similar.</dd>
-    <dt>keypoint</dt>
-    <dd>Coordinate values of similar postures.</dd>
-    <dt>accuracy</dt>
-    <dd>Accuracy with the posture (determined to be similar)</dd>
+    <dt>inputKeypoints</dt>
+    <dd>Key points of body poses</dd>
+    <dt>Similar Sensitivity</dt>
+    <dd>Target key points to detect similarity ("name" is free to write a pose name)</dd>
+  </dl>
+
+  <h3>Output</h3>
+  <dl class="message-properties">
+    <dt>status</dt>
+    <dd>true if there is a similar pose, false if not (boolean)</dd>
+    <dt>poseName</dt>
+    <dd>The name of the most similar pose if there is a similar action, null if not (string)</dd>
+    <dt>similarity</dt>
+    <dd>Similarity (%) of the most similar pose, 0 if not (number)</dd>
   </dl>
 </script>
