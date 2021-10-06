@@ -134,5 +134,5 @@ module.exports = function(RED) {
 
         })
     }
-    RED.nodes.registerType("pose-similarity", PoseSimilarity)
+    RED.nodes.registerType("pose-similarity-find", PoseSimilarity)
 }
