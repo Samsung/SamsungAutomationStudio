@@ -303,14 +303,14 @@ module.exports = function (RED) {
         this.yMin = n.yMin;
         this.yStepSize = n.yStepSize;
 
-        if (isNaN(Number(n.yStepSize)) || (Number(n.yStepSize)<=0)){
-            throw new Error("Invalid input1") 
+        if ((n.yStepSize!=='' && isNaN(Number(n.yStepSize))) || (n.yStepSize!=='' && (Number(n.yStepSize)<=0))){
+            throw new Error("Invalid input") 
         }
-        if (isNaN(Number(n.borderWidth)) || (Number(n.borderWidth)<0)){
-            throw new Error("invalid input2")
+        if ((n.borderWidth!=='' && isNaN(Number(n.borderWidth))) || (Number(n.borderWidth)<0)){
+            throw new Error("invalid input")
         }
-        if (isNaN(Number(n.yMin))) {
-            throw new Error("invalid input3")
+        if ((n.yMin!=='' && isNaN(Number(n.yMin)))) {
+            throw new Error("invalid input")
         }
     }
 
