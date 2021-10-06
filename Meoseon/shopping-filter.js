@@ -45,14 +45,17 @@ module.exports = function (RED) {
         msg.payload.items = list;
       } else if (config.apiType === '11st') {
         var list = msg.payload.ProductSearchResponse.Products.Product;
-        if (config.minprice)
-          list = list.filter((item) => Number(item.SalePrice._text) > Number(config.minprice));
 
-        if (config.maxprice)
-          list = list.filter((item) => Number(item.SalePrice._text) < Number(config.maxprice));
+        if (Array.isArray(list)) {
+          if (config.minprice)
+            list = list.filter((item) => Number(item.SalePrice._text) > Number(config.minprice));
 
-        if (config.sorttype === 'asc') list.sort(elevenAscSort);
-        else list.sort(elevenDescSort);
+          if (config.maxprice)
+            list = list.filter((item) => Number(item.SalePrice._text) < Number(config.maxprice));
+
+          if (config.sorttype === 'asc') list.sort(elevenAscSort);
+          else list.sort(elevenDescSort);
+        }
 
         msg.payload.ProductSearchResponse.Products.Product = list;
       }
@@ -87,6 +90,9 @@ module.exports = function (RED) {
         });
       } else if (config.apiType === '11st') {
         var products = msg.payload.ProductSearchResponse.Products.Product;
+        if (!Array.isArray(products)) {
+          products = [products];
+        }
         products.forEach(function (product, idx) {
           var item = {
             productName: '',
@@ -99,7 +105,7 @@ module.exports = function (RED) {
           item.price = product.SalePrice._text;
           item.link = product.DetailPageUrl._cdata;
           item.mall = '11st';
-          item.image = product.ProductImage._cdata;
+          item.image = product.ProductImage300._cdata;
           list.push(item);
         });
       }
