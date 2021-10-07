@@ -4,7 +4,7 @@
 		<input type="text" id="node-input-name" placeholder="Name" />
 	</div>
 	<div class="form-tips">
-		<b>Tips:</b> TTBKey는 <a href="https://www.aladin.co.kr/ttb" target="_blank">알라딘</a>에서
+		<b>팁:</b> TTBKey는 <a href="https://www.aladin.co.kr/ttb" target="_blank">알라딘</a>에서
 		제공하는 API Key의 명칭으로 신청 후 획득할 수 있습니다.
 	</div>
 	<div class="form-row">
@@ -28,11 +28,11 @@
 			</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-Query">
+	<div class="form-row request-element request-element-ItemSearch" id="form-row-Query">
 		<label for="node-input-Query"> Query </label>
 		<input type="text" id="node-input-Query" placeholder="검색어" />
 	</div>
-	<div class="form-row" id="form-row-QueryType1">
+	<div class="form-row request-element request-element-ItemSearch" id="form-row-QueryType1">
 		<label for="node-input-QueryType1"> QueryType1 </label>
 		<select
 			type="text"
@@ -45,7 +45,7 @@
 			<option value="Publisher">Publisher(출판사검색)</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-QueryType2">
+	<div class="form-row request-element request-element-ItemList" id="form-row-QueryType2">
 		<label for="node-input-QueryType2"> QueryType2 </label>
 		<select
 			type="text"
@@ -66,7 +66,7 @@
 			</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-SearchTarget">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-SearchTarget">
 		<label for="node-input-SearchTarget"> SearchTarget </label>
 		<select
 			type="text"
@@ -82,7 +82,7 @@
 			<option value="All">All(위의 모든 타겟(몰))</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-SubSearchTarget">
+	<div class="form-row request-element request-element-ItemList" id="form-row-SubSearchTarget">
 		<label for="node-input-SubSearchTarget"> SubSearchTarget </label>
 		<select
 			type="text"
@@ -94,11 +94,11 @@
 			<option value="DVD">DVD(DVD)</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-ItemId">
+	<div class="form-row request-element request-element-ItemLookUp request-element-ItemOffStoreList" id="form-row-ItemId">
 		<label for="node-input-ItemId"> ItemId </label>
 		<input type="text" id="node-input-ItemId" placeholder="문자열/숫자" />
 	</div>
-	<div class="form-row" id="form-row-ItemIdType">
+	<div class="form-row request-element request-element-ItemLookUp request-element-ItemOffStoreList" id="form-row-ItemIdType">
 		<label for="node-input-ItemIdType"> ItemIdType </label>
 		<select
 			type="text"
@@ -110,7 +110,7 @@
 			<option value="ItemId">ItemId(알라딘고유의 값)</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-Start">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-Start">
 		<label for="node-input-Start"> Start </label>
 		<input
 			type="text"
@@ -118,7 +118,7 @@
 			placeholder="1이상, 양의 정수(기본값:1)"
 		/>
 	</div>
-	<div class="form-row" id="form-row-MaxResults">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-MaxResults">
 		<label for="node-input-MaxResults"> MaxResults </label>
 		<input
 			type="text"
@@ -126,7 +126,7 @@
 			placeholder="1이상 100이하, 양의 정수(기본값:10)"
 		/>
 	</div>
-	<div class="form-row" id="form-row-Sort">
+	<div class="form-row request-element request-element-ItemSearch" id="form-row-Sort">
 		<label for="node-input-Sort"> Sort </label>
 		<select
 			type="text"
@@ -141,7 +141,7 @@
 			<option value="MyReviewCount">MyReviewCount(마이리뷰갯수)</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-Cover">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-Cover">
 		<label for="node-input-Cover"> Cover </label>
 		<select
 			type="text"
@@ -156,7 +156,7 @@
 			<option value="None">None(없음)</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-CategoryId">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-CategoryId">
 		<label for="node-input-CategoryId"> CategoryId </label>
 		<input
 			type="text"
@@ -164,7 +164,7 @@
 			placeholder="양의정수 - 분야의 고유 번호(기본값:0, 전체)"
 		/>
 	</div>
-	<div class="form-row" id="form-row-Output">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-Output">
 		<label for="node-input-Output"> Output </label>
 		<select
 			type="text"
@@ -175,11 +175,11 @@
 			<option value="JS">JS(JSON 방식)</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-Partner">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-Partner">
 		<label for="node-input-Partner"> Partner </label>
 		<input type="text" id="node-input-Partner" placeholder="문자" />
 	</div>
-	<div class="form-row" id="form-row-includeKey">
+	<div class="form-row request-element request-element-ItemList request-element-ItemLookUp" id="form-row-includeKey">
 		<label for="node-input-includeKey"> includeKey </label>
 		<input
 			type="text"
@@ -187,7 +187,7 @@
 			placeholder="양의정수(기본값:0)"
 		/>
 	</div>
-	<div class="form-row" id="form-row-InputEncoding">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-InputEncoding">
 		<label for="node-input-InputEncoding"> InputEncoding </label>
 		<input
 			type="text"
@@ -195,7 +195,7 @@
 			placeholder="문자열(인코딩의 영문이름 - 기본값:utf-8)"
 		/>
 	</div>
-	<div class="form-row" id="form-row-Version">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-Version">
 		<label for="node-input-Version"> Version </label>
 		<select
 			type="text"
@@ -206,7 +206,7 @@
 			<option value="20131101">20131101</option>
 		</select>
 	</div>
-	<div class="form-row" id="form-row-outofStockfilter">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-outofStockfilter">
 		<label for="node-input-outofStockfilter"> outofStockfilter </label>
 		<input
 			type="text"
@@ -214,11 +214,11 @@
 			placeholder="양의정수(기본값:0)"
 		/>
 	</div>
-	<div class="form-row" id="form-row-offCode">
+	<div class="form-row request-element request-element-ItemLookUp" id="form-row-offCode">
 		<label for="node-input-offCode"> offCode </label>
 		<input type="text" id="node-input-offCode" placeholder="문자열" />
 	</div>
-	<div class="form-row" id="form-row-OptResult">
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-OptResult">
 		<label for="node-input-OptResult"> OptResult </label>
 		<input
 			type="text"
@@ -270,113 +270,19 @@
 			$('#node-input-RequestType').change(function () {
 				const type = $('#node-input-RequestType option:selected').val();
 				if (type === 'ItemSearch') {
-					$('#form-row-Query').show();
-					$('#form-row-QueryType1').show();
-					$('#form-row-SearchTarget').show();
-					$('#form-row-Start').show();
-					$('#form-row-MaxResults').show();
-					$('#form-row-Sort').show();
-					$('#form-row-Cover').show();
-					$('#form-row-CategoryId').show();
-					$('#form-row-Output').show();
-					$('#form-row-Partner').show();
-					$('#form-row-includeKey').show();
-					$('#form-row-InputEncoding').show();
-					$('#form-row-Version').show();
-					$('#form-row-outofStockfilter').show();
-					$('#form-row-OptResult').show();
-					$('#form-row-QueryType2').hide();
-					$('#form-row-SubSearchTarget').hide();
-					$('#form-row-ItemId').hide();
-					$('#form-row-ItemIdType').hide();
-					$('#form-row-offCode').hide();
+					$('.request-element').hide();
+					$('.request-element-ItemSearch').show();
 				} else if (type === 'ItemList') {
-					$('#form-row-QueryType2').show();
-					$('#form-row-SearchTarget').show();
-					$('#form-row-SubSearchTarget').show();
-					$('#form-row-Start').show();
-					$('#form-row-MaxResults').show();
-					$('#form-row-Cover').show();
-					$('#form-row-CategoryId').show();
-					$('#form-row-Output').show();
-					$('#form-row-Partner').show();
-					$('#form-row-includeKey').show();
-					$('#form-row-InputEncoding').show();
-					$('#form-row-Version').show();
-					$('#form-row-outofStockfilter').show();
-					$('#form-row-OptResult').show();
-
-					$('#form-row-Query').hide();
-					$('#form-row-QueryType1').hide();
-					$('#form-row-ItemId').hide();
-					$('#form-row-ItemIdType').hide();
-					$('#form-row-Sort').hide();
-					$('#form-row-offCode').hide();
+					$('.request-element').hide();
+					$('.request-element-ItemList').show();
 				} else if (type === 'ItemLookUp') {
-					$('#form-row-ItemId').show();
-					$('#form-row-ItemIdType').show();
-					$('#form-row-Cover').show();
-					$('#form-row-Output').show();
-					$('#form-row-Partner').show();
-					$('#form-row-Version').show();
-					$('#form-row-includeKey').show();
-					$('#form-row-offCode').show();
-					$('#form-row-OptResult').show();
-
-					$('#form-row-Query').hide();
-					$('#form-row-QueryType1').hide();
-					$('#form-row-QueryType2').hide();
-					$('#form-row-SearchTarget').hide();
-					$('#form-row-SubSearchTarget').hide();
-					$('#form-row-Start').hide();
-					$('#form-row-MaxResults').hide();
-					$('#form-row-Sort').hide();
-					$('#form-row-CategoryId').hide();
-					$('#form-row-InputEncoding').hide();
-					$('#form-row-outofStockfilter').hide();
+					$('.request-element').hide();
+					$('.request-element-ItemLookUp').show();
 				} else if (type === 'ItemOffStoreList') {
-					$('#form-row-ItemId').show();
-					$('#form-row-ItemIdType').show();
-
-					$('#form-row-Query').hide();
-					$('#form-row-QueryType1').hide();
-					$('#form-row-QueryType2').hide();
-					$('#form-row-SearchTarget').hide();
-					$('#form-row-SubSearchTarget').hide();
-					$('#form-row-Start').hide();
-					$('#form-row-MaxResults').hide();
-					$('#form-row-Sort').hide();
-					$('#form-row-Cover').hide();
-					$('#form-row-CategoryId').hide();
-					$('#form-row-Output').hide();
-					$('#form-row-Partner').hide();
-					$('#form-row-includeKey').hide();
-					$('#form-row-InputEncoding').hide();
-					$('#form-row-Version').hide();
-					$('#form-row-outofStockfilter').hide();
-					$('#form-row-offCode').hide();
-					$('#form-row-OptResult').hide();
+					$('.request-element').hide();
+					$('.request-element-ItemOffStoreList').show();
 				} else {
-					$('#form-row-Query').hide();
-					$('#form-row-QueryType1').hide();
-					$('#form-row-QueryType2').hide();
-					$('#form-row-SearchTarget').hide();
-					$('#form-row-SubSearchTarget').hide();
-					$('#form-row-ItemId').hide();
-					$('#form-row-ItemIdType').hide();
-					$('#form-row-Start').hide();
-					$('#form-row-MaxResults').hide();
-					$('#form-row-Sort').hide();
-					$('#form-row-Cover').hide();
-					$('#form-row-CategoryId').hide();
-					$('#form-row-Output').hide();
-					$('#form-row-Partner').hide();
-					$('#form-row-includeKey').hide();
-					$('#form-row-InputEncoding').hide();
-					$('#form-row-Version').hide();
-					$('#form-row-outofStockfilter').hide();
-					$('#form-row-offCode').hide();
-					$('#form-row-OptResult').hide();
+					$('.request-element').hide();
 				}
 			});
 			$('#node-input-RequestType').change();
