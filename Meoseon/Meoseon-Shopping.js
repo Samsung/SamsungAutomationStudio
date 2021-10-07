@@ -255,8 +255,8 @@ module.exports = function (RED) {
 
   RED.nodes.registerType("naverShoppingApiKey", naverShoppingApiKey, {
     credentials: {
-      clientId: { type: "text" },
-      clientSecret: { type: "password" },
+      clientId: { type: "text", required: true },
+      clientSecret: { type: "password", required: true },
     },
   });
 
@@ -268,7 +268,7 @@ module.exports = function (RED) {
 
   RED.nodes.registerType("sk11stApiKey", sk11stApiKey, {
     credentials: {
-      apikey: { type: "password" },
+      apikey: { type: "password", required: true },
     },
   });
 };

@@ -294,14 +294,14 @@
       naverShoppingDisplay: { value: "10", validate:function(v) {
           if($("#node-input-apiType option:selected").val() !== "naverShopping") return true;
           if(v.length === 0) return false;
-          return !isNaN(v);
+          return true;
         }
       },
       naverShoppingSort: { value: "sim", required: true },
       naverShoppingStart: { value: "1", validate:function(v) {
         if($("#node-input-apiType option:selected").val() !== "naverShopping") return true;
         if(v.length === 0) return false;
-        return !isNaN(v);
+        return true;
         }
       },
       naverShoppingFilter: { value: "", required: false },
@@ -433,8 +433,8 @@
       name: { value: "Naver Shopping API Key" },
     },
     credentials: {
-      clientId: {},
-      clientSecret: {},
+      clientId: { value: "", required: true },
+      clientSecret: { value: "", required: true },
     },
     paletteLabel: "Naver Shopping API Key",
     label: function () {
@@ -465,7 +465,7 @@
       name: { value: "sk11st API Key" },
     },
     credentials: {
-      apikey: {},
+      apikey: { value: "", required: true },
     },
     label: function () {
       return this.name || "sk11st API Key";
