@@ -18,7 +18,7 @@ module.exports = function(RED) {
                 data: {
                     labels: isReverse ? X.reverse() : X,
                     datasets: [{
-						label: y_label,
+			label: y_label,
                         backgroundColor:
                             (nodeConfig && nodeConfig.backgroundColor) ||
                             'rgba(0, 0, 0, 0.1)',
@@ -32,7 +32,7 @@ module.exports = function(RED) {
                     responsive: true,
                     legend: {
                         position: 'top',
-						display: true,
+			display: true,
                     },
                     title: {
                         display: true,
