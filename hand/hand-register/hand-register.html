@@ -1,0 +1,61 @@
+<script type="text/javascript">
+  RED.nodes.registerType("hand-register", {
+    category: "motion pose",
+    color: "#B2A1F4",
+    defaults: {
+      name: { value: "" },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-hand-paper-o",
+    paletteLabel: "hand register",
+    label: function () {
+      return this.name || "hand register";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="hand-register">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="hand-register">
+  <p>This node receives a number of input key points (ex: sequence of continuous time) and determines the similarity to the saved hand pose, and derives the most similar hand pose.</p>
+
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>Name<span class="property-type">optional</span></dt>
+    <dd>The label of the Node assigned by the user.</dd>
+  </dl>
+
+  <h3>Input</h3>
+  <dl class="message-properties">
+    <dt>multiHandLandmarks</dt>
+    <dd>Output of media pipe hands model. The x, y, z coordinate values from points 1 to 21 of each hand.</dd>
+    <dt>multiHandedness</dt>
+    <dd>Output of media pipe hands model. Information on each hand.</dd>
+    <dt>savedLeftHand</dt>
+    <dd>An array storing json arrays of left-handed coordinates stored in the database.</dd>
+    <dt>savedRightHand</dt>
+    <dd>An array that stores json arrays of right-hand coordinates stored in the database.</dd>
+    <dt>savedNameList</dt>
+    <dd>An array that stores the names of hand gestures stored in the database.</dd>
+    <dt>handName</dt>
+    <dd>The name of the new hand gesture you want to register.</dd>
+  </dl>
+
+  <h3>Output</h3>
+  <dl class="message-properties">
+    <dt>status</dt>
+    <dd>true if it is possible to register, false if not (boolean)</dd>
+    <dt>handName</dt>
+    <dd>The name of the new hand gesture you want to register.</dd>
+    <dt>inputLeftHands</dt>
+    <dd>The x,y,z coordinate values from points 1 to 21 of the left hand in a hand motion to be registered in the database.</dd>
+    <dt>inputRightHands</dt>
+    <dd>The x,y,z coordinate values from points 1 to 21 of the right hand in a hand motion to be registered in the database.</dd>
+  </dl>
+</script>

@@ -1,0 +1,58 @@
+<script type="text/javascript">
+  RED.nodes.registerType('pose-register',{
+      category: 'motion pose',
+      color: '#B2A1F4',
+      defaults: {
+          name: {value:""},
+          similarSensitivity: {value: 80, required:true, validate:RED.validators.number()},
+      },
+      inputs:1,
+      outputs:1,
+      icon: "font-awesome/fa-male",
+      paletteLabel: "pose register",
+      label: function() {
+          return this.name||"pose register";
+      }
+  });
+</script>
+
+<script type="text/html" data-template-name="pose-register">
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-similarSensitivity"><i class="fa fa-tag"></i> Similar Sensitivity(%)</label>
+    <input type="text" id="node-input-similarSensitivity" placeholder="(default) 80">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="pose-register">
+  <p>Find a posture similar to the input posture and return the similarity.</p>
+
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>Name<span class="property-type">optional</span></dt>
+    <dd>The label of the Node assigned by the user.</dd>
+    <dt>Similar Sensitivity<span class="property-type">required</span></dt>
+    <dd>The percentage that can be determined as similar (default: 80)</dd>
+  </dl>
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>inputKeypoints</dt>
+    <dd>Key points to register</dd>
+    <dt>savedKeypoints</dt>
+    <dd>Target key points to detect similarity ("name" is free to write a pose name)</dd>
+  </dl>
+
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>status</dt>
+    <dd>true if there is a similar pose, false if not (boolean)</dd>
+    <dt>poseName</dt>
+    <dd>The name of the most similar pose if there is a similar action, null if not (string)</dd>
+    <dt>isAccurate</dt>
+    <dd>true if the correctness of the action to be registered is sufficient, false otherwise (boolean)</dd>
+  </dl>
+</script>
