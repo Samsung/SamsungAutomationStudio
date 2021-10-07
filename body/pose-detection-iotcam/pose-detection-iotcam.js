@@ -36,14 +36,14 @@ module.exports = function(RED) {
             
             httpServer.once('error', err => {
                 if (err.code === 'EADDRINUSE') {
-                    console.log(`Socket.io [RTSP] : port ${rtspPort} is busy.`)
+                    console.log(`WebSocket [RTSP] : port ${rtspPort} is busy.`)
                 }
             })
 
             // if port is available, run the socket server.
             // port 사용 가능할 경우, socket 서버 실행
             httpServer.once('listening', () => {
-                console.log(`Socket.io [RTSP] : port ${rtspPort} is now ready.`)
+                console.log(`WebSocket [RTSP] : port ${rtspPort} is now ready.`)
                 const Stream = require('node-rtsp-stream')
                 const newStream = Stream
                 newStream.prototype = Stream.prototype
@@ -67,7 +67,7 @@ module.exports = function(RED) {
                             if (client.readyState === 1) {
                                 results.push(client.send(data, opts))
                             } else {
-                                results.push(console.log("Error: Client from remoteAddress " + client.remoteAddress + " not connected."))
+                                results.push(console.log("WebSocket Error [RTSP] : Client from remoteAddress " + client.remoteAddress + " not connected."))
                             }
                         }
                         return results
