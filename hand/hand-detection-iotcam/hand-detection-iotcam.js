@@ -76,11 +76,12 @@ module.exports = function(RED) {
                     })
                 }
                 
-                // construct newStream.
-                // newStream 생성
+                const smartthingsMnid = this.credentials.smartthingsMnid
+                const smartthingsPat = this.credentials.smartthingsPat
+                
                 rtspStream = new newStream({
                     name: 'name',
-                    streamUrl: `rtsps://${config.smartthingsMnid}:${config.smartthingsPat}@${rtspUrl}`,
+                    streamUrl: `rtsps://${smartthingsMnid}:${smartthingsPat}@${rtspUrl}`,
                     wsPort: rtspPort,
                     ffmpegOptions: { 
                         '-stats': '', 
@@ -100,5 +101,10 @@ module.exports = function(RED) {
             rtspStream.stop()
         })
     }
-    RED.nodes.registerType("hand-detection-iotcam", HandDetectioIotcamNode)
+    RED.nodes.registerType("hand-detection-iotcam", HandDetectioIotcamNode, {
+        credentials: {
+            smartthingsMnid: {type:"text"},
+            smartthingsPat: {type:"text"}
+        }
+    })
 }

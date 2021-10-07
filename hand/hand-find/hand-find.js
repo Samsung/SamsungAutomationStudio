@@ -74,9 +74,9 @@ module.exports = function (RED) {
 
     var node = this;
 
-    //data.right, data.left
+    const similarity = require("compute-cosine-similarity");
+    
     node.on("input", function (msg) {
-      const similarity = require("compute-cosine-similarity");
 
       /*--------------- input 체크 -------------------------*/
       for (let idx = 1; idx < msg.inputLeftHands; idx++) {
