@@ -285,19 +285,19 @@
 
       // naver shopping
       naverShoppingReturnType: { value: "json", required: true },
-      naverShoppingQuery: { value: "", required: true },
-      naverShoppingDisplay: { value: "10", required: true },
+      naverShoppingQuery: { value: "", required: false },
+      naverShoppingDisplay: { value: "10", required: false },
       naverShoppingSort: { value: "sim", required: true },
-      naverShoppingStart: { value: "1", required: true },
+      naverShoppingStart: { value: "1", required: false },
       naverShoppingFilter: { value: "", required: false },
       naverShoppingCreds: {
-        value: "",
+        value: {},
         type: "naverShoppingApiKey",
         required: true,
       },
 
       // sk11st
-      sk11stApiCode: { value: "", required: true },
+      sk11stApiCode: { value: "ProductSearch", required: true },
       sk11stKeyword: { value: "", type: "text", required: false },
       sk11stCategoryCode: { value: "", type: "text", required: false },
       sk11stProductCode: { value: "", type: "text", required: false },
@@ -307,7 +307,7 @@
       sk11stOption: { value: "", type: "text", required: false },
       sk11stTargetSearchPrd: { value: "", type: "text", required: false },
       sk11stCreds: {
-        value: "",
+        value: {},
         type: "sk11stApiKey",
         required: true,
       },
