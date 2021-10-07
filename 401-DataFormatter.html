@@ -114,7 +114,64 @@
 </script>
 
 <script type="text/html" data-help-name="data-formatter">
-    <p>A simple node that converts data to json for chart.js</p>
+    <p>This node helps convert the data format for using Chart.js.</p>
+    <h3>Properties</h3>
+  <dl class="message-properties">
+    <h5>Data Formatter</h5>
+    <dt>Name</dt>
+    <dd>You can tag or describe this Data Formatter.</dd>
+    <dt>Input Type <span class="property-type">required</span></dt>
+    <dd>Choose a Input Type. </dd>
+    <dt>Data Format <span class="property-type">required</span></dt>
+    <dd>Choose the original file extension</dd>
+    <dt>Chart Type <span class="property-type">required</span></dt>
+    <dd>Choose Chart Type you want to show</dd>
+    <dt>Result <span class="property-type">required</span></dt>
+    <dd>It helps you calculate the data with various statistics function </dd>
+    <dt>Title </dt>
+    <dd>You can title this chart </dd>
+    <dt>X-axes <span class="property-type">required</span></dt>
+    <dd>
+        Input data column name you want to show on the x-axes. 
+        If you select Input Type <b>'Overall Statistics'</b>,
+        you don't have to
+    </dd>
+    <dt>Y-axes <span class="property-type">required</span></dt>
+    <dd>
+        Input data column name you want to show on the y-axes. 
+        If you select Input Type <b>'Count By Items'</b>,
+        you don't have to  
+    </dd>
+    <dt>Reverse <span class="property-type">optional</span></dt>
+    <dd>Reverse helps you to show chart data in reverse order.</dd>
+    <dt>Chart Config <span class="property-type">optional</span></dt>
+    <dd>You can apply chart config. Choose chart config Id. </dd>
+    
+  </dl>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>msg.data</dt>
+  </dl>
+</script>
+
+<script type="text/html" data-help-name="chart-config">
+    <p>This node helps you to customize chart</p>
+    <h3>Properties</h3>
+  <dl class="message-properties">
+    <h5>Chart Config</h5>
+    <dt>Name</dt>
+    <dd>You can tag or describe this Chart Config.</dd>
+    <dt>Border Color<span class="property-type">optional</span></dt>
+    <dd>You can choose chart border color. It only works when <b>Border Width</b> is set</dd>
+    <dt>Border Width<span class="property-type">optional</span></dt>
+    <dd>You can set chart border width. Input only positive number</dd>
+    <dt>Background Color<span class="property-type">optional</span></dt>
+    <dd>You can choose chart bar or line color.</dd>
+    <dt>Y-axes Min Value<span class="property-type">optional</span></dt>
+    <dd>You can set chart minimum y-axes value. Input number</dd>
+    <dt>Y-axes Step Size<span class="property-type">optional</span></dt>
+    <dd>You can set chart y-axes step size. Input only positive number</dd>
+  </dl>
 </script>
 
 
