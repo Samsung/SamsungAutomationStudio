@@ -12,7 +12,7 @@ module.exports = function(RED) {
     function HandDetectioIotcamNode(config) {
 
         function HTML() {
-            return require('./iotcam-html.js').code(config)
+            return require('./hand-iotcam-html.js').code(config)
         }
 
         RED.nodes.createNode(this, config)

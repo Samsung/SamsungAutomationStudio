@@ -5,7 +5,7 @@ module.exports = function(RED) {
 
     function PoseDetectionWebcamNode(config) {
         function HTML() {
-            return require('./webcam-html.js').code(config)
+            return require('./pose-webcam-html.js').code(config)
         }
 
         RED.nodes.createNode(this, config)

@@ -6,7 +6,7 @@ module.exports = function(RED) {
     function HandDetectionWebcamNode(config) {
 
         function HTML() {
-            return require('./webcam-html.js').code(config)
+            return require('./hand-webcam-html.js').code(config)
         }
 
         RED.nodes.createNode(this, config)

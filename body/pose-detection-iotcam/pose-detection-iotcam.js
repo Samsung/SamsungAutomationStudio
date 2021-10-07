@@ -12,7 +12,7 @@ module.exports = function(RED) {
     function PoseDetectionIotcamNode(config) {
 
         function HTML() {
-            return require('./iotcam-html.js').code(config)
+            return require('./pose-iotcam-html.js').code(config)
         }
 
         RED.nodes.createNode(this, config)
