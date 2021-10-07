@@ -127,8 +127,8 @@ module.exports.code = (config) => {
           </div>
           <div id="result-div" style="display: none;">
               <p id="motion-result-message"></p>
-              <div id="regist-btn-bar" align="center">
-                  <button id="regist-btn" class="btn">Regist</button> <button id="cancel-btn" class="btn">Cancel</button>
+              <div id="register-btn-bar" align="center">
+                  <button id="register-btn" class="btn">Register</button> <button id="cancel-btn" class="btn">Cancel</button>
               </div><br>
               <canvas id="capture-canvas" width="480px" height="270px" style="border:1px solid black"></canvas>
               <div id="motion-result-keypoint"></div>
@@ -221,11 +221,11 @@ module.exports.code = (config) => {
           document.getElementById("motion-result-message").textContent = message
           captureElement.style.display = "none"
           document.getElementById("result-div").style.display = "block"
-          document.getElementById("regist-btn-bar").style.display = "none";
+          document.getElementById("register-btn-bar").style.display = "none";
       }
       
 
-      /* hands motion capture used timer if sucess regist*/
+      /* hands motion capture used timer if sucess register*/
       function onCapture(motionName){
           setTimeout(() => {
               captureCtx.drawImage(outputElement, 0, 0, captureElement.width, captureElement.height);    
@@ -257,12 +257,12 @@ module.exports.code = (config) => {
               document.getElementById("motion-result-message").style.color = "green";
               document.getElementById("motion-result-message").textContent = "[" + motionName +"] motion captured! Is this the behavior you want?";
               captureElement.style.display = "block"
-              document.getElementById("regist-btn-bar").style.display = "block";
+              document.getElementById("register-btn-bar").style.display = "block";
               document.getElementById("result-div").style.display = "block";
           }, second*1000);
       }
       
-      document.getElementById("regist-btn").addEventListener('click', function () {
+      document.getElementById("register-btn").addEventListener('click', function () {
           document.getElementById("motion-result-message").style.color = "green";
           document.getElementById("motion-result-message").textContent = "[" + handMotionName.value + "] Data sent successfully! Check out the registration results!";
           dataWebSocket.send(JSON.stringify(poseDataResult));
