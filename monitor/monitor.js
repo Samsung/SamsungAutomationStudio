@@ -61,14 +61,14 @@ module.exports = function(RED) {
         // port 사용 중이면 HTML 문서만 반환
         httpServer.once('error', err => {
             if (err.code === 'EADDRINUSE') {
-                console.log(`Socket.io : port ${port} is busy.`)
+                console.log(`Socket.io [monitor] : port ${port} is busy.`)
             }
         })
 
         // if port is available, run the socket server.
         // port 사용 가능할 경우, socket 서버 실행
         httpServer.once('listening', () => {
-            console.log(`Socket.io : port ${port} is now ready.`)
+            console.log(`Socket.io [monitor] : port ${port} is now ready.`)
     
             // config for CORS. (I referenced the link below)
             // CORS 설정 (아래 링크를 참고하였음)
@@ -86,7 +86,7 @@ module.exports = function(RED) {
             // socket server event handler.
             // socket 서버 이벤트 핸들러
             socketServer.on('connection', socket => {
-                console.log(`Socket.io : new client has connected to port ${port}.`)
+                console.log(`Socket.io [monitor] : new client has connected to port ${port}.`)
     
                 socket.on('video', msg => {
                     socketServer.emit('video', msg)
