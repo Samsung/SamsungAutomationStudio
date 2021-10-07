@@ -4,9 +4,9 @@ A node for monitoring the pose/hand recognition screen in an external browser.
 
 ## Usage
 
-You can check the screen being detected in the external environment through the pose/hand detection node.
+You can check the screen being detected in the external environment through the pose/hand-detect-node.
 
-Apply the `Server Url` and `Monitor Port` of the detection node to the properties of this node.
+Apply the `Server Url` and `Monitor Port` of the pose/hand-detect-node to the properties of this node.
 
 ## Properties
 
