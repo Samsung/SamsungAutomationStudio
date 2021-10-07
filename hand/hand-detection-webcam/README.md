@@ -16,11 +16,11 @@ Specify the hands pose to save and press the capture button to record the pose m
 
 ### Server Url
 
-URL address of your websocket server. Server receives the user's hands pose recognition result in real time using a WebSocket. Do not include a prefix such as 'http://'. This is an attribute input item to facilitate both local and deployment environments.
+URL address of your websocket server for monitoring. Do not include a prefix such as 'http://'. This is an attribute input item to facilitate both local and deployment environments. (default: 'localhost')
 
-### Mirror Port
+### Monitor Port
 
-Port number to be used to monitor hands pose recognition results from other resources. (default: 1881)
+Port number to be used to monitor pose recognition results from other resources. To use properly, you need to match this value with `Monitor Port` attribute of [the monitor node](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/monitor). (default: 1883)
 
 ### Data Socket Url
 
@@ -36,23 +36,46 @@ This is an example of a JSON string of data from a browser through a websocket. 
 
 ```json
 {
-  "_id": {
-    "$oid": "615d66a03211d3839b196999"
-  },
-  "left_hand_landmarks": [
-    {
-      "x": 0.3092707395553589,
-      "y": 0.5108007192611694,
-      "z": 0
-    },
-    {
-      "x": 0.3847595453262329,
-      "y": 0.42168834805488586,
-      "z": 0.04432171210646629
-    },
-    // ...
+  "multiHandLandmarks": [
+    [
+      {
+        "x": 0.3092707395553589,
+        "y": 0.5108007192611694,
+        "z": 0
+      },
+      {
+        "x": 0.3847595453262329,
+        "y": 0.42168834805488586,
+        "z": 0.04432171210646629
+      },
+      // ...
+     ],
+     [
+      {
+        "x": 0.613612711429596
+        "y": 0.6383929252624512
+        "z": 0
+      },
+      {
+        "x": 0.5581011176109314
+        "y": 0.626939594745636
+        "z": -0.00810244306921959
+      },
+      // ...
   ],
-  "right_hand_landmarks": null,
-  "name": "HandsExample1"
+  "multiHandLandmarks": [
+    {
+      "index":0,
+      "score":0.96533203125,
+      "label":"Left"
+    },
+    {
+      "index":1,
+      "score":0.953643798828125,
+      "label":"Right"
+    }
+   ],
+  "regist": true
+  "poseName": "HandsExample1"
 }
 ```

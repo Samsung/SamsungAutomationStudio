@@ -6,14 +6,15 @@ A node for monitoring the pose/hand recognition screen in an external browser.
 
 You can check the screen being detected in the external environment through the pose/hand detection node.
 
-Apply the `Server Url` and `Mirror Port` of the server set by the detection node to the properties of this node.
+Apply the `Server Url` and `Monitor Port` of the detection node to the properties of this node.
 
 ## Properties
 
 ### Server Url
 
-URL address of your websocket server. Server receives the user's pose recognition result in real time using a WebSocket. Do not include a prefix such as 'http://'. This is an attribute input item to facilitate both local and deployment environments.
+URL address of your websocket server for monitoring. Do not include a prefix such as 'http://'. This is an attribute input item to facilitate both local and deployment environments. (default: 'localhost')
 
-### Mirror Port
+### Monitor Port
 
 Port number to be used to monitor pose recognition results from other resources. (default: 1881)
+

@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-motion-pose",
-  "version": "1.0.0",
-  "description": "used tensorflow mediapipe hands and pose model in real-time webcam in node red",
+  "version": "1.0.2",
+  "description": "used tensorflow mediapipe hands and pose model in real-time webcam and smartThings IoT-cam in node red",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,7 +23,7 @@
       "hand-detection-iotcam": "/hand/hand-detection-iotcam/hand-detection-iotcam.js"
     }
   },
-  "author": "5FNSaaS - Team. Hands",
+  "author": "Team 5FNSaaS",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/5FNSaaS/node-red-contrib-motion-pose/issues"

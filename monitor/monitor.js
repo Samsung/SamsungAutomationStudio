@@ -26,8 +26,6 @@ module.exports = function(RED) {
                 <img id="video" src="" />
 
                 <script>
-                    // video DOM element.
-                    // DOM 엘리먼트
                     const videoElem = document.getElementById('video')
                 
                     // construct socket client for monitoring.
