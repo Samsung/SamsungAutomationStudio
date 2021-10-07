@@ -114,37 +114,37 @@
         <option value="ProductImage">ProductImage(상품이미지조회)</option>
       </select>
     </div>
-    <div class="form-row" id="node-input-sk11stKeyword-row">
+    <div class="form-row sk11st-element sk11st-element-productsearch" id="node-input-sk11stKeyword-row">
       <label for="node-input-sk11stKeyword"> Keyword* </label>
       <input type="text" id="node-input-sk11stKeyword" />
     </div>
-    <div class="form-row" id="node-input-sk11stCategoryCode-row">
+    <div class="form-row sk11st-element sk11st-element-categoryinfo" id="node-input-sk11stCategoryCode-row">
       <label for="node-input-sk11stCategoryCode"> categoryCode* </label>
       <input type="text" id="node-input-sk11stCategoryCode" />
     </div>
-    <div class="form-row" id="node-input-sk11stProductCode-row">
+    <div class="form-row sk11st-element sk11st-element-productinfo sk11st-element-productimage" id="node-input-sk11stProductCode-row">
       <label for="node-input-sk11stProductCode"> productCode* </label>
       <input type="text" id="node-input-sk11stProductCode" />
     </div>
     <div id="sk11st-product-category-common">
-      <div class="form-row" id="node-input-sk11stPagenum-row">
+      <div class="form-row sk11st-element sk11st-element-productsearch sk11st-element-categoryinfo" id="node-input-sk11stPagenum-row">
         <label for="node-input-sk11stPagenum"> pageNum </label>
         <input type="text" id="node-input-sk11stPagenum" />
       </div>
-      <div class="form-row">
+      <div class="form-row sk11st-element sk11st-element-productsearch sk11st-element-categoryinfo" id="node-input-sk11stPagesize-row">
         <label for="node-input-sk11stPagesize"> pageSize </label>
         <input type="text" id="node-input-sk11stPagesize" />
       </div>
-      <div class="form-row">
+      <div class="form-row sk11st-element sk11st-element-productsearch sk11st-element-categoryinfo" id="node-input-sk11stSortcd-row">
         <label for="node-input-sk11stSortcd"> sortCd </label>
         <input type="text" id="node-input-sk11stSortcd" />
       </div>
     </div>
-    <div class="form-row" id="node-input-sk11stOption-row">
+    <div class="form-row sk11st-element sk11st-element-productsearch sk11st-element-categoryinfo sk11st-element-productinfo" id="node-input-sk11stOption-row">
       <label for="node-input-sk11stOption"> option </label>
       <input type="text" id="node-input-sk11stOption" />
     </div>
-    <div class="form-row" id="node-input-sk11stTargetSearchPrd-row">
+    <div class="form-row sk11st-element sk11st-element-productsearch" id="node-input-sk11stTargetSearchPrd-row">
       <label for="node-input-sk11stTargetSearchPrd"> targetSearchPrd</label>
       <input type="text" id="node-input-sk11stTargetSearchPrd" />
     </div>
@@ -285,22 +285,60 @@
 
       // naver shopping
       naverShoppingReturnType: { value: "json", required: true },
-      naverShoppingQuery: { value: "", required: false },
-      naverShoppingDisplay: { value: "10", required: false },
+      naverShoppingQuery: { value: "", validate:function(v) {
+          if($("#node-input-apiType option:selected").val() !== "naverShopping") return true;
+          if(v.length === 0) return false;
+          return true;
+        }
+      },
+      naverShoppingDisplay: { value: 10, validate:function(v) {
+          if($("#node-input-apiType option:selected").val() !== "naverShopping") return true;
+          if(v.length === 0) return false;
+          return !isNaN(v);
+        }
+      },
       naverShoppingSort: { value: "sim", required: true },
-      naverShoppingStart: { value: "1", required: false },
+      naverShoppingStart: { value: 1, validate:function(v) {
+        if($("#node-input-apiType option:selected").val() !== "naverShopping") return true;
+        if(v.length === 0) return false;
+        return !isNaN(v);
+        }
+      },
       naverShoppingFilter: { value: "", required: false },
       naverShoppingCreds: {
-        value: {},
+        value: "",
         type: "naverShoppingApiKey",
-        required: true,
+        validate:function(v) {
+          if($("#node-input-apiType option:selected").val() !== "naverShopping") return true;
+          if($("#node-input-naverShoppingCreds option:selected").val() === "_ADD_") return false;
+          return true;
+        }
       },
 
       // sk11st
       sk11stApiCode: { value: "ProductSearch", required: true },
-      sk11stKeyword: { value: "", type: "text", required: false },
-      sk11stCategoryCode: { value: "", type: "text", required: false },
-      sk11stProductCode: { value: "", type: "text", required: false },
+      sk11stKeyword: { value: "", type: "text", validate:function(v) {
+          if($("#node-input-apiType option:selected").val() !== "sk11st") return true;
+          if($("#node-input-sk11stApiCode option:selected").val() !== "ProductSearch") return true;
+          if(v.length === 0) return false;
+          return true;
+        } 
+      },
+      sk11stCategoryCode: { value: "", type: "text", validate:function(v) {
+          if($("#node-input-apiType option:selected").val() !== "sk11st") return true;
+          if($("#node-input-sk11stApiCode option:selected").val() !== "CategoryInfo") return true;
+          if(v.length === 0) return false;
+          return true;
+        }
+      },
+      sk11stProductCode: { value: "", type: "text", validate:function(v) {
+          if($("#node-input-apiType option:selected").val() !== "sk11st") return true;
+          let apiCode = $("#node-input-sk11stApiCode option:selected").val();
+          if(apiCode !== "ProductInfo" && apiCode !== "ProductImage") return true;
+          if(v.length === 0) return false;
+          return true;
+        }
+      },
       sk11stPagenum: { value: "1", type: "text", required: false },
       sk11stPagesize: { value: "50", type: "text", required: false },
       sk11stSortcd: { value: "", type: "text", required: false },
@@ -309,7 +347,11 @@
       sk11stCreds: {
         value: {},
         type: "sk11stApiKey",
-        required: true,
+        validate:function(v) {
+          if($("#node-input-apiType option:selected").val() !== "sk11st") return true;
+          if($("#node-input-sk11stCreds option:selected").val() === "_ADD_") return false;
+          return true;
+        }
       },
     },
     inputs: 1,
@@ -342,36 +384,16 @@
 
       // sk11st
       $("#node-input-sk11stApiCode").change(function () {
-        var type = $("#node-input-sk11stApiCode option:selected").val();
-        if (type == "CategoryInfo") {
-          $("#node-input-sk11stProductCode-row").hide();
-          $("#node-input-sk11stTargetSearchPrd-row").hide();
-          $("#node-input-sk11stKeyword-row").hide();
-          $("#node-input-sk11stCategoryCode-row").show();
-          $("#sk11st-product-category-common").show();
-          $("#node-input-sk11stOption-row").show();
-        } else if (type == "ProductImage") {
-          $("#node-input-sk11stCategoryCode-row").hide();
-          $("#node-input-sk11stKeyword-row").hide();
-          $("#sk11st-product-category-common").hide();
-          $("#node-input-sk11stOption-row").hide();
-          $("#node-input-sk11stTargetSearchPrd-row").hide();
-          $("#node-input-sk11stProductCode-row").show();
-        } else if (type == "ProductInfo") {
-          $("#node-input-sk11stCategoryCode-row").hide();
-          $("#node-input-sk11stKeyword-row").hide();
-          $("#sk11st-product-category-common").hide();
-          $("#node-input-sk11stTargetSearchPrd-row").hide();
-          $("#node-input-sk11stOption-row").show();
-          $("#node-input-sk11stProductCode-row").show();
-        } else {
-          //ProdcutSearch
-          $("#node-input-sk11stCategoryCode-row").hide();
-          $("#node-input-sk11stProductCode-row").hide();
-          $("#node-input-sk11stKeyword-row").show();
-          $("#sk11st-product-category-common").show();
-          $("#node-input-sk11stOption-row").show();
-          $("#node-input-sk11stTargetSearchPrd-row").show();
+        $(".sk11st-element").hide();
+        let type = $("#node-input-sk11stApiCode option:selected").val();
+        if (type === "ProductSearch") {
+          $(".sk11st-element-productsearch").show();
+        } else if (type === "CategoryInfo") {
+          $(".sk11st-element-categoryinfo").show();
+        } else if (type === "ProductInfo") {
+          $(".sk11st-element-productinfo").show();
+        } else if (type === "ProductImage") {
+          $(".sk11st-element-productimage").show();
         }
       });
       $("#node-input-sk11stApiCode").change();
@@ -397,7 +419,7 @@
   <div class="form-row">
     <label for="node-config-input-clientSecret"> Client Secret</label>
     <input
-      type="text"
+      type="password"
       id="node-config-input-clientSecret"
       placeholder="Client Secret"
     />

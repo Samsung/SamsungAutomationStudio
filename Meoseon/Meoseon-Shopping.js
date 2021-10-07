@@ -5,8 +5,7 @@ module.exports = function (RED) {
 
   const NAVER_API_URL_XML = "https://openapi.naver.com/v1/search/shop.xml";
   const NAVER_API_URL_JSON = "https://openapi.naver.com/v1/search/shop.json";
-  const SK11ST_API_URL =
-    "http://openapi.11st.co.kr/openapi/OpenApiService.tmall";
+  const SK11ST_API_URL = "http://openapi.11st.co.kr/openapi/OpenApiService.tmall";
 
   ("use strict");
   const mustache = require("mustache");
@@ -52,9 +51,7 @@ module.exports = function (RED) {
 
     // naver shopping
     if (RED.nodes.getNode(n.naverShoppingCreds)) {
-      this.naverShoppingClientId = RED.nodes.getNode(
-        n.naverShoppingCreds
-      ).credentials.clientId;
+      this.naverShoppingClientId = RED.nodes.getNode(n.naverShoppingCreds).credentials.clientId;
       this.naverShoppingClientSecret = RED.nodes.getNode(
         n.naverShoppingCreds
       ).credentials.clientSecret;
@@ -94,10 +91,7 @@ module.exports = function (RED) {
         const query = mustache
           .render(n.naverShoppingQuery, new NodeContext(msg, node.context()))
           .split(",");
-        node.url =
-          n.naverShoppingReturnType == "json"
-            ? NAVER_API_URL_JSON
-            : NAVER_API_URL_XML;
+        node.url = n.naverShoppingReturnType == "json" ? NAVER_API_URL_JSON : NAVER_API_URL_XML;
         node.options = {};
         node.options.headers = {};
 
@@ -120,8 +114,7 @@ module.exports = function (RED) {
           );
         }
         node.options.headers["X-Naver-Client-Id"] = node.naverShoppingClientId;
-        node.options.headers["X-Naver-Client-Secret"] =
-          node.naverShoppingClientSecret;
+        node.options.headers["X-Naver-Client-Secret"] = node.naverShoppingClientSecret;
 
         for (const idx in query) {
           node.options.params.query = query[idx];
@@ -137,10 +130,7 @@ module.exports = function (RED) {
                 response.data.items = [];
 
                 for (const idx in items) {
-                  if (
-                    items[idx].mallName.indexOf(node.options.params.filter) !==
-                    -1
-                  ) {
+                  if (items[idx].mallName.indexOf(node.options.params.filter) !== -1) {
                     response.data.items.push(items[idx]);
                   }
                 }
@@ -162,10 +152,7 @@ module.exports = function (RED) {
         node.params["key"] = node.sk11stApikey;
         node.params["apiCode"] = n.sk11stApiCode;
         let keywords = undefined;
-        if (
-          n.sk11stApiCode === "ProductInfo" ||
-          n.sk11stApiCode === "ProductImage"
-        ) {
+        if (n.sk11stApiCode === "ProductInfo" || n.sk11stApiCode === "ProductImage") {
           node.params["productCode"] = mustache.render(
             n.sk11stProductCode,
             new NodeContext(msg, node.context())
@@ -260,12 +247,7 @@ module.exports = function (RED) {
     });
   }
 
-  RED.nodes.registerType("shopping", shoppingNode, {
-    credentials: {
-      clientId: { type: "text" },
-      clientSecret: { type: "text" },
-    },
-  });
+  RED.nodes.registerType("shopping", shoppingNode, {});
 
   // naver shopping API key
   function naverShoppingApiKey(n) {
@@ -277,7 +259,7 @@ module.exports = function (RED) {
   RED.nodes.registerType("naverShoppingApiKey", naverShoppingApiKey, {
     credentials: {
       clientId: { type: "text" },
-      clientSecret: { type: "text" },
+      clientSecret: { type: "password" },
     },
   });
 
@@ -289,7 +271,7 @@ module.exports = function (RED) {
 
   RED.nodes.registerType("sk11stApiKey", sk11stApiKey, {
     credentials: {
-      apikey: { type: "text" },
+      apikey: { type: "password" },
     },
   });
 };
