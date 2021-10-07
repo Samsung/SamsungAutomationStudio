@@ -23,8 +23,8 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
-      "FileCloud": "501-FileCloud.js",
-      "data-formatter": "401-DataFormatter.js"
+      "FileCloud": "./file-cloud/FileCloud.js",
+      "data-formatter": "./data-formatter/DataFormatter.js"
     }
   },
   "dependencies": {
