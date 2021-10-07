@@ -5,6 +5,7 @@ const ws = require('ws')
 const http = require('http')
 const cors = require('cors')
 const express = require('express')
+const Stream = require('node-rtsp-stream')
 
 
 module.exports = function(RED) {
@@ -44,7 +45,6 @@ module.exports = function(RED) {
             // port 사용 가능할 경우, socket 서버 실행
             httpServer.once('listening', () => {
                 console.log(`WebSocket [RTSP] : port ${rtspPort} is now ready.`)
-                const Stream = require('node-rtsp-stream')
                 const newStream = Stream
                 newStream.prototype = Stream.prototype
                 newStream.prototype.constructor = newStream
