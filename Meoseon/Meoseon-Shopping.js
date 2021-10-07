@@ -5,7 +5,8 @@ module.exports = function (RED) {
 
   const NAVER_API_URL_XML = "https://openapi.naver.com/v1/search/shop.xml";
   const NAVER_API_URL_JSON = "https://openapi.naver.com/v1/search/shop.json";
-  const SK11ST_API_URL = "http://openapi.11st.co.kr/openapi/OpenApiService.tmall";
+  const SK11ST_API_URL =
+    "http://openapi.11st.co.kr/openapi/OpenApiService.tmall";
 
   ("use strict");
   const mustache = require("mustache");
@@ -46,12 +47,38 @@ module.exports = function (RED) {
     return new NodeContext(view, this.nodeContext, this.msgContext);
   };
 
+  function sk11stApiGetRequest(node, msg) {
+    axios
+      .get(SK11ST_API_URL, {
+        params: node.params,
+        responseType: "arraybuffer",
+      })
+      .then((response) => {
+        node.status({ fill: "green", shape: "dot", text: "success" });
+        node.log("sk11st shopping query success", msg);
+        const decoded = iconv.decode(response.data, "EUC-KR");
+        msg.payload = convert.xml2js(decoded, {
+          compact: true,
+          spaces: 4,
+        });
+        node.send(msg);
+      })
+      .catch((error) => {
+        node.status({ fill: "red", shape: "dot", text: "error" });
+        node.error("sk11st shopping query failed", msg);
+        msg.payload = error.message;
+        node.send(msg);
+      });
+  }
+
   function shoppingNode(n) {
     RED.nodes.createNode(this, n);
 
     // naver shopping
     if (RED.nodes.getNode(n.naverShoppingCreds)) {
-      this.naverShoppingClientId = RED.nodes.getNode(n.naverShoppingCreds).credentials.clientId;
+      this.naverShoppingClientId = RED.nodes.getNode(
+        n.naverShoppingCreds
+      ).credentials.clientId;
       this.naverShoppingClientSecret = RED.nodes.getNode(
         n.naverShoppingCreds
       ).credentials.clientSecret;
@@ -91,7 +118,10 @@ module.exports = function (RED) {
         const query = mustache
           .render(n.naverShoppingQuery, new NodeContext(msg, node.context()))
           .split(",");
-        node.url = n.naverShoppingReturnType == "json" ? NAVER_API_URL_JSON : NAVER_API_URL_XML;
+        node.url =
+          n.naverShoppingReturnType == "json"
+            ? NAVER_API_URL_JSON
+            : NAVER_API_URL_XML;
         node.options = {};
         node.options.headers = {};
 
@@ -114,7 +144,8 @@ module.exports = function (RED) {
           );
         }
         node.options.headers["X-Naver-Client-Id"] = node.naverShoppingClientId;
-        node.options.headers["X-Naver-Client-Secret"] = node.naverShoppingClientSecret;
+        node.options.headers["X-Naver-Client-Secret"] =
+          node.naverShoppingClientSecret;
 
         for (const idx in query) {
           node.options.params.query = query[idx];
@@ -130,7 +161,10 @@ module.exports = function (RED) {
                 response.data.items = [];
 
                 for (const idx in items) {
-                  if (items[idx].mallName.indexOf(node.options.params.filter) !== -1) {
+                  if (
+                    items[idx].mallName.indexOf(node.options.params.filter) !==
+                    -1
+                  ) {
                     response.data.items.push(items[idx]);
                   }
                 }
@@ -152,7 +186,10 @@ module.exports = function (RED) {
         node.params["key"] = node.sk11stApikey;
         node.params["apiCode"] = n.sk11stApiCode;
         let keywords = undefined;
-        if (n.sk11stApiCode === "ProductInfo" || n.sk11stApiCode === "ProductImage") {
+        if (
+          n.sk11stApiCode === "ProductInfo" ||
+          n.sk11stApiCode === "ProductImage"
+        ) {
           node.params["productCode"] = mustache.render(
             n.sk11stProductCode,
             new NodeContext(msg, node.context())
@@ -198,50 +235,10 @@ module.exports = function (RED) {
         if (n.sk11stApiCode === "ProductSearch") {
           for (const idx in keywords) {
             node.params["keyword"] = keywords[idx];
-            axios
-              .get(SK11ST_API_URL, {
-                params: node.params,
-                responseType: "arraybuffer",
-              })
-              .then((response) => {
-                node.status({ fill: "green", shape: "dot", text: "success" });
-                node.log("sk11st shopping query success", msg);
-                const decoded = iconv.decode(response.data, "EUC-KR");
-                msg.payload = convert.xml2js(decoded, {
-                  compact: true,
-                  spaces: 4,
-                });
-                node.send(msg);
-              })
-              .catch((error) => {
-                node.status({ fill: "red", shape: "dot", text: "error" });
-                node.error("sk11st shopping query failed", msg);
-                msg.payload = error.message;
-                node.send(msg);
-              });
+            sk11stApiGetRequest(node, msg);
           }
         } else {
-          axios
-            .get(SK11ST_API_URL, {
-              params: node.params,
-              responseType: "arraybuffer",
-            })
-            .then((response) => {
-              node.status({ fill: "green", shape: "dot", text: "success" });
-              node.log("sk11st shopping query success", msg);
-              const decoded = iconv.decode(response.data, "EUC-KR");
-              msg.payload = convert.xml2js(decoded, {
-                compact: true,
-                spaces: 4,
-              });
-              node.send(msg);
-            })
-            .catch((error) => {
-              node.status({ fill: "red", shape: "dot", text: "error" });
-              node.error("sk11st shopping query failed", msg);
-              msg.payload = error.message;
-              node.send(msg);
-            });
+          sk11stApiGetRequest(node, msg);
         }
       }
     });
