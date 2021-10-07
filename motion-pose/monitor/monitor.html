@@ -1,0 +1,63 @@
+<script type="text/javascript">
+
+  RED.nodes.registerType('monitor', {
+    category: 'motion pose',
+    color: '#B2A1F4',
+    defaults: {
+      name: { value: "" },
+      serverUrl: { value: 'localhost' },
+      monitorPort: { value: 1881, validate: RED.validators.number() },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-laptop",
+    label: function () {
+      return this.name || "monitor"
+    },
+    oneditprepare: function () {
+    },
+  })
+</script>
+
+<script type="text/html" data-template-name="monitor">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-serverUrl"><i class="fa fa-tag"></i> Server Url</label>
+    <input type="text" id="node-input-serverUrl" placeholder="(default) localhost">
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-monitorPort"><i class="fa fa-tag"></i> Monitor Port</label>
+    <input type="text" id="node-input-monitorPort" placeholder="(default) 1881">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="monitor">
+  <p>A node for monitoring motion pose flows</p>
+
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>Name</dt>
+    <dd>The label of the Node assigned by the user.</dd>
+    <dt>Server Url</dt>
+    <dd>URL address of your websocket server. Do not include a prefix such as 'http://'. (default: 'localhost')</dd>
+    <dt>Mirror Port</dt>
+    <dd>Port number of the socket server for monitoring other resources. (default: 1881)</dd>
+  </dl>
+
+  <h3>Input</h3>
+  <dl class="message-properties">
+    <dt>HTTP In</dt>
+    <dd>Information about HTTP endpoints and methods.</dd>
+  </dl>
+  
+  <h3>Output</h3>
+  <dl class="message-properties">
+    <dt>HTTP Response Payload</dt>
+    <dd>HTML payload for forwarding to http response node.</dd>
+  </dl>
+</script>

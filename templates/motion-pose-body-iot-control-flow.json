@@ -1,0 +1,703 @@
+[
+    {
+        "id": "aae948ea8dfda96b",
+        "type": "tab",
+        "label": "Body - Iot Control Flow",
+        "disabled": true,
+        "info": ""
+    },
+    {
+        "id": "676f7e2b99a96214",
+        "type": "websocket in",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "server": "e9b870a1bbf9569d",
+        "client": "",
+        "x": 230,
+        "y": 420,
+        "wires": [
+            [
+                "1106de59d9d2d808"
+            ]
+        ]
+    },
+    {
+        "id": "8ef77438cf68b80e",
+        "type": "switch",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "property": "payload.regist",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 580,
+        "y": 420,
+        "wires": [
+            [
+                "2a682544f748b61a"
+            ],
+            [
+                "835f8aaac28ba9a1"
+            ]
+        ]
+    },
+    {
+        "id": "1106de59d9d2d808",
+        "type": "json",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 420,
+        "y": 420,
+        "wires": [
+            [
+                "8ef77438cf68b80e",
+                "453e51db7839c968"
+            ]
+        ]
+    },
+    {
+        "id": "b8b4066dca8e6827",
+        "type": "function",
+        "z": "aae948ea8dfda96b",
+        "name": "Buffer Reset",
+        "func": "if (msg.payload.result != null) {\n    flow.set('keypointsBuffer', [])\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1290,
+        "y": 400,
+        "wires": [
+            [
+                "dddaae72cd936c7c"
+            ]
+        ]
+    },
+    {
+        "id": "dddaae72cd936c7c",
+        "type": "switch",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "property": "poseName",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "up",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "down",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "lightOn",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 1530,
+        "y": 380,
+        "wires": [
+            [
+                "fc61dadbdb5e3293"
+            ],
+            [
+                "efcd80fd2e242c63"
+            ],
+            [
+                "90514d32787d03ec"
+            ]
+        ]
+    },
+    {
+        "id": "fc61dadbdb5e3293",
+        "type": "command-device",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "alias": "on",
+        "deviceNodeId": "fc73d2e1b718698b",
+        "deviceType": "installed-device",
+        "deviceId": "a139fbe2-cc14-421e-8e49-b933a16ed120",
+        "componentId": "",
+        "capabilityId": "switch_v1",
+        "attributeId": "on",
+        "rules": [],
+        "logging": false,
+        "loggingEditor": false,
+        "loggingConsole": false,
+        "outputs": 1,
+        "x": 1790,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "efcd80fd2e242c63",
+        "type": "command-device",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "alias": "off",
+        "deviceNodeId": "fc73d2e1b718698b",
+        "deviceType": "installed-device",
+        "deviceId": "a139fbe2-cc14-421e-8e49-b933a16ed120",
+        "componentId": "",
+        "capabilityId": "switch_v1",
+        "attributeId": "off",
+        "rules": [],
+        "logging": false,
+        "loggingEditor": false,
+        "loggingConsole": false,
+        "outputs": 1,
+        "x": 1790,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2022b08b21ddbd1d",
+        "type": "pose-similarity-find",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "similarSensitivity": 80,
+        "x": 1070,
+        "y": 400,
+        "wires": [
+            [
+                "b8b4066dca8e6827"
+            ]
+        ]
+    },
+    {
+        "id": "98d9e950e5a9f8f9",
+        "type": "pose-similarity-register",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "similarSensitivity": 80,
+        "x": 1090,
+        "y": 520,
+        "wires": [
+            [
+                "af474b4c3d6debfb"
+            ]
+        ]
+    },
+    {
+        "id": "7ef1830d854af7ef",
+        "type": "http in",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "url": "/body/webcam",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 290,
+        "y": 140,
+        "wires": [
+            [
+                "559e4595ab586d37",
+                "dc3b739743ca1e10"
+            ]
+        ]
+    },
+    {
+        "id": "393e80a166802ea6",
+        "type": "http response",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 940,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "559e4595ab586d37",
+        "type": "change",
+        "z": "aae948ea8dfda96b",
+        "name": "Initialize",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "flow"
+            },
+            {
+                "t": "delete",
+                "p": "registeredPoses",
+                "pt": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 590,
+        "y": 140,
+        "wires": [
+            [
+                "c2e042389ca325aa"
+            ]
+        ]
+    },
+    {
+        "id": "4524414f78cc39f0",
+        "type": "function",
+        "z": "aae948ea8dfda96b",
+        "name": "Array Setting",
+        "func": "flow.set(\"registeredPoses\", msg.payload || []);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nglobal.payload = [];",
+        "finalize": "",
+        "libs": [],
+        "x": 1100,
+        "y": 140,
+        "wires": [
+            [
+                "43b2670ee3ca40f2"
+            ]
+        ]
+    },
+    {
+        "id": "43b2670ee3ca40f2",
+        "type": "debug",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1290,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "c2e042389ca325aa",
+        "type": "mongodb in",
+        "z": "aae948ea8dfda96b",
+        "mongodb": "1358ea9c6c074371",
+        "name": "Pose Load",
+        "collection": "bodytraining",
+        "operation": "find",
+        "x": 760,
+        "y": 140,
+        "wires": [
+            [
+                "a42a74ba31cffbd6"
+            ]
+        ]
+    },
+    {
+        "id": "a42a74ba31cffbd6",
+        "type": "json",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 920,
+        "y": 140,
+        "wires": [
+            [
+                "4524414f78cc39f0"
+            ]
+        ]
+    },
+    {
+        "id": "dc3b739743ca1e10",
+        "type": "pose-detection-webcam",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "serverUrl": "team1.ssafy.dev.devground.io",
+        "monitorPort": 1881,
+        "dataSocketUrl": "ws://team1.ssafy.dev.devground.io:1880/ws/data",
+        "x": 710,
+        "y": 200,
+        "wires": [
+            [
+                "393e80a166802ea6"
+            ]
+        ]
+    },
+    {
+        "id": "78abe4dbf2285844",
+        "type": "http in",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "url": "/body/iotcam",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 280,
+        "y": 260,
+        "wires": [
+            [
+                "f05d81a38631ba63"
+            ]
+        ]
+    },
+    {
+        "id": "ad2e274813788acd",
+        "type": "pose-detection-iotcam",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "serverUrl": "team1.ssafy.dev.devground.io",
+        "monitorPort": 1882,
+        "rtspPort": 1886,
+        "dataSocketUrl": "ws://team1.ssafy.dev.devground.io:1880/ws/data",
+        "smartthingsMnid": "",
+        "smartthingsPat": "",
+        "x": 880,
+        "y": 260,
+        "wires": [
+            [
+                "38e106f1c8519e89"
+            ]
+        ]
+    },
+    {
+        "id": "38e106f1c8519e89",
+        "type": "http response",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1120,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "fc73d2e1b718698b",
+        "type": "installed-device",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "alias": "token:20e09e17",
+        "device": "",
+        "devices": [
+            "4d192f0d-596d-4654-a5fa-45cae8a95250",
+            "5f9a4811-6ec1-4e4f-801b-b45c2aa87cda",
+            "fc05f376-216c-36a0-c583-4c3e5d211fcb",
+            "d3009ee6-bddf-5458-9160-1e0382da3184",
+            "21242d0b-c555-144c-27f6-b00bef816007",
+            "83024186-5f6d-8cc5-a54f-9eee02045142",
+            "645ed6c4-156f-8ce1-bbd2-a2decf6be35b",
+            "702ce8be-5a1f-3bfc-af25-c5648337aa08",
+            "be821182-7452-40f7-84c8-a101aafbcadd",
+            "77cbf87b-2b7b-b7bf-d602-4d4597941d2d",
+            "1d88fbdb-d105-43bd-9b63-be4037b3c640",
+            "a139fbe2-cc14-421e-8e49-b933a16ed120",
+            "b5d536c2-4341-09e2-e138-836a9a9332c6",
+            "c0a6fd54-bbae-4f75-a7d8-5dbea7785c52",
+            "373209a7-6a6d-40ef-b5b7-5ebc7db1d87d",
+            "2b3efe5e-c7b9-44c5-a462-de84612447a6",
+            "2456412c-1b24-6ad5-a062-9675797961c2",
+            "e6145123-0b1b-f70d-fa9e-61d7f794e965",
+            "ff64d11d-7cf0-5541-c2bb-c25bac7ce041",
+            "b01d02c5-ecd7-a826-dd7e-54f1d380c923",
+            "446bf4d2-13bf-0427-3fc3-0330dd59700c",
+            "eaeac12f-690b-3e6e-54b8-aa48d47f565c",
+            "390f7a19-8fc2-831b-1bd3-cd49b6ed885e",
+            "f0a25de1-3dd0-5ba4-15cd-e7af12221c6f",
+            "9ea3f390-cb70-30a4-03e7-a445a635477c",
+            "e1416da3-a111-cfeb-0c7c-713b3deffda0",
+            "5285349b-5606-9640-104f-9ae3dd65c1ca",
+            "1d7e30db-1939-d080-72a5-802b754db412",
+            "d0e7d832-f069-f138-5463-0c64c378a67d",
+            "ec58c60a-cd91-9b13-78dd-53b81c16af3b",
+            "70e6e297-d012-e44b-0858-d0cc3184581d",
+            "78872b97-92f6-0244-1568-025c6af8b2d4",
+            "8ea60849-a7b8-d6cb-8e02-767e0d214706",
+            "385ffa71-5a4b-565d-f3e5-1e3a1d0d1701",
+            "461fc969-bbcd-c8f3-716d-3505ac30d8c4",
+            "c776f294-98b0-632f-1658-1cfc6f39d2cb",
+            "65d4878e-48f6-0b17-cac5-bd6ee4b95da8",
+            "2d6728ea-94d9-ee1f-5dc7-291cd4a9fcbc",
+            "1ba0007f-d9ed-3f68-56f2-dfd3605424f9",
+            "af896e1b-f48c-0d79-cb1e-f2b54ba3dff3",
+            "e3535e1c-9992-e702-f257-b190f5a6b6d1"
+        ],
+        "profileId": "fc73d2e1b718698b",
+        "x": 290,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "3d29485f13a3b84b",
+        "type": "status-device",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "alias": "홈카메라 360",
+        "deviceNodeId": "fc73d2e1b718698b",
+        "deviceType": "installed-device",
+        "deviceId": "c0a6fd54-bbae-4f75-a7d8-5dbea7785c52",
+        "componentId": "",
+        "capabilityId": "videoStream_v1",
+        "attributeId": "stream",
+        "rules": [],
+        "logging": true,
+        "loggingEditor": true,
+        "loggingConsole": true,
+        "outputs": 1,
+        "x": 690,
+        "y": 260,
+        "wires": [
+            [
+                "ad2e274813788acd"
+            ]
+        ]
+    },
+    {
+        "id": "2a682544f748b61a",
+        "type": "function",
+        "z": "aae948ea8dfda96b",
+        "name": "Pose Similarity Function",
+        "func": "// Now keypoints Data\nlet keypointsBuffer = flow.get('keypointsBuffer') || []\nconst bufferlength = 30\nkeypointsBuffer.push(msg.payload.poseLandmarks)\nif (keypointsBuffer.length > bufferlength) {\n        keypointsBuffer.shift()\n}\nflow.set('keypointsBuffer', keypointsBuffer)\n\n// Saved Keypoints Data\nconst registeredPoses = flow.get(\"registeredPoses\")\nlet savedKeypoints = {}\nfor (let i = 0; i < registeredPoses.length; i ++) {\n    savedKeypoints[registeredPoses[i].poseName] = registeredPoses[i].poseLandmarks\n}\n\nif (keypointsBuffer.length < bufferlength) {\n\n    msg.inputKeypoints = []\n    msg.savedKeypoints = savedKeypoints\n\n} else {\n\n    msg.inputKeypoints = keypointsBuffer\n    msg.savedKeypoints = savedKeypoints\n}\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 810,
+        "y": 400,
+        "wires": [
+            [
+                "2022b08b21ddbd1d"
+            ]
+        ]
+    },
+    {
+        "id": "835f8aaac28ba9a1",
+        "type": "function",
+        "z": "aae948ea8dfda96b",
+        "name": "Pose Register Function",
+        "func": "const registeredPoses = flow.get(\"registeredPoses\")\nlet savedKeypoints = {}\nfor (let i = 0; i < registeredPoses.length; i ++) {\n    savedKeypoints[registeredPoses[i].poseName] = registeredPoses[i].poseLandmarks\n}\n\nmsg.inputData = msg.payload \n\n\nmsg.inputKeypoint = msg.payload.poseLandmarks\nmsg.savedKeypoints = savedKeypoints\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 810,
+        "y": 520,
+        "wires": [
+            [
+                "98d9e950e5a9f8f9"
+            ]
+        ]
+    },
+    {
+        "id": "6739b409ee9e68e7",
+        "type": "function",
+        "z": "aae948ea8dfda96b",
+        "name": "Data Preprocess",
+        "func": "let registeredPoses = flow.get(\"registeredPoses\") || []\nregisteredPoses.push(msg.inputData)\nflow.set(\"registeredPoses\", registeredPoses)\n\nmsg.payload = msg.inputData\n    \nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1610,
+        "y": 500,
+        "wires": [
+            [
+                "086f1f4dcfef29f3"
+            ]
+        ]
+    },
+    {
+        "id": "fcf60a9443fad93b",
+        "type": "function",
+        "z": "aae948ea8dfda96b",
+        "name": "Error msg",
+        "func": "if (msg.isAccurate) {\n    msg.error = msg.poseName + ' 자세와 유사합니다. 다시 등록 해주세요'\n} else {\n    msg.error = '자세가 정확하지 않습니다. 다시 등록 해주세요'\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1600,
+        "y": 560,
+        "wires": [
+            [
+                "32b9d4e2f6f71651"
+            ]
+        ]
+    },
+    {
+        "id": "086f1f4dcfef29f3",
+        "type": "mongodb out",
+        "z": "aae948ea8dfda96b",
+        "mongodb": "1358ea9c6c074371",
+        "name": "Pose Save",
+        "collection": "bodytraining",
+        "payonly": true,
+        "upsert": false,
+        "multi": false,
+        "operation": "insert",
+        "x": 1810,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "32b9d4e2f6f71651",
+        "type": "debug",
+        "z": "aae948ea8dfda96b",
+        "name": "msg.error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "error",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1780,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "af474b4c3d6debfb",
+        "type": "switch",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "property": "status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1290,
+        "y": 520,
+        "wires": [
+            [
+                "6739b409ee9e68e7"
+            ],
+            [
+                "fcf60a9443fad93b"
+            ]
+        ]
+    },
+    {
+        "id": "90514d32787d03ec",
+        "type": "command-device",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "alias": "off",
+        "deviceNodeId": "fc73d2e1b718698b",
+        "deviceType": "installed-device",
+        "deviceId": "a139fbe2-cc14-421e-8e49-b933a16ed120",
+        "componentId": "",
+        "capabilityId": "switch_v1",
+        "attributeId": "off",
+        "rules": [
+            {
+                "capaId": "switch_v1",
+                "attrId": "off",
+                "args": []
+            }
+        ],
+        "logging": false,
+        "loggingEditor": false,
+        "loggingConsole": false,
+        "outputs": 1,
+        "x": 1790,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "453e51db7839c968",
+        "type": "debug",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "f05d81a38631ba63",
+        "type": "command-device",
+        "z": "aae948ea8dfda96b",
+        "name": "",
+        "alias": "startStream",
+        "deviceNodeId": "fc73d2e1b718698b",
+        "deviceType": "installed-device",
+        "deviceId": "c0a6fd54-bbae-4f75-a7d8-5dbea7785c52",
+        "componentId": "",
+        "capabilityId": "videoStream_v1",
+        "attributeId": "startStream",
+        "rules": [
+            {
+                "capaId": "videoStream_v1",
+                "attrId": "startStream",
+                "args": []
+            }
+        ],
+        "logging": false,
+        "loggingEditor": false,
+        "loggingConsole": false,
+        "outputs": 1,
+        "x": 490,
+        "y": 260,
+        "wires": [
+            [
+                "3d29485f13a3b84b"
+            ]
+        ]
+    },
+    {
+        "id": "e9b870a1bbf9569d",
+        "type": "websocket-listener",
+        "path": "/ws/data",
+        "wholemsg": "false"
+    },
+    {
+        "id": "1358ea9c6c074371",
+        "type": "mongodb",
+        "hostname": "127.0.0.1",
+        "topology": "direct",
+        "connectOptions": "",
+        "port": "27017",
+        "db": "5fn",
+        "name": ""
+    }
+]

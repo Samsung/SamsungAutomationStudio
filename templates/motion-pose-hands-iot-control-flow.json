@@ -1,0 +1,663 @@
+[
+    {
+        "id": "9ddd64b30f45f1b5",
+        "type": "tab",
+        "label": "Hands - Iot Control Flow",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "2fb7e64acb8401e1",
+        "type": "switch",
+        "z": "9ddd64b30f45f1b5",
+        "name": "등록 가능 여부",
+        "property": "status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "true",
+                "vt": "jsonata"
+            },
+            {
+                "t": "eq",
+                "v": "false",
+                "vt": "jsonata"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1760,
+        "y": 840,
+        "wires": [
+            [
+                "2dc7cd8c8df1aaa1"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "382aeecd0abd84c1",
+        "type": "change",
+        "z": "9ddd64b30f45f1b5",
+        "name": "인풋값 조정",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.multiHandLandmarks",
+                "pt": "msg",
+                "to": "multiHandLandmarks",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.multiHandedness",
+                "pt": "msg",
+                "to": "multiHandedness",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.poseName",
+                "pt": "msg",
+                "to": "poseName",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 730,
+        "y": 840,
+        "wires": [
+            [
+                "de76697c0c125c65"
+            ]
+        ]
+    },
+    {
+        "id": "540d75dd81f4578e",
+        "type": "hand-register",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "x": 1550,
+        "y": 840,
+        "wires": [
+            [
+                "2fb7e64acb8401e1"
+            ]
+        ]
+    },
+    {
+        "id": "a7fb1b832e3d488c",
+        "type": "switch",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "property": "payload.regist",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 550,
+        "y": 740,
+        "wires": [
+            [
+                "adb606d8ad57af87"
+            ],
+            [
+                "382aeecd0abd84c1"
+            ]
+        ]
+    },
+    {
+        "id": "5e47c2e7e0e6458a",
+        "type": "function",
+        "z": "9ddd64b30f45f1b5",
+        "name": "hand-regist인풋값 조정",
+        "func": "const handDataCount = msg.payload.length;\nmsg.savedLeftHand = [];\nmsg.savedRightHand = [];\nmsg.savedNameList = [];\n\nmsg.payload.forEach((el, index) => {\n    let leftData = el.left_hand_landmarks;\n    let rightData = el.right_hand_landmarks;\n    \n    if(leftData != null){\n        msg.savedLeftHand[index] = leftData;\n    }\n    else{\n        msg.savedLeftHand[index] = null;\n    }\n    \n    if(rightData != null){\n        msg.savedRightHand[index] = rightData;\n    }\n    else{\n        msg.savedRightHand[index] = null;\n    }\n    \n    msg.savedNameList[index] = el.name;\n});\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1290,
+        "y": 840,
+        "wires": [
+            [
+                "540d75dd81f4578e"
+            ]
+        ]
+    },
+    {
+        "id": "de76697c0c125c65",
+        "type": "mongodb in",
+        "z": "9ddd64b30f45f1b5",
+        "mongodb": "94218b756ed95528",
+        "name": "mongoDB 핸즈데이터 Select",
+        "collection": "hands",
+        "operation": "find",
+        "x": 1000,
+        "y": 840,
+        "wires": [
+            [
+                "5e47c2e7e0e6458a"
+            ]
+        ]
+    },
+    {
+        "id": "a6c8be86839e69bc",
+        "type": "mongodb out",
+        "z": "9ddd64b30f45f1b5",
+        "mongodb": "94218b756ed95528",
+        "name": "hands 값 mongoDB 저장",
+        "collection": "hands",
+        "payonly": true,
+        "upsert": false,
+        "multi": false,
+        "operation": "insert",
+        "x": 2330,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "2dc7cd8c8df1aaa1",
+        "type": "function",
+        "z": "9ddd64b30f45f1b5",
+        "name": "mongoDB 등록 인풋",
+        "func": "msg.payload = {};\nmsg.payload.left_hand_landmarks = msg.inputLeftHand;\nmsg.payload.right_hand_landmarks = msg.inputRightHand;\nmsg.payload.name = msg.poseName;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2020,
+        "y": 840,
+        "wires": [
+            [
+                "a6c8be86839e69bc",
+                "6ca885c1cf5c4be6"
+            ]
+        ]
+    },
+    {
+        "id": "adb606d8ad57af87",
+        "type": "change",
+        "z": "9ddd64b30f45f1b5",
+        "name": "인풋값 조정",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.multiHandLandmarks",
+                "pt": "msg",
+                "to": "multiHandLandmarks",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.multiHandedness",
+                "pt": "msg",
+                "to": "multiHandedness",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 710,
+        "y": 560,
+        "wires": [
+            [
+                "be5941d3b82ca8fc"
+            ]
+        ]
+    },
+    {
+        "id": "7e5bc7742a8ea9ba",
+        "type": "hand-find",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "x": 2000,
+        "y": 560,
+        "wires": [
+            [
+                "cfd1118f6ee86578",
+                "fcdac061ad461ac1"
+            ]
+        ]
+    },
+    {
+        "id": "cfd1118f6ee86578",
+        "type": "switch",
+        "z": "9ddd64b30f45f1b5",
+        "name": "동작 존재 여부",
+        "property": "status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "true",
+                "vt": "jsonata"
+            },
+            {
+                "t": "eq",
+                "v": "false",
+                "vt": "jsonata"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 2400,
+        "y": 560,
+        "wires": [
+            [
+                "cc43fc8b8ae9c802"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "bfcce76f9df9fcd7",
+        "type": "mongodb in",
+        "z": "9ddd64b30f45f1b5",
+        "mongodb": "94218b756ed95528",
+        "name": "mongoDB 핸즈데이터 Select",
+        "collection": "hands",
+        "operation": "find",
+        "x": 1500,
+        "y": 560,
+        "wires": [
+            [
+                "cdd52a1e1ed59626"
+            ]
+        ]
+    },
+    {
+        "id": "cdd52a1e1ed59626",
+        "type": "function",
+        "z": "9ddd64b30f45f1b5",
+        "name": "hand-find 인풋값 조정",
+        "func": "const handDataCount = msg.payload.length;\nmsg.savedLeftHand = [];\nmsg.savedRightHand = [];\nmsg.savedNameList = [];\n\nmsg.payload.forEach((el, index) => {\n    let leftData = el.left_hand_landmarks;\n    let rightData = el.right_hand_landmarks;\n    \n    if(leftData != null){\n        msg.savedLeftHand[index] = leftData;\n    }\n    else{\n        msg.savedLeftHand[index] = null;\n    }\n    \n    if(rightData != null){\n        msg.savedRightHand[index] = rightData;\n    }\n    else{\n        msg.savedRightHand[index] = null;\n    }\n    \n    msg.savedNameList[index] = el.name;\n});\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1760,
+        "y": 560,
+        "wires": [
+            [
+                "7e5bc7742a8ea9ba"
+            ]
+        ]
+    },
+    {
+        "id": "8968894052cbad98",
+        "type": "switch",
+        "z": "9ddd64b30f45f1b5",
+        "name": "데이터 누적 여부",
+        "property": "isCorrect",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1170,
+        "y": 560,
+        "wires": [
+            [],
+            [
+                "bfcce76f9df9fcd7"
+            ]
+        ]
+    },
+    {
+        "id": "be5941d3b82ca8fc",
+        "type": "function",
+        "z": "9ddd64b30f45f1b5",
+        "name": "입력 데이터 누적",
+        "func": "let inputLeftHand = null;\nlet inputRightHand = null;\nlet isCorrect = true;\nmsg.isCorrect = false;\n\nmsg.multiHandedness.forEach((el, index) => {\n    if (el.label === \"Right\") {\n      if (msg.multiHandLandmarks[index].length != 21) {\n        isCorrect = false;\n      } else {\n        inputRightHand = msg.multiHandLandmarks[index];\n      }\n    } else if (el.label === \"Left\") {\n      if (msg.multiHandLandmarks[index].length != 21) {\n        isCorrect = false;\n      } else {\n        inputLeftHand = msg.multiHandLandmarks[index];\n      }\n    }\n});\n\nif(!isCorrect){\n    msg.isCorrect = false;\n    return msg;\n}\n\nif(flow.leftHands == null)\n    flow.leftHands = [];\n    \nif(flow.rightHands == null)\n    flow.rightHands = [];\n\nflow.leftHands.push(inputLeftHand);\nflow.rightHands.push(inputRightHand);\n\nif(flow.leftHands.length == 30){\n    msg.isCorrect = true;\n    msg.inputLeftHands = flow.leftHands;\n    msg.inputRightHands = flow.leftHands;\n\n    flow.leftHands = [];\n    flow.rightHands = [];\n}\n\n\n      \nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 560,
+        "wires": [
+            [
+                "8968894052cbad98"
+            ]
+        ]
+    },
+    {
+        "id": "cc43fc8b8ae9c802",
+        "type": "switch",
+        "z": "9ddd64b30f45f1b5",
+        "name": "핸즈별 동작",
+        "property": "handName",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "에어컨on",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "오른손주먹",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "양손펴기",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "왼손V",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "양손주먹",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 5,
+        "x": 2650,
+        "y": 560,
+        "wires": [
+            [],
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "1dd581c7d211eb31",
+        "type": "installed-device",
+        "z": "9ddd64b30f45f1b5",
+        "name": "5fn",
+        "alias": "token:c94f067d",
+        "device": "",
+        "devices": [
+            "4d192f0d-596d-4654-a5fa-45cae8a95250",
+            "5f9a4811-6ec1-4e4f-801b-b45c2aa87cda",
+            "fc05f376-216c-36a0-c583-4c3e5d211fcb",
+            "d3009ee6-bddf-5458-9160-1e0382da3184",
+            "21242d0b-c555-144c-27f6-b00bef816007",
+            "83024186-5f6d-8cc5-a54f-9eee02045142",
+            "645ed6c4-156f-8ce1-bbd2-a2decf6be35b",
+            "702ce8be-5a1f-3bfc-af25-c5648337aa08",
+            "be821182-7452-40f7-84c8-a101aafbcadd",
+            "77cbf87b-2b7b-b7bf-d602-4d4597941d2d",
+            "1d88fbdb-d105-43bd-9b63-be4037b3c640",
+            "a139fbe2-cc14-421e-8e49-b933a16ed120",
+            "b5d536c2-4341-09e2-e138-836a9a9332c6",
+            "c0a6fd54-bbae-4f75-a7d8-5dbea7785c52",
+            "373209a7-6a6d-40ef-b5b7-5ebc7db1d87d",
+            "2b3efe5e-c7b9-44c5-a462-de84612447a6",
+            "2456412c-1b24-6ad5-a062-9675797961c2",
+            "e6145123-0b1b-f70d-fa9e-61d7f794e965",
+            "ff64d11d-7cf0-5541-c2bb-c25bac7ce041",
+            "b01d02c5-ecd7-a826-dd7e-54f1d380c923",
+            "446bf4d2-13bf-0427-3fc3-0330dd59700c",
+            "eaeac12f-690b-3e6e-54b8-aa48d47f565c",
+            "390f7a19-8fc2-831b-1bd3-cd49b6ed885e",
+            "f0a25de1-3dd0-5ba4-15cd-e7af12221c6f",
+            "9ea3f390-cb70-30a4-03e7-a445a635477c",
+            "e1416da3-a111-cfeb-0c7c-713b3deffda0",
+            "5285349b-5606-9640-104f-9ae3dd65c1ca",
+            "1d7e30db-1939-d080-72a5-802b754db412",
+            "d0e7d832-f069-f138-5463-0c64c378a67d",
+            "ec58c60a-cd91-9b13-78dd-53b81c16af3b",
+            "70e6e297-d012-e44b-0858-d0cc3184581d",
+            "78872b97-92f6-0244-1568-025c6af8b2d4",
+            "8ea60849-a7b8-d6cb-8e02-767e0d214706",
+            "385ffa71-5a4b-565d-f3e5-1e3a1d0d1701",
+            "461fc969-bbcd-c8f3-716d-3505ac30d8c4",
+            "c776f294-98b0-632f-1658-1cfc6f39d2cb",
+            "65d4878e-48f6-0b17-cac5-bd6ee4b95da8",
+            "2d6728ea-94d9-ee1f-5dc7-291cd4a9fcbc",
+            "1ba0007f-d9ed-3f68-56f2-dfd3605424f9",
+            "af896e1b-f48c-0d79-cb1e-f2b54ba3dff3",
+            "e3535e1c-9992-e702-f257-b190f5a6b6d1"
+        ],
+        "profileId": "1dd581c7d211eb31",
+        "x": 830,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "780ba3bce7963e30",
+        "type": "function",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "func": "msg.payload = JSON.parse(msg.payload);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 740,
+        "wires": [
+            [
+                "a7fb1b832e3d488c"
+            ]
+        ]
+    },
+    {
+        "id": "4e1ae98096d02556",
+        "type": "http in",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "url": "/hand/iotcam",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1050,
+        "y": 360,
+        "wires": [
+            [
+                "5afb9209a4bab190"
+            ]
+        ]
+    },
+    {
+        "id": "5afb9209a4bab190",
+        "type": "status-device",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "alias": "홈카메라 360",
+        "deviceNodeId": "1dd581c7d211eb31",
+        "deviceType": "installed-device",
+        "deviceId": "c0a6fd54-bbae-4f75-a7d8-5dbea7785c52",
+        "componentId": "",
+        "capabilityId": "videoStream_v1",
+        "attributeId": "stream",
+        "rules": [],
+        "logging": true,
+        "loggingEditor": true,
+        "loggingConsole": true,
+        "outputs": 1,
+        "x": 1250,
+        "y": 360,
+        "wires": [
+            [
+                "43f373021bb39b9d"
+            ]
+        ]
+    },
+    {
+        "id": "0136ddd50d730615",
+        "type": "http response",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1690,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "1122246684f93849",
+        "type": "http in",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "url": "/hand/webcam",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1070,
+        "y": 420,
+        "wires": [
+            [
+                "c840a6ac09a4ec0d"
+            ]
+        ]
+    },
+    {
+        "id": "63187f3c3506a1fc",
+        "type": "http response",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1700,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "d55abe847a711cde",
+        "type": "websocket in",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "server": "eb7d35bd516827b8",
+        "client": "",
+        "x": 210,
+        "y": 740,
+        "wires": [
+            [
+                "780ba3bce7963e30"
+            ]
+        ]
+    },
+    {
+        "id": "c840a6ac09a4ec0d",
+        "type": "hand-detect-webcam",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "serverUrl": "localhost",
+        "monitorPort": 1883,
+        "dataSocketUrl": "ws://team1.ssafy.dev.devground.io:1880/ws/data2",
+        "x": 1420,
+        "y": 420,
+        "wires": [
+            [
+                "63187f3c3506a1fc"
+            ]
+        ]
+    },
+    {
+        "id": "43f373021bb39b9d",
+        "type": "hand-detect-iotcam",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "serverUrl": "localhost",
+        "monitorPort": 1884,
+        "rtspPort": 1886,
+        "dataSocketUrl": "ws://localhost:1880/ws/data2",
+        "x": 1460,
+        "y": 360,
+        "wires": [
+            [
+                "0136ddd50d730615"
+            ]
+        ]
+    },
+    {
+        "id": "fcdac061ad461ac1",
+        "type": "debug",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2370,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "6ca885c1cf5c4be6",
+        "type": "debug",
+        "z": "9ddd64b30f45f1b5",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2270,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "94218b756ed95528",
+        "type": "mongodb",
+        "hostname": "127.0.0.1",
+        "topology": "direct",
+        "connectOptions": "",
+        "port": "27017",
+        "db": "5fn",
+        "name": ""
+    },
+    {
+        "id": "eb7d35bd516827b8",
+        "type": "websocket-listener",
+        "path": "/ws/data2",
+        "wholemsg": "false"
+    }
+]
