@@ -10,6 +10,7 @@ module.exports = function (RED) {
     this.on('input', async (msg, send) => {
       const cloudType = config.cloudType;
       const fileName = msg.payload.fileName || config.fileName;
+      const credentials = RED.nodes.getCredentials(config.id);
       const dataFormat = fileName ? fileName.split('.') : '';
       msg.dataFormat = dataFormat[dataFormat.length - 1];
 
@@ -18,11 +19,11 @@ module.exports = function (RED) {
       };
 
       if (cloudType === 'google') {
-        const refreshToken = config.refreshToken;
+        const refreshToken = credentials.refreshToken;
         const redirectURI = 'https://developers.google.com/oauthplayground';
         const auth = new google.auth.OAuth2(
-          config.clientId,
-          config.clientSecret,
+          credentials.clientId,
+          credentials.clientSecret,
           redirectURI
         );
         auth.setCredentials({ refresh_token: refreshToken });
@@ -32,7 +33,7 @@ module.exports = function (RED) {
         });
         param['drive'] = drive;
       } else if (cloudType === 'one') {
-        const accessToken = config.accessToken;
+        const accessToken = credentials.accessToken;
         param['accessToken'] = accessToken;
       }
 
@@ -110,5 +111,12 @@ module.exports = function (RED) {
     return Buffer.from(new Uint8Array(response.data));
   }
 
-  RED.nodes.registerType('FileCloud', FileCloudNode);
+  RED.nodes.registerType('FileCloud', FileCloudNode, {
+    credentials: {
+      accessToken: {type: 'password', required: true},
+      clientId: {type: 'password', required: true},
+      clientSecret: {type: 'password', required: true},
+      refreshToken: {type: 'password', required: true}
+    },
+  });
 };

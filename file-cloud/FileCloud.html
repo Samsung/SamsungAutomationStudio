@@ -4,22 +4,6 @@
     color: '#0099ff',
     defaults: {
       name: { value: '' },
-      clientId: {
-        value: '',
-        type: 'text',
-      },
-      clientSecret: {
-        value: '',
-        type: 'text',
-      },
-      refreshToken: {
-        value: '',
-        type: 'text',
-      },
-      accessToken: {
-        value: '',
-        type: 'text',
-      },
       cloudType: {
         value: 'google',
       },
@@ -28,6 +12,12 @@
         type: 'text',
         required: true,
       },
+    },
+    credentials: {
+      accessToken: {type: 'password', required: true},
+      clientId: {type: 'password', required: true},
+      clientSecret: {type: 'password', required: true},
+      refreshToken: {type: 'password', required: true}
     },
     inputs: 1,
     outputs: 1,
@@ -78,16 +68,17 @@
   </div>
   <div class="form-row" id="node-input-google-clientId-row">
     <label for="node-input-clientId"><i class="fa fa-tag"></i> Client ID</label>
-    <input type="text" id="node-input-clientId" placeholder="Client ID" />
+    <input type="password" id="node-input-clientId" placeholder="Client ID" autocomplete="off"/>
   </div>
   <div class="form-row" id="node-input-google-secretKey-row">
     <label for="node-input-clientSecret"
       ><i class="fa fa-tag"></i> Client Secret Key</label
     >
     <input
-      type="text"
+      type="password"
       id="node-input-clientSecret"
       placeholder="Client Secret Key"
+      autocomplete="off"
     />
   </div>
   <div class="form-row" id="node-input-google-refreshToken-row">
@@ -95,16 +86,17 @@
       ><i class="fa fa-tag"></i> Refresh Token</label
     >
     <input
-      type="text"
+      type="password"
       id="node-input-refreshToken"
       placeholder="Refresh Token"
+      autocomplete="off"
     />
   </div>
   <div class="form-row" id="node-input-one-row">
     <label for="node-input-accessToken"
       ><i class="fa fa-tag"></i> Access Token</label
     >
-    <input type="text" id="node-input-accessToken" placeholder="Access Token" />
+    <input type="password" id="node-input-accessToken" placeholder="Access Token" autocomplete="off"/>
   </div>
   <div class="form-row" id="node-input-fileName-row">
     <label for="node-input-fileName"
