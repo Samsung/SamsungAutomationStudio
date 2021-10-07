@@ -1,10 +1,10 @@
-# pose-detection-iotcam
+# pose-detect-iotcam
 
-A simple node that recognizes and visualizes pose using a external camera device which support Samsung Smartthings.
+A simple node that recognizes and visualizes pose using a external camera device which support Samsung SmartThings.
 
 ## Pre-requisites
 
-First, pose-detection-iotcam node requires [FFmpeg](https://ffmpeg.org/) to be installed. This node uses FFmpeg to receive rtsp streaming data and display it to the screen.
+First, pose-detect-iotcam node requires [FFmpeg](https://ffmpeg.org/) to be installed. This node uses FFmpeg to receive rtsp streaming data and display it to the screen.
 
 Second, you need to update `node_modules/node-rtsp-stream/mpeg1muxer.js` like below.
 
@@ -30,7 +30,7 @@ Second, you need to update `node_modules/node-rtsp-stream/mpeg1muxer.js` like be
 
 This node provides body tracking in a browser environment to recognize body pose.
 
-This node provides exactly the same function as the `pose-detection-webcam` node, but there is a difference in using an external camera device. We recommend using Samsung's 'SmartThings' IoT camera. When a person is recognized on a webcam, 33 landmark coordinates are predicted and visually shown as shown in the picture below.
+This node provides exactly the same function as the `pose-detect-webcam` node, but there is a difference in using an external camera device. We recommend using Samsung's 'SmartThings' IoT camera. When a person is recognized on a webcam, 33 landmark coordinates are predicted and visually shown as shown in the picture below.
 
 ![image](https://user-images.githubusercontent.com/30489264/136204900-ef4e1304-bca2-41e6-bc31-00aaf3df2467.png)
 
@@ -48,19 +48,19 @@ Port number to be used to monitor pose recognition results from other resources.
 
 ### Rtsp Port
 
-Port number to be used to receive streaming data from your Samsung Smartthings camera device. (default: 1886)
+Port number to be used to receive streaming data from your Samsung SmartThings camera device. (default: 1886)
 
 ### Data Socket Url
 
 Specify the URL including the endpoint to receive the user's pose recognition result data in real time using a WebSocket. (default: 'ws://localhost:1880/ws/data')
 
-### Smartthings MNID
+### SmartThings MNID
 
-Your MNID to get access to your Samsung Smartthings camera device. You can check your MNID on [this page](https://smartthings.developer.samsung.com/partner/dashboard).
+Your MNID to get access to your Samsung SmartThings camera device. You can check your MNID on [this page](https://smartthings.developer.samsung.com/partner/dashboard).
 
-### Smartthings PAT
+### SmartThings PAT
 
-Your PAT to get access to your Samsung Smartthings camera device. You can generate a PAT on [this page](https://account.smartthings.com/login?redirect=https%3A%2F%2Faccount.smartthings.com%2Ftokens).
+Your PAT to get access to your Samsung SmartThings camera device. You can generate a PAT on [this page](https://account.smartthings.com/login?redirect=https%3A%2F%2Faccount.smartthings.com%2Ftokens).
 
 ## Example
 

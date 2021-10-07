@@ -105,7 +105,7 @@ module.exports.code = (config) => {
     
     <body>
         <div align="center" style="min-height: 800px;">
-            <h1>Pose Detection Page</h1>
+            <h1>Pose Detect Page</h1>
             <div style="display: inline-block;" align="center" class="tooltip">
                 <canvas id="input-canvas" width="600px" height="340px" style="border:3px solid grey"></canvas><br>
                 <div class="tooltip-content">
@@ -130,8 +130,8 @@ module.exports.code = (config) => {
             </div>
             <div id="result-div" style="display: none;">
                 <p id="motion-result-message"></p>
-                <div id="regist-btn-bar" align="center">
-                    <button id="regist-btn" class="btn">Regist</button> <button id="cancel-btn" class="btn">Cancel</button>
+                <div id="register-btn-bar" align="center">
+                    <button id="register-btn" class="btn">Register</button> <button id="cancel-btn" class="btn">Cancel</button>
                   </div><br>          
                 <canvas id="capture-canvas" width="480px" height="270px" style="border:1px solid black"></canvas>
                 <div id="motion-result-keypoint"></div>
@@ -224,11 +224,11 @@ module.exports.code = (config) => {
             document.getElementById("motion-result-message").textContent = message
             captureElement.style.display = "none"
             document.getElementById("result-div").style.display = "block"
-            document.getElementById("regist-btn-bar").style.display = "none"
+            document.getElementById("register-btn-bar").style.display = "none"
         }
 
     
-        /* visualize and transmit registered data  */
+        /* visualize and transmit registration data  */
         function onCapture(motionName, timer) {
             setTimeout((motionName) => {
                 captureCtx.drawImage(outputElement, 0, 0, captureElement.width, captureElement.height)
@@ -255,14 +255,14 @@ module.exports.code = (config) => {
     
                 document.getElementById("motion-result-keypoint").innerHTML = '<br><b>' + motionName + "</b> Motion Detail <br>" + detail
                 document.getElementById("motion-result-message").style.color = "green"
-                document.getElementById("motion-result-message").textContent = "Regist Success! You can used [" + motionName + "] motion"
+                document.getElementById("motion-result-message").textContent = "Register Success! You can used [" + motionName + "] motion"
                 captureElement.style.display = "block"
                 document.getElementById("result-div").style.display = "block"
-                document.getElementById("regist-btn-bar").style.display = "block"
+                document.getElementById("register-btn-bar").style.display = "block"
             }, timer * 1000, motionName)
         }
         
-        document.getElementById("regist-btn").addEventListener('click', function(){
+        document.getElementById("register-btn").addEventListener('click', function(){
             document.getElementById("motion-result-message").style.color = "green"
             document.getElementById("motion-result-message").textContent = "[" + poseMotionName.value +"] Data sent successfully! Check out the registration results!"
             dataWebSocket.send(JSON.stringify(poseDataResult))

@@ -1,4 +1,4 @@
-# pose-detection-webcam
+# pose-detect-webcam
 
 A simple node that recognizes and visualizes pose using a webcam.
 

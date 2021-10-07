@@ -4,7 +4,7 @@ This module provides a set of nodes of node-RED for recognizing body poses and h
 
 Use MediaPipe's BlazePose and Hands to track and visualize body and hands poses.
 
-In this module, the type of camera device for recognizing poses is separated into a webcam or external camera devices which support Samsung Smartthings.
+In this module, the type of camera device for recognizing poses is separated into a webcam or external camera devices which support Samsung SmartThings.
 
 Certain poses can be saved through the 'Pose/Hand Register' node, and the 'Pose/Hand Find' node can determine similarity with other poses.
 
@@ -23,14 +23,14 @@ These nodes require Node.js version 14.17.0 and Node-RED 2.0.6.
 ## Node
 > If you want a more detailed description of Node, see its Readme. <br> For more detailed "Flow" and "Algorithms", check out the [Wiki](https://github.com/5FNSaaS/node-red-contrib-motion-pose/wiki)
 - [monitor](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/monitor) : A node for monitoring the pose/hand recognition screen in an external browser.
-- [pose-detection-webcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-detection-webcam) : A simple node that recognizes and visualizes pose using a webcam.
-- [pose-detection-iotcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-detection-iotcam) : A simple node that recognizes and visualizes pose using a external camera device which support Samsung Smartthings.
-- [pose-similarity-find](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-similarity-find) : This node receives a number of input key points and determines the similarity to the saved pose, and derives the most similar pose.
-- [pose-similarity-register](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-similarity-register) : This node accepts a single key point, determines similarity of the saved pose , and derives whether registration is possible.
+- [pose-detect-webcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-detect-webcam) : A simple node that recognizes and visualizes pose using a webcam.
+- [pose-detect-iotcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-detect-iotcam) : A simple node that recognizes and visualizes pose using a external camera device which support Samsung SmartThings.
+- [pose-find](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-find) : This node receives a number of input key points and determines the similarity to the saved pose, and derives the most similar pose.
+- [pose-register](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/body/pose-register) : This node accepts a single key point, determines similarity of the saved pose , and derives whether registration is possible.
 - [hand-register](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-register) : This node receives a number of input key points and determines the similarity to the saved hands pose, and whether registration is possible.
 - [hand-find](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-find) : This node receives a number of input key points and determines the similarity to the saved hands pose, and derives the most similar pose.
-- [hand-detection-webcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-detection-webcam) : A simple node that recognizes and visualizes hand using a webcam.
-- [hand-detection-iotcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-detection-iotcam) : A simple node that recognizes and visualizes hand using a external camera device which support Samsung Smartthings.
+- [hand-detect-webcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-detect-webcam) : A simple node that recognizes and visualizes hand using a webcam.
+- [hand-detect-iotcam](https://github.com/5FNSaaS/node-red-contrib-motion-pose/tree/master/hand/hand-detect-iotcam) : A simple node that recognizes and visualizes hand using a external camera device which support Samsung SmartThings.
 
 <br>
 

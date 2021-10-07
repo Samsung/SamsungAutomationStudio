@@ -13,14 +13,14 @@
   "node-red": {
     "nodes": {
       "monitor": "/monitor/monitor.js",
-      "pose-detection-webcam": "/body/pose-detection-webcam/pose-detection-webcam.js",
-      "pose-detection-iotcam": "/body/pose-detection-iotcam/pose-detection-iotcam.js",
-      "pose-similarity-find": "/body/pose-similarity-find/pose-similarity-find.js",
-      "pose-similarity-register": "/body/pose-similarity-register/pose-similarity-register.js",
+      "pose-detect-webcam": "/body/pose-detect-webcam/pose-detect-webcam.js",
+      "pose-detect-iotcam": "/body/pose-detect-iotcam/pose-detect-iotcam.js",
+      "pose-find": "/body/pose-find/pose-find.js",
+      "pose-register": "/body/pose-register/pose-register.js",
       "hand-register": "/hand/hand-register/hand-register.js",
       "hand-find": "/hand/hand-find/hand-find.js",
-      "hand-detection-webcam": "/hand/hand-detection-webcam/hand-detection-webcam.js",
-      "hand-detection-iotcam": "/hand/hand-detection-iotcam/hand-detection-iotcam.js"
+      "hand-detect-webcam": "/hand/hand-detect-webcam/hand-detect-webcam.js",
+      "hand-detect-iotcam": "/hand/hand-detect-iotcam/hand-detect-iotcam.js"
     }
   },
   "author": "Team 5FNSaaS",

@@ -1,74 +1,62 @@
 module.exports = function(RED) {
-    function PoseSimilarity(config) {
+    function PoseRegisterNode(config) {
         RED.nodes.createNode(this, config);
         var node = this;
         const similarity = require("compute-cosine-similarity");
         node.on('input', function(msg, send, done) {
-            const inputKeypoints =  msg.inputKeypoints
+            
+            const inputKeypoint =  msg.inputKeypoint
             const savedKeypoints = msg.savedKeypoints
+            const keypointsNum = inputKeypoint.length
 
-            // Kepoints Number Check
-            if (inputKeypoints.length == 0) {
-                msg.status = false
-                msg.poseName = null
-                msg.accuracy = 0
-                node.send(msg)
-                return
-            }
-
-            //Define Initial Variable
-            const keypointsNum = inputKeypoints[0].length
             let isExist = false
+            let isUnAccurate = false
             let similarPoseName
-            let accuracy = 0.0
             let similarLimit = config.similarSensitivity
 
-            // Input keypoints Preprocessing
-            let inputVectors = []
+            // Input keypoint Accuracy Evaluation
+            let accuracyCount = 0
+            for ( let point of inputKeypoint) {
+                if ( point.visibility > 0.8) {
+                    accuracyCount += 1
+                }
+            }
+            if (accuracyCount < keypointsNum/2) {
+                isUnAccurate = true
+            }
 
-            for ( let inputKeypoint of inputKeypoints) {
-                inputVectors.push(keypoinstsPreprocessing(inputKeypoint))
-            } 
+            // Input keypoint Preprocessing
+            let inputVector = keypoinstsPreprocessing(inputKeypoint) 
 
             // Saved keypoints Iteration
             for ( let name in savedKeypoints ) {
-                let savedVector = keypoinstsPreprocessing(savedKeypoints[name])
-                let matchingValues = []
-                for (let inputVector of inputVectors) {
-                    cosineMatching = 100*(1 - cosineDistanceMatching(inputVector, savedVector, keypointsNum) / Math.sqrt(2))
-                    weightedMatching = 100*(1-weightedDistanceMatching(inputVector, savedVector, keypointsNum) / 0.2)
+                savedVector = keypoinstsPreprocessing(savedKeypoints[name])
 
-                    matchingValues.push( (cosineMatching + weightedMatching) / 2 )
-                }
+                cosineMatching = 100*(1 - cosineDistanceMatching(inputVector, savedVector, keypointsNum) / Math.sqrt(2))
+                weightedMatching = 100*(1-weightedDistanceMatching(inputVector, savedVector, keypointsNum) / 0.2)
 
-                // Evaluating Matching Values
-                
-                // Using Mean value
-                let sum = 0
-                for (let value of matchingValues) {
-                    sum += value
-                }
-                meanValue = sum / matchingValues.length
+                matchingValue = (cosineMatching + weightedMatching) / 2
 
-                // Determine Similarity
-                if ( meanValue > similarLimit ) {
+                if ( matchingValue > similarLimit ) {
                     isExist = true
-                    similarLimit = meanValue
                     similarPoseName = name
-                    accuracy = meanValue
-                }
-
+                    break
+                }            
             }
 
             // Return Value
-            if ( isExist ) {
+            if ( isUnAccurate ) {
+                msg.status = false
+                msg.poseName = null
+                msg.isAccurate = false
+            } else if ( isExist ) {
                 msg.status = true
                 msg.poseName = similarPoseName
-                msg.similarity = accuracy
+                msg.isAccurate = true
             } else {
                 msg.status = false
                 msg.poseName = null
-                msg.similarity = 0
+                msg.isAccurate = true
             }
             function keypoinstsPreprocessing(keypoints) {
                 // Pre-processing : Nomalization and Making Vector
@@ -99,6 +87,7 @@ module.exports = function(RED) {
                     yTerms[i] /= l2norm
                     zTerms[i] /= l2norm
                 }
+
                 return [...xTerms, ...yTerms, ...zTerms, ...scores]
 
             }
@@ -130,9 +119,11 @@ module.exports = function(RED) {
                 }
                 return summation2 / summation1;
             }
-            node.send(msg)
 
+            node.send(msg)
+            
+            
         })
     }
-    RED.nodes.registerType("pose-similarity-find", PoseSimilarity)
+    RED.nodes.registerType("pose-register", PoseRegisterNode)
 }

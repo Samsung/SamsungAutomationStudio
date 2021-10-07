@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  RED.nodes.registerType('pose-similarity-find',{
+  RED.nodes.registerType('pose-find',{
       category: 'motion pose',
       color: '#B2A1F4',
       defaults: {
@@ -16,7 +16,7 @@
   });
 </script>
 
-<script type="text/html" data-template-name="pose-similarity-find">
+<script type="text/html" data-template-name="pose-find">
   <div class="form-row">
       <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
       <input type="text" id="node-input-name" placeholder="Name">
@@ -26,7 +26,7 @@
     <input type="text" id="node-input-similarSensitivity" placeholder="(default) 80">
   </div>
 </script>
-<script type="text/html" data-help-name="pose-similarity-find">
+<script type="text/html" data-help-name="pose-find">
   <p>This node receives a number of input key points (ex: sequence of continuous time) and determines the similarity to the saved pose, and derives the most similar pose.</p>
 
   <h3>Properties</h3>

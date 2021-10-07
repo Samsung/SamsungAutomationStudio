@@ -1,6 +1,6 @@
-# pose-similarity-register
+# pose-find
 
-This node accepts a single key point, determines similarity of the saved pose , and derives whether registration is possible.
+This node receives a number of input key points (ex: sequence of continuous time) and determines the similarity to the saved pose, and derives the most similar pose.
 
 Please check the following [link(Determination of Similarity)](https://github.com/5FNSaaS/node-red-contrib-motion-pose/wiki/Determination-of-similarity) for the method referenced to calculate the similarity between poses (described in our project wiki topic).
 
@@ -14,11 +14,11 @@ Key point : [ ... ,{"x": float, "y":float, "z":float, "visibility": float}, ...]
 
 ## Usage
 
-This node is used when the user wishes to register with a new pose. Check whether the pose is already registered by the user. Sensitivity can be set through node attributes.
+This node finds a pose similar to the pose model that enters in real-time input. Criteria to determine that they are similar can be set sensitivity through the properties of the node. 
 
-To this end, the node must receive a pose arrangement that has already been saved as input.
+To this end, nodes must receive an arrangement of pose that has already been stored as input. 
 
-If there is a similar pose, return the similarity with the name of the pose. If you have a similar pose, refer to 'Status' of the output data.
+If a similar pose exists, return the name and similarity of the pose. Refer to 'status' of the output data for the presence of similar poses.
 
 ## Properties
 
@@ -28,24 +28,13 @@ This attribute is a criterion (percentage) to determine that a particular two po
 
 ## Input
 
-### inputKeypoint
+### inputKeypoints
 
-This is the coordinate data of the pose you wish to register a new pose.
+This array is the coordinate detection values of the pose being recognized by Detection Node. This array can have multiple frame data, because multiple frame data accumulated over time can be need to determine the similarity. 
 
 ```json
-inputKeypoint : [    {
-      "x": 0.49571552872657776,
-      "y": 0.7027847766876221,
-      "z": -0.4364425241947174,
-      "visibility": 0.999972939491272
-    },
-    {
-      "x": 0.5213351845741272,
-      "y": 0.6515322923660278,
-      "z": -0.4486660063266754,
-      "visibility": 0.9999632239341736
-    },
-    // ...
+inputKeypoints : [
+	keypoint1, keypoint2, keypoint3,...
 ]
 ```
 
@@ -69,6 +58,6 @@ Returns whether there is a pose similar to the pose entered in real-time. In oth
 
 Returns the name of the most similar pose if there is a similar action. However, if there is no action that is judged to be similar, null is returned. In other words, it represents a meaningful value only when status is true.
 
-### isAccurate
+### similarity
 
-This is a status value that verified whether the pose the user wants to register is valid data. true if the correctness of the action to be registered is sufficient, false otherwise (boolean)
+If there is a similar pose, it means the similarity with the most similar pose. If there is none, 0 is assigned.

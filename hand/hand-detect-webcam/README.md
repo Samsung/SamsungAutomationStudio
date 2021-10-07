@@ -1,4 +1,4 @@
-# hand-detection-webcam
+# hand-detect-webcam
 
 A simple node that recognizes and visualizes hand using a webcam.
 

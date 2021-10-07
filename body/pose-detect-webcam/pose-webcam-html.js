@@ -2,69 +2,67 @@ module.exports.code = (config) => {
   return String.raw`
   <!DOCTYPE html>
   <html>
-
+  
   <head>
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
       <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
       <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
       <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
-
       <link rel="shortcut icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1658/1658879.png">
-      <title>Hands Detection</title>
-
+      <title>Pose Detection</title>
+          
       <style>
           a {
               text-decoration: none;
           }
-
+  
           body {
               overflow-y: scroll;
           }
-
+  
           .btn {
               border: none;
               width: 100px;
               height: 25px;
               border-radius: 10px;
           }
-
+  
           .btn:first-child {
               background-color: #B2A1F4;
               color: white;
           }
-
+  
           .btn:hover {
               cursor: pointer;
           }
-
+  
           .btn:hover:first-child {
               background-color: #7557f0;
           }
-
+  
           .btn:hover:last-child {
               background-color: grey;
           }
-
+  
           table {
               width: 100%;
               border-collapse: collapse;
           }
-
+  
           th,
           td {
               border: 1px solid rgb(216, 216, 216);
               padding: 3px;
           }
-
+  
           .tooltip {
               position: relative;
               display: inline-block;
           }
-
+  
           .tooltip .tooltip-content {
               visibility: hidden;
               background-color: rgba(255, 255, 255, 0.8);
@@ -79,11 +77,11 @@ module.exports.code = (config) => {
               border-radius: 10px;
               z-index: 1;
           }
-
+  
           .tooltip:hover .tooltip-content {
               visibility: visible;
           }
-
+  
           #captrue-btn {
               background-color: #B2A1F4;
               border: 1px solid grey;
@@ -91,28 +89,28 @@ module.exports.code = (config) => {
               height: 21px;
               color: white;
           }
-
+  
           #captrue-btn:hover {
               background-color: #7557f0;
               cursor: pointer;
           }
       </style>
   </head>
-
+  
   <body>
       <div align="center" style="min-height: 800px;">
-          <h1>Hands Detection Page</h1>
+          <h1>Pose Detection Page</h1>
           <div style="display: inline-block;" align="center" class="tooltip">
               <video id="input-video" width="600px" height="340px" crossorigin="anonymous"
                   style="border:3px solid grey"></video><br>
               <div class="tooltip-content">
-              <p>Your Camera</p>
+                  <p>Your Camera</p>
               </div>
           </div>
           <div style="display: inline-block;" align="center" class="tooltip">
               <canvas id="output-canvas" width="600px" height="340px" style="border:3px solid #B2A1F4"></canvas><br>
               <div class="tooltip-content">
-                  <p>Tracking your hands</p>
+                  <p>Tracking your Pose</p>
               </div>
           </div>
           <div>
@@ -123,13 +121,13 @@ module.exports.code = (config) => {
                   <option value="2">2s Timer</option>
                   <option value="3">3s Timer</option>
               </select>
-              <input id="hand-motion-name" type="search" placeholder="Hands Motion Name"><button id="captrue-btn">Capture</button>
+              <input id="pose-motion-name" type="text" placeholder="Motion Pose Name"><button id="captrue-btn">Capture</button>
           </div>
           <div id="result-div" style="display: none;">
               <p id="motion-result-message"></p>
-              <div id="regist-btn-bar" align="center">
-                  <button id="regist-btn" class="btn">Regist</button> <button id="cancel-btn" class="btn">Cancel</button>
-              </div><br>
+              <div id="register-btn-bar" align="center">
+                  <button id="register-btn" class="btn">Register</button> <button id="cancel-btn" class="btn">Cancel</button>
+                </div><br>          
               <canvas id="capture-canvas" width="480px" height="270px" style="border:1px solid black"></canvas>
               <div id="motion-result-keypoint"></div>
           </div>
@@ -147,40 +145,42 @@ module.exports.code = (config) => {
           <a href="https://github.com/steven9408">Yeorae Jo</a><br>
       </div>
   </body>
-
+  
   </html>
-
+  
   <script type="module">
       const inputElement = document.getElementById('input-video')
       const outputElement = document.getElementById('output-canvas')
       const captureElement = document.getElementById('capture-canvas')
       const outputCtx = outputElement.getContext('2d')
       const captureCtx = captureElement.getContext('2d')
+  
       const dataWebSocket = new WebSocket('${config.dataSocketUrl}')
 
       function startDetect(renderFunc) {
           const fps = 60
           const stopLoop = audioTimerLoop(renderFunc, 1000 / fps)
       }
-      
+  
       function audioTimerLoop(renderFunc, frequency) {
-          const freq = frequency / 1000  
+          const freq = frequency / 1000
           const aCtx = new AudioContext()
           const silence = aCtx.createGain()
           silence.gain.value = 0
-          silence.connect(aCtx.destination)  
+          silence.connect(aCtx.destination)
   
           onOSCend()
   
-          let stopped = false
+          const stopped = false
           async function onOSCend() {
               await renderFunc()
+  
               const osc = aCtx.createOscillator()
               osc.onended = onOSCend
               osc.connect(silence)
               osc.start()  // 당장 시작
               osc.stop(aCtx.currentTime + freq)
-
+  
               if (stopped) {
                   osc.onended = function () {
                       aCtx.close()
@@ -188,150 +188,159 @@ module.exports.code = (config) => {
                   }
               }
           }
-          
           return function () {
               stopped = true
           }
       }
-      
+  
       const timerSecond = document.getElementById("secondTimer")
       let second = timerSecond.options[timerSecond.selectedIndex].value
       let poseData = null
       let poseName = null
       let poseDataResult = null
-
+  
       document.getElementById("secondTimer").addEventListener('change', () => {
           second = timerSecond.options[timerSecond.selectedIndex].value
       })
-      
-      var handMotionName = document.getElementById("hand-motion-name")
+  
+      const poseMotionName = document.getElementById("pose-motion-name")
       document.getElementById("captrue-btn").addEventListener('click', () => {
-          if (handMotionName.value === "" || handMotionName.value === undefined) {
+          if (poseMotionName.value === "" || poseMotionName.value === undefined) {
               isFail("[Fail] Invalid Name : The motion name is empty.")
-          } else if (poseData == null) {
-              isFail("[Fail] Keypoint not found. Show your hands on cam!");
+          }else if(poseData==null){
+              isFail("[Fail] Keypoint not found. Show your hands on cam!")
           }
           else {
-              onCapture(handMotionName.value)
+              onCapture(poseMotionName.value, document.getElementById("secondTimer").value)
           }
       })
-
+  
       function isFail(message) {
           document.getElementById("motion-result-message").style.color = "red"
           document.getElementById("motion-result-message").textContent = message
           captureElement.style.display = "none"
           document.getElementById("result-div").style.display = "block"
-          document.getElementById("regist-btn-bar").style.display = "none";
+          document.getElementById("register-btn-bar").style.display = "none"
       }
-      
-
-      /* hands motion capture used timer if sucess regist*/
-      function onCapture(motionName){
-          setTimeout(() => {
-              captureCtx.drawImage(outputElement, 0, 0, captureElement.width, captureElement.height);    
-              let detail = "";
-              const fixed = 5;
-
-              // hands motion keypoint data table
-              for (let idx = 0; idx < poseData.multiHandedness.length; idx++) {
-              detail += "<table style='display:inline;margin:0px 5px;'>";
-              detail += "<tr><th colspan='4' align='center'>"+poseData.multiHandedness[idx].label+" (score:"+poseData.multiHandedness[idx].score.toFixed(fixed)+")</th></tr>";
-              detail += "<tr align='center'><td></td><td>x</td><td>y</td><td>z</td></tr>"
-              for (let index = 0; index < 21; index++) {
-                  detail += "<tr>";
-                  detail += "<td align='center'>"+index+"</td>";
-                  detail += "<td>"+poseData.multiHandLandmarks[idx][index].x.toFixed(fixed)+"</td>"
-                  detail += "<td>"+poseData.multiHandLandmarks[idx][index].y.toFixed(fixed)+"</td>"
-                  detail += "<td>"+poseData.multiHandLandmarks[idx][index].z.toFixed(fixed)+"</td>"
-                  detail += "</tr>";
+  
+      /* visualize and transmit registration data  */
+      function onCapture(motionName, timer) {
+          setTimeout((motionName) => {
+              captureCtx.drawImage(outputElement, 0, 0, captureElement.width, captureElement.height)
+              let detail = ""
+              const fixed = 5
+  
+              detail += "<table style='display:inline;margin:0px 5px;'>"
+              detail += "<caption>Estimated Pose</caption>"
+              detail += "<tr><th></th><th>x</th><th>y</th><th>z</th><th>visibility</th></tr>"
+              for (let idx = 0; idx < poseData.poseLandmarks.length; idx++) {
+                  detail += "<tr>"
+                  detail += "<td align='center'>" + idx + "</td>"
+                  detail += "<td>" + poseData.poseLandmarks[idx].x.toFixed(fixed) + "</td>"
+                  detail += "<td>" + poseData.poseLandmarks[idx].y.toFixed(fixed) + "</td>"
+                  detail += "<td>" + poseData.poseLandmarks[idx].z.toFixed(fixed) + "</td>"
+                  detail += "<td>" + poseData.poseLandmarks[idx].visibility.toFixed(fixed) + "</td>"
+                  detail += "</tr>"
               }
-              detail += "</table>";
-              }
-              
+              detail += "</table>"
+
               /* Save data immediately after timer runs */
-              poseData["regist"] = true;
-              poseData["poseName"] = handMotionName.value;
-              poseDataResult = poseData;
-
-              document.getElementById("motion-result-keypoint").innerHTML = '<br><b>' + motionName + "</b> Motion Detail <br><br>" + detail;
-              document.getElementById("motion-result-message").style.color = "green";
-              document.getElementById("motion-result-message").textContent = "[" + motionName +"] motion captured! Is this the behavior you want?";
+              poseData.regist = true
+              poseData.poseName = motionName
+              poseDataResult = poseData
+  
+              document.getElementById("motion-result-keypoint").innerHTML = '<br><b>' + motionName + "</b> Motion Detail <br>" + detail
+              document.getElementById("motion-result-message").style.color = "green"
+              document.getElementById("motion-result-message").textContent = "Register Success! You can used [" + motionName + "] motion"
               captureElement.style.display = "block"
-              document.getElementById("regist-btn-bar").style.display = "block";
-              document.getElementById("result-div").style.display = "block";
-          }, second*1000);
+              document.getElementById("result-div").style.display = "block"
+              document.getElementById("register-btn-bar").style.display = "block"
+          }, timer * 1000, motionName)
       }
-      
-      document.getElementById("regist-btn").addEventListener('click', function () {
-          document.getElementById("motion-result-message").style.color = "green";
-          document.getElementById("motion-result-message").textContent = "[" + handMotionName.value + "] Data sent successfully! Check out the registration results!";
-          dataWebSocket.send(JSON.stringify(poseDataResult));
+  
+      document.getElementById("register-btn").addEventListener('click', function(){
+          document.getElementById("motion-result-message").style.color = "green"
+          document.getElementById("motion-result-message").textContent = "[" + poseMotionName.value +"] Data sent successfully! Check out the registration results!"
+          dataWebSocket.send(JSON.stringify(poseDataResult))
       })
-      
-      document.getElementById("hand-motion-name").addEventListener('focus', onClear);
-      document.getElementById("cancel-btn").addEventListener('click', function () {
-          document.getElementById("hand-motion-name").value = "";
-          onClear();
-      });
-
-      function onClear() {
-      document.getElementById("motion-result-message").textContent = "";
-      document.getElementById("motion-result-keypoint").innerHTML = "";
-      document.getElementById("result-div").style.display = "none";
+  
+      document.getElementById("pose-motion-name").addEventListener('focus', onClear)
+      document.getElementById("cancel-btn").addEventListener('click', function(){
+          document.getElementById("pose-motion-name").value = ""
+          onClear()
+      })
+  
+      function onClear(){
+          document.getElementById("motion-result-message").textContent = ""
+          document.getElementById("motion-result-keypoint").innerHTML = ""
+          document.getElementById("result-div").style.display = "none"
       }
-      
+  
       const urlCreator = window.URL || window.webkitURL
       const monitorUrl = 'http://${config.serverUrl}:${config.monitorPort}'
       const monitorSocket = io(monitorUrl)
       monitorSocket.on("connect", () => {
           console.log("connection server")
+          monitorSocket.emit("echo", "echo from mediapipe")
       })
-      
+  
       function onResults(results) {
           outputCtx.save()
           outputCtx.clearRect(0, 0, outputElement.width, outputElement.height)
+  
           outputCtx.globalCompositeOperation = 'destination-atop'
-          outputCtx.drawImage(results.image, 0, 0, outputElement.width, outputElement.height)
+          outputCtx.drawImage(
+              results.image, 0, 0, outputElement.width, outputElement.height)
+  
           outputCtx.globalCompositeOperation = 'source-over'
-          if (results.multiHandLandmarks) {
-              for (const landmarks of results.multiHandLandmarks) {
-                  drawConnectors(outputCtx, landmarks, HAND_CONNECTIONS,
-                                  {color: '#f2d6ae', lineWidth: 5});
-                  drawLandmarks(outputCtx, landmarks, {color: '#b2a1f4', lineWidth: 1});
-                  results.regist = false;
-                  results.poseName = null;
-                  dataWebSocket.send(JSON.stringify(results));
-                  poseData = results;
+          drawConnectors(outputCtx, results.poseLandmarks, POSE_CONNECTIONS,
+              { color: '#f2d6ae', lineWidth: 5 })
+          drawLandmarks(outputCtx, results.poseLandmarks,
+              { color: '#b2a1f4', lineWidth: 1 })
+          outputCtx.restore()
+  
+          if (results.poseLandmarks) {
+              if (dataWebSocket.readyState === 1) {
+                  results.regist = false
+                  results.poseName = poseName
+                  dataWebSocket.send(JSON.stringify(results))
+  
+                  poseData = results
+                  poseName = null
               }
           }
-          outputCtx.restore();
-
+  
           if (monitorSocket.connected) {
               outputElement.toBlob(function (blob) {
                   const imageUrl = urlCreator.createObjectURL(blob)
                   monitorSocket.emit('video', imageUrl)
               }, 'image/webp')
           }
-      }
-
-
-      const hands = new Hands({locateFile: (file) => {
-          return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/'+file;
-      }});
-      hands.setOptions({
-          maxNumHands: 2,
-          minDetectionConfidence: 0.6,
+      }            
+  
+      // construct Mediapipe Pose instance
+      const pose = new Pose({
+          locateFile: (file) => {
+              return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file
+          }
+      })
+      pose.setOptions({
+          modelComplexity: 1,
+          smoothLandmarks: true,
+          enableSegmentation: true,
+          smoothSegmentation: true,
+          minDetectionConfidence: 0.5,
           minTrackingConfidence: 0.5
-      });
-      hands.onResults(onResults);
-      
+      })
+      pose.onResults(onResults)
+  
       async function render() {
-          await hands.send({ image: inputElement })
+          await pose.send({ image: inputElement })
       }
-      
+  
       const mediaConstraints = {
-          audio: false, // modify change if you want audio data
-          video: { width: 600, height: 340 }
+          audio: false, 
+          video: { width: 1280, height: 720 }
       }
 
       navigator.mediaDevices.getUserMedia(mediaConstraints)

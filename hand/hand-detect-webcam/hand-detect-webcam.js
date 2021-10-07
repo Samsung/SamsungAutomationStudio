@@ -3,7 +3,7 @@
 
 module.exports = function(RED) {
 
-    function HandDetectionWebcamNode(config) {
+    function HandDetectWebcamNode(config) {
 
         function HTML() {
             return require('./hand-webcam-html.js').code(config)
@@ -18,5 +18,5 @@ module.exports = function(RED) {
             send(msg)
         })
     }
-    RED.nodes.registerType("hand-detection-webcam", HandDetectionWebcamNode)
+    RED.nodes.registerType("hand-detect-webcam", HandDetectWebcamNode)
 }
