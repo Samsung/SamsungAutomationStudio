@@ -49,7 +49,8 @@
 2. 스위치가 켜지는 event를 감지하기 위해 Device Profile 노드의 capability를 switch로 선택합니다.
 3. automation 노드로 시작하는 플로우와 websocket-in 노드로 시작하는 플로우에서 Query이름을 가진 노드를 선택하여 재고관리 상품을 등록합니다.<br>
    (이벤트 노드와 상태 노드가 스위치가 켜지는 이벤트를 감지한 뒤 Query 노드에서 입력한 상품 키워드로 상품을 검색하고 결과 보고서를 만듭니다.)
-4. automation 플로우 말단에 있는 알림노드에서 알림을 보낼 slack 채널의 webhook endpoint를 등록합니다.
+4. 상태(status)노드에서 재고관리에 사용되는 스위치를 Device 필드의 속성 값으로 선택하고, 하단에 add filter를 눌러 switch == on을 추가합니다.
+5. automation 플로우 말단에 있는 알림노드에서 알림을 보낼 slack 채널의 webhook endpoint를 등록합니다.
    <br>
    <br>
    _참고 : 11번가가 아닌 naver쇼핑 검색 결과 이용시, shopping노드의 API Type을 "Naver Shopping"으로, shopping-formatter, shopping-filter 노드들의 apiType을 naver로 바꿔야 합니다._
