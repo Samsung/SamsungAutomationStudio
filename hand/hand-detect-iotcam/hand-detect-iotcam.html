@@ -1,6 +1,6 @@
 <script type="text/javascript">
 
-  RED.nodes.registerType('hand-detection-iotcam',{
+  RED.nodes.registerType('hand-detect-iotcam',{
     category: 'motion pose',
     color: '#B2A1F4',
     defaults: {
@@ -18,14 +18,14 @@
     outputs: 1,
     icon: "font-awesome/fa-hand-paper-o",
     label: function() {
-      return this.name||"hands-detection-iotcam"
+      return this.name||"hands-detect-iotcam"
     },
     oneditprepare: function() {
     },
   })
 </script>
 
-<script type="text/html" data-template-name="hand-detection-iotcam">
+<script type="text/html" data-template-name="hand-detect-iotcam">
   <div class="form-tips" style="margin-bottom:10px;">
     <b>Note:</b> You can check your Smartthings MNID on <b><a href="https://smartthings.developer.samsung.com/partner/dashboard" target="_blank">this page</a>.</b>
     And you can also generate your Smartthings Personal Access Token(PAT) on <b><a href="https://account.smartthings.com/tokens" target="_blank">this page</a>.</b>
@@ -67,7 +67,7 @@
   </div>
 </script>
 
-<script type="text/html" data-help-name="hand-detection-iotcam">
+<script type="text/html" data-help-name="hand-detect-iotcam">
   <p>A simple node that recognizes and visualizes hand posture using external camera device.</p>
 
   <h3>Properties</h3>

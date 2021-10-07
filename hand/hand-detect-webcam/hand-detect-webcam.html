@@ -1,6 +1,6 @@
 <script type="text/javascript">
 
-  RED.nodes.registerType('hand-detection-webcam',{
+  RED.nodes.registerType('hand-detect-webcam',{
     category: 'motion pose',
     color: "#B2A1F4",
     defaults: {
@@ -13,7 +13,7 @@
     outputs: 1,
     icon: "font-awesome/fa-hand-paper-o",
     label: function() {
-      return this.name||"hands-detection-webcam"
+      return this.name||"hands-detect-webcam"
     },
     oneditprepare: function() {
       const inputVideo = document.getElementById('input-video')
@@ -36,7 +36,7 @@
   })
 </script>
 
-<script type="text/html" data-template-name="hand-detection-webcam">
+<script type="text/html" data-template-name="hand-detect-webcam">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name">
@@ -66,7 +66,7 @@
   </div>
 </script>
 
-<script type="text/html" data-help-name="hand-detection-webcam">
+<script type="text/html" data-help-name="hand-detect-webcam">
   <p>A simple node that recognizes and visualizes hand posture using a webcam.</p>
 
   <h3>Properties</h3>

@@ -1,10 +1,10 @@
-# hand-detection-iotcam
+# hand-detect-iotcam
 
 A simple node that recognizes and visualizes hand using a external camera device which support Samsung Smartthings.
 
 ## Pre-requisites
 
-First, hand-detection-iotcam node requires [FFmpeg](https://ffmpeg.org/) to be installed. This node uses FFmpeg to receive rtsp streaming data and display it to the screen.
+First, hand-detect-iotcam node requires [FFmpeg](https://ffmpeg.org/) to be installed. This node uses FFmpeg to receive rtsp streaming data and display it to the screen.
 
 Second, you need to update `node_modules/node-rtsp-stream/mpeg1muxer.js` like below.
 
@@ -30,7 +30,7 @@ Second, you need to update `node_modules/node-rtsp-stream/mpeg1muxer.js` like be
 
 This node recognizes the coordinates of the hand by providing tracking for both hands in a browser environment.
 
-This node provides exactly the same function as the `hand-detection-webcam` node, but there is a difference in using an external camera device. We recommend using Samsung's 'SmartThings' IoT camera. When the webcam recognizes the hand, 20 landmark coordinates are predicted and visually displayed as shown in the picture below.
+This node provides exactly the same function as the `hand-detect-webcam` node, but there is a difference in using an external camera device. We recommend using Samsung's 'SmartThings' IoT camera. When the webcam recognizes the hand, 20 landmark coordinates are predicted and visually displayed as shown in the picture below.
 
 ![image](https://user-images.githubusercontent.com/30489264/136223035-decf4060-8a0d-4fb3-9fa7-8cffd1c2491e.png)
 

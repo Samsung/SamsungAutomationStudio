@@ -10,10 +10,10 @@ const Stream = require('node-rtsp-stream')
 
 module.exports = function(RED) {
 
-    function PoseDetectionIotcamNode(config) {
+    function HandDetectIotcamNode(config) {
 
         function HTML() {
-            return require('./pose-iotcam-html.js').code(config)
+            return require('./hand-iotcam-html.js').code(config)
         }
 
         RED.nodes.createNode(this, config)
@@ -21,6 +21,7 @@ module.exports = function(RED) {
         
         // listener to receive messages from the up-stream nodes in a flow.
         this.on('input', (msg, send, done) => {
+
             // construct socket server for RTSP.
             // RTSP socket 서버 생성
             const rtspUrl = msg.payload.components.main.videoStream.stream.value.OutHomeURL.split('//')[1]
@@ -40,9 +41,7 @@ module.exports = function(RED) {
                     console.log(`WebSocket [RTSP] : port ${rtspPort} is busy.`)
                 }
             })
-
-            // if port is available, run the socket server.
-            // port 사용 가능할 경우, socket 서버 실행
+            
             httpServer.once('listening', () => {
                 console.log(`WebSocket [RTSP] : port ${rtspPort} is now ready.`)
                 const newStream = Stream
@@ -62,7 +61,7 @@ module.exports = function(RED) {
                         return this.onSocketConnect(socket, request)
                     })
                     this.wsServer.broadcast = function(data, opts) {
-                        var results = []
+                        const results = []
                         for (let client of this.clients) {
                             if (client.readyState === 1) {
                                 results.push(client.send(data, opts))
@@ -102,11 +101,10 @@ module.exports = function(RED) {
             rtspStream.stop()
         })
     }
-    RED.nodes.registerType("pose-detection-iotcam", PoseDetectionIotcamNode, {
+    RED.nodes.registerType("hand-detect-iotcam", HandDetectIotcamNode, {
         credentials: {
             smartthingsMnid: {type:"text"},
             smartthingsPat: {type:"text"}
         }
     })
 }
-

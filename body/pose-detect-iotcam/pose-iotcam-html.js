@@ -105,7 +105,7 @@ module.exports.code = (config) => {
     
     <body>
         <div align="center" style="min-height: 800px;">
-            <h1>Pose Detection Page</h1>
+            <h1>Pose Detect Page</h1>
             <div style="display: inline-block;" align="center" class="tooltip">
                 <canvas id="input-canvas" width="600px" height="340px" style="border:3px solid grey"></canvas><br>
                 <div class="tooltip-content">

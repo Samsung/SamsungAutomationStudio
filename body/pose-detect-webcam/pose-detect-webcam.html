@@ -1,6 +1,6 @@
 <script type="text/javascript">
 
-  RED.nodes.registerType('pose-detection-webcam',{
+  RED.nodes.registerType('pose-detect-webcam',{
     category: 'motion pose',
     color: '#B2A1F4',
     defaults: {
@@ -13,7 +13,7 @@
     outputs: 1,
     icon: "font-awesome/fa-male",
     label: function() {
-        return this.name||"pose-detection-webcam"
+        return this.name||"pose-detect-webcam"
     },
     oneditprepare: function() {
       const inputVideo = document.getElementById('input-video')
@@ -36,7 +36,7 @@
   })
 </script>
 
-<script type="text/html" data-template-name="pose-detection-webcam">
+<script type="text/html" data-template-name="pose-detect-webcam">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name">
@@ -66,7 +66,7 @@
   </div>
 </script>
 
-<script type="text/html" data-help-name="pose-detection-webcam">
+<script type="text/html" data-help-name="pose-detect-webcam">
   <p>A simple node that recognizes and visualizes posture using a webcam.</p>
 
   <h3>Properties</h3>

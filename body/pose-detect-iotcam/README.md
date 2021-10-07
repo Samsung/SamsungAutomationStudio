@@ -1,10 +1,10 @@
-# pose-detection-iotcam
+# pose-detect-iotcam
 
 A simple node that recognizes and visualizes pose using a external camera device which support Samsung Smartthings.
 
 ## Pre-requisites
 
-First, pose-detection-iotcam node requires [FFmpeg](https://ffmpeg.org/) to be installed. This node uses FFmpeg to receive rtsp streaming data and display it to the screen.
+First, pose-detect-iotcam node requires [FFmpeg](https://ffmpeg.org/) to be installed. This node uses FFmpeg to receive rtsp streaming data and display it to the screen.
 
 Second, you need to update `node_modules/node-rtsp-stream/mpeg1muxer.js` like below.
 
@@ -30,7 +30,7 @@ Second, you need to update `node_modules/node-rtsp-stream/mpeg1muxer.js` like be
 
 This node provides body tracking in a browser environment to recognize body pose.
 
-This node provides exactly the same function as the `pose-detection-webcam` node, but there is a difference in using an external camera device. We recommend using Samsung's 'SmartThings' IoT camera. When a person is recognized on a webcam, 33 landmark coordinates are predicted and visually shown as shown in the picture below.
+This node provides exactly the same function as the `pose-detect-webcam` node, but there is a difference in using an external camera device. We recommend using Samsung's 'SmartThings' IoT camera. When a person is recognized on a webcam, 33 landmark coordinates are predicted and visually shown as shown in the picture below.
 
 ![image](https://user-images.githubusercontent.com/30489264/136204900-ef4e1304-bca2-41e6-bc31-00aaf3df2467.png)
 
