@@ -291,14 +291,14 @@
           return true;
         }
       },
-      naverShoppingDisplay: { value: 10, validate:function(v) {
+      naverShoppingDisplay: { value: "10", validate:function(v) {
           if($("#node-input-apiType option:selected").val() !== "naverShopping") return true;
           if(v.length === 0) return false;
           return !isNaN(v);
         }
       },
       naverShoppingSort: { value: "sim", required: true },
-      naverShoppingStart: { value: 1, validate:function(v) {
+      naverShoppingStart: { value: "1", validate:function(v) {
         if($("#node-input-apiType option:selected").val() !== "naverShopping") return true;
         if(v.length === 0) return false;
         return !isNaN(v);
