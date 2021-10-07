@@ -137,6 +137,7 @@ module.exports = function (RED) {
                 node.params = {};
                 node.params["key"] = node.sk11stApikey;
                 node.params["apiCode"] = n.sk11stApiCode;
+		let keywords = undefined;
                 if (n.sk11stApiCode === "ProductInfo" || n.sk11stApiCode === "ProductImage") {
                     node.params["productCode"] = mustache.render(n.sk11stProductCode, new NodeContext(msg, node.context()));
                     if (n.sk11stApiCode === "ProductInfo") {
@@ -148,29 +149,60 @@ module.exports = function (RED) {
                     node.params["sortCd"] = mustache.render(n.sk11stSortcd, new NodeContext(msg, node.context()));
                     node.params["option"] = mustache.render(n.sk11stOption, new NodeContext(msg, node.context()));
                     if (n.sk11stApiCode === "ProductSearch") {
-                        node.params["keyword"] = mustache.render(n.sk11stKeyword, new NodeContext(msg, node.context()));
+                        keywords = mustache.render(n.sk11stKeyword, new NodeContext(msg, node.context())).split(",");
                         node.params["targetSearchPrd"] = mustache.render(n.sk11stTargetSearchPrd, new NodeContext(msg, node.context()));
                     } else {
                         node.params["categoryCode"] = mustache.render(n.sk11stCategoryCode, new NodeContext(msg, node.context()));
                     }
                 }
-
-                axios.get(SK11ST_API_URL, {
-                        params: node.params,
-                        responseType: "arraybuffer",
-                    })
-                    .then((response) => {
-                        const decoded = iconv.decode(response.data, "EUC-KR");
-                        msg.payload = convert.xml2js(decoded, {
-                            compact: true,
-                            spaces: 4,
-                        });
-                        node.send(msg);
-                    })
-                    .catch((error) => {
-                        msg.payload = error.message;
-                        node.send(msg);
-                    });
+		if (n.sk11stApiCode === "ProductSearch") {
+			for (const idx in keywords) {
+			    node.params["keyword"] = keywords[idx];
+			    axios
+			      .get(SK11ST_API_URL, {
+				params: node.params,
+				responseType: "arraybuffer",
+			      })
+			      .then((response) => {
+				node.status({ fill: "green", shape: "dot", text: "success" });
+				node.log("sk11st shopping query success", msg);
+				const decoded = iconv.decode(response.data, "EUC-KR");
+				msg.payload = convert.xml2js(decoded, {
+				  compact: true,
+				  spaces: 4,
+				});
+				node.send(msg);
+			      })
+			      .catch((error) => {
+				node.status({ fill: "red", shape: "dot", text: "error" });
+				node.error("sk11st shopping query failed", msg);
+				msg.payload = error.message;
+				node.send(msg);
+			      });
+			}
+		} else {
+			axios
+			    .get(SK11ST_API_URL, {
+			      params: node.params,
+			      responseType: "arraybuffer",
+			    })
+			    .then((response) => {
+			      node.status({ fill: "green", shape: "dot", text: "success" });
+			      node.log("sk11st shopping query success", msg);
+			      const decoded = iconv.decode(response.data, "EUC-KR");
+			      msg.payload = convert.xml2js(decoded, {
+				compact: true,
+				spaces: 4,
+			      });
+			      node.send(msg);
+			    })
+			    .catch((error) => {
+			      node.status({ fill: "red", shape: "dot", text: "error" });
+			      node.error("sk11st shopping query failed", msg);
+			      msg.payload = error.message;
+			      node.send(msg);
+			    });
+		}
             }
         });
     }
