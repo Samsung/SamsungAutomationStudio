@@ -23,14 +23,14 @@
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",      
       "monitor": "motion-pose/monitor/monitor.js",
-      "pose-detection-webcam": "motion-pose/body/pose-detection-webcam/pose-detection-webcam.js",
-      "pose-detection-iotcam": "motion-pose/body/pose-detection-iotcam/pose-detection-iotcam.js",
-      "pose-similarity-find": "motion-pose/body/pose-similarity-find/pose-similarity-find.js",
-      "pose-similarity-register": "motion-pose/body/pose-similarity-register/pose-similarity-register.js",
+      "pose-detect-webcam": "motion-pose/body/pose-detect-webcam/pose-detect-webcam.js",
+      "pose-detect-iotcam": "motion-pose/body/pose-detect-iotcam/pose-detect-iotcam.js",
+      "pose-find": "motion-pose/body/pose-find/pose-find.js",
+      "pose-register": "motion-pose/body/pose-register/pose-register.js",
       "hand-register": "motion-pose/hand/hand-register/hand-register.js",
       "hand-find": "motion-pose/hand/hand-find/hand-find.js",
-      "hand-detection-webcam": "motion-pose/hand/hand-detection-webcam/hand-detection-webcam.js",
-      "hand-detection-iotcam": "motion-pose/hand/hand-detection-iotcam/hand-detection-iotcam.js"
+      "hand-detect-webcam": "motion-pose/hand/hand-detect-webcam/hand-detect-webcam.js",
+      "hand-detect-iotcam": "motion-pose/hand/hand-detect-iotcam/hand-detect-iotcam.js"
     }
   },
   "dependencies": {
