@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-motion-pose",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "used tensorflow mediapipe hands and pose model in real-time webcam and smartThings IoT-cam in node red",
   "main": "index.js",
   "scripts": {
