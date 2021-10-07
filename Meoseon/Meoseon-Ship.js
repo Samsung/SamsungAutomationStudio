@@ -30,8 +30,9 @@ module.exports = function (RED) {
           })
           .catch((error) => {
             node.status({ fill: "red", shape: "dot", text: "error" });
-            msg.payload = error;
             msg.url = node.requestUrl;
+            msg.payload = error;
+            node.error("Meoseon ship node get request error from", msg);
             node.send(msg);
           });
       });
