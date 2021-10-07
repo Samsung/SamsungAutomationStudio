@@ -73,10 +73,10 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
 
     var node = this;
-
-    //data.right, data.left
+    
+    const similarity = require("compute-cosine-similarity");
+    
     node.on("input", function (msg) {
-      const similarity = require("compute-cosine-similarity");
 
       /*--------------- DB 데이터 처리 -------------------------*/
       const handDataCount = msg.savedLeftHand.length;
