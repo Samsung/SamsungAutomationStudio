@@ -27,8 +27,8 @@
 
 <script type="text/html" data-template-name="pose-detect-iotcam">
   <div class="form-tips" style="margin-bottom:10px;">
-    <b>Note:</b> You can check your Smartthings MNID on <b><a href="https://smartthings.developer.samsung.com/partner/dashboard" target="_blank">this page</a>.</b>
-    And you can also generate your Smartthings Personal Access Token(PAT) on <b><a href="https://account.smartthings.com/tokens" target="_blank">this page</a>.</b>
+    <b>Note:</b> You can check your SmartThings MNID on <b><a href="https://smartthings.developer.samsung.com/partner/dashboard" target="_blank">this page</a>.</b>
+    And you can also generate your SmartThings Personal Access Token(PAT) on <b><a href="https://account.smartthings.com/tokens" target="_blank">this page</a>.</b>
   </div>
 
   <div class="form-row">
@@ -57,12 +57,12 @@
   </div>
 
   <div class="form-row">
-    <label for="node-input-smartthingsMnid"><i class="fa fa-tag"></i> Smartthings MNID</label>
+    <label for="node-input-smartthingsMnid"><i class="fa fa-tag"></i> SmartThings MNID</label>
     <input type="text" id="node-input-smartthingsMnid">
   </div>
 
   <div class="form-row">
-    <label for="node-input-smartthingsPat"><i class="fa fa-tag"></i> Smartthings PAT</label>
+    <label for="node-input-smartthingsPat"><i class="fa fa-tag"></i> SmartThings PAT</label>
     <input type="text" id="node-input-smartthingsPat">
   </div>
 </script>
@@ -82,8 +82,10 @@
     <dd>Port number to serve the IoT camera streaming. (default: 1886)</dd>
     <dt>Data Socket Url</dt>
     <dd>Socket URI to send and receive data. (default: 'ws://localhost:1880/ws/data')</dd>
-    <dt>Camera Test</dt>
-    <dd>Preview webcam camera.</dd>
+    <dt>SmartThings MNID</dt>
+    <dd>Your MNID to get access to your Samsung SmartThings camera device.</dd>
+    <dt>SmartThings PAT</dt>
+    <dd>Your PAT to get access to your Samsung SmartThings camera device.</dd>
   </dl>
   
   <h3>Input</h3>
@@ -97,5 +99,4 @@
     <dt>HTTP Response Payload</dt>
     <dd>HTML payload for forwarding to http response node.</dd>
   </dl>
-  
 </script>

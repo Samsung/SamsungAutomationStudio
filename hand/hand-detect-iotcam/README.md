@@ -1,6 +1,6 @@
 # hand-detect-iotcam
 
-A simple node that recognizes and visualizes hand using a external camera device which support Samsung Smartthings.
+A simple node that recognizes and visualizes hand using a external camera device which support Samsung SmartThings.
 
 ## Pre-requisites
 
@@ -48,19 +48,19 @@ Port number to be used to monitor pose recognition results from other resources.
 
 ### Rtsp Port
 
-Port number to be used to receive streaming data from your Samsung Smartthings camera device. (default: 1886)
+Port number to be used to receive streaming data from your Samsung SmartThings camera device. (default: 1886)
 
 ### Data Socket Url
 
 Specify the URL including the endpoint to receive the user's pose recognition result data in real time using a WebSocket. (default: 'ws://localhost:1880/ws/data')
 
-### Smartthings MNID
+### SmartThings MNID
 
-Your MNID to get access to your Samsung Smartthings camera device. You can check your MNID on [this page](https://smartthings.developer.samsung.com/partner/dashboard).
+Your MNID to get access to your Samsung SmartThings camera device. You can check your MNID on [this page](https://smartthings.developer.samsung.com/partner/dashboard).
 
-### Smartthings PAT
+### SmartThings PAT
 
-Your PAT to get access to your Samsung Smartthings camera device. You can generate a PAT on [this page](https://account.smartthings.com/login?redirect=https%3A%2F%2Faccount.smartthings.com%2Ftokens).
+Your PAT to get access to your Samsung SmartThings camera device. You can generate a PAT on [this page](https://account.smartthings.com/login?redirect=https%3A%2F%2Faccount.smartthings.com%2Ftokens).
 
 ## Example
 
