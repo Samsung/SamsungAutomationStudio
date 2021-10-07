@@ -1,6 +1,7 @@
 module.exports = function (RED) {
 	'use strict';
 	const axios = require('axios');
+	const ERROR_MESSAGE = "알라딘 노드 에러 입니다. request 에서 에러를 확인하세요"
 	function AladinNode(config) {
 		RED.nodes.createNode(this, config);
 
@@ -69,7 +70,6 @@ module.exports = function (RED) {
 			msg.params = node.params;
 
 			if (config.RequestType === 'ItemSearch') {
-				console.log('This is:', config.RequestType);
 				axios
 					.get('http://www.aladin.co.kr/ttb/api/ItemSearch.aspx', {
 						params: node.params,
@@ -79,7 +79,7 @@ module.exports = function (RED) {
 						node.send(msg);
 					})
 					.catch((error) => {
-						node.error('요청에서 에러를 확인했습니다.');
+						node.error(ERROR_MESSAGE, error);
 					});
 			} else if (config.RequestType === 'ItemList') {
 				axios
@@ -91,7 +91,7 @@ module.exports = function (RED) {
 						node.send(msg);
 					})
 					.catch((error) => {
-						node.error('요청에서 에러를 확인했습니다.');
+						node.error(ERROR_MESSAGE, error);
 					});
 			} else if (config.RequestType === 'ItemLookUp') {
 				axios
@@ -103,7 +103,7 @@ module.exports = function (RED) {
 						node.send(msg);
 					})
 					.catch((error) => {
-						node.error('요청에서 에러를 확인했습니다.');
+						node.error(ERROR_MESSAGE, error);
 					});
 			} else if (config.RequestType === 'ItemOffStoreList') {
 				axios
@@ -115,7 +115,7 @@ module.exports = function (RED) {
 						node.send(msg);
 					})
 					.catch((error) => {
-						node.error('요청에서 에러를 확인했습니다.');
+						node.error(ERROR_MESSAGE, error);
 					});
 			} else {
 				if (done) {
