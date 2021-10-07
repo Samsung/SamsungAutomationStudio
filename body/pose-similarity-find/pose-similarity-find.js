@@ -2,8 +2,8 @@ module.exports = function(RED) {
     function PoseSimilarity(config) {
         RED.nodes.createNode(this, config);
         var node = this;
+        const similarity = require("compute-cosine-similarity");
         node.on('input', function(msg, send, done) {
-            const similarity = require("compute-cosine-similarity");
             const inputKeypoints =  msg.inputKeypoints
             const savedKeypoints = msg.savedKeypoints
 
