@@ -443,9 +443,12 @@ module.exports = function(RED) {
                     })
                 }
                 
+                const smartthingsMnid = this.credentials.smartthingsMnid
+                const smartthingsPat = this.credentials.smartthingsPat
+                
                 rtspStream = new newStream({
                     name: 'name',
-                    streamUrl: `rtsps://${config.smartthingsMnid}:${config.smartthingsPat}@${rtspUrl}`,
+                    streamUrl: `rtsps://${smartthingsMnid}:${smartthingsPat}@${rtspUrl}`,
                     wsPort: rtspPort,
                     ffmpegOptions: { 
                         '-stats': '', 
@@ -465,6 +468,11 @@ module.exports = function(RED) {
             rtspStream.stop()
         })
     }
-    RED.nodes.registerType("pose-detection-iotcam", PoseDetectionIotcamNode)
+    RED.nodes.registerType("pose-detection-iotcam", PoseDetectionIotcamNode, {
+        credentials: {
+            smartthingsMnid: {type:"text"},
+            smartthingsPat: {type:"text"}
+        }
+    })
 }
 

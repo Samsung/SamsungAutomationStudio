@@ -9,6 +9,8 @@
       monitorPort: {value: 1882, validate:RED.validators.number()},
       rtspPort: {value: 1886, validate:RED.validators.number()},
       dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
+    },
+    credentials: {
       smartthingsMnid: {value: ""},
       smartthingsPat: {value: ""},
     },
@@ -25,7 +27,7 @@
 
 <script type="text/html" data-template-name="pose-detection-iotcam">
   <div class="form-tips" style="margin-bottom:10px;">
-    <b>Note:</b> You can check your Smartthings MNID on <b><a href="https://smartthings.developer.samsung.com/partner/dashboard" target="_blank">this page</a>.
+    <b>Note:</b> You can check your Smartthings MNID on <b><a href="https://smartthings.developer.samsung.com/partner/dashboard" target="_blank">this page</a>.</b>
     And you can also generate your Smartthings Personal Access Token(PAT) on <b><a href="https://account.smartthings.com/tokens" target="_blank">this page</a>.</b>
   </div>
 
