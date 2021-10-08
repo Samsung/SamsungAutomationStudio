@@ -1,0 +1,121 @@
+<script type="text/javascript">
+  RED.nodes.registerType('shopping-filter', {
+    category: 'SASM Ecommerce Extensions Pack',
+    color: '#ffffff',
+    defaults: {
+      name: { value: '' },
+      apiType: { value: '', required: false },
+      format: { value: '', required: false },
+      sorttype: { value: '', required: false },
+      minprice: { value: '', required: false },
+      maxprice: { value: '', required: false },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'shopping.png',
+    label: function () {
+      return this.name || 'shopping-filter';
+    },
+  });
+
+  RED.nodes.registerType('shopping-formatter', {
+    category: 'SASM Ecommerce Extensions Pack',
+    color: '#ffffff',
+    defaults: {
+      name: { value: '' },
+      apiType: { value: '' },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'shopping.png',
+    label: function () {
+      return this.name || 'shopping-formatter';
+    },
+  });
+</script>
+
+<script type="text/x-red" data-template-name="shopping-filter">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-apiType"><i class="icon-tag"></i> apiType</label>
+        <select id="node-input-apiType" name="node-input-apiType">
+            <option value="naver" selected>Naver</option>
+            <option value="11st">11st</option>
+        </select>
+    </div>
+    <div class="form-row">
+      <label for="node-input-format"><i class="icon-tag"></i> Format</label>
+      <select id="node-input-format" name="node-input-format">
+          <option value="json" selected>JSON</option>
+          <option value="xml">XML</option>
+      </select>
+  </div>
+    <div class="form-row">
+        <label for="node-input-sorttype"><i class="icon-tag"></i> Sort Type</label>
+        <select id="node-input-sorttype" name="node-input-sorttype">
+            <option value="asc" selected>asc</option>
+            <option value="desc">desc</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-minprice"><i class="icon-tag"></i> MinPrice</label>
+        <input type="text" id="node-input-minprice" placeholder="minprice">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxprice"><i class="icon-tag"></i> MaxPrice</label>
+        <input type="text" id="node-input-maxprice" placeholder="maxprice">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="shopping-filter">
+  <p>Filter for Shopping Node</p>
+  <h3>Input Data</h3>
+  <dl class="message-properties">
+      <dt>API Type<span class="property-type">String</span></dt>
+      <dd>Input Shopping API Vendor | 쇼핑 API 종류</dd>
+      <dt>Sort Type<span class="property-type">String</span></dt>
+      <dd>Select Sorting Type (asc or desc) | 가격 오름차순, 내림차순 선택</dd>
+      <dt>MinPrice<span class="property-type">Number</span></dt>
+      <dd>Set Minimum Price | 최솟가 설정 </dd>
+      <dt>MaxPrice<span class="property-type">Number</span></dt>
+      <dd>Set Maximum Price | 최댓가 설정</dd>
+  </dl>
+
+  <h3>Output Data</h3>
+  <dl class="message-properties">
+      <dt>Output JSON<span class="property-type">JSON Object</span></dt>
+      <dd>Filtered product list | 필터링된 상품 리스트</dd>
+  </dl>
+</script>
+
+<script type="text/x-red" data-template-name="shopping-formatter">
+  <div class="form-row">
+      <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-apiType"><i class="icon-tag"></i> apiType</label>
+      <select id="node-input-apiType" name="node-input-apiType">
+          <option value="naver" selected>Naver</option>
+          <option value="11st">11st</option>
+      </select>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="shopping-formatter">
+  <p>Formatter for Shopping Node</p>
+  <h3>Input Data</h3>
+  <dl class="message-properties">
+      <dt>Input JSON<span class="property-type">JSON Object</span></dt>
+      <dd>Output from shopping nodes | 쇼핑 노드 검색 결과</dd>
+  </dl>
+
+  <h3>Output Data</h3>
+  <dl class="message-properties">
+      <dt>Output JSON<span class="property-type">JSON Object</span></dt>
+      <dd>Refined product list data | 정제된 상품 리스트 데이터 </dd>
+  </dl>
+</script>
