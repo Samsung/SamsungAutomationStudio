@@ -1,0 +1,453 @@
+<script type="text/html" data-template-name="aladin">
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name" />
+	</div>
+	<div class="form-tips">
+		<b>팁:</b> TTBKey는 <a href="https://www.aladin.co.kr/ttb" target="_blank">알라딘</a>에서
+		제공하는 API Key의 명칭으로 신청 후 획득할 수 있습니다.
+	</div>
+	<div class="form-row">
+		<label for="node-input-creds"><i class="fa fa-key"></i> Creds</label>
+		<input type="text" id="node-input-creds" placeholder="Creds" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-RequestType"
+			><i class="fa fa-list"></i> Request Type</label
+		>
+		<select
+			type="text"
+			id="node-input-RequestType"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="ItemSearch">ItemSearch(상품검색)</option>
+			<option value="ItemList">ItemList(상품리스트)</option>
+			<option value="ItemLookUp">ItemLookUp(상품조회)</option>
+			<option value="ItemOffStoreList">
+				ItemOffStoreList(중고상품 보유 매장 검색)
+			</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch" id="form-row-Query">
+		<label for="node-input-Query"> Query </label>
+		<input type="text" id="node-input-Query" placeholder="검색어" />
+	</div>
+	<div class="form-row request-element request-element-ItemSearch" id="form-row-QueryType1">
+		<label for="node-input-QueryType1"> QueryType1 </label>
+		<select
+			type="text"
+			id="node-input-QueryType1"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="Keyword">Keyword(제목+저자)</option>
+			<option value="Title">Title(제목검색)</option>
+			<option value="Author">Author(저자검색)</option>
+			<option value="Publisher">Publisher(출판사검색)</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemList" id="form-row-QueryType2">
+		<label for="node-input-QueryType2"> QueryType2 </label>
+		<select
+			type="text"
+			id="node-input-QueryType2"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="ItemNewAll">ItemNewAll(신간 전체 리스트)</option>
+			<option value="ItemNewSpecial">
+				ItemNewSpecial(주목할 만한 신간 리스트)
+			</option>
+			<option value="ItemEditorChoice">
+				ItemEditorChoice(편집자 추천 리스트 (카테고리로만 조회 가능 -
+				국내도서/음반/외서만 지원))
+			</option>
+			<option value="Bestseller">Bestseller(베스트셀러)</option>
+			<option value="BlogBest">
+				BlogBest(블로거 베스트셀러 (국내도서만 조회 가능))
+			</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-SearchTarget">
+		<label for="node-input-SearchTarget"> SearchTarget </label>
+		<select
+			type="text"
+			id="node-input-SearchTarget"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="Book">Book(도서)</option>
+			<option value="Foreign">Foreign(외국도서)</option>
+			<option value="Music">Music(음반)</option>
+			<option value="DVD">DVD(DVD)</option>
+			<option value="Used">Used(중고샵(도서/음반/DVD등))</option>
+			<option value="eBook">eBook(전자책)</option>
+			<option value="All">All(위의 모든 타겟(몰))</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemList" id="form-row-SubSearchTarget">
+		<label for="node-input-SubSearchTarget"> SubSearchTarget </label>
+		<select
+			type="text"
+			id="node-input-SubSearchTarget"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="Book">Book(도서)</option>
+			<option value="Music">Music(음반)</option>
+			<option value="DVD">DVD(DVD)</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemLookUp request-element-ItemOffStoreList" id="form-row-ItemId">
+		<label for="node-input-ItemId"> ItemId </label>
+		<input type="text" id="node-input-ItemId" placeholder="문자열/숫자" />
+	</div>
+	<div class="form-row request-element request-element-ItemLookUp request-element-ItemOffStoreList" id="form-row-ItemIdType">
+		<label for="node-input-ItemIdType"> ItemIdType </label>
+		<select
+			type="text"
+			id="node-input-ItemIdType"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="ISBN">ISBN(ISBN 10자리)</option>
+			<option value="ISBN13">ISBN13(ISBN 13자리)</option>
+			<option value="ItemId">ItemId(알라딘고유의 값)</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-Start">
+		<label for="node-input-Start"> Start </label>
+		<input
+			type="text"
+			id="node-input-Start"
+			placeholder="1이상, 양의 정수(기본값:1)"
+		/>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-MaxResults">
+		<label for="node-input-MaxResults"> MaxResults </label>
+		<input
+			type="text"
+			id="node-input-MaxResults"
+			placeholder="1이상 100이하, 양의 정수(기본값:10)"
+		/>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch" id="form-row-Sort">
+		<label for="node-input-Sort"> Sort </label>
+		<select
+			type="text"
+			id="node-input-Sort"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="Accuracy">Accuracy(관련도)</option>
+			<option value="PublishTime">PublishTime(출간일)</option>
+			<option value="Title">Title(제목)</option>
+			<option value="SalesPoint">SalesPoint(판매량)</option>
+			<option value="CustomerRating">CustomerRating(고객평점)</option>
+			<option value="MyReviewCount">MyReviewCount(마이리뷰갯수)</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-Cover">
+		<label for="node-input-Cover"> Cover </label>
+		<select
+			type="text"
+			id="node-input-Cover"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="Mid">Mid(중간 크기: 너비 85px)</option>
+			<option value="MidBig">MidBig(중간 큰 크기 : 너비 150px)</option>
+			<option value="Big">Big(큰 크기 : 너비 200px)</option>
+			<option value="Small">Small(작은 크기 : 너비 75px)</option>
+			<option value="Mini">Mini(매우 작은 크기 : 너비 65px)</option>
+			<option value="None">None(없음)</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-CategoryId">
+		<label for="node-input-CategoryId"> CategoryId </label>
+		<input
+			type="text"
+			id="node-input-CategoryId"
+			placeholder="양의정수 - 분야의 고유 번호(기본값:0, 전체)"
+		/>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-Output">
+		<label for="node-input-Output"> Output </label>
+		<select
+			type="text"
+			id="node-input-Output"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="XML">XML(REST XML 형식)</option>
+			<option value="JS">JS(JSON 방식)</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-Partner">
+		<label for="node-input-Partner"> Partner </label>
+		<input type="text" id="node-input-Partner" placeholder="문자" />
+	</div>
+	<div class="form-row request-element request-element-ItemList request-element-ItemLookUp" id="form-row-includeKey">
+		<label for="node-input-includeKey"> includeKey </label>
+		<input
+			type="text"
+			id="node-input-includeKey"
+			placeholder="양의정수(기본값:0)"
+		/>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-InputEncoding">
+		<label for="node-input-InputEncoding"> InputEncoding </label>
+		<input
+			type="text"
+			id="node-input-InputEncoding"
+			placeholder="문자열(인코딩의 영문이름 - 기본값:utf-8)"
+		/>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-Version">
+		<label for="node-input-Version"> Version </label>
+		<select
+			type="text"
+			id="node-input-Version"
+			style="display: inline-block; vertical-align: middle; width:70%;"
+		>
+			<option value="20070901">20070901</option>
+			<option value="20131101">20131101</option>
+		</select>
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList" id="form-row-outofStockfilter">
+		<label for="node-input-outofStockfilter"> outofStockfilter </label>
+		<input
+			type="text"
+			id="node-input-outofStockfilter"
+			placeholder="양의정수(기본값:0)"
+		/>
+	</div>
+	<div class="form-row request-element request-element-ItemLookUp" id="form-row-offCode">
+		<label for="node-input-offCode"> offCode </label>
+		<input type="text" id="node-input-offCode" placeholder="문자열" />
+	</div>
+	<div class="form-row request-element request-element-ItemSearch request-element-ItemList request-element-ItemLookUp" id="form-row-OptResult">
+		<label for="node-input-OptResult"> OptResult </label>
+		<input
+			type="text"
+			id="node-input-OptResult"
+			placeholder="OptResult=ebookList,usedList,reviewList 와 같은 Array 형태로 요청"
+		/>
+	</div>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('aladin', {
+		category: 'SASM Ecommerce Extensions Pack',
+		color: '#33AFE9',
+		defaults: {
+			name: { value: '' },
+			creds: {
+				value: '',
+				type: 'aladinTTBKey',
+			},
+			RequestType: { value: '' },
+			Query: { value: '' },
+			QueryType1: { value: '' },
+			QueryType2: { value: '' },
+			SearchTarget: { value: 'Book' },
+			SubSearchTarget: { value: '' },
+			ItemId: { value: '' },
+			ItemIdType: { value: 'ISBN' },
+			Start: { value: '' },
+			MaxResults: { value: '' },
+			Sort: { value: 'Accuracy' },
+			Cover: { value: 'Mid' },
+			CategoryId: { value: '' },
+			Output: { value: 'JS' },
+			Partner: { value: '' },
+			includeKey: { value: '' },
+			InputEncoding: { value: '' },
+			Version: { value: '20131101' },
+			outofStockfilter: { value: '' },
+			offCode: { value: '' },
+			OptResult: { value: '' },
+		},
+		inputs: 1,
+		outputs: 1,
+		icon: 'Aladin.png',
+		label: function () {
+			return this.name || 'aladin';
+		},
+		oneditprepare: function () {
+			$('#node-input-RequestType').change(function () {
+				const type = $('#node-input-RequestType option:selected').val();
+				if (type === 'ItemSearch') {
+					$('.request-element').hide();
+					$('.request-element-ItemSearch').show();
+				} else if (type === 'ItemList') {
+					$('.request-element').hide();
+					$('.request-element-ItemList').show();
+				} else if (type === 'ItemLookUp') {
+					$('.request-element').hide();
+					$('.request-element-ItemLookUp').show();
+				} else if (type === 'ItemOffStoreList') {
+					$('.request-element').hide();
+					$('.request-element-ItemOffStoreList').show();
+				} else {
+					$('.request-element').hide();
+				}
+			});
+			$('#node-input-RequestType').change();
+		},
+	});
+</script>
+
+<script type="text/html" data-help-name="aladin">
+	<p>Node-RED wrapper for aladin bookstore TTB API. | 노드-레드를 위한 알라딘 온라인서점 TTB API 래퍼입니다.</p>
+	<h3>Inputs</h3>
+	<dl class="message-properties">
+		<dt>Name<span class="property-type">string</span></dt>
+		<dd>The name of the node.</dd>
+		<dt>Creds<span class="property-type">config</span></dt>
+		<dd>The credential API Key to access the API. | 부여받은 TTBKey값</dd>
+		<dt>RequestType<span class="property-type">select</span></dt>
+		<dd>The type of request you are trying to make.</dd>
+		<dt class="optional">
+			Query <span class="property-type">string | ItemSearch</span>
+		</dt>
+		<dd>The string you are searching for in ItemSearch. | 검색어</dd>
+		<dt class="optional">
+			QueryType1 <span class="property-type">select | ItemSearch</span>
+		</dt>
+		<dd>The type you are searching for in ItemSearch. | 검색어 종류</dd>
+		<dt>
+			QueryType2 <span class="property-type">select | ItemList</span>
+		</dt>
+		<dd>The type of List you are searching for in ItemList. | 리스트 종류</dd>
+		<dt class="optional">
+			SearchTarget <span class="property-type">select | ItemSearch, ItemList </span>
+		</dt>
+		<dd>The type of Mall you are trying to search. | 검색 대상 Mall</dd>
+		<dt class="optional">
+			SubSearchTarget <span class="property-type">select | ItemList </span>
+		</dt>
+		<dd>If your SearchTarget is Used, the sub Mall to search. | SearchTarget이 중고(Used)인 경우, 서브 Mall 지정</dd>
+		<dt class="optional">
+			ItemId <span class="property-type">string/integer | ItemLookUp, ItemOffStoreList </span>
+		</dt>
+		<dd>The unique identifier for a item. (Choose either integer or ISBN via ItemIdType) | 상품을 구분짓는 유일한 값
+			(ItemIdType으로 정수값과 ISBN중에 택일)
+		</dd>
+		<dt class="optional">
+			ItemIdType <span class="property-type">select | ItemLookUp, ItemOffStoreList </span>
+		</dt>
+		<dd>Choose between aladin original ItemId or ISBN for which ItemId corresponds to. Please use the 13-digit ISBN if possible. |
+			조회용 파라미터인 ItemId가 ISBN으로 입력되었는지, 알라딘고유의"ItemId"값으로 입력되었는지 선택. 가급적 13자리 ISBN을 이용해주세요
+		</dd>
+		<dt class="optional">
+			Start <span class="property-type">integer | ItemSearch, ItemList </span>
+		</dt>
+		<dd>Starting page for search result. | 검색결과 시작페이지</dd>
+		<dt class="optional">
+			MaxResults <span class="property-type">integer | ItemSearch, ItemList </span>
+		</dt>
+		<dd>Maximum number of outputs per page of search results | 검색결과 한 페이지당 최대 출력 개수</dd>
+		<dt class="optional">
+			Sort <span class="property-type">select | ItemSearch </span>
+		</dt>
+		<dd>Sorting order | 정렬순서</dd>
+		<dt class="optional">
+			Cover <span class="property-type">select | ItemSearch, ItemList, ItemLookUp </span>
+		</dt>
+		<dd>Size of the cover image | 표지크기</dd>
+		<dt class="optional">
+			CategoryId <span class="property-type">integer | ItemSearch, ItemList </span>
+		</dt>
+		<dd>Limits the search result to specific fields. <a href="http://image.aladin.co.kr/img/files/aladin_Category_CID_20200626.xls">Reference: Categories of All Fields in Aladin</a> | 특정 분야로 검색결과를 제한함. <a href="http://image.aladin.co.kr/img/files/aladin_Category_CID_20200626.xls">참고: 알라딘 모든 분야 카테고리</a></dd>
+		<dt class="optional">
+			Output <span class="property-type">select | ItemSearch, ItemList, ItemLookUp </span>
+		</dt>
+		<dd>Method of Output | 출력방법</dd>
+		<dt class="optional">
+			Partner <span class="property-type">select | ItemSearch, ItemList, ItemLookUp </span>
+		</dt>
+		<dd>Partner code related to affiliations. In the case of an affiliate, checks the validity of the affiliate by the entered partner code. | 
+			제휴와 관련한 파트너코드. 제휴사의 경우 파트너코드 입력으로 제휴사 유효성 체크.
+		</dd>
+		<dt class="optional">
+			includeKey <span class="property-type">integer | ItemSearch, ItemList, ItemLookUp </span>
+		</dt>
+		<dd>If includeKey is 1, TTBKey is included in the product page link. | 
+			includeKey가 1인 경우 결과의 상품페이지 링크값에 TTBKey가 포함됨.
+		</dd>
+		<dt class="optional">
+			InputEncoding <span class="property-type">integer | ItemSearch, ItemList, ItemLookUp </span>
+		</dt>
+		<dd>Set the encoding value of the search query. The English code of the encoding, for example, "utf-8" or "euc-kr". | 
+			검색어의 인코딩 값을 설정. "utf-8"이나 "euc-kr"과 같은 인코딩의 영문이름.
+		</dd>
+		<dt class="optional">
+			Version <span class="property-type">select | ItemSearch, ItemList, ItemLookUp </span>
+		</dt>
+		<dd>Set the Version (date format) of the search API.(Latest version: 20131101) | 
+			검색API의 Version(날짜형식)을 설정.(최신버젼: 20131101)
+		</dd>
+		<dt class="optional">
+			outofStockfilter <span class="property-type">integer | ItemSearch, ItemList, ItemLookUp </span>
+		</dt>
+		<dd>Filter out-of-stock products("1" to filter out) | 
+			품절/절판 등 재고 없는 상품 필터링("1"이 제외 필터)
+		</dd>
+		<dt class="optional">
+			offCode <span class="property-type">string | ItemLookUp </span>
+		</dt>
+		<dd>OffCode value of second-hand store obtained from ItemOffStoreList API | 
+			중고상품 보유 매장 검색 API에서 얻어낸 중고매장의 offCode값
+		</dd>
+		<dt class="optional">
+			OptResult <span class="property-type">string, Array | ItemSearch, ItemList, ItemLookUp </span>
+		</dt>
+		<dd>Additional information ※ request in the form of an Array such as OptResult=ebookList,usedList,reviewList | 
+			부가 정보 ※ 요청시 OptResult=ebookList,usedList,reviewList 와 같은 Array 형태로 요청
+		</dd>
+	</dl>
+	<h3>Outputs</h3>
+	<dl class="message-properties">
+		<dt>
+			payload
+			<span class="property-type">string | buffer</span>
+		</dt>
+		<dd>The string you are searching for in ItemSearch.</dd>
+	</dl>
+	<h3>Details</h3>
+	<p>알라딘 온라인서점에서 제공하는 API를 노드-레드에서 사용할 수 있게 만든 노드입니다. API Key가 필요하므로 아래 참고자료를 통해 회원가입 후 신청하시기 바랍니다.</p>
+	<h4>유의사항</h4>
+	<p>Edit dialog 외에도 <code>msg</code>에 담겨온 변수를 입력받으며, <code>msg</code>의 우선순위가 더 높다. 아래 코드 예시를 참조하면 된다.<p>
+	<code>[{"id":"8b8ff774cbe81686","type":"tab","label":"Flow 2","disabled":false,"info":""},{"id":"aa0b1bd2340aa1b8","type":"inject","z":"8b8ff774cbe81686","name":"","props":[{"p":"Query","v":"harry potter stone","vt":"str"}],"repeat":"","crontab":"","once":false,"onceDelay":0.1,"topic":"","payloadType":"str","x":130,"y":160,"wires":[["3e7596e23ef7b29c"]]},{"id":"3e7596e23ef7b29c","type":"aladin","z":"8b8ff774cbe81686","name":"","creds":"","RequestType":"ItemSearch","Query":"","QueryType1":"","QueryType2":"","SearchTarget":"Book","SubSearchTarget":"","ItemId":"","ItemIdType":"ISBN","Start":"","MaxResults":"","Sort":"Accuracy","Cover":"Mid","CategoryId":"","Output":"JS","Partner":"","includeKey":"","InputEncoding":"","Version":"20131101","outofStockfilter":"","offCode":"","OptResult":"","x":330,"y":160,"wires":[["e69f5dbd476f6cfa"]]},{"id":"e69f5dbd476f6cfa","type":"debug","z":"8b8ff774cbe81686","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":550,"y":160,"wires":[]}]</code>
+	<h4>참고자료</h4>
+	<a href="https://www.aladin.co.kr/">알라딘</a>
+	<a href="https://www.aladin.co.kr/ttb/">알라딘 TTB API 소개</a>
+	<a href="https://docs.google.com/document/d/1mX-WxuoGs8Hy-QalhHcvuV17n50uGI2Sg_GHofgiePE/edit#">알라딘 TTB API 매뉴얼</a>
+</script>
+
+<script type="text/html" data-template-name="aladinTTBKey">
+	<div class="form-row">
+		<label for="node-config-input-name"
+			><i class="fa fa-bookmark"></i> Name
+		</label>
+		<input type="text" id="node-config-input-name" placeholder="Name" />
+	</div>
+	<div class="form-row">
+		<label for="node-config-input-TTBKey"
+			><i class="fa fa-key"></i> TTBKey</label
+		>
+		<input type="text" id="node-config-input-TTBKey" placeholder="TTBKey" />
+	</div>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('aladinTTBKey', {
+		category: 'config',
+		defaults: {
+			name: { value: '' },
+		},
+		credentials: {
+			TTBKey: {},
+		},
+		label() {
+			return this.name || 'aladinTTBKey';
+		},
+	});
+</script>
+
+<script type="text/html" data-help-name="aladinTTBKey">
+	<p>Node-RED config for aladinTTBKey for aladin bookstore TTB API.</p>
+</script>
