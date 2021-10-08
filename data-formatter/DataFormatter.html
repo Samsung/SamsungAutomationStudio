@@ -1,0 +1,305 @@
+<!--
+    SAMSUNG SW ACADEMY FOR YOUTH (SSAFY) 5th SOTAEJI Team
+-->
+<script type="text/html" data-template-name="data-formatter">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name"><br>
+    </div>
+    <div class="form-row">
+        <label for="node-input-data_entry_point"><i class="fa fa-sign-in"></i> Input Type</label>
+        <select id="node-input-data_entry_point">
+            <option value="string">String</option>
+            <option value="binary">Binary File</option>
+            <option value="path">Data Path</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-input-data_path-row">
+        <label for="node-input-data_path"><i class="fa fa-folder-open-o"></i> Data Path</label>
+        <input type="text" id="node-input-data_path" placeholder="Data Path"><br>
+    </div>
+    <div class="form-row">
+        <label for="node-input-data_type"><i class="fa fa-file-text-o"></i> Data Format</label>
+        <select id="node-input-data_type">
+            <option value="csv">csv</option>
+            <option value="xlsx" id = "node-input-data_type-xlsx">xlsx</option>
+            <option value="xml">xml</option>
+            <option value="json">json</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-chart_type"><i class="fa fa-bar-chart"></i> Chart type</label>
+        <select id="node-input-chart_type">
+            <option value="line">line chart</option>
+            <option value="bar">bar chart</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-result_data_type"><i class="fa fa-sign-out"></i> Result</label>
+        <select id="node-input-result_data_type">
+            <option value="raw">Raw Data</option>
+            <option value="totalByItems">Total By Items</option>
+            <option value="countByItems">Count By Items</option>
+            <option value="averageByItems">Average By Items</option>
+            <option value="overallStatistics">Overall Statistics</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-title"><i class="fa fa-tag"></i> Title</label>
+        <input type="text" id="node-input-title" placeholder="title">
+    </div>
+    <div class="form-row" id="node-input-x_data-row">
+        <label for="node-input-x_data"><i class="fa fa-line-chart"></i> X-axes</label>
+        <input type="text" id="node-input-x_data" placeholder="x_data"><br>
+    </div>
+    <div class="form-row" id="node-input-y_data-row">
+        <label for="node-input-y_data"><i class="fa fa-line-chart"></i> Y-axes</label>
+        <input type="text" id="node-input-y_data" placeholder="y_data">
+    </div>
+    <div class="form-row" id="node-input-y_label-row">
+        <label for="node-input-y_label"><i class="fa fa-tag"></i> Y-label</label>
+        <input type="text" id="node-input-y_label" placeholder="y_label">
+    </div>
+    <div class="form-row">
+        <label for="node-input-isReverse"><i class="fa fa-sort-amount-desc"></i>Reverse</label>
+        <input type="checkbox" id="node-input-isReverse" style="width:5%!important;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-user"></i> Chart Config</label>
+        <select type="text" id="node-input-config" style="width:70%!important;"></select>
+    </div>
+</script>
+
+<script type="text/html" data-template-name="chart-config">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-borderColor"><i class="fa fa-tag"></i> Border Color</label>
+        <select type="text" id="node-input-borderColor" placeholder="Border Color">
+            <option value="rgba(0, 0, 0, 0.1)">default</option>
+            <option value="rgb(255, 99, 132)">red</option>
+            <option value="rgb(255, 159, 64)">orange</option>
+            <option value="rgb(255, 205, 86)">yellow</option>
+            <option value="rgb(75, 192, 192)">green</option>
+            <option value="rgb(54, 162, 235)">blue</option>
+            <option value="rgb(153, 102, 255)">purple</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-borderWidth"><i class="fa fa-tag"></i> Border Width</label>
+        <input type="text" id="node-input-borderWidth" placeholder="Border Width">
+    </div>
+    <div class="form-row">
+        <label for="node-input-backgroundColor"><i class="fa fa-tag"></i> Background Color</label>
+        <select type="text" id="node-input-backgroundColor" placeholder="Background Color">
+            <option value="rgba(0, 0, 0, 0.1)">default</option>
+            <option value="rgba(255, 99, 132, 0.6)">red</option>
+            <option value="rgba(255, 159, 64, 0.6)">orange</option>
+            <option value="rgba(255, 205, 86, 0.6)">yellow</option>
+            <option value="rgba(75, 192, 192, 0.6)">green</option>
+            <option value="rgba(54, 162, 235, 0.6)">blue</option>
+            <option value="rgba(153, 102, 255, 0.6)">purple</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-yMin"><i class="fa fa-tag"></i> Y-axes Min Value</label>
+        <input type="text" id="node-input-yMin" placeholder="Min Value">
+    </div>
+    <div class="form-row">
+        <label for="node-input-yStepSize"><i class="fa fa-tag"></i> Y-axes Step Size</label>
+        <input type="text" id="node-input-yStepSize" placeholder="Value Step Size">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="data-formatter">
+    <p>This node helps convert the data format for using Chart.js.</p>
+    <h3>Properties</h3>
+  <dl class="message-properties">
+    <h5>Data Formatter</h5>
+    <dt>Name</dt>
+    <dd>You can tag or describe this Data Formatter.</dd>
+    <dt>Input Type <span class="property-type">required</span></dt>
+    <dd>Choose a Input Type. </dd>
+    <dt>Data Format <span class="property-type">required</span></dt>
+    <dd>Choose the original file extension</dd>
+    <dt>Chart Type <span class="property-type">required</span></dt>
+    <dd>Choose Chart Type you want to show</dd>
+    <dt>Result <span class="property-type">required</span></dt>
+    <dd>It helps you calculate the data with various statistics function </dd>
+    <dt>Title </dt>
+    <dd>You can title this chart </dd>
+    <dt>X-axes <span class="property-type">required</span></dt>
+    <dd>
+        Input data column name you want to show on the x-axes. 
+        If you select Input Type <b>'Overall Statistics'</b>,
+        you don't have to
+    </dd>
+    <dt>Y-axes <span class="property-type">required</span></dt>
+    <dd>
+        Input data column name you want to show on the y-axes. 
+        If you select Input Type <b>'Count By Items'</b>,
+        you don't have to  
+    </dd>
+    <dt>Reverse <span class="property-type">optional</span></dt>
+    <dd>Reverse helps you to show chart data in reverse order.</dd>
+    <dt>Chart Config <span class="property-type">optional</span></dt>
+    <dd>You can apply chart config. Choose chart config Id. </dd>
+    
+  </dl>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>msg.data</dt>
+  </dl>
+</script>
+
+<script type="text/html" data-help-name="chart-config">
+    <p>This node helps you to customize chart</p>
+    <h3>Properties</h3>
+  <dl class="message-properties">
+    <h5>Chart Config</h5>
+    <dt>Name</dt>
+    <dd>You can tag or describe this Chart Config.</dd>
+    <dt>Border Color<span class="property-type">optional</span></dt>
+    <dd>You can choose chart border color. It only works when <b>Border Width</b> is set</dd>
+    <dt>Border Width<span class="property-type">optional</span></dt>
+    <dd>You can set chart border width. Input only positive number</dd>
+    <dt>Background Color<span class="property-type">optional</span></dt>
+    <dd>You can choose chart bar or line color.</dd>
+    <dt>Y-axes Min Value<span class="property-type">optional</span></dt>
+    <dd>You can set chart minimum y-axes value. Input number</dd>
+    <dt>Y-axes Step Size<span class="property-type">optional</span></dt>
+    <dd>You can set chart y-axes step size. Input only positive number</dd>
+  </dl>
+</script>
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('data-formatter', {
+        category: 'sotaeji',
+        color: '#FFE682',
+        defaults: {
+            config: {
+                value: '',
+            },
+            name: {
+                value: "Data Formatter"
+            },
+            title: {
+                value: ""
+            },
+            data_entry_point: {
+                value: "string",
+                required: true
+            },
+            data_path: {
+                value: ""
+            },
+            data_type: {
+                value: "csv",
+                required: true
+            },
+            chart_type: {
+                value: "line",
+                required: true
+            },
+            result_data_type: {
+                value: "raw",
+                required: true
+            },
+            x_data: {
+                value: "",
+            },
+            y_data: {
+                value: ""
+            },
+            y_label: {
+                value: ""
+            },
+            isReverse: {
+                value: false
+            },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-edit",
+        paletteLabel: "Data Formatter",
+        label: function() {
+            return this.name;
+        },
+        oneditprepare: function() {
+            var NODE = this;
+            $("#node-input-config").html('<option value = ""> Default</>');
+            RED.nodes.eachNode(function(node) {
+                if (node.name && node.type == 'chart-config') {
+                    $("#node-input-config").append($("<option></option>").val(node.id).text(node.name + " (" + node.id + ")"));
+                }
+            });
+            $("#node-input-config").val(NODE.config);
+
+            $("#node-input-data_entry_point").on("change", function() {
+                var type = $(this).val();
+                if (type == "path") {
+                    $("#node-input-data_path-row").show();
+                    $("#node-input-data_type-xlsx").show();
+                } else if (type == "string") {
+                    $("#node-input-data_path-row").hide();
+                    $("#node-input-data_type-xlsx").hide();
+                } else {
+                    $("#node-input-data_path-row").hide();
+                    $("#node-input-data_type-xlsx").show();
+                }
+            });
+
+            $("#node-input-result_data_type").on("change", function() {
+                var type = $(this).val();
+                if (type == "countByItems") {
+                    $("#node-input-x_data-row").show();
+                    $("#node-input-y_data-row").hide();
+                    $("#node-input-y_label-row").hide();
+
+                } else if (type == "overallStatistics") {
+                    $("#node-input-x_data-row").hide();
+                    $("#node-input-y_data-row").show();
+                    $("#node-input-y_label-row").show();
+
+                } else {
+                    $("#node-input-x_data-row").show();
+                    $("#node-input-y_data-row").show();
+                    $("#node-input-y_label-row").show();
+                }
+            });
+        },
+    });
+
+    RED.nodes.registerType('chart-config', {
+        category: 'sotaeji',
+        color: '#FF9F43',
+        defaults: {
+            name: {
+                value: "Chart Config"
+            },
+            borderColor: {
+                value: "rgba(0, 0, 0, 0.1)"
+            },
+            borderWidth: {
+                value: ""
+            },
+            backgroundColor: {
+                value: "rgba(0, 0, 0, 0.1)"
+            },
+            yMin: {
+                value: ""
+            },
+            yStepSize: {
+                value: null
+            },
+        },
+        icon: "font-awesome/fa-bar-chart-o",
+        paletteLabel: "Chart Config",
+        label: function() {
+            return this.name;
+        }
+    });
+</script>

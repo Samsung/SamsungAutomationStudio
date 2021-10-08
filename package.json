@@ -7,7 +7,8 @@
     "Bixby",
     "node-red",
     "Samsung Automation Studio",
-    "AWS"
+    "AWS",
+    "File Cloud"
   ],
   "license": "Apache 2.0",
   "repository": {
@@ -30,7 +31,9 @@
       "hand-register": "motion-pose/hand/hand-register/hand-register.js",
       "hand-find": "motion-pose/hand/hand-find/hand-find.js",
       "hand-detect-webcam": "motion-pose/hand/hand-detect-webcam/hand-detect-webcam.js",
-      "hand-detect-iotcam": "motion-pose/hand/hand-detect-iotcam/hand-detect-iotcam.js"
+      "hand-detect-iotcam": "motion-pose/hand/hand-detect-iotcam/hand-detect-iotcam.js",
+      "FileCloud": "./file-cloud/FileCloud.js",
+      "data-formatter": "./data-formatter/DataFormatter.js"
     }
   },
   "dependencies": {
@@ -55,6 +58,13 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "socket.io": "^4.2.0",
-    "ws": "^8.2.2"
+    "ws": "^8.2.2",
+    "googleapis": "^85.0.0",
+    "axios": "^0.21.4",
+    "mime-types": "^2.1.32",
+    "xlsx": "^0.17.2",
+    "fs-extra": "^10.0.0",
+    "he": "1.2.0",
+    "fast-xml-parser": "3.19.0"
   }
 }
