@@ -6,11 +6,31 @@
       name: {
         value: "Data Path Generator",
       },
+      url: {
+        value: "Url",
+      },
     },
     icon: "font-awesome/fa-list-ul",
     paletteLabel: "Data Path Generator",
     label: function () {
       return "Data Path Generator";
+    },
+    oneditprepare: function () {
+      $("#node-input-read").on("click", function () {
+        console.log($("#node-input-url").val());
+
+        fetch($("#node-input-url").val())
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (json) {
+            console.log(json);
+            console.log(JSON.stringify(json));
+          })
+          .catch((error) => {
+            console.log("get 요청 실패");
+          });
+      });
     },
   });
 </script>
@@ -19,6 +39,11 @@
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
     <input type="text" id="node-input-name" placeholder="Name" /><br />
+  </div>
+  <div class="form-row">
+    <label for="node-input-url"><i class="fa fa-globe" aria-hidden="true"></i> Url</label>
+    <input type="text" id="node-input-url" placeholder="Url" style="width: 60%" />
+    <button type="button" class="red-ui-button" id="node-input-read">Read</button>
   </div>
 </script>
 
