@@ -31,6 +31,24 @@
             console.log("get 요청 실패");
           });
       });
+
+      let treeList;
+
+      treeList = $("<div>")
+        .css({ width: "100%", height: "100%" })
+        .appendTo(".node-input-api-tree")
+        .treeList({});
+
+      treeList.treeList("data", [
+        {
+          label: "body",
+          checkbox: true,
+          children: [
+            { label: "child 1", checkbox: true },
+            { label: "child 2", checkbox: true },
+          ],
+        },
+      ]);
     },
   });
 </script>
@@ -45,6 +63,7 @@
     <input type="text" id="node-input-url" placeholder="Url" style="width: 60%" />
     <button type="button" class="red-ui-button" id="node-input-read">Read</button>
   </div>
+  <div class="form-row node-input-api-tree" style="height: calc(100% - 40px);"></div>
 </script>
 
 <script type="text/html" data-help-name="data-path-generator">
