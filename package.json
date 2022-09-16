@@ -1,0 +1,27 @@
+{
+  "name": "node-red-contrib-object-detection",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+
+  },
+  "node-red":{
+    "nodes" : {
+      "object-detection" : "/object_detection/object-detection.js"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cocoSsd" : "^2.2.2"
+  },
+  "keywords": [
+    "node-red",
+    "object-detection",
+    "cocossd"
+  ]
+}
