@@ -1,0 +1,27 @@
+<script type="text/javascript">
+  RED.nodes.registerType("data-path-generator", {
+    category: "Data Extraction",
+    color: "#00bffe",
+    defaults: {
+      name: {
+        value: "Data Path Generator",
+      },
+    },
+    icon: "font-awesome/fa-list-ul",
+    paletteLabel: "Data Path Generator",
+    label: function () {
+      return "Data Path Generator";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="data-path-generator">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" /><br />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="data-path-generator">
+  <p>A node that extracts some data you want from REST API response.</p>
+</script>
