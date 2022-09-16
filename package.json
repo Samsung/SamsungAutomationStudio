@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@mediapipe/holistic": "^0.5.1635989137"
+  }
+}
