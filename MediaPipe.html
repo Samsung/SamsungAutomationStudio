@@ -1,0 +1,37 @@
+<script type="text/x-red" data-template-name="mediapipe">
+    <div class="form-row">
+        <label for="node-input-pass"><i class="fa fa-globe"></i> pass Data </label>
+        <input type="text" id="node-input-pass">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="mediapipe">
+    <p>Pass</p>
+    <p>입력한 값을 그대로 반환하는 노드입니다.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>msg</dt>
+            <dd>아무 값이나 입력할 수 있습니다.</dd>
+    </dl>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType("mediapipe", {
+        category: "Samsung AutomationStudio",
+        inputs: 1,
+        outputs: 1,
+        defaults: {
+            pass: {value: ""}
+        },
+        label: function() {
+            return "Holistic";
+        },
+        labelStyle: function() {
+            return node_label_italic;
+        },
+        paletteLabel: "mediapipe",
+        color: "#936389",
+        icon: "db.png"
+    });
+</script>

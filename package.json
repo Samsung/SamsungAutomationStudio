@@ -1,5 +1,22 @@
 {
+  "name": "node-red-contrib-mediapipe",
+  "version": "0.0.01",
+  "license": "Apache 2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TeamWildWest/node-red-contrib-mediapipe"
+  },
+
+  "node-red": {
+    "nodes": {
+      "MediaPipe": "MediaPipe.js"
+    }
+  },
+
   "dependencies": {
+    "@mediapipe/camera_utils": "^0.3.1640029074",
+    "@mediapipe/control_utils": "^0.6.1629159505",
+    "@mediapipe/drawing_utils": "^0.3.1620248257",
     "@mediapipe/holistic": "^0.5.1635989137"
   }
 }
