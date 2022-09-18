@@ -2,16 +2,13 @@
 
     RED.nodes.registerType('object-detection',{
       category: 'D5MI',
-      color: "#B2A1F4",
+      color: "#03bafc",
       defaults: {
-        // name: {value: ""},
-        // serverUrl: {value: 'localhost'},
-        // monitorPort: {value: 1883, validate:RED.validators.number()},
-        dataSocketUrl: {value: 'ws://localhost:1880/ws/data'}
+          dataSocketUrl: {value: 'ws://localhost:1880/ws/data'}
       },
       inputs: 1,
       outputs: 1,
-      icon: "font-awesome/fa-hand-paper-o",
+      icon: "font-awesome/fa-object-ungroup",
       label: function() {
         return this.name||"object-detection"
       },
@@ -41,17 +38,7 @@
       <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
       <input type="text" id="node-input-name" placeholder="Name">
     </div>
-<!--   
-    <div class="form-row">
-      <label for="node-input-serverUrl"><i class="fa fa-tag"></i> Server Url</label>
-      <input type="text" id="node-input-serverUrl" placeholder="(default) localhost">
-    </div>
-  
-    <div class="form-row">
-      <label for="node-input-monitorPort"><i class="fa fa-tag"></i> Monitor Port</label>
-      <input type="text" id="node-input-monitorPort" placeholder="(default) 1883">
-    </div>
-   -->
+    
     <div class="form-row">
       <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
       <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/data'">
@@ -67,16 +54,12 @@
   </script>
   
   <script type="text/html" data-help-name="object-detection">
-    <p>A simple node that recognizes and visualizes hand posture using a webcam.</p>
+    <p>A node that recognizes and visualizes some objects and analyzes which one is interacting with user using a webcam.</p>
   
     <h3>Properties</h3>
     <dl class="message-properties">
       <dt>Name</dt>
       <dd>The label of the Node assigned by the user.</dd>
-      <dt>Server Url</dt>
-      <dd>URL address of your websocket server. Do not include a prefix such as 'http://'. (default: 'localhost')</dd>
-      <dt>Mirror Port</dt>
-      <dd>Port number to allow monitoring from other resources. (default: 1883)</dd>
       <dt>Data Socket Url</dt>
       <dd>Socket URI to send and receive data. (default: 'ws://localhost:1880/ws/data')</dd>
       <dt>Camera Test</dt>
