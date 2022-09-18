@@ -1,19 +1,19 @@
 <script type="text/javascript">
 
-    RED.nodes.registerType('hand-detect-webcam',{
+    RED.nodes.registerType('object-detection',{
       category: 'D5MI',
       color: "#B2A1F4",
       defaults: {
         // name: {value: ""},
         // serverUrl: {value: 'localhost'},
         // monitorPort: {value: 1883, validate:RED.validators.number()},
-        // dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
+        dataSocketUrl: {value: 'ws://localhost:1880/ws/data'}
       },
       inputs: 1,
       outputs: 1,
       icon: "font-awesome/fa-hand-paper-o",
       label: function() {
-        return this.name||"objects-detect-cam"
+        return this.name||"object-detection"
       },
       oneditprepare: function() {
         const inputVideo = document.getElementById('input-video')
@@ -36,12 +36,12 @@
     })
   </script>
   
-  <script type="text/html" data-template-name="hand-detect-webcam">
+  <script type="text/html" data-template-name="object-detection">
     <div class="form-row">
       <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
       <input type="text" id="node-input-name" placeholder="Name">
     </div>
-  
+<!--   
     <div class="form-row">
       <label for="node-input-serverUrl"><i class="fa fa-tag"></i> Server Url</label>
       <input type="text" id="node-input-serverUrl" placeholder="(default) localhost">
@@ -51,7 +51,7 @@
       <label for="node-input-monitorPort"><i class="fa fa-tag"></i> Monitor Port</label>
       <input type="text" id="node-input-monitorPort" placeholder="(default) 1883">
     </div>
-  
+   -->
     <div class="form-row">
       <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
       <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/data'">
@@ -66,7 +66,7 @@
     </div>
   </script>
   
-  <script type="text/html" data-help-name="hand-detect-webcam">
+  <script type="text/html" data-help-name="object-detection">
     <p>A simple node that recognizes and visualizes hand posture using a webcam.</p>
   
     <h3>Properties</h3>

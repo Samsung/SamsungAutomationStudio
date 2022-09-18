@@ -1,11 +1,11 @@
 module.exports = function(RED){
 
     function ObjectDetectionNode(config){
-        RED.nodes.createNode(this, config){
+        RED.nodes.createNode(this, config)
             var node = this;
             
         function HTML() {
-            return require('./hand-webcam-html.js').code(config)
+            return require('./object-detection-html.js').code(config)
         }
 
             node.on('input', function(msg, send){
@@ -13,7 +13,6 @@ module.exports = function(RED){
                 send = send || function(){this.send.apply(this, arguments)}
                 send(msg)
             })
-        }
     }
 
     RED.nodes.registerType("object-detection", ObjectDetectionNode);

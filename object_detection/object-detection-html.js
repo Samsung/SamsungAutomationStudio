@@ -1,6 +1,5 @@
 module.exports.code = (config) => {
     return String.raw`
-    
     <html>
 
 <head>
@@ -51,9 +50,17 @@ module.exports.code = (config) => {
         const registerBtn = document.getElementById("captrue-btn");
         const context = canvas.getContext("2d");
         let objects = []
-        const dataWebSocket = new WebSocket('ws://localhost:1880/ws/data')
+        const dataWebSocket = new WebSocket('${config.dataSocketUrl}')
 
-
+        function validation(predictions){
+            for(i = 0; i < predictions.length; i++){
+                if(predictions[i].class === "person"){
+                    return true;
+                }    
+            }
+            return false;
+        }
+        
         navigator.mediaDevices.getUserMedia({ video: true, audio: false })
             .then(function (stream) {
                 video.srcObject = stream;
@@ -66,8 +73,12 @@ module.exports.code = (config) => {
                 model.detect(canvas).then(predictions => {
 
                     objects = [...predictions]
+                    
+                    if(validation(predictions)){
+                        console.log(predictions)
+                        dataWebSocket.send(JSON.stringify({detect : predictions}));
+                    }
 
-                    dataWebSocket.send(JSON.stringify({detect : predictions}))
                     canvas.width = video.width;
                     canvas.height = video.height;
 
@@ -88,6 +99,7 @@ module.exports.code = (config) => {
             }
         });
 
+       setInterval(() => dataWebSocket.send(JSON.stringify({log : objects})), 1000);
        registerBtn.addEventListener("click", function(){
             dataWebSocket.send(JSON.stringify({register : predictions}))
        });
@@ -97,8 +109,5 @@ module.exports.code = (config) => {
 </body>
 
 </html>
-    
-
-
     `
 }
