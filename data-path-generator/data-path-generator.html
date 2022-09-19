@@ -1,6 +1,7 @@
 <script type="text/javascript">
   (function () {
     let treeList;
+    let tree = [];
 
     RED.nodes.registerType("data-path-generator", {
       category: "Data Extraction",
@@ -10,7 +11,7 @@
           value: "Data Path Generator",
         },
         url: {
-          value: "Url",
+          value: "",
         },
       },
       icon: "font-awesome/fa-list-ul",
@@ -27,12 +28,13 @@
               return response.json();
             })
             .then(function (json) {
-              let tree = [];
+              tree = [];
               makeKeyTree(json, tree);
               treeList.treeList("data", tree);
             })
             .catch((error) => {
               console.log("get 요청 실패");
+              console.log(error);
             });
         });
 
@@ -40,18 +42,49 @@
           .css({ width: "100%", height: "100%" })
           .appendTo(".node-input-api-tree")
           .treeList({});
+
+        treeList.on("treelistselect", function (event, item) {
+          if (item === undefined || Object.keys(item).length === 0) {
+            return;
+          }
+
+          if (item.selected) {
+            checkParent(item);
+          } else {
+            uncheckChildren(item);
+          }
+          treeList.treeList("data", tree);
+        });
       },
     });
 
+    function checkParent(item) {
+      item.selected = true;
+      if (item.parent === undefined) {
+        return;
+      }
+      checkParent(item.parent);
+    }
+
+    function uncheckChildren(item) {
+      item.selected = false;
+      if (item.children === undefined) {
+        return;
+      }
+      for (n of item.children) {
+        uncheckChildren(n);
+      }
+    }
+
     function makeKeyTree(json, subtree) {
+      if (Array.isArray(json) && json.length > 0) {
+        makeKeyTree(json[0], subtree);
+        return;
+      }
       let keys = Object.keys(json);
       for (let key of keys) {
         subtree.push(makeTreeItem(key));
-        if (Array.isArray(json[key])) {
-          if (json[key].length < 1) break;
-          subtree[subtree.length - 1]["children"] = [];
-          makeKeyTree(json[key][0], subtree[subtree.length - 1]["children"]);
-        } else if (typeof json[key] === "object" && json[key] !== null) {
+        if (typeof json[key] === "object" && json[key] !== null) {
           subtree[subtree.length - 1]["children"] = [];
           makeKeyTree(json[key], subtree[subtree.length - 1]["children"]);
         }
@@ -62,6 +95,7 @@
       return {
         label: label,
         checkbox: true,
+        expanded: true,
       };
     }
   })();
