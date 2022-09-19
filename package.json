@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cocoSsd" : "^2.2.2"
+    "@tensorflow-models/coco-ssd": "^2.2.2"
   },
   "keywords": [
     "node-red",
