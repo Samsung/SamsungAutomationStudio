@@ -1,0 +1,46 @@
+<script type="text/javascript">
+  const MY_CATEGORY = "common";
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType("lower-case", {
+    category: MY_CATEGORY,
+    color: "#3092f0",
+    defaults: {
+      name: { value: "" },
+      active: { value: 1, validate: RED.validators.number() },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "file.svg",
+    label: function () {
+      return this.name || "lower-case";
+    },
+    oneditprepare: function () {
+      $("#node-input-active").typedInput({
+        types: [
+          {
+            value: "active",
+            options: [
+              { value: 1, label: "Active" },
+              { value: 2, label: "Inactive" },
+            ],
+          },
+        ],
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="lower-case">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+    <label for="node-input-active"><i class="fa fa-tag"></i>Active</label>
+    <input type="text" id="node-input-active" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="lower-case">
+  <p>A simple node that converts the message payloads int all lower-case character</p>
+</script>
