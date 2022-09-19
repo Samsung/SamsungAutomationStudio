@@ -1,6 +1,5 @@
 module.exports.code = (config) => {
     return String.raw`
-    
     <html>
 
 <head>
@@ -26,16 +25,11 @@ module.exports.code = (config) => {
 
     <table class="detected"></table>
 
-    <div><button id="captrue-btn">Capture</button></div>
+    <!-- <div><button id="captrue-btn">Capture</button></div> -->
     
     
-    <div id="result-div" style="display: none;">
-        <p id="motion-result-message"></p>
-        <div id="register-btn-bar" align="center">
-            <button id="register-btn" class="btn">Register</button> <button id="cancel-btn" class="btn">Cancel</button>
-        </div><br>
-        <canvas id="capture-canvas" width="480px" height="270px" style="border:1px solid black"></canvas>
-        <div id="motion-result-keypoint"></div>
+    <div id="result-div">
+        <p id="detected-result-message"></p>
     </div>
 
 
@@ -46,14 +40,27 @@ module.exports.code = (config) => {
 
     <script>
 
+        let detected = []
+        let objects = []
+        let data = ""
+        let preset = ""
+
         const video = document.getElementById('video');
         const canvas = document.getElementById("canvas");
         const registerBtn = document.getElementById("captrue-btn");
         const context = canvas.getContext("2d");
-        let objects = []
-        const dataWebSocket = new WebSocket('ws://localhost:1880/ws/data')
+        const result = document.getElementById("detected-result-message")
+        const dataWebSocket = new WebSocket('${config.dataSocketUrl}')
 
-
+        function validation(predictions){
+            for(i = 0; i < predictions.length; i++){
+                if(predictions[i].class === "person"){
+                    return true;
+                }    
+            }
+            return false;
+        }
+        
         navigator.mediaDevices.getUserMedia({ video: true, audio: false })
             .then(function (stream) {
                 video.srcObject = stream;
@@ -66,8 +73,12 @@ module.exports.code = (config) => {
                 model.detect(canvas).then(predictions => {
 
                     objects = [...predictions]
+                    
+                    if(validation(predictions)){
+                        console.log(predictions)
+                        dataWebSocket.send(JSON.stringify({detect : predictions}));
+                    }
 
-                    dataWebSocket.send(JSON.stringify({detect : predictions}))
                     canvas.width = video.width;
                     canvas.height = video.height;
 
@@ -88,17 +99,43 @@ module.exports.code = (config) => {
             }
         });
 
-       registerBtn.addEventListener("click", function(){
-            dataWebSocket.send(JSON.stringify({register : predictions}))
-       });
+        
+      
+
+        preset += "<table style='display:inline;margin:0px 5px;'>"
+        preset += "<caption>Detected objects</caption>"
+        preset += "<tr><th>INDEX</th><th>Objects</th></tr>"
+        
+        let = detectedCnt = 1;
+
+       setInterval(() => {
+        dataWebSocket.send(JSON.stringify({log : objects}))
+
+        objects.forEach((element) => {
+            if(!detected.includes(element["class"])){
+                detected.push(element["class"]);
+                data += "<tr><td>" + detectedCnt + "</td><td>" + element["class"] + "</td></tr>"
+                detectedCnt += 1
+            }
+        });
+        console.log("detected : ", detected)
+        console.log("objects ", objects)
+        detected.forEach((element, idx) => {
+            
+        })
+
+        result.innerHTML = preset + data;
+
+        
+       }, 1000);
+    //    registerBtn.addEventListener("click", function(){
+    //         dataWebSocket.send(JSON.stringify({register : predictions}))
+    //    });
 
     </script>
 
 </body>
 
 </html>
-    
-
-
     `
 }
