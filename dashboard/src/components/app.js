@@ -1,20 +1,13 @@
 import React, { useEffect } from "react";
-import io from "socket.io-client";
 
-const socket = io.connect("http://localhost:1880");
+import { initlaizeSocket, disconnectSocket } from "../utils/socket";
 
 const App = () => {
   useEffect(() => {
-    socket.on("connection", ({ name, message }) => {
-      console.log(name, message);
-    });
-
-    socket.on("hello", (msg) => {
-      console.log(msg);
-    });
+    initlaizeSocket();
 
     return () => {
-      socket.disconnect();
+      disconnectSocket();
     };
   }, []);
 
