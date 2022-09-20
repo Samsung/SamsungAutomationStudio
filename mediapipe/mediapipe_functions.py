@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# The source code here was taken from the repository below, which is under the MIT license.
+# https://github.com/ngzhili/SignPose
 
 import cv2
 import time
