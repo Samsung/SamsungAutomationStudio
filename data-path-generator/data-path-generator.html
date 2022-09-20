@@ -2,6 +2,7 @@
   (function () {
     let treeList;
     let tree = [];
+    let paths = [];
 
     RED.nodes.registerType("data-path-generator", {
       category: "Data Extraction",
@@ -19,10 +20,12 @@
       label: function () {
         return "Data Path Generator";
       },
+      oneditsave: function () {
+        this.tree = tree;
+        this.paths = paths;
+      },
       oneditprepare: function () {
         $("#node-input-read").on("click", function () {
-          console.log($("#node-input-url").val());
-
           fetch($("#node-input-url").val())
             .then(function (response) {
               return response.json();
@@ -33,7 +36,6 @@
               treeList.treeList("data", tree);
             })
             .catch((error) => {
-              console.log("get 요청 실패");
               console.log(error);
             });
         });
@@ -43,36 +45,73 @@
           .appendTo(".node-input-api-tree")
           .treeList({});
 
+        if (this.tree !== undefined) {
+          tree = this.tree;
+          treeList.treeList("data", tree);
+        }
+        if (this.paths !== undefined) {
+          paths = this.paths;
+          showPath();
+        }
+
         treeList.on("treelistselect", function (event, item) {
           if (item === undefined || Object.keys(item).length === 0) {
             return;
           }
 
           if (item.selected) {
-            checkParent(item);
-          } else {
-            uncheckChildren(item);
+            if (item.parent !== undefined) {
+              item.parent.treeList.select(true);
+            }
+          } else if (!item.selected) {
+            if (item.children !== undefined) {
+              for (n of item.children) {
+                if (n.selected) {
+                  n.treeList.select(false);
+                }
+              }
+              return;
+            }
           }
-          treeList.treeList("data", tree);
+
+          paths = [];
+          for (item of tree) {
+            generatePath(item, "");
+          }
+          showPath();
         });
       },
     });
 
-    function checkParent(item) {
-      item.selected = true;
-      if (item.parent === undefined) {
-        return;
+    function showPath() {
+      let res = "";
+
+      for (let path of paths) {
+        res += path + "\n";
       }
-      checkParent(item.parent);
+      $("#node-input-path").val(res);
     }
 
-    function uncheckChildren(item) {
-      item.selected = false;
-      if (item.children === undefined) {
+    function generatePath(item, pre) {
+      if (!item.selected) {
         return;
       }
+
+      let cur = item.depth === 0 ? item.label : pre + "." + item.label;
+      if (item.children === undefined) {
+        paths.push(cur);
+        return;
+      }
+
+      let childChecked = false;
       for (n of item.children) {
-        uncheckChildren(n);
+        if (n.selected) {
+          childChecked = true;
+          generatePath(n, cur);
+        }
+      }
+      if (!childChecked) {
+        paths.push(cur);
       }
     }
 
@@ -95,6 +134,7 @@
       return {
         label: label,
         checkbox: true,
+        selected: false,
         expanded: true,
       };
     }
@@ -103,15 +143,21 @@
 
 <script type="text/html" data-template-name="data-path-generator">
   <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" /><br />
   </div>
   <div class="form-row">
-    <label for="node-input-url"><i class="fa fa-globe" aria-hidden="true"></i> Url</label>
+    <label for="node-input-url"><i class="fa fa-globe"></i> Url</label>
     <input type="text" id="node-input-url" placeholder="Url" style="width: 60%" />
     <button type="button" class="red-ui-button" id="node-input-read">Read</button>
   </div>
-  <div class="form-row node-input-api-tree" style="height: calc(100% - 40px);"></div>
+  <div class="form-row">
+    <label for="node-input-path"><i class="fa fa-bookmark"></i> Path</label>
+    <textarea id="node-input-path" disabled style="height: 80px; width: 100%;"></textarea>
+  </div>
+  <div class="form-row node-input-api-tree" style="height: calc(80% - 40px);">
+    <label for="node-input-api-tree"><i class="fa fa-key"></i></i> Key</label>
+  </div>
 </script>
 
 <script type="text/html" data-help-name="data-path-generator">
