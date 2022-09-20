@@ -1,7 +1,6 @@
-# pip install -r requirements.txt
-
 import cv2
 import mediapipe as mp
+import numpy as np
 from mediapipe_functions import mediapipe_detection, extract_keypoints
 
 holistic = None
@@ -22,14 +21,17 @@ def endMediaPipe():
     holistic.close()
     holistic = None
 
-def predict(name):
+def predict(data):
     global holistic
     
     if holistic is None : 
         print("Holistic is not Set")
         return
     
-    img = cv2.imread(f'./mediapipe/{name}.jpg')
+    img = np.fromstring(data, dtype = np.uint8)
+    img = cv2.imdecode(img, cv2.IMREAD_COLOR)
+
+    #img = cv2.imread(f'./mediapipe/{name}.jpg')
     image, results = mediapipe_detection(img, holistic)
     keypoints = extract_keypoints(results)
     return repr(keypoints)[6:-1]

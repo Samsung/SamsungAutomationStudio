@@ -7,10 +7,11 @@ const exec = util.promisify(require('child_process').exec);
 // do it(error check);
 exports.detection = async () => {
   try {
-    let run = await exec(`python ./mediapipe/mediapipeTest.py`, { timeout: 5000 });
-    return run.stdout;
+    let test = exec(`python ./mediapipe/main.py`);
+    
+    return test;
 
   } catch (error) { // 시간 초과 or 런타임 오류
-      return "[]";
+      return "fail";
   }
 }

@@ -1,13 +1,9 @@
+# pip install -r requirements.txt
 
 import socket
 import sys
 from _thread import *
 from mediapipeController import *
-
-
-# openServer, closeServer
-# mediapipe => communcation by socket communcation
-
 
 client_sockets = [] # 서버에 접속한 클라이언트 목록
 
@@ -65,20 +61,19 @@ def threaded(client_socket, addr):
 
             # 데이터가 수신될 때 까지 대기
             data = client_socket.recv(1024)
-
             # receive empty data when client is destroyed
             if not data:
                 print('>> Disconnected by ' + addr[0], ':', addr[1])
                 break
             
-            data = data.decode()
-            print('>> Received from ' + addr[0], ':', addr[1], data)
-
-            if data == "sendTest":
-                client_socket.send("success".encode('ascii'))
-            elif data == "close" :
-                closeServer()
-                break
+            if len(data) <= 10 :
+                data = data.decode()
+                print('>> Received from ' + addr[0], ':', addr[1], data)
+                if data == "sendTest":
+                    client_socket.send("success".encode('ascii'))
+                elif data == "close" :
+                    closeServer()
+                    break
             else :
                 # 클라이언트에게 실행 결과 보내기
                 result = predict(data)
