@@ -7,7 +7,7 @@ module.exports = function (RED) {
   }
 
   return {
-    testFunc,
+    emit,
   };
 };
 
@@ -24,6 +24,10 @@ function init(RED) {
   io = socketio(server);
   initSocket(io);
 
+  RED.nodes.eachNode(function callback(node) {
+    console.log(node);
+  });
+
   // const settings = RED.settings;
   // const path = `${settings.httpNodeRoot}${settings.path}`;
   // app.use(path, serveStatic(path.join(__dirname, "/dist")));
@@ -34,18 +38,11 @@ function init(RED) {
 
 function initSocket(io) {
   io.on("connection", (socket) => {
-    console.log("a user connected");
-    socket.on("disconnect", () => {
-      console.log("user disconnected");
-    });
-
-    socket.emit("hello", "world");
-    socket.emit("hello", "world");
-    socket.emit("hello", "world");
     socket.emit("hello", "world");
   });
 }
 
-function testFunc() {
-  return "test message";
+function emit(data) {
+  console.log(data);
+  io.emit("update-value", data);
 }
