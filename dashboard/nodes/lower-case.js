@@ -16,6 +16,8 @@ module.exports = function (RED) {
       send(msg);
       if (done) done();
     });
+
+    node.log("LowerCase Node created");
   }
 
   RED.nodes.registerType("lower-case", LowerCaseNode);
