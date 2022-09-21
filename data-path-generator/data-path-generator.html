@@ -25,25 +25,22 @@
         this.paths = paths;
       },
       oneditprepare: function () {
-        $("#node-input-read").on("click", function () {
-          fetch($("#node-input-url").val())
-            .then(function (response) {
-              return response.json();
-            })
-            .then(function (json) {
-              tree = [];
-              makeKeyTree(json, tree);
-              treeList.treeList("data", tree);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        });
-
         treeList = $("<div>")
           .css({ width: "100%", height: "100%" })
           .appendTo(".node-input-api-tree")
           .treeList({});
+
+        $("#node-input-type").typedInput({
+          types: [
+            {
+              value: "Type",
+              options: [
+                { value: "json", label: "json" },
+                { value: "xml", label: "xml" },
+              ],
+            },
+          ],
+        });
 
         if (this.tree !== undefined) {
           tree = this.tree;
@@ -53,6 +50,31 @@
           paths = this.paths;
           showPath();
         }
+
+        $("#node-input-read").on("click", function () {
+          let type = $("#node-input-type").typedInput("value");
+
+          fetch($("#node-input-url").val())
+            .then(function (response) {
+              if (type === "json") {
+                return response.json();
+              } else if (type === "xml") {
+                return response.text();
+              }
+            })
+            .then(function (json) {
+              if (type === "xml") {
+                let xmlNode = new DOMParser().parseFromString(json, "text/xml");
+                json = xmlToJson.parse(xmlNode);
+              }
+              tree = [];
+              makeKeyTree(json, tree);
+              treeList.treeList("data", tree);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
 
         treeList.on("treelistselect", function (event, item) {
           if (item === undefined || Object.keys(item).length === 0) {
@@ -65,7 +87,7 @@
             }
           } else if (!item.selected) {
             if (item.children !== undefined) {
-              for (n of item.children) {
+              for (let n of item.children) {
                 if (n.selected) {
                   n.treeList.select(false);
                 }
@@ -75,7 +97,7 @@
           }
 
           paths = [];
-          for (item of tree) {
+          for (let item of tree) {
             generatePath(item, "");
           }
           showPath();
@@ -104,7 +126,7 @@
       }
 
       let childChecked = false;
-      for (n of item.children) {
+      for (let n of item.children) {
         if (n.selected) {
           childChecked = true;
           generatePath(n, cur);
@@ -123,7 +145,11 @@
       let keys = Object.keys(json);
       for (let key of keys) {
         subtree.push(makeTreeItem(key));
-        if (typeof json[key] === "object" && json[key] !== null) {
+        if (
+          typeof json[key] === "object" &&
+          json[key] !== null &&
+          Object.keys(json[key]).length > 0
+        ) {
           subtree[subtree.length - 1]["children"] = [];
           makeKeyTree(json[key], subtree[subtree.length - 1]["children"]);
         }
@@ -140,11 +166,14 @@
     }
   })();
 </script>
-
 <script type="text/html" data-template-name="data-path-generator">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Name" /><br />
+    <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;"/>
+  </div>
+  <div class="form-row">
+    <label for="node-input-type"><i class="fa fa-file-o"></i> Type</label>
+    <input type="text" id="node-input-type" style="width:70%;">
   </div>
   <div class="form-row">
     <label for="node-input-url"><i class="fa fa-globe"></i> Url</label>
@@ -162,4 +191,126 @@
 
 <script type="text/html" data-help-name="data-path-generator">
   <p>A node that extracts some data you want from REST API response.</p>
+</script>
+
+<script type="text/javascript">
+  if (typeof Object.assign != "function") {
+    Object.defineProperty(Object, "assign", {
+      value: function assign(target, varArgs) {
+        "use strict";
+        if (target == null) {
+          throw new TypeError("Cannot convert undefined or null to object");
+        }
+
+        var to = Object(target);
+
+        for (var index = 1; index < arguments.length; index++) {
+          var nextSource = arguments[index];
+
+          if (nextSource != null) {
+            for (var nextKey in nextSource) {
+              if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                to[nextKey] = nextSource[nextKey];
+              }
+            }
+          }
+        }
+        return to;
+      },
+      writable: true,
+      configurable: true,
+    });
+  }
+
+  var xmlToJson = (function () {
+    var self = this;
+
+    self.addToParent = function (parent, nodeName, obj) {
+      if (!parent[nodeName]) {
+        parent[nodeName] = obj;
+      } else {
+        if (!Array.isArray(parent[nodeName])) {
+          var tmp = parent[nodeName];
+          parent[nodeName] = [];
+          parent[nodeName].push(tmp);
+        }
+        parent[nodeName].push(obj);
+      }
+    };
+
+    self.convertXMLStringToDoc = function (str) {
+      var xmlDoc = null;
+
+      if (str && typeof str === "string") {
+        var parser = new DOMParser();
+
+        xmlDoc = parser.parseFromString(str, "application/xml");
+      }
+
+      return xmlDoc;
+    };
+
+    self.isXML = function (data) {
+      var documentElement = (data ? data.ownerDocument || data : 0).documentElement;
+      return documentElement ? documentElement.nodeName.toLowerCase() !== "html" : false;
+    };
+
+    self.parseAttributes = function (node) {
+      var attributes = node.attributes,
+        obj = {};
+
+      if (node.hasAttributes()) {
+        for (var i = 0; i < attributes.length; i++) {
+          obj[attributes[i].name] = self.parseValue(attributes[i].value);
+        }
+      }
+      return obj;
+    };
+
+    self.parseChildren = function (parent, childNodes) {
+      if (childNodes.length > 0) {
+        for (var i = 0; i < childNodes.length; i++) {
+          if (childNodes[i].nodeType == 1) {
+            self.parseNode(parent, childNodes[i]);
+          }
+        }
+      }
+    };
+
+    self.parseNode = function (parent, node) {
+      var nodeName = node.nodeName,
+        obj = Object.assign({}, self.parseAttributes(node)),
+        tmp = null;
+
+      if (node.childNodes.length == 1 && node.childNodes[0].nodeType == 3) {
+        if (node.hasAttributes()) {
+          obj["text"] = self.parseValue(node.childNodes[0].nodeValue);
+        } else {
+          obj = self.parseValue(node.childNodes[0].nodeValue);
+        }
+      } else {
+        self.parseChildren(obj, node.childNodes);
+      }
+      self.addToParent(parent, nodeName, obj);
+      return parent;
+    };
+    this.parseValue = function (val) {
+      var num = Number(val);
+
+      if (val.toLowerCase() === "true" || val.toLowerCase() === "false") {
+        return val.toLowerCase() == "true";
+      }
+
+      return isNaN(num) ? val.trim() : val.length == 0 ? null : num;
+    };
+
+    return {
+      parse: function (xml) {
+        if (xml && typeof xml === "string") {
+          xml = self.convertXMLStringToDoc(xml);
+        }
+        return xml && self.isXML(xml) ? self.parseNode({}, xml.firstChild) : null;
+      },
+    };
+  })();
 </script>
