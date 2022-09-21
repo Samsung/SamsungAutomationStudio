@@ -7,7 +7,7 @@ module.exports = function (RED) {
   }
 
   return {
-    emit,
+    emitState,
   };
 };
 
@@ -16,6 +16,7 @@ const socketio = require("socket.io");
 const serveStatic = require("serve-static");
 
 let io = null;
+const dashboardState = {};
 
 function init(RED) {
   const app = RED.httpNode || RED.httpAdmin;
@@ -23,10 +24,6 @@ function init(RED) {
 
   io = socketio(server);
   initSocket(io);
-
-  RED.nodes.eachNode(function callback(node) {
-    console.log(node);
-  });
 
   // const settings = RED.settings;
   // const path = `${settings.httpNodeRoot}${settings.path}`;
@@ -42,7 +39,19 @@ function initSocket(io) {
   });
 }
 
-function emit(data) {
-  data.time = Date.now();
-  io.emit("update-value", data);
+function emitState(state) {
+  const node_id = state.node_id;
+  state.time = Date.now();
+
+  if (dashboardState.hasOwnProperty(node_id)) {
+    dashboardState[node_id].push(state);
+  } else {
+    dashboardState[node_id] = [state];
+  }
+
+  emit(state);
+}
+
+function emit(state) {
+  io.emit("update-value", state);
 }
