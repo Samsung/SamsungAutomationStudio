@@ -11,7 +11,7 @@ def startMediaPipe():
     if holistic is not None : 
         try : 
             endMediaPipe()
-        except e:
+        except Exception as e:
             pass
     mp_holistic = mp.solutions.holistic
     holistic = mp_holistic.Holistic(static_image_mode=True, model_complexity=2, enable_segmentation=True)

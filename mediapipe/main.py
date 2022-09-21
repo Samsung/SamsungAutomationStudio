@@ -42,7 +42,9 @@ def openServer():
 
 def closeServer():
     try:
-        server_socket.close()
+        global client_sockets
+        for server_socket in client_sockets:
+            server_socket.close()
         endMediaPipe()
         print("The server was successfully shut down.")
     except:
@@ -60,7 +62,7 @@ def threaded(client_socket, addr):
         try:
 
             # 데이터가 수신될 때 까지 대기
-            data = client_socket.recv(1024)
+            data = client_socket.recv(10000000)
             # receive empty data when client is destroyed
             if not data:
                 print('>> Disconnected by ' + addr[0], ':', addr[1])
