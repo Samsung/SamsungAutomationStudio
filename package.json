@@ -12,14 +12,14 @@
   },
   "node-red": {
     "nodes": {
-      "MediaPipe": "MediaPipe.js"
+      "Open": "Open.js",
+      "Close": "Close.js",
+      "Holistic": "Holistic.js"
     }
   },
 
   "dependencies": {
-    "@mediapipe/camera_utils": "^0.3.1640029074",
-    "@mediapipe/control_utils": "^0.6.1629159505",
-    "@mediapipe/drawing_utils": "^0.3.1620248257",
-    "@mediapipe/holistic": "^0.5.1635989137"
+    "util": "^0.12.4",
+    "child_process": "^1.0.2"
   }
 }
