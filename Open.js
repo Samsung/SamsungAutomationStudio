@@ -1,14 +1,16 @@
-const mediapipeGlobalConfig = require('./MediapipeConfig.js');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
 module.exports = function (RED) {
 
     function MediapipeOpen(config){
+        const mediapipeGlobalConfig = require('./MediapipeConfig.js');
+        const util = require('util');
+        const exec = util.promisify(require('child_process').exec);
+
         const node = this;
         RED.nodes.createNode(node, config);
         
         node.on("input", function (msg) {
             try {
+                
                 mediapipeGlobalConfig.pid = exec(`python ./mediapipe/main.py`);
                 
                 mediapipeGlobalConfig.client.on('data', function(data) {

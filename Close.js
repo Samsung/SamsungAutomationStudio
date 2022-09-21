@@ -1,10 +1,10 @@
-const mediapipeGlobalConfig = require('./MediapipeConfig.js');
+
 
 module.exports = function (RED) {
     function MediapipeClose(config){
+        const mediapipeGlobalConfig = require('./MediapipeConfig.js');
         const node = this;
         RED.nodes.createNode(node, config);
-        
         node.on("input", function (msg){
             try {
                 mediapipeGlobalConfig.client.write('close');
