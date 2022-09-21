@@ -1,0 +1,16 @@
+{
+  "name": "node-red-contrib-data-path-generator",
+  "node-red" : {
+    "nodes": {
+      "data-path-generator" : "data-path-generator.js"
+    }
+  },
+  "version": "1.0.0",
+  "description": "node-red-contrib-data-path-generator",
+  "main": "data-path-generator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Team D5MI",
+  "license": "Apache 2.0"
+}
