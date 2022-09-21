@@ -1,0 +1,35 @@
+<script type="text/javascript">
+  function initializeDashboardConfig() {
+    console.log("config node added to palette");
+    RED.nodes.eachNode((node) => {
+      console.log(node);
+    });
+
+    RED.nodes.eachConfig((node) => {
+      console.log(node);
+    });
+
+    RED.events.on("nodes:add", function (node) {
+      console.log("A node has been added to the workspace!", node);
+    });
+  }
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType("soop-dashboard-config", {
+    category: "config",
+    color: "#FFFFFF",
+    defaults: {
+      name: {},
+    },
+    icon: "file.svg",
+    label: function () {
+      return this.name || "Soop Dashboard Config";
+    },
+    onpaletteadd: initializeDashboardConfig,
+  });
+</script>
+
+<script type="text/html" data-template-name="soop-dashboard-config">
+  <div>This is configuration node for soop dashboard.</div>
+</script>

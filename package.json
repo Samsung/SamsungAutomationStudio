@@ -27,7 +27,8 @@
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
       "lower-case": "dashboard/nodes/lower-case.js",
-      "test-node": "dashboard/nodes/test-node.js"
+      "test-node": "dashboard/nodes/test-node.js",
+      "soop-dashboard-config": "dashboard/nodes/dashboard-config.js"
     }
   },
   "dependencies": {
