@@ -4,7 +4,7 @@ module.exports = function (RED) {
   function TestNode(config) {
     const node = this;
     RED.nodes.createNode(node, config);
-    console.log("Test Node created " + dashboard.testFunc());
+    node.log("Test Node created");
   }
 
   RED.nodes.registerType("test-node", TestNode);
