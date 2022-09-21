@@ -35,7 +35,7 @@ function init(RED) {
 
 function initSocket(io) {
   io.on("connection", (socket) => {
-    socket.emit("hello", "world");
+    socket.emit("initial-value", dashboardState);
   });
 }
 

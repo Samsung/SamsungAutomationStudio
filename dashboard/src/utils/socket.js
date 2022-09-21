@@ -9,8 +9,8 @@ export const initlaizeSocket = () => {
     console.info(`socket connected : ${socket.id}`);
   });
 
-  socket.on("hello", (msg) => {
-    console.log(msg);
+  socket.on("initial-value", (state) => {
+    console.log(state);
   });
 
   socket.on("update-value", (data) => {
