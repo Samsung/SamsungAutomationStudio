@@ -334,7 +334,6 @@ function formatJSON(json, paths) {
   }
   paths.forEach((path) => {
     path = path.split(".");
-    path.shift();
     resultOnlyOne = formatJSONOnlyOne(json, path);
     result.push(resultOnlyOne);
   });
@@ -363,7 +362,7 @@ function formatJSONOnlyOne(data, path) {
   }
 }
 
-let paths = ["api.response.body.items.item.BOOK_KEY"];
+let paths = ["response.body.items.item.BOOK_KEY"];
 formatJSON(json, paths);
 
 console.log(result);

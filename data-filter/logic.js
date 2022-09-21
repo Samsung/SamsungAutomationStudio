@@ -1017,7 +1017,6 @@ const json = `{
 function findTarget(input) {
   const parsedData = JSON.parse(input.data);
   stdPath = input.stdPath.split(".");
-  stdPath.shift();
   findTargetOnlyOne(parsedData, stdPath, input.stdValue);
 }
 
@@ -1059,7 +1058,6 @@ function findTargetOnlyOne(data, path, stdValue) {
 
 function cleanPath(path, comparePath) {
   path = path.split(".");
-  path.shift();
   while (path[0] && comparePath[0] && path[0] === comparePath[0]) {
     path.shift();
     comparePath.shift();
@@ -1089,12 +1087,12 @@ function formatJSONOnlyOne(data, path) {
 
 let input = {
   data: json,
-  stdPath: "api.response.body.items.stationName",
+  stdPath: "response.body.items.stationName",
   stdValue: "중구",
   outputPaths: [
-    "api.response.body.items.khaiValue",
-    "api.response.body.items.so2Value",
-    "api.response.body.items.coValue",
+    "response.body.items.khaiValue",
+    "response.body.items.so2Value",
+    "response.body.items.coValue",
   ],
 };
 
