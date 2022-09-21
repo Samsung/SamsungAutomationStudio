@@ -43,6 +43,6 @@ function initSocket(io) {
 }
 
 function emit(data) {
-  console.log(data);
+  data.time = Date.now();
   io.emit("update-value", data);
 }
