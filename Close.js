@@ -8,10 +8,10 @@ module.exports = function (RED) {
         node.on("input", function (msg){
             try {
                 mediapipeGlobalConfig.client.write('close');
-                mediapipeGlobalConfig.client.write('close');
-                mediapipeGlobalConfig.client.off('data');
-                mediapipeGlobalConfig.pid.kill('SIGINT');
-                msg.payload = 'sucess';
+                mediapipeGlobalConfig.mediapipeEnable = false;
+                // mediapipeGlobalConfig.client.off('data');
+                // mediapipeGlobalConfig.pid.kill('SIGINT');
+                msg.payload = 'success';
             } catch (error) {
                 console.log(error);
                 msg.payload = 'fail';
