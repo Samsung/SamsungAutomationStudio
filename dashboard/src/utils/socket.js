@@ -13,8 +13,8 @@ export const initlaizeSocket = () => {
     console.log(state);
   });
 
-  socket.on("update-value", (data) => {
-    console.log(data);
+  socket.on("update-value", (state) => {
+    console.log(state);
   });
 };
 
