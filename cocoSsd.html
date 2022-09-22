@@ -2,12 +2,6 @@
 
 <head>
     <style>
-        /* 이미지에 캔버스를 겹쳐서 그릴때는 아래 주석 해제 */
-        
-        /* #frame > {
-            display: block;
-            margin : auto;
-        } */
 
         h2 {
             margin-top : 15px;
@@ -19,11 +13,6 @@
         #regi-form{
             margin-top: 0%;
         }
-
-        /* #detected-result-message{
-            text-align: center;
-            vertical-align: bottom;
-        } */
 
         #frame > video {
             position: absolute;
@@ -85,6 +74,7 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
     <script>
+    
 
         let detected = []
         let objects = []
@@ -92,6 +82,7 @@
         let preset = ""
         let savedObjects = []
         let = detectedCnt = 1;
+        let database;
 
         const video = document.getElementById('video');
         const canvas = document.getElementById("canvas");
@@ -106,8 +97,7 @@
 /*         
 * 거루가 쓰는 공간 1
 */ 
-
-
+ 
         function validation(predictions){
             for(i = 0; i < predictions.length; i++){
                 if(predictions[i].class === "person"){
@@ -163,7 +153,6 @@
 * 거루가 쓰는 공간 2
 */ 
 
-
        setInterval(() => {
         dataWebSocket.send(JSON.stringify({log : objects}))
     
@@ -193,6 +182,9 @@
         1000);
 
         registerBtn.addEventListener("click", function(){
+
+            console.log('${config.dbSavedData}');
+
             registerWebSocket.send(JSON.stringify(detected.filter((element) => {
                 return document.getElementById(element).checked})));
         });
