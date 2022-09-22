@@ -4,6 +4,12 @@ module.exports.code = (config) => {
 
 <head>
     <style>
+        /* 이미지에 캔버스를 겹쳐서 그릴때는 아래 주석 해제 */
+        
+        /* #frame > {
+            display: block;
+            margin : auto;
+        } */
 
         h2 {
             margin-top : 15px;
@@ -15,6 +21,11 @@ module.exports.code = (config) => {
         #regi-form{
             margin-top: 0%;
         }
+
+        /* #detected-result-message{
+            text-align: center;
+            vertical-align: bottom;
+        } */
 
         #frame > video {
             position: absolute;
@@ -50,8 +61,6 @@ module.exports.code = (config) => {
         <h3 style='text-align: left; margin : 0px; '>Detected objects</h3></br>
         <h4>INDEX   Objects   register</h4>
         <form action="" id="regi-form">
-            <label for="test">test</label>
-            <input type="text" id="test" value="hello">
         </form>
         <button id = "captrue-btn">register</button>
     </div>
@@ -76,7 +85,6 @@ module.exports.code = (config) => {
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
     <script>
-    
 
         let detected = []
         let objects = []
@@ -84,22 +92,22 @@ module.exports.code = (config) => {
         let preset = ""
         let savedObjects = []
         let = detectedCnt = 1;
-        let database;
 
         const video = document.getElementById('video');
         const canvas = document.getElementById("canvas");
         const registerBtn = document.getElementById("captrue-btn");
         const context = canvas.getContext("2d");
         const result = document.getElementById("detected-result-message")
-        const registerWebSocket = new WebSocket('ws://localhost:1880/ws/register')
-        const dataWebSocket = new WebSocket('${config.dataSocketUrl}')
+        const registerWebSocket = new WebSocket(${config.registerSocketUrl})
+        const dataWebSocket = new WebSocket(${config.dataSocketUrl})
         const _form = document.getElementById("regi-form")
 
 
 /*         
 * 거루가 쓰는 공간 1
 */ 
- 
+
+
         function validation(predictions){
             for(i = 0; i < predictions.length; i++){
                 if(predictions[i].class === "person"){
@@ -155,6 +163,7 @@ module.exports.code = (config) => {
 * 거루가 쓰는 공간 2
 */ 
 
+
        setInterval(() => {
         dataWebSocket.send(JSON.stringify({log : objects}))
     
@@ -184,9 +193,6 @@ module.exports.code = (config) => {
         1000);
 
         registerBtn.addEventListener("click", function(){
-
-            dataWebSocket.send(JSON.stringify({saved : '${config.dbSavedData}'}));
-
             registerWebSocket.send(JSON.stringify(detected.filter((element) => {
                 return document.getElementById(element).checked})));
         });
