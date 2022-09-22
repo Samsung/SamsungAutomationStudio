@@ -14,17 +14,33 @@
       socket.emit("flow-deployed", dashboardNodes);
     });
 
-    dashboardConfigNode = {
-      id: RED.nodes.id(),
-      _def: RED.nodes.getType("soop-dashboard-config"),
-      type: "soop-dashboard-config",
-      users: [],
-    };
-    RED.nodes.add(dashboardConfigNode);
+    dashboardConfigNode = createDashboardConfigNode();
+  }
 
+  function createDashboardConfigNode() {
     RED.nodes.eachConfig((node) => {
-      console.log("config", node);
+      const configNodes = [];
+      if (node.type === "soop-dashboard-config") {
+        configNodes.push(node);
+      }
     });
+
+    for (let i = 1; i < configNodes.length; ++i) {
+      RED.nodes.remove(configNodes[i].id);
+    }
+
+    let dashboardConfgNode = configNodes[0];
+    if (!dashboardConfgNode) {
+      dashboardConfgNode = {
+        id: RED.nodes.id(),
+        _def: RED.nodes.getType("soop-dashboard-config"),
+        type: "soop-dashboard-config",
+        users: [],
+      };
+    }
+    RED.nodes.add(dashboardConfgNode);
+
+    return dashboardConfgNode;
   }
 </script>
 
