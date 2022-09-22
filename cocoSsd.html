@@ -63,13 +63,15 @@
                 <input type="text" id="test" value="hello">
             </form>
             <button id="captrue-btn">register</button>
+            <!-- Garo start -->
             <div>
                 <button id="pose-object-btn">pose-object mapping</button>
                 <div id="pose-object-mapping">
-                    
+
                 </div>
                 <button id="pose-object-mapping-btn" style="display:none;">regist</button>
             </div>
+            <!-- Garo end -->
         </div>
     </div>
 
@@ -116,59 +118,59 @@
         const _form = document.getElementById("regi-form")
 
 
-        /*         
-        * garo start
-        */
-        let savedPose = [{name:'seat'},{name:'armup'}]
-        let savedObject = [{name:'person'},{name:'chair'},{name:'cellphone'},{name:'cup'}]
+                 
+        // garo start
+        
+        let savedPose = [{ name: 'seat' }, { name: 'armup' }]
+        let savedObject = [{ name: 'person' }, { name: 'chair' }, { name: 'cellphone' }, { name: 'cup' }]
         document.getElementById('pose-object-btn').addEventListener('click', () => {
             let area = document.getElementById('pose-object-mapping')
             let html = `
                     <select name="pose" id="pose">
                         <option value="null" selected>null</option>`
 
-            savedPose.forEach(pose=>{
-                html += `<option value="`+pose.name+`">`+pose.name+`</option>`
+            savedPose.forEach(pose => {
+                html += `<option value="` + pose.name + `">` + pose.name + `</option>`
             })
 
             html += `</select>
                     <select name="object" id="object">
                     <option value="null" selected>null</option>`
 
-            savedObject.forEach(object=>{
-                html += `<option value="`+object.name+`">`+object.name+`</option>`
+            savedObject.forEach(object => {
+                html += `<option value="` + object.name + `">` + object.name + `</option>`
             })
             html += ` </select>
             <input type="text" id="pose-object-name">
                 `
-            
+
             area.innerHTML = html
 
             document.getElementById('pose-object-mapping-btn').setAttribute('style', '')
         })
 
-        document.getElementById('pose-object-mapping-btn').addEventListener('click', ()=>{
+        document.getElementById('pose-object-mapping-btn').addEventListener('click', () => {
             let nodes = document.getElementById('pose-object-mapping').children
             let pose = getVal(nodes.pose);
             let object = getVal(nodes.object);
             let value = document.getElementById('pose-object-name').value
 
-            function getVal(node){
+            function getVal(node) {
                 let res;
-                for(let i=0; i<node.options.length; i++){
-                    if(node.options[i].selected == true){
+                for (let i = 0; i < node.options.length; i++) {
+                    if (node.options[i].selected == true) {
                         res = node.options[i].value;
                     }
                 }
                 return res
-            } 
-            console.log({pose, object, value});
-            registerWebSocket.send(JSON.stringify({pose, object, value}));
+            }
+            console.log({ pose, object, value });
+            registerWebSocket.send(JSON.stringify({ pose, object, value }));
         })
 
-        /*
-         * garo end
-         */
+        
+        // garo end
+         
 
         function validation(predictions) {
             for (i = 0; i < predictions.length; i++) {
@@ -219,11 +221,6 @@
             }
         });
 
-
-
-        /*         
-        * 거루가 쓰는 공간 2
-        */
 
 
         setInterval(() => {
