@@ -1,5 +1,7 @@
 import { io } from "socket.io-client";
 
+const { FRONT_SOCKET_TYPE } = require("../../common/common");
+
 let socket;
 
 export const initlaizeSocket = () => {
@@ -9,12 +11,12 @@ export const initlaizeSocket = () => {
     console.info(`socket connected : ${socket.id}`);
   });
 
-  socket.on("initial-value", (state) => {
-    console.log(state);
+  socket.on(FRONT_SOCKET_TYPE.INIT_STATES, (states) => {
+    console.log(states);
   });
 
-  socket.on("update-value", (state) => {
-    console.log(state);
+  socket.on(FRONT_SOCKET_TYPE.UPDATE_STATE, (states) => {
+    console.log(states);
   });
 };
 

@@ -1,4 +1,12 @@
 <script src="socket.io/socket.io.js"></script>
+
+<script>
+  // TODO : import from common.js
+  const EDITOR_SOCKET_TYPE = {
+    FLOW_DEPLOYED: "flow-deployed",
+  };
+</script>
+
 <script type="text/javascript">
   var socket = io();
   let dashboardConfigNode;
@@ -11,15 +19,15 @@
           dashboardNodes.push(node);
         }
       });
-      socket.emit("flow-deployed", dashboardNodes);
-    });
 
-    dashboardConfigNode = createDashboardConfigNode();
+      dashboardConfigNode = createDashboardConfigNode();
+      socket.emit(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, dashboardNodes);
+    });
   }
 
   function createDashboardConfigNode() {
+    const configNodes = [];
     RED.nodes.eachConfig((node) => {
-      const configNodes = [];
       if (node.type === "soop-dashboard-config") {
         configNodes.push(node);
       }
@@ -28,6 +36,7 @@
     for (let i = 1; i < configNodes.length; ++i) {
       RED.nodes.remove(configNodes[i].id);
     }
+    RED.nodes.dirty(true);
 
     let dashboardConfgNode = configNodes[0];
     if (!dashboardConfgNode) {
