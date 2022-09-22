@@ -4,9 +4,10 @@
       category: 'D5MI',
       color: "#03bafc",
       defaults: {
-          dataSocketUrl: {value: 'ws://localhost:1880/ws/data'}
+          dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
+          registerSocketUrl : {value : 'ws://localhost:1880/ws/register'}
       },
-      inputs: 1,
+      inputs: 3,
       outputs: 1,
       icon: "font-awesome/fa-object-ungroup",
       label: function() {
@@ -42,6 +43,11 @@
     <div class="form-row">
       <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
       <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/data'">
+    </div>
+
+    <div class="form-row">
+      <label for="node-input-registerSocketUrl"><i class="fa fa-tag"></i> Register Socket Url</label>
+      <input type="text" id="node-input-registerSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/register'">
     </div>
   
     <div class="form-row" style="text-align: left;">
