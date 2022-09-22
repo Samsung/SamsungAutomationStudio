@@ -57,5 +57,6 @@ function emitState(state) {
 }
 
 function emit(state) {
-  io.emit("update-value", state);
+  if (Array.isArray(state)) io.emit("update-value", state);
+  else io.emit("update-value", [state]);
 }
