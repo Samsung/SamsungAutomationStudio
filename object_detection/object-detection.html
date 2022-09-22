@@ -5,7 +5,11 @@
       color: "#03bafc",
       defaults: {
           dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
-          registerSocketUrl : {value : 'ws://localhost:1880/ws/register'}
+          registerSocketUrl : {value : 'ws://localhost:1880/ws/register'},
+          field: {value:"payload",
+                  label:"payload",
+                  validate:RED.validators.typedInput("fieldType", false)},
+          fieldType: {value:"msg"},
       },
       inputs: 3,
       outputs: 1,
@@ -30,6 +34,23 @@
           .catch(err => {
             console.log(err)
           })
+
+
+          const that = this;
+          const stateId = RED.editor.generateViewStateId("node", this, "");
+            if (!this.field) {
+                this.field = 'payload';
+                $("#node-input-field").val("payload");
+            }
+            if (!this.fieldType) {
+                this.fieldType = 'msg';
+            }
+            $("#node-input-field").typedInput({
+                default: 'msg',
+                types: ['msg','flow','global'],
+                typeField: $("#node-input-fieldType")
+            });
+
       },
     })
   </script>
@@ -48,6 +69,12 @@
     <div class="form-row">
       <label for="node-input-registerSocketUrl"><i class="fa fa-tag"></i> Register Socket Url</label>
       <input type="text" id="node-input-registerSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/register'">
+    </div>
+
+    <div class="form-row">
+      <label for="node-input-field"><i class="fa fa-ellipsis-h"></i> Property </label>
+      <input type="text" id="node-input-field" placeholder="payload" style="width:250px;">
+      <input type="hidden" id="node-input-fieldType">
     </div>
   
     <div class="form-row" style="text-align: left;">

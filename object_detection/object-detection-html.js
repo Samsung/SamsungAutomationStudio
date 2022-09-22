@@ -98,8 +98,8 @@ module.exports.code = (config) => {
         const registerBtn = document.getElementById("captrue-btn");
         const context = canvas.getContext("2d");
         const result = document.getElementById("detected-result-message")
-        const registerWebSocket = new WebSocket(${config.registerSocketUrl})
-        const dataWebSocket = new WebSocket(${config.dataSocketUrl})
+        const registerWebSocket = new WebSocket("${config.registerSocketUrl}")
+        const dataWebSocket = new WebSocket("${config.dataSocketUrl}")
         const _form = document.getElementById("regi-form")
 
 
@@ -163,9 +163,13 @@ module.exports.code = (config) => {
 * 거루가 쓰는 공간 2
 */ 
 
-
-       setInterval(() => {
-        dataWebSocket.send(JSON.stringify({log : objects}))
+        const KR_TIME_DIFF = 9 * 60 * 60 * 1000;
+       
+        setInterval(() => {
+        
+        var curr = new Date();
+        const utc = curr.getTime() + (curr.getTimezoneOffset() * 60 * 1000);
+        dataWebSocket.send(JSON.stringify({log : {data : objects, date : new Date(utc + (KR_TIME_DIFF))}}))
     
         objects.forEach((element) => {
                     if(!detected.includes(element["class"])){
@@ -193,6 +197,8 @@ module.exports.code = (config) => {
         1000);
 
         registerBtn.addEventListener("click", function(){
+
+            console.log(${config.field});
             registerWebSocket.send(JSON.stringify(detected.filter((element) => {
                 return document.getElementById(element).checked})));
         });
