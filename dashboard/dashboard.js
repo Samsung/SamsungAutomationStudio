@@ -36,6 +36,10 @@ function init(RED) {
 function initSocket(io) {
   io.on("connection", (socket) => {
     socket.emit("initial-value", dashboardState);
+
+    socket.on("flow-deployed", (nodes) => {
+      console.log("new flow", nodes);
+    });
   });
 }
 
