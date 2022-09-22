@@ -11,7 +11,8 @@
   },
   "node-red":{
     "nodes" : {
-      "object-detection" : "/object_detection/object-detection.js"
+      "object-detection" : "/object_detection/object-detection.js",
+      "log" : "/log/log.js"
     }
   },
   "author": "",
