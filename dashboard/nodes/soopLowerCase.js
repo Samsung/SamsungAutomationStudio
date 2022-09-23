@@ -17,5 +17,5 @@ module.exports = function (RED) {
     });
   }
 
-  RED.nodes.registerType("soop-lower-case", LowerCaseNode);
+  RED.nodes.registerType("soopLowerCase", LowerCaseNode);
 };

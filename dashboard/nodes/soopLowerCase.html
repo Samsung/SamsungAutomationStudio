@@ -3,7 +3,7 @@
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType("soop-lower-case", {
+  RED.nodes.registerType("soopLowerCase", {
     category: MY_CATEGORY,
     color: "#3092f0",
     defaults: {
@@ -15,7 +15,7 @@
     outputs: 1,
     icon: "file.svg",
     label: function () {
-      return this.name || "soop-lower-case";
+      return this.name || "soopLowerCase";
     },
     oneditprepare: function () {
       $("#node-input-active").typedInput({
@@ -33,7 +33,7 @@
   });
 </script>
 
-<script type="text/html" data-template-name="soop-lower-case">
+<script type="text/html" data-template-name="soopLowerCase">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
     <input type="text" id="node-input-name" placeholder="Name" />
@@ -50,6 +50,6 @@
   </div>
 </script>
 
-<script type="text/html" data-help-name="soop-lower-case">
+<script type="text/html" data-help-name="soopLowerCase">
   <p>A simple node that converts the message payloads int all lower-case character</p>
 </script>

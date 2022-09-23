@@ -7,5 +7,5 @@ module.exports = function (RED) {
     node.log("Dashboard config created");
   }
 
-  RED.nodes.registerType("soop-dashboard-config", TestNode);
+  RED.nodes.registerType("soopDashboardConfig", TestNode);
 };
