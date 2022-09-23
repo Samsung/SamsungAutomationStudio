@@ -13,8 +13,7 @@ const SoopSlider = () => {
   const [value, setValue] = useState(defaultValue);
 
   useEffect(() => {
-    // TODO: props에서 변경이 생기면 slider에서도 변경이 되어야 한다!
-    // setValue()
+    // TODO: value에서 변경이 생기면, socket통해서 runtime에도 전달해야 한다.
   }, []);
 
   return (

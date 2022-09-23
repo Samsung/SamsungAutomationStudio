@@ -36,7 +36,7 @@ const BoardTextValue = styled.div`
   font-family: "Pretendard-Bold";
 `;
 
-const Text = () => {
+const SoopText = () => {
   return (
     <>
       <BoardText>
@@ -51,4 +51,4 @@ const Text = () => {
   );
 };
 
-export default Text;
+export default SoopText;

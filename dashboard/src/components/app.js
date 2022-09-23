@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
-import Button from "./Button";
-import Text from "./Text";
+import SoopButton from "./SoopButton";
+import SoopText from "./SoopText";
+import SoopSlider from "./SoopSlider";
+import SoopGauge from "./SoopGauge";
+import SoopChart from "./SoopChart";
 import { initlaizeSocket, disconnectSocket } from "../utils/socket";
 import "./App.css";
 
@@ -16,8 +19,11 @@ const App = () => {
   return (
     <>
       <div>Hello Dashboard</div>
-      <Button />
-      <Text />
+      <SoopButton />
+      <SoopText />
+      <SoopSlider />
+      <SoopGauge />
+      <SoopChart />
     </>
   );
 };

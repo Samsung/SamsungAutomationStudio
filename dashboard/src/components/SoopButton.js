@@ -6,7 +6,7 @@ import { mainColor, gradientColor, fontSize } from "../assets/DesignOption";
 // border-radius - sq: 0px, rdsq: 5px, pill: height/2, circle: 100%
 const height = 48; // FIXME: 추후 그리드 사이즈에 맞게 바뀔것, width도 마찬가지
 
-const BoardButton = styled.button`
+const Button = styled.button`
   background: linear-gradient(
     91.29deg,
     ${mainColor.blue} 0%,
@@ -22,12 +22,12 @@ const BoardButton = styled.button`
   border-radius: ${height / 2}px;
 `;
 
-const Button = () => {
+const SoopButton = () => {
   return (
     <>
-      <BoardButton>이것은 Button노드</BoardButton>
+      <Button>이것은 Button노드</Button>
     </>
   );
 };
 
-export default Button;
+export default SoopButton;
