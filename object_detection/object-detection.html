@@ -63,12 +63,12 @@
     
     <div class="form-row">
       <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
-      <input type="text" id="node-input-dataSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/data'">
+      <input type="text" id="node-input-dataSocketUrl" placeholder="ws://localhost:1880/ws/data">
     </div>
 
     <div class="form-row">
       <label for="node-input-registerSocketUrl"><i class="fa fa-tag"></i> Register Socket Url</label>
-      <input type="text" id="node-input-registerSocketUrl" placeholder="(default) 'ws://localhost:1880/ws/register'">
+      <input type="text" id="node-input-registerSocketUrl" placeholder="ws://localhost:1880/ws/register">
     </div>
 
     <div class="form-row">
@@ -95,6 +95,10 @@
       <dd>The label of the Node assigned by the user.</dd>
       <dt>Data Socket Url</dt>
       <dd>Socket URI to send and receive data. (default: 'ws://localhost:1880/ws/data')</dd>
+      <dt>Register Socket Url</dt>
+      <dd>Socket URI to send and receive data for object registration for detecting. (default: 'ws://localhost:1880/ws/data')</dd>
+      <dt>Property</dt>
+      <dd>call saved data about object regitstaion from database</dd>
       <dt>Camera Test</dt>
       <dd>Preview webcam camera.</dd>
     </dl>

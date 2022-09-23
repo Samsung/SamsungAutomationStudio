@@ -13,8 +13,8 @@ module.exports = function(RED){
             node.on('input', function(msg, send){
                 
                 console.log("here context");
-                config.field = this.context().flow.get("registered");
-                console.log("fninally? " + this.context().flow.get("registered"));
+                config.field = String(this.context().flow.get("registered"));
+                console.log("fninally? " + config.field);
                 msg.payload = HTML()
                 send = send || function(){this.send.apply(this, arguments)}
                 send(msg)

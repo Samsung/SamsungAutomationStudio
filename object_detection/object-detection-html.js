@@ -90,7 +90,7 @@ module.exports.code = (config) => {
         let objects = []
         let data = ""
         let preset = ""
-        let savedObjects = []
+        let registered = "${config.field}".split(',');
         let = detectedCnt = 1;
 
         const video = document.getElementById('video');
@@ -102,10 +102,14 @@ module.exports.code = (config) => {
         const dataWebSocket = new WebSocket("${config.dataSocketUrl}")
         const _form = document.getElementById("regi-form")
 
-
+        console.log("reg : " + registered);
 /*         
 * 거루가 쓰는 공간 1
 */ 
+
+
+        
+
 
 
         function validation(predictions){
@@ -184,6 +188,7 @@ module.exports.code = (config) => {
                         tmpInput.type="checkbox"
                         tmpInput.id=element["class"]
                         tmpInput.value=element["class"]
+                        tmpInput.checked = registered.includes(element["class"])
 
                         tmpSpan.appendChild(tmpString);
                         tmpNode.appendChild(tmpSpan);
