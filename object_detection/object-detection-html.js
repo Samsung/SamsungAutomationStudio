@@ -117,24 +117,23 @@ module.exports.code = (config) => {
             let savedObject = [{ name: 'person' }, { name: 'chair' }, { name: 'cellphone' }, { name: 'cup' }]
             document.getElementById('pose-object-btn').addEventListener('click', () => {
                 let area = document.getElementById('pose-object-mapping')
-                let html = '
-                        <select name="pose" id="pose">
-                            <option value="null" selected>null</option>'
+                let html = ${"`"}<select name="pose" id="pose">
+                            <option value="null" selected>null</option>${"`"}
     
                 savedPose.forEach(pose => {
-                    html += '<option value="' + pose.name + '">' + pose.name + '</option>'
+                    html += ${"`"}<option value="${"`"} + pose.name + ${"`"}">${"`"} + pose.name + ${"`"}</option>${"`"}
                 })
     
-                html += '</select>
+                html += ${"`"}</select>
                         <select name="object" id="object">
-                        <option value="null" selected>null</option>'
+                        <option value="null" selected>null</option>${"`"}
     
                 savedObject.forEach(object => {
-                    html += '<option value="' + object.name + '">' + object.name + '</option>'
+                    html += ${"`"}<option value="${"`"} + object.name + ${"`"}">${"`"} + object.name + ${"`"}</option>${"`"}
                 })
-                html += ' </select>
+                html += ${"`"} </select>
                 <input type="text" id="pose-object-name">
-                    '
+                ${"`"}
     
                 area.innerHTML = html
     
