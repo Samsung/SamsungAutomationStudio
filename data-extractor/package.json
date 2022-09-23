@@ -1,0 +1,16 @@
+{
+  "name": "data-extractor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "data-extractor.js",
+  "node-red" : {
+    "nodes": {
+      "data-extractor": "data-extractor.js"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TEAM D5MI",
+  "license": "Apache-2.0"
+}
