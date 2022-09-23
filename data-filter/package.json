@@ -11,6 +11,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "fast-xml-parser": "^4.0.10",
+    "he": "^1.2.0"
+  },
   "author": "Team D5MI",
   "license": "Apache 2.0"
 }

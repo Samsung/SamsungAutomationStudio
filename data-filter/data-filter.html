@@ -14,23 +14,43 @@
         name: {
           value: "Data Filter",
         },
+        response_type: {
+          value: "",
+        },
         url: {
           value: "",
         },
         value: {
           value: "",
         },
+        value_type: {
+          value: "",
+        },
+        label_value: {
+          value: "",
+        },
+        stdPath: {
+          value: "",
+        },
+        outputPaths: {
+          value: [],
+        },
       },
+      inputs: 1,
+      outputs: 1,
       icon: "font-awesome/fa fa-filter",
       paletteLabel: "Data Filter",
       label: function () {
         return "Data Filter";
       },
-      oneditsave: function () {},
+      oneditsave: function () {
+        this.stdPath = stdPath;
+        this.outputPaths = outputPaths;
+      },
       oneditprepare: function () {
         stdTreeList = $("<div>")
           .css({ width: "100%", height: "100%" })
-          .appendTo(".node-input-stdpath")
+          .appendTo(".node-input_stdpath")
           .treeList({});
 
         outputTreeList = $("<div>")
@@ -38,20 +58,26 @@
           .appendTo(".node-input-output")
           .treeList({});
 
-        $("#node-input-type").typedInput({
+        $("#node-input-response_type").typedInput({
           types: [
             {
               value: "Type",
               options: [
-                { value: "json", label: "json" },
-                { value: "xml", label: "xml" },
+                { value: "json", label: "JSON" },
+                { value: "xml", label: "XML" },
               ],
             },
           ],
         });
 
+        $("#node-input-value").typedInput({
+          type: "str",
+          types: ["str", "num", "bool"],
+          typeField: "#node-input-value_type",
+        });
+
         $("#node-input-read").on("click", function () {
-          let type = $("#node-input-type").typedInput("value");
+          let type = $("#node-input-response_type").typedInput("value");
 
           fetch($("#node-input-url").val())
             .then(function (response) {
@@ -81,11 +107,9 @@
           }
 
           if (item.selected) {
-            $("#node-input-label-value").val(item.label);
-
+            $("#node-input-label_value").val(item.label);
             stdPath = "";
             generateStdPath(item);
-            console.log(stdPath);
 
             outputTree = [];
             makeOutputTree(item);
@@ -97,11 +121,8 @@
             return;
           }
 
-          if (item.selected) {
-            outputPaths = [];
-            generateOutputPaths();
-            console.log(outputPaths);
-          }
+          outputPaths = [];
+          generateOutputPaths();
         });
       },
     });
@@ -187,27 +208,29 @@
     <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;" />
   </div>
   <div class="form-row">
-    <label for="node-input-type"><i class="fa fa-file-o"></i> Type</label>
-    <input type="text" id="node-input-type" style="width:70%;" />
+    <label for="node-input-response_type"><i class="fa fa-file-o"></i> Type</label>
+    <input type="text" id="node-input-response_type" style="width:70%;" />
   </div>
   <div class="form-row">
-    <label for="node-input-url"><i class="fa fa-globe"></i> Url</label>
-    <input type="text" id="node-input-url" placeholder="Url" style="width: 60%" />
+    <label for="node-input-url"><i class="fa fa-globe"></i> URL</label>
+    <input type="text" id="node-input-url" placeholder="URL" style="width: 60%" />
     <button type="button" class="red-ui-button" id="node-input-read">Read</button>
   </div>
-  <div class="form-row node-input-stdpath" style="height: 180px;">
-    <label for="node-input-stdpath" style="width: 70%;"
-      ><i class="fa fa-key"></i> Standard Key</label
-    >
+  <div class="form-row node-input_stdpath" style="height: 180px;">
+    <label for="node-input_stdpath" style="width: 70%;">
+      <i class="fa fa-key"></i>
+      Standard Key
+    </label>
   </div>
   <br />
   <br />
   <div class="form-row">
     <label for="node-input-value"><i class="fa fa-ellipsis-h"></i> Compare</label>
     <div style="display:flex;">
-      <input type="text" id="node-input-label-value" style="width:45%; margin: auto;" readonly />
+      <input type="text" id="node-input-label_value" style="width:35%; margin: auto 0;" readonly />
       <p style="width:10px; margin: auto">=</p>
-      <input type="text" id="node-input-value" style="width:45%; margin: auto" />
+      <input type="text" id="node-input-value" style="width:55%; margin: auto;" />
+      <input type="hidden" id="node-input-value_type" />
     </div>
   </div>
   <br />
