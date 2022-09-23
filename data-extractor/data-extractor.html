@@ -1,3 +1,22 @@
+<script type="text/html" data-help-name="data-extractor">
+  <p>A node that extracts specific data you want from REST API response.</p>
+  <h3>Properties</h3>
+  <dl>
+    <dt>name</dt>
+    <dd>You can tag or naming this data extraction node.</dd>
+    <dt>Type<span class="property-type">require</span></dt>
+    <dd>You can choose the type of input data format between JSON and XML.</dd>
+    <dt>URL<span class="property-type">require</span></dt>
+    <dd>This URL makes the data structure tree of API response keys.</dd>
+    <dt>Path<span class="property-type">optional</span></dt>
+    <dd>This Paths is a list of path that is checked in key tree.</dd>
+    <dt>Key<span class="property-type">optional</span></dt>
+    <dd>This Key Tree is made by URL response.
+      And it provides data path checkboxes for extracting specific data.
+    </dd>
+  </dl>
+</script>
+
 <script type="text/javascript">
   (function () {
     let treeList;
@@ -40,8 +59,8 @@
             {
               value: "Type",
               options: [
-                { value: "json", label: "json" },
-                { value: "xml", label: "xml" },
+                { value: "json", label: "JSON" },
+                { value: "xml", label: "XML" },
               ],
             },
           ],
@@ -185,8 +204,8 @@
     <input type="text" id="node-input-type" style="width:70%;">
   </div>
   <div class="form-row">
-    <label for="node-input-url"><i class="fa fa-globe"></i> Url</label>
-    <input type="text" id="node-input-url" placeholder="Url" style="width: 60%" />
+    <label for="node-input-url"><i class="fa fa-globe"></i> URL</label>
+    <input type="text" id="node-input-url" placeholder="URL" style="width: 60%" />
     <button type="button" class="red-ui-button" id="node-input-read">Read</button>
   </div>
   <div class="form-row">
@@ -196,10 +215,6 @@
   <div class="form-row node-input-api-tree" style="height: calc(80% - 40px);">
     <label for="node-input-api-tree"><i class="fa fa-key"></i></i> Key</label>
   </div>
-</script>
-
-<script type="text/html" data-help-name="data-extractor">
-  <p>A node that extracts some data you want from REST API response.</p>
 </script>
 
 <script type="text/javascript">
