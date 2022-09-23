@@ -10,11 +10,8 @@ module.exports = function(RED){
             return require('./object-detection-html.js').code(config)
         }
 
-            node.on('input', function(msg, send){
-                
-                console.log("here context");
+            node.on('input', function(msg, send){                
                 config.field = String(this.context().flow.get("registered"));
-                console.log("fninally? " + config.field);
                 msg.payload = HTML()
                 send = send || function(){this.send.apply(this, arguments)}
                 send(msg)
