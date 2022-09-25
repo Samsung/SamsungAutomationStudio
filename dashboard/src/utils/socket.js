@@ -23,3 +23,10 @@ export const initlaizeSocket = () => {
 export const disconnectSocket = () => {
   socket.disconnect();
 };
+
+export const sendMessage = (nodeId, messageBody) => {
+  socket.emit(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, {
+    nodeId: nodeId,
+    ...messageBody,
+  });
+};

@@ -8,6 +8,7 @@ module.exports = function (RED) {
 
   return {
     emitState,
+    addNode,
   };
 };
 
@@ -18,6 +19,7 @@ const { FRONT_SOCKET_TYPE, EDITOR_SOCKET_TYPE, DASHBOARD_PATH } = require("./com
 
 let io = null;
 let dashboardState = {};
+let dashboardNodes = {};
 
 function init(RED) {
   const app = RED.httpNode || RED.httpAdmin;
@@ -32,6 +34,14 @@ function init(RED) {
 function initSocket(io) {
   io.on("connection", (socket) => {
     socket.emit(FRONT_SOCKET_TYPE.INIT_STATES, dashboardState);
+
+    socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, (message) => {
+      const node = dashboardNodes[message.nodeId];
+      if (!node) return;
+      if (typeof node.onMessage === "function") {
+        node.onMessage(message);
+      }
+    });
 
     socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, (nodes) => {
       initializeDashboardState(nodes);
@@ -63,4 +73,8 @@ function emitState(state) {
 function emit(state) {
   if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_STATE, state);
   else io.emit(FRONT_SOCKET_TYPE.UPDATE_STATE, [state]);
+}
+
+function addNode(node) {
+  dashboardNodes[node.id] = node;
 }
