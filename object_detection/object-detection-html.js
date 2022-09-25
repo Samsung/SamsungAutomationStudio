@@ -96,7 +96,7 @@ module.exports.code = (config) => {
             let data = ""
             let preset = ""
             let savedObjects = []
-            let registered = "${config.field}".split(',');
+            let registered = "${config.registered}".split(',');
             let = detectedCnt = 1;
             let database;
     

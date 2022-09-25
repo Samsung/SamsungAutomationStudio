@@ -10,8 +10,18 @@ module.exports = function(RED){
             return require('./object-detection-html.js').code(config)
         }
 
-            node.on('input', function(msg, send){                
-                config.field = String(this.context().flow.get("registered"));
+            node.on('input', function(msg, send){
+                let savedName = config.field;
+
+                if(config.fieldType === "flow"){
+                    config.registered = this.context().flow.get(String(savedName));
+                }
+                else if(config.fieldType === "global"){
+                    config.registered = this.context().global.get(String(savedName));
+                }
+                else{
+                    config.registered = this.context().node.get(String(savedName));
+                }
                 msg.payload = HTML()
                 send = send || function(){this.send.apply(this, arguments)}
                 send(msg)
