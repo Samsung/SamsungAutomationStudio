@@ -3,21 +3,16 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
         node.on('input', function (msg) {
-
-            let inputList = msg.payload.log || msg.payload.detect;
-            let savedObject = msg.payload.saveData || [];
+            let inputList;
+            if(msg.payload.log !== undefined) inputList = msg.payload.log.data
+            else inputList = msg.payload.detect;
             let isLog = msg.payload.log !== undefined ? true : false;
-            let date = inputList.date || null
+            let date = msg.payload.log !== undefined ? msg.payload.log.date : null
             let objects = [];
             let person = {};
-
             
-            let objectList = [];
-            inputList.array.forEach(item => {
-                if (savedObject.length > 0 && savedObject.find(item['class'])) objectList.push(item);
-            });
 
-            objectList.forEach(object => {
+            inputList.forEach(object => {
                 let centerX = object.bbox[0] + object.bbox[2] / 2;
                 let centerY = object.bbox[1] + object.bbox[3] / 2;
                 let _class = object['class'];
