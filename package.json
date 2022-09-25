@@ -12,6 +12,7 @@
   "node-red":{
     "nodes" : {
       "object-detection" : "/object_detection/object-detection.js",
+      "object-person-determine" : "/object-person-determine/object-person-determine.js"
       "log" : "/log/log.js"
     }
   },
