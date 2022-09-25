@@ -1,0 +1,26 @@
+<script type="text/javascript">
+
+    RED.nodes.registerType('object-person-determine',{
+      category: 'D5MI',
+      color: "#03bafc",
+      defaults: {},
+      inputs: 1,
+      outputs: 1,
+      icon: "font-awesome/fa-object-ungroup",
+      label: function() {
+        return this.name||"object-person-determine"
+      },
+    })
+  </script>
+  
+  <script type="text/html" data-template-name="object-person-determine">
+    <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+  </script>
+  
+  <script type="text/html" data-help-name="object-detection">
+    <p>A node that determines object which interacts the most with me</p>
+  
+  </script>
