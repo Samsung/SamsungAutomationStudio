@@ -5,7 +5,7 @@ import SoopPieChart from "./SoopChart/SoopPieChart";
 
 const SoopChart = () => {
   // FIXME: 넘겨받은 데이터에 따라서 return되는 component가 다르다
-  const type = "line";
+  const type = "pie";
 
   switch (type) {
     case "line":
