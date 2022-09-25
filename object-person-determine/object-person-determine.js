@@ -7,6 +7,7 @@ module.exports = function (RED) {
             let inputList = msg.payload.log || msg.payload.detect;
             let savedObject = msg.payload.saveData || [];
             let isLog = msg.payload.log !== undefined ? true : false;
+            let date = inputList.date || null
             let objects = [];
             let person = {};
 
@@ -32,7 +33,6 @@ module.exports = function (RED) {
             objects.forEach(object => {
                 let distance = Math.sqrt(Math.pow(Math.abs(object.centerX - person.centerX), 2) + Math.pow(Math.abs(object.centerY - person.centerY), 2));
                 if (distance <= object.diameter) {
-                    console.log(determine.distance == -1);
                     if (determine.distance == -1 || determine.distance > distance) {
                         determine = object
                         determine.distance = distance;
@@ -43,7 +43,7 @@ module.exports = function (RED) {
 
             if (determine.distance == -1) return;
 
-            msg.payload = { object: determine['class'], isLog };
+            msg.payload = { object: determine['class'], isLog , date};
 
             node.send(msg);
         });
