@@ -2,12 +2,6 @@
 
 <head>
     <style>
-        /* 이미지에 캔버스를 겹쳐서 그릴때는 아래 주석 해제 */
-
-        /* #frame > {
-            display: block;
-            margin : auto;
-        } */
 
         h2 {
             margin-top: 15px;
@@ -20,12 +14,7 @@
             margin-top: 0%;
         }
 
-        /* #detected-result-message{
-            text-align: center;
-            vertical-align: bottom;
-        } */
-
-        #frame>video {
+        #frame > video {
             position: absolute;
             border: 8px solid rgb(15, 195, 39);
             top: 50%;
@@ -59,8 +48,6 @@
             <h3 style='text-align: left; margin : 0px; '>Detected objects</h3></br>
             <h4>INDEX Objects register</h4>
             <form action="" id="regi-form">
-                <label for="test">test</label>
-                <input type="text" id="test" value="hello">
             </form>
             <button id="captrue-btn">register</button>
             <!-- Garo start -->
@@ -100,21 +87,24 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
     <script>
+    
 
         let detected = []
         let objects = []
         let data = ""
         let preset = ""
         let savedObjects = []
+        let registered = "${config.field}".split(',');
         let = detectedCnt = 1;
+        let database;
 
         const video = document.getElementById('video');
         const canvas = document.getElementById("canvas");
         const registerBtn = document.getElementById("captrue-btn");
         const context = canvas.getContext("2d");
         const result = document.getElementById("detected-result-message")
-        const registerWebSocket = new WebSocket('ws://localhost:1880/ws/register')
-        const dataWebSocket = new WebSocket('ws://localhost:1880/ws/data')
+        const registerWebSocket = new WebSocket("${config.registerSocketUrl}")
+        const dataWebSocket = new WebSocket("${config.dataSocketUrl}")
         const _form = document.getElementById("regi-form")
 
 
@@ -221,11 +211,14 @@
             }
         });
 
-
-
-        setInterval(() => {
-            dataWebSocket.send(JSON.stringify({ log: objects }))
-
+        const KR_TIME_DIFF = 9 * 60 * 60 * 1000;
+       
+       setInterval(() => {
+       
+       var curr = new Date();
+       const utc = curr.getTime() + (curr.getTimezoneOffset() * 60 * 1000);
+       dataWebSocket.send(JSON.stringify({log : {data : objects, date : new Date(utc + (KR_TIME_DIFF))}}))
+        
             objects.forEach((element) => {
                 if (!detected.includes(element["class"])) {
                     detected.push(element["class"]);
@@ -239,6 +232,7 @@
                     tmpInput.type = "checkbox"
                     tmpInput.id = element["class"]
                     tmpInput.value = element["class"]
+                    tmpInput.checked = registered.includes(element["class"])
 
                     tmpSpan.appendChild(tmpString);
                     tmpNode.appendChild(tmpSpan);
@@ -251,7 +245,8 @@
         },
             1000);
 
-        registerBtn.addEventListener("click", function () {
+        registerBtn.addEventListener("click", function(){
+
             registerWebSocket.send(JSON.stringify(detected.filter((element) => {
                 return document.getElementById(element).checked
             })));
