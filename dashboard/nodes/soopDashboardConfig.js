@@ -4,8 +4,8 @@ module.exports = function (RED) {
   function TestNode(config) {
     const node = this;
     RED.nodes.createNode(node, config);
-    node.log("Test Node created");
+    node.log("Dashboard config created");
   }
 
-  RED.nodes.registerType("test-node", TestNode);
+  RED.nodes.registerType("soopDashboardConfig", TestNode);
 };

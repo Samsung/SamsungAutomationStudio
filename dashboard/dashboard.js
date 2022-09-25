@@ -14,9 +14,10 @@ module.exports = function (RED) {
 const path = require("path");
 const socketio = require("socket.io");
 const serveStatic = require("serve-static");
+const { FRONT_SOCKET_TYPE, EDITOR_SOCKET_TYPE, DASHBOARD_PATH } = require("./common/common");
 
 let io = null;
-const dashboardState = {};
+let dashboardState = {};
 
 function init(RED) {
   const app = RED.httpNode || RED.httpAdmin;
@@ -25,18 +26,25 @@ function init(RED) {
   io = socketio(server);
   initSocket(io);
 
-  // const settings = RED.settings;
-  // const path = `${settings.httpNodeRoot}${settings.path}`;
-  // app.use(path, serveStatic(path.join(__dirname, "/dist")));
-
-  app.use("/dashboard", serveStatic(path.join(__dirname, "/dist")));
-  console.log("react dashboard started at /dashboard");
+  app.use(DASHBOARD_PATH, serveStatic(path.join(__dirname, "/dist")));
 }
 
 function initSocket(io) {
   io.on("connection", (socket) => {
-    socket.emit("initial-value", dashboardState);
+    socket.emit(FRONT_SOCKET_TYPE.INIT_STATES, dashboardState);
+
+    socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, (nodes) => {
+      initializeDashboardState(nodes);
+      io.emit(FRONT_SOCKET_TYPE.INIT_STATES, dashboardState);
+    });
   });
+}
+
+function initializeDashboardState(nodes) {
+  dashboardState = {};
+  for (let i = 0; i < nodes.length; ++i) {
+    dashboardState[nodes[i].id] = nodes[i];
+  }
 }
 
 function emitState(state) {
@@ -53,5 +61,6 @@ function emitState(state) {
 }
 
 function emit(state) {
-  io.emit("update-value", state);
+  if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_STATE, state);
+  else io.emit(FRONT_SOCKET_TYPE.UPDATE_STATE, [state]);
 }
