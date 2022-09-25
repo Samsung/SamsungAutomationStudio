@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "start": "webpack-dev-server --mode development --open --hot",
-    "build": "webpack --mode production"
+    "builddev": "webpack --mode development",
+    "buildprod": "webpack --mode production"
   },
   "license": "Apache 2.0",
   "repository": {
