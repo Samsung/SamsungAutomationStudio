@@ -14,7 +14,7 @@
   function initializeDashboardConfig() {
     RED.events.on("deploy", function () {
       const dashboardNodes = [];
-      RED.nodes.eachNode((node) => {
+      RED.nodes.eachNode(node => {
         if (node.type.indexOf("soop") !== -1) {
           dashboardNodes.push(node);
         }
@@ -27,7 +27,7 @@
 
   function createDashboardConfigNode() {
     const configNodes = [];
-    RED.nodes.eachConfig((node) => {
+    RED.nodes.eachConfig(node => {
       if (node.type === "soopDashboardConfig") {
         configNodes.push(node);
       }
