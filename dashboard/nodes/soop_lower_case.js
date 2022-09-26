@@ -4,6 +4,15 @@ module.exports = function (RED) {
   function LowerCaseNode(config) {
     const node = this;
     RED.nodes.createNode(node, config);
+
+    dashboard.addNode({
+      node: node,
+      onMessage: (message) => {
+        console.log(message);
+        node.send("received message from a dashboard");
+      },
+    });
+
     node.on("input", function (msg, send, done) {
       send =
         send ||
