@@ -32,7 +32,7 @@ function init(RED) {
 
 function initSocket(io) {
   io.on("connection", socket => {
-    socket.emit(FRONT_SOCKET_TYPE.INIT_STATES, getInitNodeStates);
+    socket.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitNodeStates);
 
     socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, message => {
       const node = globalNodes[message.nodeId].runtime;
@@ -44,7 +44,7 @@ function initSocket(io) {
 
     socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, nodes => {
       setInitNodes(nodes);
-      io.emit(FRONT_SOCKET_TYPE.INIT_STATES, globalNodes);
+      io.emit(FRONT_SOCKET_TYPE.INIT_NODE, globalNodes);
     });
   });
 }
@@ -69,8 +69,8 @@ function emitState(state) {
 }
 
 function emit(state) {
-  if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_STATE, state);
-  else io.emit(FRONT_SOCKET_TYPE.UPDATE_STATE, [state]);
+  if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, state);
+  else io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, [state]);
 }
 
 function setInitNodes(nodes) {

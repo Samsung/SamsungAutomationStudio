@@ -1,6 +1,6 @@
 const FRONT_SOCKET_TYPE = {
-  INIT_STATES: "initialize-state",
-  UPDATE_STATE: "update-state",
+  INIT_NODE: "init-node",
+  UPDATE_NODE: "udpate-node",
   RECEIVE_MESSAGE: "receive-message",
 };
 
