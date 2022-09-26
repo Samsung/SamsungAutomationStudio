@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import SoopButton from "./SoopButton";
 import SoopText from "./SoopText";
 import SoopSlider from "./SoopSlider";
@@ -11,12 +11,11 @@ import { initlaizeSocket, disconnectSocket } from "../utils/socket";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
 
-const { SOOP_NODE_TYPE } = require("../../common/common");
-
+const { SOOP_NODE_TYPE } = require("../common/common");
 const App = () => {
   const dispatch = useDispatch();
-  const nodes = useSelector(state => state.node.nodes);
-
+  const nodes = useSelector((state) => state.node.states);
+  const [keys, setKeys] = useState([]);
   useEffect(() => {
     initlaizeSocket(dispatch);
 
@@ -25,38 +24,20 @@ const App = () => {
     };
   }, []);
 
-  const drawNode = node => {
-    // switch (node?.editor?.type) {
-    //   case SOOP_NODE_TYPE.LOWER_CASE:
-    //     return <div key={node.editor.id}>lowercase {node.editor.id}</div>;
-    //   case SOOP_NODE_TYPE.SWITCH:
-    //     return <div key={node.editor.id}>switch {node.editor.id}</div>;
-    // }
+  useEffect(() => {
+    if (nodes) setKeys(nodes.keys());
+  }, [nodes]);
 
-    if (node && node.editor) {
-      return (
-        <div key={node.editor.id}>
-          {node.editor.type}({node.editor.id})
-        </div>
-      );
+  const drawNode = (node) => {
+    switch (node.type) {
+      case SOOP_NODE_TYPE.LOWER_CASE:
+        break;
+      case SOOP_NODE_TYPE.SWITCH:
+        break;
     }
   };
 
-  //return <>{Object.keys(nodes).map(key => drawNode(nodes[key]))}</>;
-
-  return (
-    <>
-      <div>Hello Dashboard</div>
-      <SoopImage />
-      <SoopList />
-      <SoopButton />
-      <SoopText />
-      <SoopSlider />
-      <SoopGauge />
-      <SoopChart />
-      <SoopDropdown />
-    </>
-  );
+  return <>{keys.map((key) => drawNode(nodes[key]))}</>;
 };
 
 export default App;
