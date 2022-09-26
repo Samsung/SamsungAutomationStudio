@@ -1,0 +1,263 @@
+<script type="text/javascript">
+    RED.nodes.registerType('soop_chart',{
+        category: RED._("node-red-dashboard/ui_base:ui_base.label.category") || 'soop_dashboard', // 이후 수정되어야할 부분
+        color: 'rgb(100, 189, 27)', // 이후 수정되어야할 부분
+        defaults: {
+            group: {type:'ui_group', required: true}, // 이후 수정되어야할 부분
+            width: {
+                value: 0, 
+                validate: function(value) {
+                    const width = value || 0;
+                    const currentGroup = $('#node-input-group').val() || this.group;
+                    const groupNode = RED.nodes.node(currentGroup);
+                    const valid = !groupNode || +width <= +groupNode.width; 
+                    $("#node-input-size").toggleClass("input-error", !valid);
+                    return valid;
+                }
+            },
+            height:{value: 0},
+            label: {value: 'chart_name'},
+            chartType: {value: 'line'},
+            removePastData: {value: 1, validate: RED.validators.number(), required:true},
+            removePastDataUnit: {value: '3600', required:true},
+            removePastDataPoints: {value: '', validate: function(value) { return value === '' || RED.validators.number(); }},
+            xAxisFormat: {value: 'HH:mm:ss'},
+            customValue: {value: ''},
+            xMin: {value: '', validate: function(value) { return value === '' || RED.validators.number(); }},
+            xMax: {value: '', validate: function(value) { return value === '' || RED.validators.number(); }},
+            yMin: {value: '', validate: function(value) { return value === '' || RED.validators.number(); }},
+            yMax: {value: '', validate: function(value) { return value === '' || RED.validators.number(); }},
+            legend: {value: 'false'},
+            interpolate: {value: 'linear', required: true},
+            cutout: {value: 0, validate: RED.validators.number()},
+            blankLabel: {value: ''},
+            name: {value:''},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "ui_chart.png",
+        paletteLabel: 'soop chart',
+        inputLabels: function() { return `${this.chartType} chart data`; },
+        outputLabels: ["chart state"],
+        align: "right",
+        label: function() { return this.name || (~this.label.indexOf("{{") ? null : this.label) || 'new_chart'; },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+
+            $("#node-input-size").elementSizer({
+                width: "#node-input-width",
+                height: "#node-input-height",
+                group: "#node-input-group"
+            });
+
+            if (!$("#node-input-chartType").val()) {
+                $("#node-input-chartType").val("line");
+            }
+            if (!$("#node-input-removePastData").val()) {
+                $("#node-input-removePastData").val("1");
+            }
+            if (!$("#node-input-removePastDataUnit").val()) {
+                $("#node-input-removePastDataUnit").val("3600");
+            }
+            if (!$("#node-input-xAxisFormat").val()) {
+                $("#node-input-xAxisFormat").val("HH:mm:ss");
+            }
+            if (!$("#node-input-legend").val()) {
+                $("#node-input-legend").val("false");
+            }
+            if (!$("#node-input-interpolate").val()) {
+                $("#node-input-interpolate").val("linear");
+            }
+            if (!$("#node-input-cutout").val()) {
+                $("#node-input-cutout").val("0");
+            }
+
+            $('#node-input-xAxisFormat').on("change", function() {
+                if($(this).val() === "custom"){
+                    $("#custom-value").show();
+                } else {
+                    $("#custom-value").hide();
+                }
+            })
+
+            $('#node-input-chartType').on("change", function() {
+                if ($(this).val() === "line") {
+                    $("#removePastData").show();
+                    $("#xAxisFormat").show();
+                    $("#yAxis").show();
+                    $("#interpolate").show();
+                    $("#xAxis").hide();
+                    $("#cutout").hide();
+                } else if ($(this).val() === "bar") {
+                    $("#removePastData").hide();
+                    $("#xAxis").hide();
+                    $("#xAxisFormat").hide();
+                    $("#yAxis").show();
+                    $("#interpolate").hide();
+                    $("#cutout").hide();
+                    $("#custom-value").hide();
+                } else if ($(this).val() === "horizontalBar") {
+                    $("#removePastData").hide();
+                    $("#xAxis").show();
+                    $("#xAxisFormat").hide();
+                    $("#yAxis").hide();
+                    $("#interpolate").hide();
+                    $("#cutout").hide();
+                    $("#custom-value").hide();
+                } else { // pie
+                    $("#cutout").show();
+                    $("#removePastData").hide();
+                    $("#xAxis").hide();
+                    $("#xAxisFormat").hide();
+                    $("#yAxis").hide();
+                    $("#interpolate").hide();
+                    $("#custom-value").hide();
+                }
+            });
+        },
+        oneditsave: function() {
+
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="soop_chart">
+    <div class="form-row">
+        <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+        <input type="text" id="node-input-group">
+    </div>
+    <div class="form-row">
+        <label for="node-input-size"><i class="fa fa-object-group"></i> Size</label>
+        <input type="hidden" id="node-input-width">
+        <input type="hidden" id="node-input-height">
+        <button class="editor-button" id="node-input-size"></button>
+    </div>
+    <div class="form-row">
+        <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+        <input type="text" id="node-input-label">
+    </div>
+    <div class="form-row">
+        <label for="node-input-chartType"><i class="fa fa-line-chart"></i> Type</label>
+        <select id="node-input-chartType" style="width:190px; font-family:'FontAwesome','Helvetica Neue', Helvetica, Arial, sans-serif">
+            <option value="line">&#xf201; Line chart</option>
+            <option value="bar">&#xf080; Bar chart</option>
+            <option value="horizontalBar">&#xf080; Horizontal bar chart</option>
+            <option value="pie">&#xf200; Pie chart</option>
+        </select>
+    </div>
+    <div class="form-row" id="removePastData">
+        <label for="node-input-xAxis"><i class="fa fa-arrows-h"></i> X-axis</label>
+        <label for="node-input-removePastData" style="width:auto">Last </label>
+        <input type="text" id="node-input-removePastData" style="width:50px;">
+        <select id="node-input-removePastDataUnit" style="width:80px;">
+            <option value="1">seconds</option>
+            <option value="60">minutes</option>
+            <option value="3600">hours</option>
+            <option value="86400">days</option>
+            <option value="604800">weeks</option>
+        </select>
+        <label for="node-input-removePastDataPoints" style="width:auto; margin: 0 10px;">OR</label>
+        <input type="text" id="node-input-removePastDataPoints" style="width:60px;" placeholder="1000">
+        <span style="margin-left:5px;">points</span>
+    </div>
+    
+    <div class="form-row" id="xAxisFormat">
+        <label for="node-input-xAxisFormat"><i class="fa fa-clock-o"></i> X-axis Format</label>
+        <select id="node-input-xAxisFormat" style="width:150px; margin-right:10px;">
+            <option value="HH:mm:ss">HH:mm:ss</option>
+            <option value="HH:mm">HH:mm</option>
+            <option value="dd HH:mm">Day HH:mm</option>
+            <option value="D/M">Date/Month</option>
+            <option value="Y-M-D">Year-Month-Date</option>
+            <option value="custom">custom</option>
+            <option value="auto">automatic</option>
+        </select>
+        <span id="custom-value">
+            <input type="text" id="node-input-customValue" style="width:120px; margin:0px;">
+        </span>
+    </div>
+
+    <div class="form-row" id="xAxis">
+        <label for="node-input-xAxis"><i class="fa fa-arrows-h"></i> X-axis</label>
+        <label for="node-input-xMin" style="width:auto">min</label>
+        <input type="text" id="node-input-xMin" style="width:90px; margin: 0 5px 0 0;">
+        <label for="node-input-xMax" style="width:auto">max</label>
+        <input type="text" id="node-input-xMax" style="width:90px;">
+    </div>
+
+    <div class="form-row" id="yAxis">
+        <label for="node-input-yAxis"><i class="fa fa-arrows-v"></i> Y-axis</label>
+        <label for="node-input-yMin" style="width:auto">min</label>
+        <input type="text" id="node-input-yMin" style="width:90px; margin: 0 5px 0 0;">
+        <label for="node-input-yMax" style="width:auto">max</label>
+        <input type="text" id="node-input-yMax" style="width:90px;">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-legend">Legend</label>
+        <select id="node-input-legend" style="width:120px; margin-right:10px;">
+            <option value="false">None</option>
+            <option value="true">Show</option>
+        </select>
+        <span id="interpolate">
+            <label for="node-input-interpolate" style="width:auto">Interpolate</label>
+            <select id="node-input-interpolate" style="width:120px; margin-left:0;">
+                <option value="linear">Linear</option>
+                <option value="step">Step</option>
+                <option value="cubic">Cubic</option>
+                <option value="cubic-mono">Cubic-mono</option>
+            </select>
+        </span>
+        <span id="cutout">
+            <label for="node-input-cutout" style="width:auto">Cutout</label>
+            <input type="text" id="node-input-cutout" style="width:40px;">
+            <span style="margin-left:5px;">%</span>
+        </span>
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-blankLabel">Blank label</label>
+        <input type="text" id="node-input-blankLabel" placeholder="Display this text before valid data arrives">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="soop_chart">
+    <p>Plot a chart on the dashboard.</p>
+
+    <h3>Inputs</h3>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">number</span>
+            </dt>
+            <dd> the data value. </dd>
+            <dt class="optional">topic <span class="property-type">string</span></dt>
+            <dd> the label for dataset.</dd>
+        </dl>
+    <h3>Outputs</h3>
+        <dl class="message-properties">
+            <dt>payload <span class="property-type">object</span></dt>
+            <dd>the state of chart.</dd>
+        </dl>
+
+    <h3>Details</h3>
+        <p>Choose the type of chart: Line, Bar(Horizontal, Vertical), Pie.</p>
+        <p>The value of X-axis defines the time when the input received and that of Y-axis defines the <code>msg.payload</code>.</p>
+        <p>The max and min value of X-axis and Y-axis is optional.</p>
+        <p>Before any data is received, the Blank label will be displayed.</p>
+    <h3>References</h3>
+        <ul>
+            <li>
+                <a href="https://www.chartjs.org/">ChartJS</a> - the plot drawn by ChartJS
+            </li>
+            <li>
+                <a href="https://momentjs.com/">MomentJS</a> - the X-axis formatted using MomentJS.
+            </li>
+        </ul>
+    </script>
