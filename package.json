@@ -53,6 +53,7 @@
     "react-chartjs-2": "^4.3.1",
     "react-circular-progressbar": "^2.1.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.4.0",
     "react-liquid-gauge": "^1.2.4",
     "react-move": "^6.5.0",
     "react-svg-gauge": "^1.0.10",
