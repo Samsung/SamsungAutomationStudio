@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { setInitState } from "./store";
+import { setInitNode } from "./store";
 
 const { FRONT_SOCKET_TYPE } = require("../../common/common");
 
@@ -12,12 +12,13 @@ export const initlaizeSocket = dispatch => {
     console.info(`socket connected : ${socket.id}`);
   });
 
-  socket.on(FRONT_SOCKET_TYPE.INIT_NODE, states => {
-    dispatch(setInitState(states));
+  socket.on(FRONT_SOCKET_TYPE.INIT_NODE, nodes => {
+    console.log("dispatched", nodes);
+    dispatch(setInitNode(nodes));
   });
 
-  socket.on(FRONT_SOCKET_TYPE.UPDATE_NODE, states => {
-    console.log(states);
+  socket.on(FRONT_SOCKET_TYPE.UPDATE_NODE, node => {
+    console.log(node);
   });
 };
 

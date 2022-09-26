@@ -1,18 +1,18 @@
 import { createStore, combineReducers } from "redux";
 
-const SET_INIT_STATE = "node/SET_INIT_STATE";
+const SET_INIT_NODE = "node/SET_INIT_NODE";
 
-export const setInitState = (states) => ({
-  type: SET_INIT_STATE,
-  states,
+export const setInitNode = nodes => ({
+  type: SET_INIT_NODE,
+  nodes,
 });
 
 function node(state = {}, action) {
   switch (action.type) {
-    case SET_INIT_STATE:
+    case SET_INIT_NODE:
       return {
         ...state,
-        states: action.states,
+        nodes: action.nodes,
       };
   }
 
