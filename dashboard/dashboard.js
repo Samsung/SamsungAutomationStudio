@@ -32,7 +32,7 @@ function init(RED) {
 }
 
 function initSocket(io) {
-  io.on("connection", (socket) => {
+  io.on("connection", socket => {
     socket.emit(FRONT_SOCKET_TYPE.INIT_STATES, dashboardState);
 
     socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, (message) => {
@@ -53,7 +53,10 @@ function initSocket(io) {
 function initializeDashboardState(nodes) {
   dashboardState = {};
   for (let i = 0; i < nodes.length; ++i) {
-    dashboardState[nodes[i].id] = nodes[i];
+    dashboardState[nodes[i].id] = {
+      attr: nodes[i],
+      data: [],
+    };
   }
 }
 
