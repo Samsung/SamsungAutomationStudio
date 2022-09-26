@@ -4,12 +4,8 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { easeQuadInOut } from "d3-ease";
 import AnimatedProgressProvider from "./AnimatedProgressProvider";
-import {
-  mainColor,
-  gradientColor,
-  fontSize,
-  fontColor,
-} from "../../assets/DesignOption";
+import GradientSVG from "./GradientSVG";
+import { fontSize, fontColor } from "../../assets/DesignOption";
 
 const DonutGaugeContainer = styled("div")({
   width: "160px",
@@ -30,18 +26,24 @@ const DonutGaugeLabel = styled.div`
 
 const SoopDonutGauge = () => {
   // FIXME: card 크기로 수정
-  const percentage = 80;
-  const unit = "%%";
-  const colorOption = "pink";
-  const label = "라벨입니당";
+  const exampleData = {
+    nodeId: "dfg124w4",
+    gType: "donut",
+    label: "라벨입니당",
+    // format : {{value}}, TODO: 이미 노드의 JS영역에서 처리되어 value로 올것
+    range: [0, 100],
+    value: 100,
+    units: "%%%",
+    color: "blue",
+  };
 
   return (
     <>
       <DonutGaugeContainer>
-        <DonutGaugeLabel>{label}</DonutGaugeLabel>
+        <DonutGaugeLabel>{exampleData.label}</DonutGaugeLabel>
         <AnimatedProgressProvider
           valueStart={0}
-          valueEnd={percentage}
+          valueEnd={exampleData.value}
           duration={1.4}
           easingFunction={easeQuadInOut}
         >
@@ -57,11 +59,10 @@ const SoopDonutGauge = () => {
                   alignItems: "center",
                 }}
               >
-                {unit.length === 1 ? (
+                {exampleData.units.length === 1 ? (
                   <div
                     style={{
                       color: fontColor.light,
-
                       position: "absolute",
                       display: "flex",
                       flexDirection: "column",
@@ -73,14 +74,13 @@ const SoopDonutGauge = () => {
                   >
                     <strong>
                       {roundedValue}
-                      {unit}
+                      {exampleData.units}
                     </strong>
                   </div>
                 ) : (
                   <div
                     style={{
                       color: fontColor.light,
-
                       position: "absolute",
                       marginTop: -5,
                       display: "flex",
@@ -92,26 +92,42 @@ const SoopDonutGauge = () => {
                     <div
                       style={{
                         color: fontColor.light,
-
                         fontSize: fontSize.xl,
                         fontFamily: "Pretendard-Bold",
                       }}
                     >
                       {roundedValue}
                     </div>
-                    <div style={{ fontSize: fontSize.sm }}>{unit}</div>
+                    <div style={{ fontSize: fontSize.sm }}>
+                      {exampleData.units}
+                    </div>
                   </div>
                 )}
                 <CircularProgressbar
                   value={value}
-                  styles={buildStyles({
-                    pathTransition: "none",
+                  strokeWidth="12"
+                  styles={
+                    // buildStyles({
+                    // pathTransition: "none",
                     // pathTransitionDuration: 1400,
                     // pathColor: mainColor.blue,
-                    textColor: `${
-                      mainColor[colorOption] + gradientColor[colorOption]
-                    }`,
-                  })}
+                    // textColor: `${
+                    //   mainColor[colorOption] + gradientColor[colorOption]
+                    // }`,
+
+                    // }),
+                    {
+                      path: {
+                        stroke: `url(#${exampleData.nodeId})`,
+                        height: "100%",
+                      },
+                    }
+                  }
+                ></CircularProgressbar>
+                <GradientSVG
+                  colorOption={exampleData.color}
+                  rotation={0}
+                  idCSS={exampleData.nodeId}
                 />
               </div>
             );
