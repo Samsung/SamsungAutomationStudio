@@ -88,7 +88,7 @@ function addNode(node) {
   } else {
     globalNodes[node.id] = {
       runtime: node,
-      data: [],
+      states: [],
     };
   }
 }
