@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "start": "webpack-dev-server --mode development --open --hot",
-    "build": "webpack --mode production"
+    "build": "webpack --mode development"
   },
   "license": "Apache 2.0",
   "repository": {
@@ -46,12 +46,14 @@
     "proxy-agent": "^5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-redux": "^8.0.4",
+    "redux": "^4.2.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "serve-static": "^1.15.0",
-    "styled-components": "^5.3.5",
     "socket.io": "^4.5.2",
     "socket.io-client": "^4.5.2",
+    "styled-components": "^5.3.5",
     "when": "3.7.8"
   },
   "devDependencies": {
