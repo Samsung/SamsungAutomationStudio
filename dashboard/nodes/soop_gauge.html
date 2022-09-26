@@ -1,0 +1,118 @@
+<script type="text/javascript">
+  RED.nodes.registerType("soop_gauge", {
+    category: "common",
+    color: "rgb(255, 189, 27)",
+    defaults: {
+      name: {
+        value: "",
+      },
+      label: {
+        value: "gauge_name",
+      },
+      group: {
+        type: "soop_group",
+        required: true,
+      },
+      width: {
+        value: 0,
+      },
+      height: {
+        value: 0,
+      },
+      gType: { value: "gauge" },
+      format: { value: "{{value}}" },
+      min: {
+        value: 0,
+        required: true,
+        validate: RED.validators.number(),
+      },
+      max: {
+        value: 100,
+        required: true,
+        validate: RED.validators.number(),
+      },
+    },
+    inputs: 1,
+    inputLabels: function () {
+      return this.min + " - " + this.max;
+    },
+    icon: "gauge.png",
+    outputLabels: function () {
+      return this.min + " - " + this.max;
+    },
+    label: function () {
+      return (
+        this.name ||
+        (~this.label.indexOf("{{") ? null : this.label) ||
+        "new_gauge"
+      );
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
+    },
+    oneditprepare: function () {
+      if (this.gType === undefined) {
+        this.gType = "gauge";
+        $("#node-input-gtype").val("gauge");
+      }
+      $("#node-input-size").elementSizer({
+        width: "#node-input-width",
+        height: "#node-input-height",
+        group: "#node-input-group",
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="soop_gauge">
+  <div class="form-row">
+    <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+    <input type="text" id="node-input-group" />
+  </div>
+  <div class="form-row">
+    <label><i class="fa fa-object-group"></i> Size</label>
+    <input type="hidden" id="node-input-width" />
+    <input type="hidden" id="node-input-height" />
+    <button class="editor-button" id="node-input-size"></button>
+  </div>
+  <div class="form-row">
+    <label for="node-input-gType"><i class="fa fa-list"></i> Type</label>
+    <select id="node-input-gType">
+      <option value="gauge">Gauge</option>
+      <option value="donut">Donut</option>
+      <option value="compass">Compass</option>
+      <option value="level">Level</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+    <input type="text" id="node-input-label" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-format"
+      ><i class="fa fa-i-cursor"></i> Value format</label
+    >
+    <input type="text" id="node-input-format" placeholder="{{value}}" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
+    <span for="node-input-min">min</span>
+    <input type="text" id="node-input-min" style="width:60px" />
+    <span for="not-input-max" style="margin-left:22px;">max</span>
+    <input type="text" id="node-input-max" style="width:60px" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="soop_gauge">
+  <p>Adds a gauge type widget to the user interface.</p>
+  <p>
+    The <code>msg.payload</code> is searched for a numeric <i>value</i> and is
+    formatted in accordance with the defined <b>Value Format</b>.
+  </p>
+  <p>The gauge has several modes. Regular gauge, donut, compass and wave.</p>
+  <p>These gauges are drawn by Chart.js.</p>
+</script>

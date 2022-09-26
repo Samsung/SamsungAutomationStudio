@@ -4,6 +4,15 @@ module.exports = function (RED) {
   function LowerCaseNode(config) {
     const node = this;
     RED.nodes.createNode(node, config);
+
+    dashboard.addNode({
+      node: node,
+      onMessage: (message) => {
+        console.log(message);
+        node.send("received message from a dashboard");
+      },
+    });
+
     node.on("input", function (msg, send, done) {
       send =
         send ||
@@ -11,14 +20,11 @@ module.exports = function (RED) {
           node.send.apply(node, arguments);
         };
 
-      // node.status({ fill: "red", shape: "ring", text: "disconnected" });
       msg.payload = msg.payload.toLowerCase();
       send(msg);
       if (done) done();
     });
-
-    node.log("LowerCase Node created");
   }
 
-  RED.nodes.registerType("lower-case", LowerCaseNode);
+  RED.nodes.registerType("soopLowerCase", LowerCaseNode);
 };

@@ -1,0 +1,72 @@
+<script src="socket.io/socket.io.js"></script>
+
+<script>
+  // TODO : import from common.js
+  const EDITOR_SOCKET_TYPE = {
+    FLOW_DEPLOYED: "flow-deployed",
+  };
+</script>
+
+<script type="text/javascript">
+  var socket = io();
+  let dashboardConfigNode;
+
+  function initializeDashboardConfig() {
+    RED.events.on("deploy", function () {
+      const dashboardNodes = [];
+      RED.nodes.eachNode((node) => {
+        if (node.type.indexOf("soop") !== -1) {
+          dashboardNodes.push(node);
+        }
+      });
+
+      dashboardConfigNode = createDashboardConfigNode();
+      socket.emit(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, dashboardNodes);
+    });
+  }
+
+  function createDashboardConfigNode() {
+    const configNodes = [];
+    RED.nodes.eachConfig((node) => {
+      if (node.type === "soopDashboardConfig") {
+        configNodes.push(node);
+      }
+    });
+
+    for (let i = 1; i < configNodes.length; ++i) {
+      RED.nodes.remove(configNodes[i].id);
+    }
+    RED.nodes.dirty(true);
+
+    let dashboardConfgNode = configNodes[0];
+    if (!dashboardConfgNode) {
+      dashboardConfgNode = {
+        id: RED.nodes.id(),
+        _def: RED.nodes.getType("soopDashboardConfig"),
+        type: "soopDashboardConfig",
+        users: [],
+      };
+    }
+    RED.nodes.add(dashboardConfgNode);
+
+    return dashboardConfgNode;
+  }
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType("soopDashboardConfig", {
+    category: "config",
+    defaults: {
+      name: {},
+    },
+    hasUsers: false,
+    label: function () {
+      return this.name || "Soop Dashboard Config";
+    },
+    onpaletteadd: initializeDashboardConfig,
+  });
+</script>
+
+<script type="text/html" data-template-name="soopDashboardConfig">
+  <div>This is configuration node for soop dashboard.</div>
+</script>

@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "start": "webpack-dev-server --mode development --open --hot",
-    "build": "webpack --mode production"
+    "builddev": "webpack --mode development",
+    "buildprod": "webpack --mode production"
   },
   "license": "Apache 2.0",
   "repository": {
@@ -26,7 +27,8 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
-      "lower-case": "dashboard/nodes/lower-case.js",
+      "soopLowerCase": "dashboard/nodes/soopLowerCase.js",
+      "soopDashboardConfig": "dashboard/nodes/soopDashboardConfig.js",
       "test-node": "dashboard/nodes/test-node.js"
     }
   },
