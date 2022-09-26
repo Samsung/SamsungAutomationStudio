@@ -1,0 +1,207 @@
+<style>
+    input[type=radio] {
+        opacity: 0;
+    }
+    input[type=radio] +label{
+        border:none;
+        color:white;
+        border-radius: 5px;
+    }
+    input[type=radio]:checked +label{
+        border: 3px solid #FD5988;
+    }
+    .styled1 {
+        background: #1153FC;
+    }
+    .styled2 {
+        background: #FF7E42;
+    }
+    .styled3 {
+        background: #FD5988;
+    }
+   .styled4 {
+        background: #8443F6;
+    }
+</style>
+<script type="text/javascript">
+    RED.nodes.registerType('soop_slider', {
+        /* Node definitions
+        *  category: palette category
+        *  color: background color
+        *  defaults: node property
+        *  inputs: # of input
+        *  outputs: # of output
+        *  icon: icon image
+        *  paletteLabel: node name in palette
+        *  label: function that returns value for the label name
+        *  labelstyle: function that returns css-style for the label
+        *  oneditprepare: function called when edit window is opened
+        *  oneditsave: function called when edit window is okayed
+        */
+        category: RED._("node-red-dashboard/ui_base:ui_base.label.category"),
+        color: 'rgb(255, 189, 27)',
+        defaults: {
+            /* Node Properties (value, required, validate, type)
+            *  name: node name on palette
+            *  label: node label on dashboard
+            *  group: group information of the node
+            *  order: order of the node
+            *  width, height: size of node
+            *  min, max, step: property of slider
+            *  colorPicking: color of node in dashboard
+            *  pass: boolean option for whether pass input or not
+            *  send: option for when to send msg through flow
+            */
+            name: { value: '' },
+            label: { value: '' },
+            tooltip: { value: '' },
+            group: {
+                type: 'ui_group',
+                required: true
+            },
+            order: { value: 0 },
+            width: {
+                value: 0,
+                validate: function(v) {
+                    var width = v || 0;
+                    var currentGroup = $('#node-input-group').val() || this.group;
+                    var groupNode = RED.nodes.node(currentGroup);
+                    var valid = !groupNode || +width <= +groupNode.width;
+                    $("#node-input-size").toggleClass("input-error", !valid);
+                    return valid;
+                }
+            },
+            height: {
+                value: 0
+            },
+            min: {
+                value: 0,
+                required: true,
+                validate: RED.validators.number()
+            },
+            max: {
+                value: 100,
+                required: true,
+                validate: RED.validators.number()
+            },
+            step: {
+                value: 1
+            },
+            colorPicking:{
+                value:'colorPicking1'
+            },
+            pass: { value: true },
+            send: {value: 'always'},
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "ui_slider.png",
+        paletteLabel: 'soop_slider',
+        label: function() {
+            return this.name || 'soop_slider';
+        },
+        // labelStyle: function() {
+        //     return this.name ? "node_label_italic" : "";
+        // },
+        oneditprepare: function() {
+
+            $("#node-input-size").elementSizer({
+                width: "#node-input-width",
+                height: "#node-input-height",
+                group: "#node-input-group"
+            });
+
+            if (!$("#node-input-send").val()) { $("#node-input-send").val("always") }
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="soop_slider">
+    <!-- Group -->
+    <div class="form-row">
+        <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+        <input type="text" id="node-input-group">
+    </div>
+    <!-- Size -->
+    <div class="form-row">
+        <label><i class="fa fa-object-group"></i> Size</label>
+        <input type="hidden" id="node-input-width">
+        <input type="hidden" id="node-input-height">
+        <button class="editor-button" id="node-input-size"></button>
+    </div>
+    <!-- Color -->
+    <div class="form-row">
+        <label for="node-input-color"><i class="fa fa fa-tint"></i> Color</label>
+        <input type="radio" name="colorPicking" id="colorPicking1" style="width: 0px;">
+        <label class="styled1" for="colorPicking1" style="width: 60px;text-align: center;">blue</label>
+        <input type="radio" name="colorPicking" id="colorPicking2" style="width: 0px;">
+        <label class="styled2" for="colorPicking2" style="width: 60px;text-align: center;">orange</label>
+        <input type="radio" name="colorPicking" id="colorPicking3" style="width: 0px;">
+        <label class="styled3" for="colorPicking3" style="width: 60px;text-align: center;">pink</label>
+        <input type="radio" name="colorPicking" id="colorPicking4" style="width: 0px;">
+        <label class="styled4" for="colorPicking4" style="width: 60px;text-align: center;">purple</label>
+    </div>
+    <!-- Label -->
+    <div class="form-row">
+        <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+        <input type="text" id="node-input-label">
+    </div>
+    <!-- Tooltip -->
+    <div class="form-row">
+        <label for="node-input-tooltip"><i class="fa fa-info-circle"></i> Tooltip</label>
+        <input type="text" id="node-input-tooltip" placeholder="optional tooltip">
+    </div>
+    <!-- Range -->
+    <div class="form-row">
+        <label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
+        <span for="node-input-min">min</span>
+        <input type="text" id="node-input-min" style="width:60px">
+        <span for="not-input-max" style="margin-left:22px;">max</span>
+        <input type="text" id="node-input-max" style="width:60px">
+        <span for="not-input-step" style="margin-left:22px;">step</span>
+        <input type="text" id="node-input-step" style="width:60px">
+    </div>
+    <!-- Pass -->
+    <div class="form-row">
+        <label style="width:auto" for="node-input-pass"><i class="fa fa-arrow-right"></i> If <code>msg</code> arrives on input, pass through to output: </label>
+        <input type="checkbox" checked id="node-input-pass" style="display:inline-block; width:auto; vertical-align:top;">
+    </div>
+    <!-- Send -->
+    <div class="form-row">
+        <label style="width:auto" for="node-input-payload"><i class="fa fa-envelope-o"></i> Send <code>msg</code></label>
+    </div>
+    <div class="form-row">
+        <label style="padding-left:25px; margin-right:-25px" for="node-input-send">When</label>
+        <select id="node-input-send" style="width:204px">
+            <option value="always">always value changed</option>
+            <option value="release">only after slider released</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label style="padding-left:25px; margin-right:-25px">Payload</label>
+        <label style="width:auto">Current value</label>
+    </div>
+    <!-- Name -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="soop_slider">
+    <p>Helper Text is not ready</p>
+    <p>It'll be revised</p>
+    <!--
+    <p>Adds a slider widget to the user interface.</p>
+	<p>The user can change its value between the limits (<b>min</b> and <b>max</b>). Each value change
+    will generate a message with the value set as <b>payload</b>.</p>
+    <p>A vertical slider can be created by setting the size so that the height is greater than the width.</p>
+    <p>The slider can be reversed by setting the min value larger than the max value. e.g. min 100, max 0.</p>
+    <p>An input <code>msg.payload</code> will be converted to a number, and used to preset a value.
+    The <b>min</b> value will be used if conversion fails,
+    and it will update the user interface. If the value changes, it will also be passed to the output.</p>
+    <p>Setting <code>msg.enabled</code> to <code>false</code> will disable the slider output.</p>
+    <p>If a <b>Class</b> is specified, it will be added to the parent card. This way you can style the card and the elements inside it with custom CSS. The Class can be set at runtime by setting a <code>msg.className</code> string property.</p>
+    -->
+</script>
