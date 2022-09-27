@@ -1,0 +1,70 @@
+<script type="text/javascript">
+    RED.nodes.registerType("iotcam2img", {
+      category: "Camera",
+      color: "#FFAAAA",
+      defaults: {
+          rtspURL: { value: "" },
+          saveURL: { value: "" },
+          totalFrame: { value: "" },
+          timer: { value: ""},
+          name: { value: "" },
+      },
+      credentials: {
+        smartthingsMnid: { value: "" },
+        smartthingsPat: { value: "" },
+      },
+      inputs: 1,
+      outputs: 3,
+      icon: "font-awesome/fa-camera",
+      label: function () {
+        return this.name || "iotcam2img";
+      },
+    });
+  </script>
+  
+  <script type="text/html" data-template-name="iotcam2img">
+    <div class="form-row">
+        <label for="node-input-smartthingsMnid"
+          ><i class="fa fa-tag"></i> SmartThings MNID</label
+        >
+        <input type="text" id="node-input-smartthingsMnid" />
+      </div>
+      <div class="form-row">
+        <label for="node-input-smartthingsPat"
+          ><i class="fa fa-tag"></i> SmartThings PAT</label
+        >
+        <input type="text" id="node-input-smartthingsPat" />
+      </div>
+    <div class="form-row">
+      <label for="node-input-rtspURL"
+        ><i class="fa fa-tag"></i>RTSP Stream URL</label
+      >
+      <input type="text" id="node-input-rtspURL" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-saveURL"
+          ><i class="fa fa-tag"></i>Image save URL</label
+        >
+        <input type="text" id="node-input-saveURL" />
+      </div>
+    <div class="form-row">
+        <label for="node-input-totalFrame"
+        ><i class="fa fa-tag"></i>Total Frame</label
+        >
+        <input type="number" id="node-input-totalFrame" />
+    </div>
+    <div class="form-row">
+      <label for="node-input-timer"
+        ><i class="fa fa-tag"></i>Timer</label
+      >
+      <input type="number" id="node-input-timer" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" />
+      </div>
+  </script>
+  
+  <script type="text/html" data-help-name="iotcam2img">
+    <p>Node that capture iotcamera's frame</p>
+  </script
