@@ -26,12 +26,10 @@ const App = () => {
   }, []);
 
   const drawNode = node => {
-    // switch (node?.editor?.type) {
-    //   case SOOP_NODE_TYPE.LOWER_CASE:
-    //     return <div key={node.editor.id}>lowercase {node.editor.id}</div>;
-    //   case SOOP_NODE_TYPE.SWITCH:
-    //     return <div key={node.editor.id}>switch {node.editor.id}</div>;
-    // }
+    switch (node?.editor?.type) {
+      case SOOP_NODE_TYPE.SWITCH:
+        return <Switch key={node.editor.id} id={node.editor.id} />;
+    }
 
     if (node && node.editor) {
       return (
