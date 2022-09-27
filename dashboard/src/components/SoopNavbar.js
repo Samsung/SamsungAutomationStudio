@@ -1,26 +1,18 @@
 import React, { useState } from "react";
-import {
-  AppBar,
-  Box,
-  Button,
-  Toolbar,
-  Typography,
-  IconButton,
-  Drawer,
-  List,
-  Divider,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-} from "@mui/material";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { AppBar, Box, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemButton } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { RiMenuUnfoldFill } from "react-icons/ri";
-import { AiFillSetting } from "react-icons/ai";
+import { AiFillSetting, AiFillSave } from "react-icons/ai";
+import IsEditingCircle from "../assets/images/isEditingCircle.gif";
 
-const SoopNavbar = () => {
+const SoopNavbar = ({ isEditing, handleIsEditing, exampleTab }) => {
   const [state, setState] = useState({
     left: false,
   });
+  const navigate = useNavigate();
+  const { tabId } = useParams();
+  console.log(tabId);
 
   const muiTheme = createTheme({
     palette: {
@@ -33,7 +25,6 @@ const SoopNavbar = () => {
   });
 
   const toggleDrawer = (anchor, isOpen) => event => {
-    console.log("toggleDrawer 호출", isOpen);
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
@@ -41,7 +32,6 @@ const SoopNavbar = () => {
   };
 
   const sideBar = anchor => {
-    console.log(anchor);
     return (
       <Box
         sx={{ width: anchor === "top" || anchor === "bottom" ? "auto" : 250 }}
@@ -50,20 +40,14 @@ const SoopNavbar = () => {
         onKeyDown={toggleDrawer(anchor, false)}
       >
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+          {exampleTab.map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemText primary={text} />
+              <ListItemButton
+                onClick={() => {
+                  navigate(`/${index}`);
+                }}
+              >
+                <div style={{ height: 36, display: "flex", alignItems: "center" }}>{text}</div>
               </ListItemButton>
             </ListItem>
           ))}
@@ -91,12 +75,31 @@ const SoopNavbar = () => {
               {sideBar("left")}
             </Drawer>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontFamily: "Pretendard-Bold" }}>
-              대시보드 이름이에요
+              제목이당
             </Typography>
-            {/* TODO: onClick => Drag n Drop 시작 */}
-            <IconButton color="inherit">
-              <AiFillSetting />
-            </IconButton>
+
+            {!isEditing ? (
+              <IconButton
+                color="inherit"
+                onClick={() => {
+                  handleIsEditing(true);
+                }}
+              >
+                <AiFillSetting />
+              </IconButton>
+            ) : (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img src={IsEditingCircle} alt="editing" width={40} style={{ marginRight: 10 }} />
+                <IconButton
+                  color="inherit"
+                  onClick={() => {
+                    handleIsEditing(false);
+                  }}
+                >
+                  <AiFillSave color="navy" />
+                </IconButton>
+              </div>
+            )}
           </Toolbar>
         </AppBar>
       </ThemeProvider>
