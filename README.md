@@ -5,7 +5,7 @@
 
 # Object Detection Nodes
 
-# 데이터 모델링
+#데이터 모델링
 
 ---
 
@@ -55,16 +55,16 @@
 - poseData: 알람 조건(pose)
 - timestamp: 알람 시작 시간
 
-# 알림 Flow
+#알림 Flow
 
 ---
-# 차트 Flow
+#차트 Flow
 
 ---
 
 ### 시작 날짜와 끝 날짜 입력 받음
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/407d4649-8dc4-4dea-bffc-35c73475e83d/Untitled.png)
+![Untitled (1)](https://user-images.githubusercontent.com/67916174/192566343-fbb107a9-e972-4eba-b273-0e202868238c.png)
 
 ### 들어가는 Data 형식
 
@@ -73,7 +73,7 @@
 , payload: 데이터 값}
 ```
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b87553e3-fdaa-49c2-bf7d-37dcc75ed11d/Untitled.png)
+![Untitled (2)](https://user-images.githubusercontent.com/67916174/192566492-be507666-b4e0-44b8-a075-e89350244056.png)
 
 ### Sum Chart
 
@@ -87,7 +87,7 @@
 
 기간 내의 location에 머문 값을 기간으로 나누어서 일당 location에 머문 시간을 바 차트 형태로 나타낸다.
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/20118e4b-9c74-481e-9db7-085dee690918/Untitled.png)
+![Untitled (3)](https://user-images.githubusercontent.com/67916174/192566609-9c445d51-f01e-4209-80e0-ab6544a6be7e.png)
 
 ### Day Chart
 
@@ -98,29 +98,14 @@
 지정한 날에 저장된 Log 값을 Timeline 그래프로 나타낸다.
 
 ```json
-{
-	label: 라벨,
-	datasets: {label: 라벨,
-						 timestamp: 타임스탬프, 
-						 data: [시작시간, 끝시간, 색상]
-						}
-}
+{"labels":["Bed","Couch"],"datasets":[{"label":"Bed","timestamp":"2022-09-27T14:29:26.395Z","data":[["2022-11-06T18:02:00.000Z","2022-11-06T18:22:00.000Z","#FF6633"],["2022-11-06T18:42:00.000Z","2022-11-06T19:01:00.000Z","#FF6633"]]},{"label":"Couch","timestamp":"2022-09-27T14:29:26.395Z","data":[["2022-11-06T18:22:00.000Z","2022-11-06T18:42:00.000Z","#5DA5DA"]]}]}
 ```
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/0360448c-6583-4eb7-ad6a-057b9a2baff2/Untitled.png)
+![Untitled (4)](https://user-images.githubusercontent.com/67916174/192567130-0d7f5690-f19c-45ce-af07-4933758e4c8c.png)
 
 ### Timeline Chart(Live)
 
 실시간 저장되는 Log 값을 Timeline 차트로 나타낸다.
 
-```json
-{
-	label: 라벨,
-	datasets: {label: 라벨,
-						 timestamp: 타임스탬프, 
-						 data: [시작시간, 끝시간, 색상]
-						}
-}
-```
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5dc6cee3-33b3-4286-8d2a-18533ab5d38e/Untitled.png)
+![Untitled (5)](https://user-images.githubusercontent.com/67916174/192567188-f7c809f1-8183-4d47-a195-412fde022725.png)
