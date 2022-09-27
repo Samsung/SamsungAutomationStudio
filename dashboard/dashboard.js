@@ -74,12 +74,18 @@ function emit(state) {
 }
 
 function setInitNodes(nodes) {
+  const exist = {};
   for (let i = 0; i < nodes.length; ++i) {
     globalNodes[nodes[i].id] = {
       editor: nodes[i],
       states: [],
     };
+    exist[nodes[i].id] = true;
   }
+
+  Object.keys(globalNodes).map(key => {
+    if (!exist[key]) delete globalNodes[key];
+  });
 }
 
 function addNode(node) {
