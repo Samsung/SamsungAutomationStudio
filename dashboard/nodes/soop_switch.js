@@ -7,7 +7,7 @@ module.exports = function (RED) {
 
     dashboard.addNode({
       node: node,
-      onMessage: (message) => {
+      onMessage: message => {
         node.send({
           payload: message.switchState,
         });

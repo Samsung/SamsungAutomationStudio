@@ -48,11 +48,11 @@ const SwitchHandle = styled.span`
   transition: 0.2s;
 `;
 
-const Switch = () => {
+const Switch = props => {
   const [switchState, setSwitchState] = useState(false);
 
   useEffect(() => {
-    sendMessage("nodeId", { switchState });
+    sendMessage(props.id, { switchState });
   }, [switchState]);
 
   function onSwitchChange(e) {

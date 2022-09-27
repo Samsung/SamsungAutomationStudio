@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import Text from "./Text";
+import Switch from "./Switch";
 import { initlaizeSocket, disconnectSocket } from "../utils/socket";
 import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,12 +21,10 @@ const App = () => {
   }, []);
 
   const drawNode = node => {
-    // switch (node?.editor?.type) {
-    //   case SOOP_NODE_TYPE.LOWER_CASE:
-    //     return <div key={node.editor.id}>lowercase {node.editor.id}</div>;
-    //   case SOOP_NODE_TYPE.SWITCH:
-    //     return <div key={node.editor.id}>switch {node.editor.id}</div>;
-    // }
+    switch (node?.editor?.type) {
+      case SOOP_NODE_TYPE.SWITCH:
+        return <Switch key={node.editor.id} id={node.editor.id} />;
+    }
 
     if (node && node.editor) {
       return (
