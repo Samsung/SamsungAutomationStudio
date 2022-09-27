@@ -29,8 +29,8 @@ const fontColor = {
 };
 
 const fontSize = {
-  xs: "12px",
-  sm: "14px",
+  xs: "10px",
+  sm: "12px",
   md: "16px",
   lg: "20px",
   xl: "32px",
