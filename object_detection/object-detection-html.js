@@ -156,7 +156,7 @@ module.exports.code = (config) => {
                     return res
                 }
                 console.log({ pose, object, value });
-                registerWebSocket.send(JSON.stringify({ pose, object, value }));
+                registerWebSocket.send(JSON.stringify({ dataType : "command", data : {pose, object, value} }));
             })
     
             
@@ -189,7 +189,7 @@ module.exports.code = (config) => {
     
     
                         if (validation(predictions)) {
-                            dataWebSocket.send(JSON.stringify({ detect: predictions }));
+                            dataWebSocket.send(JSON.stringify({ dataType : "object", data : predictions }));
                         }
     
                         canvas.width = video.width;
@@ -248,9 +248,11 @@ module.exports.code = (config) => {
     
             registerBtn.addEventListener("click", function(){
     
-                registerWebSocket.send(JSON.stringify(detected.filter((element) => {
-                    return document.getElementById(element).checked
-                })));
+                registerWebSocket.send(JSON.stringify(
+                    { dataType : "object", data : 
+                    detected.filter((element) => {
+                    return document.getElementById(element).checked})}
+                    ));
             });
     
         </script>
