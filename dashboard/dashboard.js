@@ -89,8 +89,6 @@ function setInitNodes(nodes) {
       delete globalNodes[key];
     }
   });
-
-  console.log(globalNodes);
 }
 
 function addNode(node) {
