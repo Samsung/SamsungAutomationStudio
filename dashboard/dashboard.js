@@ -18,8 +18,7 @@ const serveStatic = require("serve-static");
 const { FRONT_SOCKET_TYPE, EDITOR_SOCKET_TYPE, DASHBOARD_PATH } = require("./common/common");
 
 let io = null;
-let dashboardState = {};
-let dashboardNodes = {};
+let globalNodes = {};
 
 function init(RED) {
   const app = RED.httpNode || RED.httpAdmin;
@@ -32,39 +31,38 @@ function init(RED) {
 }
 
 function initSocket(io) {
-  io.on("connection", (socket) => {
-    socket.emit(FRONT_SOCKET_TYPE.INIT_STATES, dashboardState);
+  io.on("connection", socket => {
+    socket.emit(FRONT_SOCKET_TYPE.INIT_STATES, getInitNodeStates);
 
-    socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, (message) => {
-      const node = dashboardNodes[message.nodeId];
+    socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, message => {
+      const node = globalNodes[message.nodeId].runtime;
       if (!node) return;
       if (typeof node.onMessage === "function") {
         node.onMessage(message);
       }
     });
 
-    socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, (nodes) => {
-      initializeDashboardState(nodes);
-      io.emit(FRONT_SOCKET_TYPE.INIT_STATES, dashboardState);
+    socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, nodes => {
+      setInitNodes(nodes);
+      io.emit(FRONT_SOCKET_TYPE.INIT_STATES, globalNodes);
     });
   });
 }
 
-function initializeDashboardState(nodes) {
-  dashboardState = {};
-  for (let i = 0; i < nodes.length; ++i) {
-    dashboardState[nodes[i].id] = nodes[i];
-  }
-}
-
 function emitState(state) {
-  const node_id = state.node_id;
+  const nodeId = state.node_id;
   state.time = Date.now();
 
-  if (dashboardState.hasOwnProperty(node_id)) {
-    dashboardState[node_id].push(state);
+  if (globalNodes && globalNodes.hasOwnProperty(nodeId)) {
+    if (Array.isArray(globalNodes[nodeId].states)) {
+      globalNodes[nodeId].states.push(state);
+    } else {
+      globalNodes[nodeId].states = [state];
+    }
   } else {
-    dashboardState[node_id] = [state];
+    globalNodes[nodeId] = {
+      states: [state],
+    };
   }
 
   emit(state);
@@ -75,6 +73,31 @@ function emit(state) {
   else io.emit(FRONT_SOCKET_TYPE.UPDATE_STATE, [state]);
 }
 
+function setInitNodes(nodes) {
+  for (let i = 0; i < nodes.length; ++i) {
+    globalNodes[nodes[i].id] = {
+      editor: nodes[i],
+      states: [],
+    };
+  }
+}
+
 function addNode(node) {
-  dashboardNodes[node.id] = node;
+  if (globalNodes && globalNodes.hasOwnProperty(node.id)) {
+    globalNodes[node.id].runtime = node;
+  } else {
+    globalNodes[node.id] = {
+      runtime: node,
+      states: [],
+    };
+  }
+}
+
+function getInitNodeStates() {
+  return globalNodes.map(node => {
+    return {
+      editor: node.editor,
+      states: node.states,
+    };
+  });
 }
