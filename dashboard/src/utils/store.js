@@ -7,7 +7,11 @@ export const setInitNode = nodes => ({
   nodes,
 });
 
-function node(state = {}, action) {
+const initialState = {
+  nodes: {},
+};
+
+function node(state = initialState, action) {
   switch (action.type) {
     case SET_INIT_NODE:
       return {

@@ -10,7 +10,7 @@ const { SOOP_NODE_TYPE } = require("../../common/common");
 const App = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(state => state.node.nodes);
-  const [keys, setKeys] = useState([]);
+
   useEffect(() => {
     initlaizeSocket(dispatch);
 
@@ -19,21 +19,16 @@ const App = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (nodes) setKeys(Object.keys(nodes));
-  }, [nodes]);
-
   const drawNode = node => {
-    console.log(node);
-    switch (node.editor.type) {
+    switch (node?.editor?.type) {
       case SOOP_NODE_TYPE.LOWER_CASE:
-        return <div key={node.editor.id}>lowercase</div>;
+        return <div key={node.editor.id}>lowercase {node.editor.id}</div>;
       case SOOP_NODE_TYPE.SWITCH:
-        return <div key={node.editor.id}>switch</div>;
+        return <div key={node.editor.id}>switch {node.editor.id}</div>;
     }
   };
 
-  return <>{keys.map(key => drawNode(nodes[key]))}</>;
+  return <>{Object.keys(nodes).map(key => drawNode(nodes[key]))}</>;
 };
 
 export default App;

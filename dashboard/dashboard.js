@@ -84,8 +84,13 @@ function setInitNodes(nodes) {
   }
 
   Object.keys(globalNodes).map(key => {
-    if (!exist[key]) delete globalNodes[key];
+    if (!exist[key]) {
+      console.log(key + " is deleted");
+      delete globalNodes[key];
+    }
   });
+
+  console.log(globalNodes);
 }
 
 function addNode(node) {
