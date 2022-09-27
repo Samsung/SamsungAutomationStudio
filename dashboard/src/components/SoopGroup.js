@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { fontSize, fontColor } from "../assets/DesignOption";
 
 const Group = styled.div`
-  width: 300px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
   border-radius: 10px;
   filter: drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.05));
   background-color: white;
