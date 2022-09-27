@@ -1,0 +1,29 @@
+{
+  "name": "node-red-contrib-ffmpeg-iotcam",
+  "version": "1.0.0",
+  "description": "Capture Frame from iotcam using ffmpeg",
+  "main": "Iotcam2img.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TeamWildWest/node-red-contrib-ffmpeg-iotcam.git"
+  },
+  "keywords": [
+    "smartthings",
+    "iotcam",
+    "ffmpeg"
+  ],
+  "author": "wasi",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/TeamWildWest/node-red-contrib-ffmpeg-iotcam/issues"
+  },
+  "homepage": "https://github.com/TeamWildWest/node-red-contrib-ffmpeg-iotcam#readme",
+  "node-red": {
+    "nodes": {
+      "iotcam2img": "Iotcam2img.js"
+    }
+  }
+}
