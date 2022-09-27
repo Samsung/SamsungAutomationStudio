@@ -1,11 +1,11 @@
-[데이터 모델링](#데이터 모델링)
-[알림 Flow](#알림 Flow)
-[차트 Flow](#차트 Flow)
+[데이터 모델링](#데이터-모델링)
+[알림 Flow](#알림-Flow)
+[차트 Flow](#차트-Flow)
 
 
 # Object Detection Nodes
 
-#데이터 모델링
+# 데이터 모델링
 
 ---
 
@@ -55,10 +55,10 @@
 - poseData: 알람 조건(pose)
 - timestamp: 알람 시작 시간
 
-#알림 Flow
+# 알림 Flow
 
 ---
-#차트 Flow
+# 차트 Flow
 
 ---
 
@@ -69,8 +69,8 @@
 ### 들어가는 Data 형식
 
 ```json
-{ label: 라벨
-, payload: 데이터 값}
+{ "label" : "라벨"
+, "payload" : "데이터 값"}
 ```
 
 ![Untitled (2)](https://user-images.githubusercontent.com/67916174/192566492-be507666-b4e0-44b8-a075-e89350244056.png)
