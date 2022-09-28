@@ -1,0 +1,242 @@
+<style>
+  input[type="radio"] {
+    opacity: 0;
+  }
+  input[type="radio"] + label {
+    border: none;
+    color: white;
+    border-radius: 5px;
+  }
+  input[type="radio"]:checked + label {
+    border: 3px solid #fd5988;
+  }
+  input[name="shape"]:checked + label {
+    border: 3px solid #fd5988 !important;
+  }
+  .styled1 {
+    background: linear-gradient(91.29deg, #1153fc 0%, #5f86fe 100%);
+  }
+  .styled2 {
+    background: linear-gradient(91.29deg, #ff7e42 0%, #febf7d 100%);
+  }
+  .styled3 {
+    background: linear-gradient(91.29deg, #fd5988 0%, #f8a899 100%);
+  }
+  .styled4 {
+    background: linear-gradient(91.29deg, #8443f6 0%, #7793fe 100%);
+  }
+  .styled5 {
+    background: linear-gradient(91.29deg, #08c792 0%, #2afeb7 100%);
+  }
+  .button {
+    text-align: center;
+    border: solid 2px #d9d9d9;
+    color: white;
+    background-color: #d9d9d9;
+    font-size: 10px;
+    padding: 5px;
+  }
+</style>
+<script type="text/javascript">
+  RED.nodes.registerType("soop_button", {
+    category: RED._("node-red-dashboard/ui_base:ui_base.label.category") || "soop_dashboard", // 이후 수정되어야할 부분
+    color: "rgb(100, 189, 27)", // 이후 수정되어야할 부분
+    defaults: {
+      group: { type: "soop_group", required: true }, // 이후 수정되어야할 부분
+      width: {
+        value: 0,
+        validate: function (value) {
+          const width = value || 0;
+          const currentGroup = $("#node-input-group").val() || this.group;
+          const groupNode = RED.nodes.node(currentGroup);
+          const valid = !groupNode || +width <= +groupNode.width;
+          $("#node-input-size").toggleClass("input-error", !valid);
+          return valid;
+        },
+      },
+      height: { value: 0 },
+      widgetX: { value: 0, validate: RED.validators.number(), required: true },
+      widgetY: { value: 0, validate: RED.validators.number(), required: true },
+      label: { value: "button_name" },
+      tooltip: { value: "" },
+      background: { value: "blue" },
+      shape: { value: "rounded-rectangle" },
+      icon: { value: "" },
+      payload: { value: "", validate: RED.validators.typedInput("payloadType") },
+      payloadType: { value: "str" },
+      topic: { value: "topic", validate: RED.validators.typedInput("topicType") },
+      topicType: { value: "msg" },
+      getInput: { value: false },
+      name: { value: "" },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-hand-pointer-o",
+    paletteLabel: "soop_button",
+    outputLabels: ["payload"],
+    label: function () {
+      return this.name || (~this.label.indexOf("{{") ? null : this.label) || "new_button";
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
+    },
+    oneditprepare: function () {
+      $("#node-input-size").elementSizer({
+        width: "#node-input-width",
+        height: "#node-input-height",
+        group: "#node-input-group",
+      });
+
+      $("#node-input-payload").typedInput({
+        default: "str",
+        typeField: $("#node-input-payloadType"),
+        types: ["str", "num", "bool", "json", "bin", "date", "flow", "global"],
+      });
+
+      $("#node-input-topic").typedInput({
+        default: "str",
+        typeField: $("#node-input-topicType"),
+        types: ["str", "msg", "flow", "global"],
+      });
+
+      if (!$("#node-input-widgetX").val()) {
+        $("#node-input-widgetX").val(0);
+      }
+      if (!$("#node-input-widgetY").val()) {
+        $("#node-input-widgetY").val(0);
+      }
+
+      if (this.background === undefined) {
+        this.background = "blue";
+        $("input[type=radio][name=background]")[0].checked = true;
+      }
+      let backgrounds = $("input[type=radio][name=background]");
+      for (var i = 0; i < backgrounds.length; i++) {
+        if (backgrounds[i].value == this.background) backgrounds[i].checked = true;
+      }
+
+      if (this.shape === undefined) {
+        this.shape = "rounded-rectangle";
+        $("input[type=radio][name=shape]")[2].checked = true;
+      }
+      let shapes = $("input[type=radio][name=shape]");
+      for (var i = 0; i < shapes.length; i++) {
+        if (shapes[i].value == this.shape) shapes[i].checked = true;
+      }
+    },
+    oneditsave: function () {
+      this.background = $("input[type=radio][name=background]:checked")[0].value;
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="soop_button">
+  <div class="form-row">
+    <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+    <input type="text" id="node-input-group" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-size"><i class="fa fa-object-group"></i> Size</label>
+    <input type="hidden" id="node-input-width" />
+    <input type="hidden" id="node-input-height" />
+    <button class="editor-button" id="node-input-size"></button>
+  </div>
+  <div class="form-row">
+    <label for="node-input-position"><i class="fa fa-object-fa-arrows-alt"></i> Position</label>
+    <label for="node-input-widgetX" style="margin-right: 5px; width: auto;">X</label>
+    <input type="text" id="node-input-widgetX" style="width: 50px;" />
+    <label for="node-input-widgetY" style="margin-left:20px; margin-right: 5px; width: auto;">Y</label>
+    <input type="text" id="node-input-widgetY" style="width: 50px;" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-icon"><i class="fa fa-picture-o"></i> Icon</label>
+    <input type="text" id="node-input-icon" placeholder="icon" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+    <input type="text" id="node-input-label" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-tooltip"><i class="fa fa-info-circle"></i> Tooltip</label>
+    <input type="text" id="node-input-tooltip" placeholder="tooltip" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-background"><i class="fa fa-tint"></i> Color</label>
+    <input type="radio" name="background" id="blue" style="width: 0px;" value="blue" />
+    <label class="styled1" for="blue" style="width: 55px; text-align: center;">blue</label>
+    <input type="radio" name="background" id="orange" style="width: 0px;" value="orange" />
+    <label class="styled2" for="orange" style="width: 55px; text-align: center;">orange</label>
+    <input type="radio" name="background" id="pink" style="width: 0px;" value="pink" />
+    <label class="styled3" for="pink" style="width: 55px; text-align: center;">pink</label>
+    <input type="radio" name="background" id="purple" style="width: 0px;" value="purple" />
+    <label class="styled4" for="purple" style="width: 55px; text-align: center;">purple</label>
+    <input type="radio" name="background" id="green" style="width: 0px;" value="green" />
+    <label class="styled5" for="green" style="width: 55px; text-align: center;">green</label>
+  </div>
+  <div class="form-row">
+    <label for="node-input-shape"><i class="fa fa-square"></i> Shape</label>
+    <input type="radio" name="shape" id="rectangle" style="width: 0px;" value="rectangle" />
+    <label class="button" for="rectangle" style="width: 70px; height: 40px; line-height: 40px; border-radius:0;"
+      >CLICK</label
+    >
+    <input type="radio" name="shape" id="circle" style="width: 0px;" value="circle" />
+    <label class="button" for="circle" style="width: 40px; height: 40px; line-height: 40px; border-radius:100%;"
+      >CLICK</label
+    >
+    <input type="radio" name="shape" id="rounded-rectangle" style="width: 0px;" value="rounded-rectangle" />
+    <label
+      class="button"
+      for="rounded-rectangle"
+      style="width: 70px; height: 40px; line-height: 40px; border-radius:8%;"
+      >CLICK</label
+    >
+    <input type="radio" name="shape" id="pill" style="width: 0px;" value="pill" />
+    <label class="button" for="pill" style="width: 70px; height: 40px; line-height: 40px; border-radius:25px;"
+      >CLICK</label
+    >
+  </div>
+  <div class="form-row">
+    <label style="width:auto" for="node-input-payload"><i class="fa fa-envelope-o"></i> When clicked, send: </label>
+  </div>
+  <div class="form-row">
+    <label for="node-input-payload" style="padding-left: 25px; margin-right: -25px">Payload</label>
+    <input type="text" id="node-input-payload" style="width:70%" />
+    <input type="hidden" id="node-input-payloadType" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-topic" style="padding-left: 25px; margin-right: -25px">Topic</label>
+    <input type="text" id="node-input-topic" style="width:70%" />
+    <input type="hidden" id="node-input-topicType" />
+  </div>
+  <div class="form-row">
+    <label style="width:auto" for="node-input-getInput"
+      ><i class="fa fa-arrow-right"></i> If msg arrives on input, emulate a button click:</label
+    >
+    <input type="checkbox" id="node-input-getInput" style="display:inline-block; width:auto; vertical-align:top;" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="soop_button">
+  <p>Add a button on the dashboard.</p>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">string, number, boolean, JSON</span></dt>
+    <dd>written in the payload field</dd>
+    <dt>topic <span class="property-type">string, number, boolean, JSON</span></dt>
+    <dd>written in the topic field</dd>
+  </dl>
+  <h3>Details</h3>
+  <p>
+    The label and icon will be shown on a button. You can choose the color and shape of a button. If you want to send a
+    payload or topic, write the field. Write the tooltip to show optional explanation of the button.
+  </p>
+  <h3>References</h3>
+  <ul>
+    <li><a href="https://fontawesome.com/v4/icons/">FontAwesome</a> - the icon on a button</li>
+  </ul>
+</script>
