@@ -32,7 +32,7 @@ function init(RED) {
 
 function initSocket(io) {
   io.on("connection", socket => {
-    socket.emit(FRONT_SOCKET_TYPE.INIT_STATES, getInitNodeStates);
+    socket.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitNodes());
 
     socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, message => {
       const node = globalNodes[message.nodeId].runtime;
@@ -44,7 +44,7 @@ function initSocket(io) {
 
     socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, nodes => {
       setInitNodes(nodes);
-      io.emit(FRONT_SOCKET_TYPE.INIT_STATES, globalNodes);
+      io.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitNodes());
     });
   });
 }
@@ -69,17 +69,26 @@ function emitState(state) {
 }
 
 function emit(state) {
-  if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_STATE, state);
-  else io.emit(FRONT_SOCKET_TYPE.UPDATE_STATE, [state]);
+  if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, state);
+  else io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, [state]);
 }
 
 function setInitNodes(nodes) {
+  const exist = {};
   for (let i = 0; i < nodes.length; ++i) {
     globalNodes[nodes[i].id] = {
       editor: nodes[i],
       states: [],
     };
+    exist[nodes[i].id] = true;
   }
+
+  Object.keys(globalNodes).map(key => {
+    if (!exist[key]) {
+      console.log(key + " is deleted");
+      delete globalNodes[key];
+    }
+  });
 }
 
 function addNode(node) {
@@ -93,11 +102,14 @@ function addNode(node) {
   }
 }
 
-function getInitNodeStates() {
-  return globalNodes.map(node => {
-    return {
-      editor: node.editor,
-      states: node.states,
+function getInitNodes() {
+  const initNodes = {};
+  Object.keys(globalNodes).map(key => {
+    initNodes[key] = {
+      editor: globalNodes[key].editor,
+      states: globalNodes[key].states,
     };
   });
+
+  return initNodes;
 }
