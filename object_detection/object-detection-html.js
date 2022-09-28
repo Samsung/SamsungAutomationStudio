@@ -189,7 +189,13 @@ module.exports.code = (config) => {
     
     
                         if (validation(predictions)) {
-                            dataWebSocket.send(JSON.stringify({ dataType : "object", data : predictions }));
+                            dataWebSocket.send(JSON.stringify({ dataType : "object", data : 
+                            
+                            predictions.filter((element) => {
+                                return registered.includes(element[1])
+                            })
+                        
+                        }));
                         }
     
                         canvas.width = video.width;
@@ -244,15 +250,23 @@ module.exports.code = (config) => {
                     }
                 });
             },
-                1000);
+                60000);
     
             registerBtn.addEventListener("click", function(){
-    
+
+                let output = detected.filter((element) => {
+                    return document.getElementById(element).checked})
+                
+                registered.forEach((element) => {
+                    if (!output.includes(element)){
+                        output.push(element);
+                    }
+                })
+                
                 registerWebSocket.send(JSON.stringify(
-                    { dataType : "object", data : 
-                    detected.filter((element) => {
-                    return document.getElementById(element).checked})}
-                    ));
+                    {dataType : "object", data : output}
+                ))
+
             });
     
         </script>
