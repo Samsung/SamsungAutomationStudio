@@ -42,15 +42,15 @@ This is an example of a JSON string of data from a browser through a websocket.
 
 
 
-##### three outputs 
+##### four outputs 
 
-Detected object :  output from coco-ssd object detection model,
+**Detected object** :  output from coco-ssd object detection model,
 
-Detected  objects (for registration) : object name array for detectable object registration  
+**Detected  objects (for registration)** : object name array for detectable object registration  
 
-Detected  command (for registration) : array composed of pose and object and command for registration 
+**Detected  command (for registration)** : array composed of pose and object and command for registration 
 
-Log information : informations of detected objects per 1 min
+**Log information** : informations of detected objects per 1 min
 
 
 
