@@ -6,8 +6,8 @@ module.exports = function (RED) {
     RED.nodes.createNode(node, config);
 
     dashboard.addNode({
-      node: node,
-      onMessage: (message) => {
+      ...node,
+      onMessage: message => {
         console.log(message);
         node.send("received message from a dashboard");
       },
