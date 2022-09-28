@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { mainColor, groupColor } from "../assets/DesignOption";
 import { sendMessage } from "../utils/socket";
+import useUpdateHook from "../hooks/UpdateHook";
 
 const SwitchWrapper = styled.div`
   position: relative;
@@ -14,11 +15,11 @@ const SwitchInput = styled.input`
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  &:checked + #switch_area {
+  &:checked + .switch_area {
     background: ${mainColor.blue};
   }
 
-  &:checked + #switch_area #switch_handle {
+  &:checked + .switch_area .switch_handle {
     left: 36px;
   }
 `;
@@ -48,11 +49,11 @@ const SwitchHandle = styled.span`
   transition: 0.2s;
 `;
 
-const Switch = props => {
+const SoopSwitch = props => {
   const [switchState, setSwitchState] = useState(false);
 
-  useEffect(() => {
-    sendMessage(props.id, { switchState });
+  useUpdateHook(() => {
+    sendMessage(props.nodeId, { switchState });
   }, [switchState]);
 
   function onSwitchChange(e) {
@@ -61,12 +62,12 @@ const Switch = props => {
 
   return (
     <SwitchWrapper>
-      <SwitchInput type="checkbox" id="switch" checked={switchState} onChange={onSwitchChange} />
-      <SwitchArea htmlFor="switch" id="switch_area">
-        <SwitchHandle id="switch_handle"></SwitchHandle>
+      <SwitchInput type="checkbox" id={`switch-${props.nodeId}`} checked={switchState} onChange={onSwitchChange} />
+      <SwitchArea htmlFor={`switch-${props.nodeId}`} className="switch_area">
+        <SwitchHandle className="switch_handle"></SwitchHandle>
       </SwitchArea>
     </SwitchWrapper>
   );
 };
 
-export default Switch;
+export default SoopSwitch;
