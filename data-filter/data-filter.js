@@ -1,4 +1,7 @@
 module.exports = function (RED) {
+  const { XMLParser } = require("fast-xml-parser");
+  const parser = new XMLParser();
+
   let targetArr = [];
   let targetPath = [];
 
@@ -12,9 +15,8 @@ module.exports = function (RED) {
         if (config.response_type === "json") {
           data = JSON.parse(msg.payload);
         } else {
+          data = parser.parse(msg.payload);
         }
-
-        console.log(data);
 
         targetArr = [];
         targetPath = [];
@@ -23,6 +25,7 @@ module.exports = function (RED) {
           data: data,
           stdPath: config.stdPath,
           stdValue: config.value,
+          stdType: config.value_type,
           outputPaths: config.outputPaths,
         };
 
@@ -34,11 +37,11 @@ module.exports = function (RED) {
 
         let result = [];
         targetArr.forEach((target) => {
-          let ret = [];
+          let ret = {};
           cleanedOutputPaths.forEach((path) => {
             if (path.length) {
               const newTarget = JSON.parse(JSON.stringify(target));
-              ret.push(formatJSONOnlyOne(newTarget, [...path]));
+              ret[path] = formatJSONOnlyOne(newTarget, [...path]);
             } else {
               ret.push(
                 "Invalid Path Error: The outputPath must be a sibling or child path of targetPath"
@@ -61,17 +64,34 @@ module.exports = function (RED) {
     });
   }
 
-  function findTarget(input) {
-    stdPath = input.stdPath.split(".");
-    findTargetOnlyOne(input.data, stdPath, input.stdValue);
+  function compareData(data, stdValue, stdType) {
+    if (data === undefined || data === null || stdValue === undefined || stdValue === null) {
+      return false;
+    }
+    if (stdType === "str") {
+      return data.toString() === stdValue;
+    } else if (stdType === "num") {
+      if (isNaN(data) || isNaN(stdValue)) {
+        return false;
+      }
+      return data.toString() === stdValue;
+    } else if (stdType === "bool") {
+      return data.toString().toLowerCase() === stdValue;
+    }
+    return false;
   }
 
-  function findTargetOnlyOne(data, path, stdValue) {
+  function findTarget(input) {
+    stdPath = input.stdPath.split(".");
+    findTargetOnlyOne(input.data, stdPath, input.stdValue, input.stdType);
+  }
+
+  function findTargetOnlyOne(data, path, stdValue, stdType) {
     key = path.shift();
     targetPath.push(key);
     if (key === undefined) {
       targetPath.pop();
-      return data === stdValue;
+      return compareData(data, stdValue, stdType);
     }
 
     try {
@@ -82,7 +102,7 @@ module.exports = function (RED) {
       if (data[key] instanceof Array) {
         for (let item of data[key]) {
           const targetsArr = [];
-          if (findTargetOnlyOne(item, [...path], stdValue)) {
+          if (findTargetOnlyOne(item, [...path], stdValue, stdType)) {
             targetsArr.push(item);
           }
           targetPath.pop();
@@ -95,7 +115,7 @@ module.exports = function (RED) {
           }
         }
       }
-      return findTargetOnlyOne(data[key], path, stdValue);
+      return findTargetOnlyOne(data[key], path, stdValue, stdType);
     } catch (error) {
       targetPath.pop();
       return `Unknown Error`;
