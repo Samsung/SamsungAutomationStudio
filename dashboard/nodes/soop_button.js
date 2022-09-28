@@ -38,6 +38,10 @@ module.exports = function (RED) {
     topic = config.topic;
     topicType = config.topicType;
 
+    if (payloadType === "date") {
+      payload = Date.now();
+    }
+
     // dashboard.addNode({
     //   node: node,
     //   onMessage: msg => {
