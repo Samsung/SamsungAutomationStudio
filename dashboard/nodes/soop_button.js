@@ -42,17 +42,11 @@ module.exports = function (RED) {
       payload = Date.now();
     }
 
-    // dashboard.addNode({
-    //   node: node,
-    //   onMessage: msg => {
-    //     RED.util.setMessageProperty(msg, 'payload', RED.util.evaluateNodeProperty(payload, payloadType, node, msg),true);
-    //     msg.payload = payload;
-    //     msg.topic = topic;
-    //     node.send(msg);
-    //   },
-    // });
+    if (payloadType === "date") {
+      payload = Date.now();
+    }
 
-    node.on("input", function (msg, send, done) {
+    function sendMessage(msg) {
       if (topic) {
         RED.util.setMessageProperty(msg, "topic", RED.util.evaluateNodeProperty(topic, topicType, node, msg), true);
       } else {
@@ -68,14 +62,19 @@ module.exports = function (RED) {
       } else {
         delete msg.payload;
       }
+      node.send(msg);
+    }
 
-      send =
-        send ||
-        function () {
-          node.send.apply(node, arguments);
-        };
+    // dashboard.addNode({
+    //   node: node,
+    //   onMessage: () => {
+    //     sendMessage({ payload: "", topic: "" });
+    //   },
+    // });
+
+    node.on("input", function (msg, send, done) {
       if (config.getInput) {
-        send(msg);
+        sendMessage(msg);
       }
       if (done) done();
     });
