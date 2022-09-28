@@ -23,14 +23,14 @@ const GroupName = styled.div`
   padding: 3px 10px;
 `;
 
-const SoopGroup = () => {
+const SoopGroup = ({ group }) => {
   // TODO: 노드 그룹 정보들을 받아오면 그룹의 설정에 따라서 변경이 가능하다.
   // 그리고 노드의 렌더링도 여기서 해야한다... ㅠㅜㅠㅜ
   const nameHidden = false;
 
   return (
     <Group>
-      {!nameHidden && <GroupName>그룹입니당</GroupName>}
+      {!nameHidden && <GroupName>{group.groupName}</GroupName>}
       <div>1</div>
       <div>2</div>
     </Group>

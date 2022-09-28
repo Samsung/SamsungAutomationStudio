@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import SoopGroup from "./SoopGroup";
 import { Responsive as ResponsiveGridLayout } from "react-grid-layout";
@@ -33,27 +32,21 @@ const GridItem = styled.div`
   }
 `;
 
-const SoopGrid = ({ size: { width }, isEditing }) => {
-  const { tabId } = useParams();
-  console.log(tabId);
-  const originalItems = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
-
+const SoopGrid = ({ size: { width }, isEditing, tab }) => {
+  const initialGroupGrid = tab.groups.map((group, idx) => {
+    return {
+      i: group.groupId,
+      w: group.w,
+      h: group.h,
+      x: group.x,
+      y: group.y,
+      static: !isEditing,
+    };
+  });
+  console.log("초기 그리드", initialGroupGrid);
   const initialLayouts = {
-    lg: [
-      { i: "a", x: 0, y: 0, w: 1, h: 4, static: !isEditing },
-      { i: "b", x: 1, y: 0, w: 3, h: 4, static: !isEditing },
-      { i: "c", x: 4, y: 0, w: 1, h: 4, static: !isEditing },
-      { i: "d", x: 5, y: 0, w: 2, h: 4, static: !isEditing },
-      { i: "e", x: 7, y: 0, w: 5, h: 4, static: !isEditing },
-      { i: "f", x: 0, y: 4, w: 1, h: 4, static: !isEditing },
-      { i: "g", x: 1, y: 4, w: 3, h: 4, static: !isEditing },
-      { i: "h", x: 4, y: 4, w: 1, h: 4, static: !isEditing },
-      { i: "i", x: 5, y: 4, w: 2, h: 4, static: !isEditing },
-      { i: "j", x: 7, y: 4, w: 5, h: 4, static: !isEditing },
-    ],
+    lg: initialGroupGrid,
   };
-
-  const [items, setItems] = useState(originalItems);
   const [layouts, setLayouts] = useState(initialLayouts);
 
   const onLayoutChange = (_, allLayouts) => {
@@ -65,6 +58,7 @@ const SoopGrid = ({ size: { width }, isEditing }) => {
       return { ...item, static: !isEditing };
     });
     setLayouts({ lg: currentLayouts });
+    console.log("저장된 그리드", layouts);
   }, [isEditing]);
 
   // FIXME: localStorage에 저장하기
@@ -80,16 +74,14 @@ const SoopGrid = ({ size: { width }, isEditing }) => {
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
         cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
         rowHeight={60}
-        maxRows={10}
         width={width}
         onLayoutChange={onLayoutChange}
-        compactType="horizontal"
+        compactType="vertical"
         containerPadding={[20, 0]}
-        static={true}
       >
-        {items.map(key => (
-          <GridItem key={key} className="widget" data-grid={{ w: 3, h: 2, x: 0, y: 0 }} isEditing={isEditing}>
-            <SoopGroup />
+        {tab.groups.map((group, index) => (
+          <GridItem key={group.groupId} className="widget" data-grid={layouts.lg[index]} isEditing={isEditing}>
+            <SoopGroup group={group} />
           </GridItem>
         ))}
       </ResponsiveGridLayout>
