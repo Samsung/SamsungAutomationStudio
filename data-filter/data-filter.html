@@ -33,11 +33,9 @@
         },
         stdPath: {
           value: "",
-          require: true,
         },
         outputPaths: {
           value: [],
-          require: true,
         },
         stdTree: {
           value: [],
@@ -51,7 +49,7 @@
       icon: "font-awesome/fa fa-filter",
       paletteLabel: "Data Filter",
       label: function () {
-        return "Data Filter";
+        return this.name;
       },
       oneditsave: function () {
         this.stdPath = stdPath;
@@ -75,6 +73,9 @@
           .css({ width: "100%", height: "100%" })
           .appendTo(".node-input-output")
           .treeList({});
+
+        stdPath = this.stdPath;
+        outputPaths = this.outputPaths;
 
         if (this.stdTree !== undefined) {
           stdTree = [];
