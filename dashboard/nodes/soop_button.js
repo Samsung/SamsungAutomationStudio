@@ -42,10 +42,6 @@ module.exports = function (RED) {
       payload = Date.now();
     }
 
-    if (payloadType === "date") {
-      payload = Date.now();
-    }
-
     function sendMessage(msg) {
       if (topic) {
         RED.util.setMessageProperty(msg, "topic", RED.util.evaluateNodeProperty(topic, topicType, node, msg), true);
