@@ -3,7 +3,6 @@ module.exports = function (RED) {
   const parser = new XMLParser();
 
   let targetArr = [];
-  let targetPath = [];
 
   function DataFilter(config) {
     RED.nodes.createNode(this, config);
@@ -19,7 +18,6 @@ module.exports = function (RED) {
         }
 
         targetArr = [];
-        targetPath = [];
 
         let input = {
           data: data,
@@ -31,22 +29,13 @@ module.exports = function (RED) {
 
         findTarget(input);
 
-        const cleanedOutputPaths = input.outputPaths.map((path) =>
-          cleanPath(path, [...targetPath])
-        );
+        const cleanedOutputPaths = input.outputPaths.map((path) => cleanPath(path, input.stdPath));
 
         let result = [];
         targetArr.forEach((target) => {
           let ret = {};
           cleanedOutputPaths.forEach((path) => {
-            if (path.length) {
-              const newTarget = JSON.parse(JSON.stringify(target));
-              ret[path] = formatJSONOnlyOne(newTarget, [...path]);
-            } else {
-              ret.push(
-                "Invalid Path Error: The outputPath must be a sibling or child path of targetPath"
-              );
-            }
+            makeResult(ret, target, [...path]);
           });
           result.push(ret);
         });
@@ -87,67 +76,63 @@ module.exports = function (RED) {
   }
 
   function findTargetOnlyOne(data, path, stdValue, stdType) {
-    key = path.shift();
-    targetPath.push(key);
-    if (key === undefined) {
-      targetPath.pop();
-      return compareData(data, stdValue, stdType);
+    if (path.length === 1) {
+      if (compareData(data[path], stdValue, stdType)) {
+        targetArr.push(data);
+        return;
+      }
     }
 
+    let key = path.shift();
     try {
       if (data[key] === undefined) {
-        targetArr.push(path.length ? `Invalid Key : ${key}` : undefined);
         return;
       }
       if (data[key] instanceof Array) {
         for (let item of data[key]) {
-          const targetsArr = [];
-          if (findTargetOnlyOne(item, [...path], stdValue, stdType)) {
-            targetsArr.push(item);
-          }
-          targetPath.pop();
-          if (targetsArr.length > 0) {
-            if (targetsArr.length === 1) {
-              targetArr.push(targetsArr[0]);
-            } else {
-              targetArr.push(targetsArr);
-            }
-          }
+          findTargetOnlyOne(item, [...path], stdValue, stdType);
         }
       }
-      return findTargetOnlyOne(data[key], path, stdValue, stdType);
+      findTargetOnlyOne(data[key], path, stdValue, stdType);
     } catch (error) {
-      targetPath.pop();
-      return `Unknown Error`;
+      console.log(`Unknown Error`);
     }
   }
 
-  function cleanPath(path, comparePath) {
-    path = path.split(".");
-    while (path[0] && comparePath[0] && path[0] === comparePath[0]) {
-      path.shift();
-      comparePath.shift();
+  function cleanPath(path, stdPath) {
+    let paths = path.split(".");
+    let stdPaths = stdPath.split(".");
+
+    while (stdPaths.length > 1) {
+      paths.shift();
+      stdPaths.shift();
     }
-    return path;
+    return paths;
   }
 
-  function formatJSONOnlyOne(data, path) {
-    key = path.shift();
-    if (key === undefined) return data;
-    try {
-      if (data[key] === undefined) {
-        return path.length ? `Invalid Key : ${key}` : undefined;
-      }
-      if (data[key] instanceof Array) {
-        const valArray = [];
-        for (item of data[key]) {
-          valArray.push(formatJSONOnlyOne(item, [...path]));
+  function makeResult(ret, target, path) {
+    if (path.legnth < 1) {
+      return;
+    } else if (path.length == 1) {
+      ret[path[0]] = target[path[0]];
+    } else {
+      let key = path.shift();
+      if (target[key] instanceof Array) {
+        if (ret[key] === undefined) {
+          ret[key] = [];
         }
-        return valArray;
+        for (let i = 0; i < target[key].length; i++) {
+          if (ret[key][i] === undefined) {
+            ret[key].push({});
+          }
+          makeResult(ret[key][i], target[key][i], [...path]);
+        }
+      } else {
+        if (ret[key] === undefined) {
+          ret[key] = {};
+        }
+        makeResult(ret[key], target[key], [...path]);
       }
-      return formatJSONOnlyOne(data[key], path);
-    } catch (error) {
-      return `Unknown Error`;
     }
   }
 

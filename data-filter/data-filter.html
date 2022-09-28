@@ -145,7 +145,10 @@
             generateStdPath(item);
 
             outputTree = [];
-            makeOutputTree(item);
+            let children = item.parent ? item.parent.children : stdTree;
+            makeOutputTree(outputTree, children);
+            //makeOutputTree(item);
+            outputTreeList.treeList("data", outputTree);
           }
         });
 
@@ -155,7 +158,7 @@
           }
 
           outputPaths = [];
-          generateOutputPaths();
+          generateOutputPaths(getPrePath(), outputTree);
         });
       },
     });
@@ -178,7 +181,7 @@
       }
     }
 
-    function generateOutputPaths() {
+    function getPrePath() {
       let pathKeywords = stdPath.split(".");
       let prePath = "";
 
@@ -187,8 +190,15 @@
           prePath += pathKeywords[i] + ".";
         }
       }
+      return prePath;
+    }
 
-      outputTree.forEach((item) => {
+    function generateOutputPaths(prePath, subtree) {
+      subtree.forEach((item) => {
+        if (item.children) {
+          generateOutputPaths(prePath + item.label + ".", item.children);
+          return;
+        }
         if (item.selected) {
           outputPaths.push(prePath + item.label);
         }
@@ -202,15 +212,16 @@
       stdPath += item.children ? item.label + "." : item.label;
     }
 
-    function makeOutputTree(item) {
-      let list = item.parent ? item.parent.children : stdTree;
-
-      list.forEach((child) => {
-        if (child.children === undefined && child.label !== item.label) {
+    function makeOutputTree(outputTree, stdTree) {
+      stdTree.forEach((child) => {
+        if (child.children === undefined) {
           outputTree.push(makeStdTreeItem(child.label, "outputPath", true));
+        } else {
+          outputTree.push(makeStdTreeItem(child.label, "outputPath", false));
+          outputTree[outputTree.length - 1].children = [];
+          makeOutputTree(outputTree[outputTree.length - 1].children, child.children);
         }
       });
-      outputTreeList.treeList("data", outputTree);
     }
 
     function makeStdTree(json, subtree) {
