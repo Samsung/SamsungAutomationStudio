@@ -65,12 +65,12 @@ module.exports = function (RED) {
       node.send(msg);
     }
 
-    // dashboard.addNode({
-    //   node: node,
-    //   onMessage: () => {
-    //     sendMessage({ payload: "", topic: "" });
-    //   },
-    // });
+    dashboard.addNode({
+      node: node,
+      onMessage: () => {
+        sendMessage({ payload: "", topic: "" });
+      },
+    });
 
     node.on("input", function (msg, send, done) {
       if (config.getInput) {
