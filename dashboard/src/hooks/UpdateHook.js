@@ -1,26 +1,25 @@
 // https://stackoverflow.com/questions/55075604/react-hooks-useeffect-only-on-update
-import React from "react";
+import { useRef, useEffect } from "react";
 
-const useIsMounted = () => {
-  const isMounted = React.useRef(false);
+function useIsMounted() {
+  const isMounted = useRef(false);
 
-  React.useEffect(function setIsMounted() {
+  useEffect(() => {
     isMounted.current = true;
-
-    return function cleanupSetIsMounted() {
+    return () => {
       isMounted.current = false;
     };
   }, []);
 
   return isMounted;
-};
+}
 
 export default function UpdateEffect(effect, dependencies) {
   const isMounted = useIsMounted();
-  const isInitialMount = React.useRef(true);
+  const isInitialMount = useRef(true);
 
-  React.useEffect(() => {
-    let effectCleanupFunc = function noop() {};
+  useEffect(() => {
+    let effectCleanupFunc = () => {};
 
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -33,5 +32,5 @@ export default function UpdateEffect(effect, dependencies) {
         isInitialMount.current = true;
       }
     };
-  }, dependencies); // eslint-disable-line react-hooks/exhaustive-deps
+  }, dependencies);
 }
