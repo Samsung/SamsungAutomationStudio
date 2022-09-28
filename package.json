@@ -27,7 +27,6 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
-      "soopLowerCase": "dashboard/nodes/soop_lower_case.js",
       "soopDashboardConfig": "dashboard/nodes/soop_dashboard_config.js",
       "soopSwitch": "dashboard/nodes/soop_switch.js"
     }
