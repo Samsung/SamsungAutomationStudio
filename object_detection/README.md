@@ -4,11 +4,13 @@ a node that detect various objects, determine the interactions between a user an
 
 detectable objects are about 80 that are easy to see around us like table, cup, etc
 
-![캡처](C:\Users\multicampus\Desktop\캡처1.PNG)
+![캡처](https://user-images.githubusercontent.com/57743143/192708101-bda33886-d665-46de-9e0b-d73efa1ec0d1.PNG)
 
 
 
 ### Properties
+
+![image](https://user-images.githubusercontent.com/57743143/192708281-79f7f7a6-eea6-4e1e-93c5-43bc24d9f659.png)
 
 - **Data Socket Url**
 
