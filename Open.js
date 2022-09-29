@@ -19,8 +19,7 @@ module.exports = function (RED) {
         mediapipeGlobalConfig.openNode = this;
         node.on("input", async function (msg) {
             try {
-                
-                mediapipeGlobalConfig.pid = exec(`python ./mediapipe/main.py`);
+                mediapipeGlobalConfig.pid = exec(`python ${__dirname}/mediapipe/main.py`);
                 await sleep(4000);
                 
                 mediapipeGlobalConfig.client.on('data', function(data) {
@@ -28,10 +27,16 @@ module.exports = function (RED) {
                     msg.payload = data.toString();
                     if(mediapipeGlobalConfig.mediapipeEnable){
                         mediapipeGlobalConfig.holisticNode.send(msg);
+                        mediapipeGlobalConfig.send();
                     }else{
                         mediapipeGlobalConfig.mediapipeEnable = true;
                         mediapipeGlobalConfig.openNode.send(msg);
                     }
+
+                });
+
+                mediapipeGlobalConfig.client.on('disconnect', function(data) {
+                    mediapipeGlobalConfig.mediapipeEnable = false;
                 });
 
                 mediapipeGlobalConfig.client.connect(1881, '127.0.0.1', function() {
@@ -44,6 +49,8 @@ module.exports = function (RED) {
 
             node.send(msg);
         });
+
+        
     }
 
     RED.nodes.registerType("open", MediapipeOpen, {});

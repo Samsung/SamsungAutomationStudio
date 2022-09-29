@@ -5,5 +5,23 @@ module.exports = {
     mediapipeEnable : false,
     pid : 0,
     openNode : null,
-    holisticNode : null
+    holisticNode : null,
+    running : false,
+    queue : [],
+    send : function(){
+        if(!this.mediapipeEnable){
+            this.running = false;
+            return;
+        }
+
+        if(this.queue.length == 0){
+            this.running = false;
+            return;
+        }else{
+            this.running = true;
+            this.client.write(this.queue[0]);
+            this.queue.shift();
+        }
+
+    },
 }
