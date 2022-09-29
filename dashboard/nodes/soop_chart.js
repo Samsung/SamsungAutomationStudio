@@ -27,6 +27,8 @@ module.exports = function (RED) {
         size: [
           parseInt(config.height || group.config.width / 2 + 1 || 4),
           parseInt(config.width || group.config.width || 6),
+          parseInt(config.widgetX),
+          parseInt(config.widgetY),
         ],
         title: config.label,
         chartType: config.chartType,
