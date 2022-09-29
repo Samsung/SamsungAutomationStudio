@@ -154,7 +154,7 @@ const App = () => {
       {tmpData.tabs.map((tab, idx) => {
         if (currentTab === idx) {
           console.log(tab);
-          return <SoopGrid isEditing={isEditing} currentTab={currentTab} tmpData={tmpData} tab={tab} />;
+          return <SoopGrid key={tab.tabId} isEditing={isEditing} currentTab={currentTab} tmpData={tmpData} tab={tab} />;
         }
       })}
       {/* <SoopGroup />
