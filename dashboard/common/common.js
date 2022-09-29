@@ -11,9 +11,8 @@ const EDITOR_SOCKET_TYPE = {
 const DASHBOARD_PATH = "/dashboard";
 
 const SOOP_NODE_TYPE = {
-  CONFIG: "soopDashboardConfig",
-  LOWER_CASE: "soopLowerCase",
-  SWITCH: "soopSwitch",
+  CONFIG: "soop_dashboard_config",
+  SWITCH: "soop_switch",
 };
 
 exports.FRONT_SOCKET_TYPE = FRONT_SOCKET_TYPE;
