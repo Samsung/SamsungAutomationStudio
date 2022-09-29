@@ -26,14 +26,12 @@ module.exports = function (RED) {
       format: config.format,
       range: [config.min, config.max],
       value: config.min,
+      units: config.units,
+      colorPicking: config.colorPicking,
     };
 
     node.on("input", function (msg) {
-      let form =
-        config.format
-          .replace(/{{/g, "")
-          .replace(/}}/g, "")
-          .replace(/\s/g, "") || "_zzz_zzz_zzz_";
+      let form = config.format.replace(/{{/g, "").replace(/}}/g, "").replace(/\s/g, "") || "_zzz_zzz_zzz_";
       form = form.split("|")[0];
       let value = RED.util.getMessageProperty(msg, form);
       if (value !== undefined) {

@@ -1,6 +1,6 @@
 <script type="text/javascript">
   RED.nodes.registerType("soop_chart", {
-    category: "soop_dashboard", // 이후 수정되어야할 부분
+    category: "soop", // 이후 수정되어야할 부분
     color: "rgb(100, 189, 27)", // 이후 수정되어야할 부분
     defaults: {
       group: { type: "soop_group", required: true }, // 이후 수정되어야할 부분
@@ -133,6 +133,7 @@
         }
       });
     },
+
   });
 </script>
 
@@ -233,6 +234,7 @@
         <option value="cubic-mono">Cubic-mono</option>
       </select>
     </span>
+    
     <span id="cutout" class="chart-property pie">
       <label for="node-input-cutout" style="width:auto">Cutout</label>
       <input type="text" id="node-input-cutout" style="width:40px;" />
