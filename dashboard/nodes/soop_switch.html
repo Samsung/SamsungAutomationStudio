@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  RED.nodes.registerType("soopSwitch", {
+  RED.nodes.registerType("soop_switch", {
     category: "common",
     color: "#3092f0",
     defaults: {
@@ -8,18 +8,18 @@
     outputs: 1,
     icon: "file.svg",
     label: function () {
-      return this.name || "soopSwitch";
+      return this.name || "Switch";
     },
   });
 </script>
 
-<script type="text/html" data-template-name="soopSwitch">
+<script type="text/html" data-template-name="soop_switch">
   <div class="form-row">
     <label for="node-input-name"> <i class="fa fa-tag"></i>Name </label>
     <input type="text" id="node-input-name" placeholder="Name" />
   </div>
 </script>
 
-<script type="text/html" data-help-name="soopSwitch">
+<script type="text/html" data-help-name="soop_switch">
   <p>A simple switch node</p>
 </script>
