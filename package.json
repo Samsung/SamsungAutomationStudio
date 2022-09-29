@@ -29,7 +29,7 @@
       "SlackNotification": "303-SlackNotification.js",
       "soop_dashboard_config": "dashboard/nodes/soop_dashboard_config.js",
       "soop_switch": "dashboard/nodes/soop_switch.js",
-      "soop_button": "dashbaord/nodes/soop_button.js",
+      "soop_button": "dashboard/nodes/soop_button.js",
       "soop_chart": "dashboard/nodes/soop_chart.js",
       "soop_gauge": "dashbaord/nodes/soop_gauge.js",
       "soop_slider": "dashboard/nodes/soop_slider.js"
