@@ -40,9 +40,8 @@ module.exports = function (RED) {
           state.options.push(o);
         });
       }
+      dashboard.emitState(state);
     });
-
-    dashboard.emitState(state);
 
     dashboard.addNode({
       node: node,
