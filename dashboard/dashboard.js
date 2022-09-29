@@ -49,21 +49,26 @@ function initSocket(io) {
   });
 }
 
-function emitState(state) {
+function emitState(state, isTimeSerial = false) {
   const nodeId = state.node_id;
-  state.time = Date.now();
 
-  if (globalNodes && globalNodes.hasOwnProperty(nodeId)) {
-    if (Array.isArray(globalNodes[nodeId].states)) {
-      globalNodes[nodeId].states.push(state);
-    } else {
-      globalNodes[nodeId].states = [state];
-    }
-  } else {
+  if (globalNodes && !globalNodes.hasOwnProperty(nodeId)) {
     globalNodes[nodeId] = {
-      states: [state],
+      states: [],
     };
   }
+
+  if (!Array.isArray(globalNodes[nodeId].states)) {
+    globalNodes[nodeId].states = [];
+  }
+
+  if (isTimeSerial) {
+    state.time = Date.now();
+  } else {
+    globalNodes[nodeId].states = [];
+  }
+
+  globalNodes[nodeId].states.push(state);
 
   emit(state);
 }
