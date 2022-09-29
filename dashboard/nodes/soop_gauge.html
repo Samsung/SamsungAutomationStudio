@@ -1,6 +1,6 @@
 <script type="text/javascript">
   RED.nodes.registerType("soop_gauge", {
-    category: "common",
+    category: "soop-dashboard",
     color: "rgb(255, 189, 27)",
     defaults: {
       name: {
@@ -41,11 +41,7 @@
       return this.min + " - " + this.max;
     },
     label: function () {
-      return (
-        this.name ||
-        (~this.label.indexOf("{{") ? null : this.label) ||
-        "new_gauge"
-      );
+      return this.name || (~this.label.indexOf("{{") ? null : this.label) || "new_gauge";
     },
     labelStyle: function () {
       return this.name ? "node_label_italic" : "";
@@ -89,9 +85,7 @@
     <input type="text" id="node-input-label" />
   </div>
   <div class="form-row">
-    <label for="node-input-format"
-      ><i class="fa fa-i-cursor"></i> Value format</label
-    >
+    <label for="node-input-format"><i class="fa fa-i-cursor"></i> Value format</label>
     <input type="text" id="node-input-format" placeholder="{{value}}" />
   </div>
   <div class="form-row">
@@ -110,8 +104,8 @@
 <script type="text/html" data-help-name="soop_gauge">
   <p>Adds a gauge type widget to the user interface.</p>
   <p>
-    The <code>msg.payload</code> is searched for a numeric <i>value</i> and is
-    formatted in accordance with the defined <b>Value Format</b>.
+    The <code>msg.payload</code> is searched for a numeric <i>value</i> and is formatted in accordance with the defined
+    <b>Value Format</b>.
   </p>
   <p>The gauge has several modes. Regular gauge, donut, compass and wave.</p>
   <p>These gauges are drawn by Chart.js.</p>
