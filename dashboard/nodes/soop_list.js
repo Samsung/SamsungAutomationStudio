@@ -29,12 +29,10 @@ module.exports = function (RED) {
 
     node.on("input", function (msg) {
       if (msg.payload.length != 0) {
-        if (state.nodeType == "checkbox") {
-          state.nodeType = "ol";
-        }
         state.options = [];
         msg.payload.forEach(function (v) {
           let o = {
+            check: false,
             value: v,
           };
           state.options.push(o);
