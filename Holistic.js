@@ -4,7 +4,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(node, config);
         const mediapipeGlobalConfig = require('./MediapipeConfig.js');
         mediapipeGlobalConfig.holisticNode = this;
-        node.on("input", async function (msg) {
+        node.on("input", function (msg) {
             mediapipeGlobalConfig.client.write(msg.payload);
             // node.status(200).send(msg);
             // node.error(e);
