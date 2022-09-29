@@ -76,27 +76,31 @@ function emit(state) {
 function setInitNodes(nodes) {
   const exist = {};
   for (let i = 0; i < nodes.length; ++i) {
-    globalNodes[nodes[i].id] = {
-      editor: nodes[i],
-      states: [],
-    };
+    if (!globalNodes[nodes[i].id]) globalNodes[nodes[i].id] = {};
+
+    globalNodes[nodes[i].id].editor = nodes[i];
+    globalNodes[nodes[i].id].states = [];
+
     exist[nodes[i].id] = true;
   }
 
   Object.keys(globalNodes).map(key => {
     if (!exist[key]) {
-      console.log(key + " is deleted");
       delete globalNodes[key];
     }
   });
 }
 
-function addNode(node) {
+function addNode(nodeObject) {
+  if (typeof nodeObject != "object") return;
+  const node = nodeObject.node;
+  if (!node) return;
+
   if (globalNodes && globalNodes.hasOwnProperty(node.id)) {
-    globalNodes[node.id].runtime = node;
+    globalNodes[node.id].runtime = nodeObject;
   } else {
     globalNodes[node.id] = {
-      runtime: node,
+      runtime: nodeObject,
       states: [],
     };
   }
