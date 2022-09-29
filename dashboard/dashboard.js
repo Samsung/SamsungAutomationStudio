@@ -49,7 +49,7 @@ function initSocket(io) {
   });
 }
 
-function emitState(state, isTimeSerial = false) {
+function emitState(state, isTimeSeries = false) {
   const nodeId = state.node_id;
 
   if (globalNodes && !globalNodes.hasOwnProperty(nodeId)) {
@@ -62,20 +62,22 @@ function emitState(state, isTimeSerial = false) {
     globalNodes[nodeId].states = [];
   }
 
-  if (isTimeSerial) {
+  if (isTimeSeries) {
     state.time = Date.now();
   } else {
     globalNodes[nodeId].states = [];
   }
 
-  globalNodes[nodeId].states.push(state);
+  const sendState = { ...state };
+  delete sendState.node_id;
 
-  emit(nodeId, state);
+  globalNodes[nodeId].states.push(sendState);
+
+  emit(nodeId, sendState, isTimeSeries);
 }
 
-function emit(nodeId, state) {
-  if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, state });
-  else io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, state: [state] });
+function emit(nodeId, state, isTimeSeries) {
+  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, isTimeSeries, state: state });
 }
 
 function setInitNodes(nodes) {

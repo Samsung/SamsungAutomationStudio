@@ -20,7 +20,7 @@ const SliderLabel = styled.div`
   margin: auto 10px;
 `;
 
-const SoopSlider = ({ node }) => {
+const SoopSlider = ({ node, states }) => {
   const exampleData = {
     color: "pink",
     label: "This is Label!",
@@ -31,12 +31,12 @@ const SoopSlider = ({ node }) => {
     payload: 50,
   };
 
-  useEffect(() => {
-    console.log(node);
-  }, [node]);
-
   // FIXME: 현재 보이는 값 -> props에서 들어오는 것으로 수정해야 한다.
   const [value, setValue] = useState(exampleData.payload);
+
+  useEffect(() => {
+    if (Array.isArray(states)) setValue(states[0].value);
+  }, [states]);
 
   const muiTheme = createTheme({
     palette: {

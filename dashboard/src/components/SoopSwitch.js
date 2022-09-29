@@ -49,7 +49,7 @@ const SwitchHandle = styled.span`
   transition: 0.2s;
 `;
 
-const SoopSwitch = ({ node }) => {
+const SoopSwitch = ({ node, states }) => {
   const [switchState, setSwitchState] = useState(false);
 
   useUpdateHook(() => {
