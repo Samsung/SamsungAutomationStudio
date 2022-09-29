@@ -26,6 +26,8 @@ module.exports = function (RED) {
       format: config.format,
       range: [config.min, config.max],
       value: config.min,
+      units: config.units,
+      colorPicking: config.colorPicking,
     };
 
     node.on("input", function (msg) {

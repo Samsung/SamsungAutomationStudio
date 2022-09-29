@@ -21,6 +21,12 @@
       },
       gType: { value: "gauge" },
       format: { value: "{{value}}" },
+      units: {
+        value: "",
+      },
+      colorPicking: {
+        value: "blue",
+      },
       min: {
         value: 0,
         required: true,
@@ -51,11 +57,25 @@
         this.gType = "gauge";
         $("#node-input-gtype").val("gauge");
       }
+
+      if (this.colorPicking === undefined) {
+        this.colorPicking = "blue";
+        $("input[type=radio][name=colorPicking]")[0].checked = true;
+      }
+
       $("#node-input-size").elementSizer({
         width: "#node-input-width",
         height: "#node-input-height",
         group: "#node-input-group",
       });
+
+      let pickers = $("input[type=radio][name=colorPicking]");
+      for (var i = 0; i < pickers.length; i++) {
+        if (pickers[i].value == this.colorPicking) pickers[i].checked = true;
+      }
+    },
+    oneditsave: function () {
+      this.colorPicking = $("input[type=radio][name=colorPicking]:checked")[0].value;
     },
   });
 </script>
@@ -89,8 +109,8 @@
     <input type="text" id="node-input-format" placeholder="{{value}}" />
   </div>
   <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-    <input type="text" id="node-input-name" />
+    <label for="node-input-units"><i class="fa fa-i-cursor"></i> Units</label>
+    <input type="text" id="node-input-units" placeholder="%" />
   </div>
   <div class="form-row">
     <label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
@@ -99,13 +119,34 @@
     <span for="not-input-max" style="margin-left:22px;">max</span>
     <input type="text" id="node-input-max" style="width:60px" />
   </div>
+  <div class="form-row">
+    <label for="node-input-color"><i class="fa fa fa-tint"></i> Color</label>
+    <input type="radio" name="colorPicking" id="colorPicking1" style="width: 0px;" value="blue" />
+    <label class="styled1" for="colorPicking1" style="width: 60px;text-align: center;">blue</label>
+    <input type="radio" name="colorPicking" id="colorPicking2" style="width: 0px;" value="orange" />
+    <label class="styled2" for="colorPicking2" style="width: 60px;text-align: center;"
+      >orange</label
+    >
+    <input type="radio" name="colorPicking" id="colorPicking3" style="width: 0px;" value="pink" />
+    <label class="styled3" for="colorPicking3" style="width: 60px;text-align: center;">pink</label>
+    <input type="radio" name="colorPicking" id="colorPicking4" style="width: 0px;" value="purple" />
+    <label class="styled4" for="colorPicking4" style="width: 60px;text-align: center;"
+      >purple</label
+    >
+    <input type="radio" name="colorPicking" id="colorPicking5" style="width: 0px;" value="green" />
+    <label class="styled5" for="colorPicking5" style="width: 60px;text-align: center;">green</label>
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" />
+  </div>
 </script>
 
 <script type="text/html" data-help-name="soop_gauge">
   <p>Adds a gauge type widget to the user interface.</p>
   <p>
-    The <code>msg.payload</code> is searched for a numeric <i>value</i> and is formatted in accordance with the defined
-    <b>Value Format</b>.
+    The <code>msg.payload</code> is searched for a numeric <i>value</i> and is formatted in
+    accordance with the defined <b>Value Format</b>.
   </p>
   <p>The gauge has several modes. Regular gauge, donut, compass and wave.</p>
   <p>These gauges are drawn by Chart.js.</p>
