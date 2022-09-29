@@ -25,6 +25,14 @@ module.exports = function (RED) {
     var step = Math.abs(config.step) || 1;
     var value = min;
 
+    // Receive msg from upstream node in a flow
+    node.on("input", function (msg) {
+      dashboard.emitState({
+        node_id: node.id,
+        value: parseInt(msg.payload),
+      });
+    });
+
     // send node configuration
     /* Currently, html<->js communication is used by config
      ** When it need to change by using socket communication
@@ -63,18 +71,6 @@ module.exports = function (RED) {
       when: config.send || "always",
       invert: parseFloat(config.min) > parseFloat(config.max) ? true : false,
       payload: Math.max(min, Math.min(max, value)),
-    });
-
-    // Receive msg from upstream node in a flow
-    node.on("input", function (msg) {
-      if (node.pass) {
-        // pass input flow to output
-        value = msg.payload;
-        /* need some logic to update dashboard ui
-         *  ex) dashobard.emit(some data)
-         */
-        node.send(msg); // send output
-      }
     });
 
     // if (node.pass) {

@@ -127,46 +127,42 @@ const App = () => {
   const drawNode = node => {
     switch (node?.editor?.type) {
       case SOOP_NODE_TYPE.SWITCH:
-        return <SoopSwitch key={node.editor.id} nodeId={node.editor.id} />;
-    }
-
-    if (node && node.editor) {
-      return (
-        <div key={node.editor.id}>
-          {node.editor.type}({node.editor.id})
-        </div>
-      );
+        return <SoopSwitch key={node.editor.id} node={node.editor} />;
+      case SOOP_NODE_TYPE.SLIDER:
+        return <SoopSlider key={node.editor.id} node={node.editor} />;
+      case SOOP_NODE_TYPE.GAUGE:
+        return <SoopGauge key={node.editor.id} node={node.editor} />;
     }
   };
 
-  //return <>{Object.keys(nodes).map(key => drawNode(nodes[key]))}</>;
+  return <>{Object.keys(nodes).map(key => drawNode(nodes[key]))}</>;
 
-  return (
-    <>
-      <SoopNavbar
-        isEditing={isEditing}
-        handleIsEditing={handleIsEditing}
-        currentTab={currentTab}
-        handleCurrentTab={handleCurrentTab}
-        tmpData={tmpData}
-      />
+  // return (
+  //   <>
+  //     <SoopNavbar
+  //       isEditing={isEditing}
+  //       handleIsEditing={handleIsEditing}
+  //       currentTab={currentTab}
+  //       handleCurrentTab={handleCurrentTab}
+  //       tmpData={tmpData}
+  //     />
 
-      {tmpData.tabs.map((tab, idx) => {
-        if (currentTab === idx) {
-          console.log(tab);
-          return <SoopGrid key={tab.tabId} isEditing={isEditing} currentTab={currentTab} tmpData={tmpData} tab={tab} />;
-        }
-      })}
-      {/* <SoopGroup />
-      <SoopList />
-      <SoopButton />
-      <SoopText />
-      <SoopSlider />
-      <SoopGauge />
-      <SoopChart />
-      <SoopDropdown /> */}
-    </>
-  );
+  //     {tmpData.tabs.map((tab, idx) => {
+  //       if (currentTab === idx) {
+  //         console.log(tab);
+  //         return <SoopGrid key={tab.tabId} isEditing={isEditing} currentTab={currentTab} tmpData={tmpData} tab={tab} />;
+  //       }
+  //     })}
+  //     {/* <SoopGroup />
+  //     <SoopList />
+  //     <SoopButton />
+  //     <SoopText />
+  //     <SoopSlider />
+  //     <SoopGauge />
+  //     <SoopChart />
+  //     <SoopDropdown /> */}
+  //   </>
+  // );
 };
 
 export default App;

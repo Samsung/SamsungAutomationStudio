@@ -5,7 +5,9 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { mainColor, fontSize, fontColor } from "../assets/DesignOption";
 
 const SliderContainer = styled.div`
-  width: 300px;
+  width: 100%;
+  padding: 5px 10px;
+  box-sizing: border-box;
   display: flex;
   color: ${fontColor.light};
   font-family: "Pretendard-Bold";
@@ -18,7 +20,7 @@ const SliderLabel = styled.div`
   margin: auto 10px;
 `;
 
-const SoopSlider = () => {
+const SoopSlider = ({ node }) => {
   const exampleData = {
     color: "pink",
     label: "This is Label!",
@@ -28,6 +30,11 @@ const SoopSlider = () => {
     invert: false,
     payload: 50,
   };
+
+  useEffect(() => {
+    console.log(node);
+  }, [node]);
+
   // FIXME: 현재 보이는 값 -> props에서 들어오는 것으로 수정해야 한다.
   const [value, setValue] = useState(exampleData.payload);
 
@@ -52,9 +59,9 @@ const SoopSlider = () => {
             value={value}
             aria-label="Default"
             valueLabelDisplay="auto"
-            min={exampleData.range[0]}
-            max={exampleData.range[1]}
-            step={exampleData.range[2]}
+            min={node.min}
+            max={node.max}
+            step={node.step}
             onChange={(_, value) => {
               setValue(value);
             }}

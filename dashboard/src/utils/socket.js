@@ -13,6 +13,7 @@ export const initlaizeSocket = dispatch => {
   });
 
   socket.on(FRONT_SOCKET_TYPE.INIT_NODE, states => {
+    console.log(states);
     dispatch(setInitNode(states));
   });
 

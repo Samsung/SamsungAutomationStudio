@@ -70,12 +70,12 @@ function emitState(state, isTimeSerial = false) {
 
   globalNodes[nodeId].states.push(state);
 
-  emit(state);
+  emit(nodeId, state);
 }
 
-function emit(state) {
-  if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, state);
-  else io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, [state]);
+function emit(nodeId, state) {
+  if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, state });
+  else io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, state: [state] });
 }
 
 function setInitNodes(nodes) {
