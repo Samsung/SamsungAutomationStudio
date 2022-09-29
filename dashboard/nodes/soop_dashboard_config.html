@@ -28,7 +28,7 @@
   function createDashboardConfigNode() {
     const configNodes = [];
     RED.nodes.eachConfig(node => {
-      if (node.type === "soopDashboardConfig") {
+      if (node.type === "soop_dashboard_config") {
         configNodes.push(node);
       }
     });
@@ -42,8 +42,8 @@
     if (!dashboardConfgNode) {
       dashboardConfgNode = {
         id: RED.nodes.id(),
-        _def: RED.nodes.getType("soopDashboardConfig"),
-        type: "soopDashboardConfig",
+        _def: RED.nodes.getType("soop_dashboard_config"),
+        type: "soop_dashboard_config",
         users: [],
       };
     }
@@ -54,7 +54,7 @@
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType("soopDashboardConfig", {
+  RED.nodes.registerType("soop_dashboard_config", {
     category: "config",
     defaults: {
       name: {},
@@ -67,6 +67,6 @@
   });
 </script>
 
-<script type="text/html" data-template-name="soopDashboardConfig">
+<script type="text/html" data-template-name="soop_dashboard_config">
   <div>This is configuration node for soop dashboard.</div>
 </script>

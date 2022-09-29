@@ -31,8 +31,7 @@ module.exports = function (RED) {
     };
 
     node.on("input", function (msg) {
-      let form =
-        config.format.replace(/{{/g, "").replace(/}}/g, "").replace(/\s/g, "") || "_zzz_zzz_zzz_";
+      let form = config.format.replace(/{{/g, "").replace(/}}/g, "").replace(/\s/g, "") || "_zzz_zzz_zzz_";
       form = form.split("|")[0];
       let value = RED.util.getMessageProperty(msg, form);
       if (value !== undefined) {
