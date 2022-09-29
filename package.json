@@ -31,7 +31,7 @@
       "soop_switch": "dashboard/nodes/soop_switch.js",
       "soop_button": "dashboard/nodes/soop_button.js",
       "soop_chart": "dashboard/nodes/soop_chart.js",
-      "soop_gauge": "dashbaord/nodes/soop_gauge.js",
+      "soop_gauge": "dashboard/nodes/soop_gauge.js",
       "soop_slider": "dashboard/nodes/soop_slider.js"
     }
   },
