@@ -3,15 +3,23 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
         node.on('input', function (msg) {
-            let inputList;
-            if(msg.payload.log !== undefined) inputList = msg.payload.log.data
-            else inputList = msg.payload.detect;
-            let isLog = msg.payload.log !== undefined ? true : false;
-            let date = msg.payload.log !== undefined ? msg.payload.log.date : null
+
+            let inputList = null;
+            let isLog = null;
+            let date = null;
+            if(msg.payload.log !== undefined){
+                inputList = msg.payload.log.data;
+                isLog = true;
+                date = msg.payload.log.date
+            }
+            else{
+                inputList = msg.payload.data;
+                isLog = false;
+            }
             let objects = [];
             let person = {};
-            
 
+        
             inputList.forEach(object => {
                 let centerX = object.bbox[0] + object.bbox[2] / 2;
                 let centerY = object.bbox[1] + object.bbox[3] / 2;
@@ -23,7 +31,7 @@ module.exports = function (RED) {
 
 
             if (person === undefined) return;
-            let determine = objects[0];
+            let determine = objects[0]; 
             if (determine === undefined) return;
             objects.forEach(object => {
                 let distance = Math.sqrt(Math.pow(Math.abs(object.centerX - person.centerX), 2) + Math.pow(Math.abs(object.centerY - person.centerY), 2));
