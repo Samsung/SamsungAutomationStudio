@@ -19,8 +19,7 @@ module.exports = {
             return;
         }else{
             this.running = true;
-            this.client.write(this.queue[0]);
-            this.queue.shift();
+            this.client.write(this.queue.shift());
         }
 
     },

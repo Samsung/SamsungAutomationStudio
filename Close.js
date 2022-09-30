@@ -7,11 +7,15 @@ module.exports = function (RED) {
         RED.nodes.createNode(node, config);
         node.on("input", function (msg){
             try {
-                mediapipeGlobalConfig.queue.push('close');
+                const requestData = {
+                    command : "close"
+                }
+                mediapipeGlobalConfig.queue.push(JSON.stringify(requestData));
 
                 if(!mediapipeGlobalConfig.running){
                     mediapipeGlobalConfig.send();
                     mediapipeGlobalConfig.mediapipeEnable = false;
+                    
                 }
                 msg.payload = 'success';
             } catch (error) {

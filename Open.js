@@ -19,6 +19,9 @@ module.exports = function (RED) {
         mediapipeGlobalConfig.openNode = this;
         node.on("input", async function (msg) {
             try {
+                // if already opened, exit function
+                if(mediapipeGlobalConfig.mediapipeEnable) return;
+
                 exec(`python ${__dirname}/mediapipe/main.py`);
                 await sleep(4000);
                 
@@ -52,7 +55,10 @@ module.exports = function (RED) {
                 });
 
                 mediapipeGlobalConfig.client.connect(1881, '127.0.0.1', function() {
-                    mediapipeGlobalConfig.client.write('sendTest');
+                    const requestData = {
+                        command : "open"
+                    }
+                    mediapipeGlobalConfig.client.write(JSON.stringify(requestData));
                 });
             } catch (error) {
                 console.log(error);

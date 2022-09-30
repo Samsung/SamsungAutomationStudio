@@ -1,7 +1,7 @@
 # pip install -r requirements.txt
 
 import socket
-import sys
+import json
 from _thread import *
 from mediapipeController import *
 
@@ -67,24 +67,33 @@ def dataCommunication(client_socket, addr):
         try:
 
             # Wait for data to be received
-            data = client_socket.recv(10000000)
+            data = client_socket.recv(100000)
             # receive empty data when client is destroyed
             if not data:
                 print('>> Disconnected by ' + addr[0], ':', addr[1])
                 break
+
+            data = data.decode()
+            data = json.loads(data)
             
-            if len(data) <= 10 :
-                data = data.decode()
-                print('>> Received from ' + addr[0], ':', addr[1], data)
-                if data == "sendTest":
-                    client_socket.send("MediaPipe Server(v0.1) is started successfully".encode('ascii'))
-                elif data == "close" :
-                    closeServer()
-                    break
-            else :
-                # 클라이언트에게 실행 결과 보내기
-                result = predict(data)
+            # data
+            # {
+            #   command : "open/close/holistic",(one of the three)
+            #   path : "" (only holistic),
+            #   result : "array"
+            # }
+            #
+
+            if data["command"] == "open" : 
+                client_socket.send("MediaPipe Server(v0.1) is started successfully".encode('ascii'))
+            elif data["command"] == "close":
+                closeServer()
+                break
+            elif data["command"] == "holistic":
+                result = predict(data["path"])
                 client_socket.send(result.encode('ascii'))
+            else : 
+                client_socket.send("invalid request.".encode('ascii'))
 
         except ConnectionResetError as e:
             print('>> Disconnected by ' + addr[0], ':', addr[1])
