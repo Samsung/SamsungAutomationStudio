@@ -13,6 +13,49 @@
 
   function initializeDashboardConfig() {
     RED.events.on("deploy", function () {
+      // const dashboardState = {
+      //   tabs: [],
+      // };
+
+      // // update tab state
+      // RED.nodes.eachConfig(node => {
+      //   if (node.type == "soop_tab") dashboardState.tabs.push(node);
+      // });
+
+      // // update group state
+      // RED.nodes.eachConfig(node => {
+      //   for (tab in dashboardState.tabs) {
+      //     if (tab.id == node.tabId) {
+      //       if (Array.isArray(tab.groups)) {
+      //         tab.groups.push(node);
+      //       } else {
+      //         tab.groups = [node];
+      //       }
+      //       break;
+      //     }
+      //   }
+      // });
+
+      // // update node state
+      // RED.nodes.eachNode(node => {
+      //   if (node.type.indexOf("soop") !== -1) {
+      //     for (tab in dashboardState.tabs) {
+      //       for (group in tab.groups) {
+      //         if (group.id == node.groupId) {
+      //           if (Array.isArray(group.nodes)) {
+      //             group.nodes.push(node);
+      //           } else {
+      //             group.nodes = [node];
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // });
+
+      // dashboardConfigNode = createDashboardConfigNode();
+      // socket.emit(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, dashboardState);
+
       const dashboardNodes = [];
       RED.nodes.eachNode(node => {
         if (node.type.indexOf("soop") !== -1) {
