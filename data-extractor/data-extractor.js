@@ -1,4 +1,6 @@
 module.exports = function (RED) {
+  const { XMLParser } = require("fast-xml-parser");
+  const parser = new XMLParser();
   let result = [];
 
   function formatJSON(json, paths) {
@@ -50,9 +52,16 @@ module.exports = function (RED) {
 
     node.on("input", function (msg) {
       try {
+        let data;
+        if (config.response_type === "json") {
+          data = JSON.parse(msg.payload);
+        } else {
+          data = parser.parse(msg.payload);
+        }
+
         let paths = config.paths;
         result = [paths];
-        formatJSON(msg.payload, paths);
+        formatJSON(data, paths);
         msg.payload = result;
         node.send(msg);
       } catch (error) {

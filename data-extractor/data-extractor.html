@@ -38,6 +38,9 @@
         paths: {
           value: [],
         },
+        response_type: {
+          value: "",
+        }
       },
       inputs: 1,
       outputs: 1,
@@ -56,7 +59,7 @@
           .appendTo(".node-input-api-tree")
           .treeList({});
 
-        $("#node-input-type").typedInput({
+        $("#node-input-response_type").typedInput({
           types: [
             {
               value: "Type",
@@ -78,7 +81,7 @@
         }
 
         $("#node-input-read").on("click", function () {
-          let type = $("#node-input-type").typedInput("value");
+          let type = $("#node-input-response_type").typedInput("value");
 
           fetch($("#node-input-url").val())
             .then(function (response) {
@@ -203,7 +206,7 @@
   </div>
   <div class="form-row">
     <label for="node-input-type"><i class="fa fa-file-o"></i> Type</label>
-    <input type="text" id="node-input-type" style="width:70%;">
+    <input type="text" id="node-input-response_type" style="width:70%;">
   </div>
   <div class="form-row">
     <label for="node-input-url"><i class="fa fa-globe"></i> URL</label>
