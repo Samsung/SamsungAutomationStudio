@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { mainColor, fontSize, fontColor, gradientColor } from "../../assets/DesignOption";
+import { fontSize, fontColor } from "../../assets/DesignOption";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -13,6 +13,7 @@ const SoopBarChart = () => {
     "rgba(253, 89, 136, 0.4)",
     "rgba(132, 67, 246, 0.4)",
     "rgba(9, 194, 141, 0.4)",
+    "rgba(255, 135, 66, 0.4)",
   ];
   const bdColor = [
     "rgba(17, 83, 252, 1)",
@@ -20,6 +21,7 @@ const SoopBarChart = () => {
     "rgba(253, 89, 136, 1)",
     "rgba(132, 67, 246, 1)",
     "rgba(9, 194, 141, 1)",
+    "rgba(255, 135, 66, 1)",
   ];
   const exampleData = {
     node: {
@@ -88,12 +90,9 @@ const SoopBarChart = () => {
   const [chartData, setChartData] = useState({ datasets: [] });
   const [chartOptions, setChartOptions] = useState({});
 
-  const timeSeries = Date.now();
-  const timeseriesToDateMoment = moment(timeSeries).format(exampleData.node.xAxisFormat);
-  console.log("moment 변환", timeseriesToDateMoment);
-
-  // TODO: bar nontime ver.
-  // states의 key가 labels가 된다.?
+  // const timeSeries = Date.now();
+  // const timeseriesToDateMoment = moment(timeSeries).format(exampleData.node.xAxisFormat);
+  // console.log("moment 변환", timeseriesToDateMoment);
 
   useEffect(() => {
     if (!exampleData.node.isTimeSeriesData) {
@@ -109,6 +108,7 @@ const SoopBarChart = () => {
               "rgba(253, 89, 136, 0.4)",
               "rgba(132, 67, 246, 0.4)",
               "rgba(9, 194, 141, 0.4)",
+              "rgba(255, 135, 66, 0.4)",
             ],
             borderColor: [
               "rgba(17, 83, 252, 1)",
@@ -116,6 +116,7 @@ const SoopBarChart = () => {
               "rgba(253, 89, 136, 1)",
               "rgba(132, 67, 246, 1)",
               "rgba(9, 194, 141, 1)",
+              "rgba(255, 135, 66, 1)",
             ],
             borderWidth: 1,
           },
@@ -182,12 +183,11 @@ const SoopBarChart = () => {
         return {
           label: key,
           data: exampleData.states[key].map(d => d.value),
-          backgroundColor: bgColor[idx % 5],
-          borderColor: bdColor[idx % 5],
+          backgroundColor: bgColor[idx % 6],
+          borderColor: bdColor[idx % 6],
           borderWidth: 1,
         };
       });
-      console.log("지금저장된 datasets", currentDatasets);
       const currentChartData = {
         labels: currentLabels,
         datasets: currentDatasets,

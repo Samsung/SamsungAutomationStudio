@@ -15,7 +15,7 @@ const SoopPieChart = () => {
       title: "pie chart",
       chartType: "pie",
       cutout: 0,
-      legend: false,
+      legend: true,
       blankLabel: "no data",
     },
     id: "노드의 id",
@@ -25,6 +25,7 @@ const SoopPieChart = () => {
       TV: [{ value: 3 }],
       사과: [{ value: 1 }],
       바나나: [{ value: 3 }],
+      키위: [{ value: 3 }],
     },
   };
 
@@ -45,6 +46,7 @@ const SoopPieChart = () => {
             "rgba(253, 89, 136, 0.2)",
             "rgba(132, 67, 246, 0.2)",
             "rgba(9, 194, 141, 0.2)",
+            "rgba(255, 135, 66, 0.2)",
           ],
           borderColor: [
             "rgba(17, 83, 252, 1)",
@@ -52,6 +54,7 @@ const SoopPieChart = () => {
             "rgba(253, 89, 136, 1)",
             "rgba(132, 67, 246, 1)",
             "rgba(9, 194, 141, 1)",
+            "rgba(255, 135, 66, 1)",
           ],
           borderWidth: 1,
         },
