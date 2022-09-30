@@ -1,0 +1,32 @@
+{
+  "name": "@d5mi/node-red-contrib-data-extraction",
+  "version": "1.0.0",
+  "description": "A Node-RED Node for extracting data from api response",
+  "homepage": "https://github.com/D5MI/node-red-contrib-data-extraction",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/D5MI/node-red-contrib-data-extraction.git"
+  },
+  "bugs": {
+    "url": "https://github.com/D5MI/node-red-contrib-data-extraction/issues"
+  },
+  "license": "Apache 2.0",
+  "keywords": [
+    "node-red",
+    "sasm"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "author": "Team D5MI",
+  "node-red": {
+    "version": ">=1.3.0",
+    "nodes": {
+      "data-filter": "/data-filter/data-filter.js",
+      "data-extractor": "/data-extractor/data-extractor.js"
+    }
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.0.10"
+  }
+}

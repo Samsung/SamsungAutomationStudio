@@ -1,0 +1,552 @@
+[
+    {
+        "id": "491c7eaa777ec6d3",
+        "type": "tab",
+        "label": "플로우 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "22d42cc6ab8b6150",
+        "type": "http request",
+        "z": "491c7eaa777ec6d3",
+        "name": "openWeather",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=[api-key]",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 440,
+        "y": 220,
+        "wires": [
+            [
+                "d648d5d199852fdd",
+                "9604edf0e62a8d93"
+            ]
+        ]
+    },
+    {
+        "id": "240a69e26438fe12",
+        "type": "inject",
+        "z": "491c7eaa777ec6d3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 220,
+        "wires": [
+            [
+                "22d42cc6ab8b6150"
+            ]
+        ]
+    },
+    {
+        "id": "9604edf0e62a8d93",
+        "type": "data-filter",
+        "z": "491c7eaa777ec6d3",
+        "name": "Data Filter",
+        "response_type": "json",
+        "url": "https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=[api-key]",
+        "value": "Seoul",
+        "value_type": "str",
+        "label_value": "name",
+        "stdPath": "name",
+        "outputPaths": [
+            "main.temp",
+            "main.feels_like",
+            "main.temp_min",
+            "main.temp_max"
+        ],
+        "stdTree": [
+            {
+                "label": "coord",
+                "radio": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "lon",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "lat",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "weather",
+                "radio": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "id",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "main",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "description",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "icon",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "base",
+                "radio": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "main",
+                "radio": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "temp",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "feels_like",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "temp_min",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "temp_max",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "pressure",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "humidity",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "visibility",
+                "radio": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "wind",
+                "radio": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "speed",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "deg",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "clouds",
+                "radio": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "all",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "dt",
+                "radio": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "sys",
+                "radio": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "type",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "id",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "country",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "sunrise",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "sunset",
+                        "radio": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "timezone",
+                "radio": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "id",
+                "radio": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "name",
+                "radio": true,
+                "selected": true,
+                "expanded": true
+            },
+            {
+                "label": "cod",
+                "radio": true,
+                "selected": false,
+                "expanded": true
+            }
+        ],
+        "outputTree": [
+            {
+                "label": "coord",
+                "checkbox": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "lon",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "lat",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "weather",
+                "checkbox": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "id",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "main",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "description",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "icon",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "base",
+                "checkbox": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "main",
+                "checkbox": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "temp",
+                        "checkbox": true,
+                        "selected": true,
+                        "expanded": true
+                    },
+                    {
+                        "label": "feels_like",
+                        "checkbox": true,
+                        "selected": true,
+                        "expanded": true
+                    },
+                    {
+                        "label": "temp_min",
+                        "checkbox": true,
+                        "selected": true,
+                        "expanded": true
+                    },
+                    {
+                        "label": "temp_max",
+                        "checkbox": true,
+                        "selected": true,
+                        "expanded": true
+                    },
+                    {
+                        "label": "pressure",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "humidity",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "visibility",
+                "checkbox": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "wind",
+                "checkbox": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "speed",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "deg",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "clouds",
+                "checkbox": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "all",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "dt",
+                "checkbox": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "sys",
+                "checkbox": false,
+                "selected": false,
+                "expanded": true,
+                "children": [
+                    {
+                        "label": "type",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "id",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "country",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "sunrise",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    },
+                    {
+                        "label": "sunset",
+                        "checkbox": true,
+                        "selected": false,
+                        "expanded": true
+                    }
+                ]
+            },
+            {
+                "label": "timezone",
+                "checkbox": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "id",
+                "checkbox": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "name",
+                "checkbox": true,
+                "selected": false,
+                "expanded": true
+            },
+            {
+                "label": "cod",
+                "checkbox": true,
+                "selected": false,
+                "expanded": true
+            }
+        ],
+        "x": 670,
+        "y": 260,
+        "wires": [
+            [
+                "e776c2cd34d44c35"
+            ]
+        ]
+    },
+    {
+        "id": "d648d5d199852fdd",
+        "type": "data-extractor",
+        "z": "491c7eaa777ec6d3",
+        "name": "Data Extractor",
+        "url": "https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=[api-key]",
+        "paths": [
+            "coord.lon",
+            "coord.lat",
+            "weather.id",
+            "weather.main",
+            "weather.description",
+            "weather.icon"
+        ],
+        "response_type": "json",
+        "x": 680,
+        "y": 180,
+        "wires": [
+            [
+                "e776c2cd34d44c35"
+            ]
+        ]
+    },
+    {
+        "id": "e776c2cd34d44c35",
+        "type": "debug",
+        "z": "491c7eaa777ec6d3",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 920,
+        "y": 220,
+        "wires": []
+    }
+]
