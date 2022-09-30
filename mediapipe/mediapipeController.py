@@ -46,4 +46,7 @@ def predict(data):
         keypoints = extract_keypoints(results)
         return repr(keypoints)[6:-1]
     except Exception as e :
+        cv2.imshow('image',img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
         raise Exception(str(e) + "mediaPipe Error")
