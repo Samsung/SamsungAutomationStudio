@@ -14,6 +14,15 @@ const SOOP_NODE_TYPE = {
   CONFIG: "soopDashboardConfig",
   LOWER_CASE: "soopLowerCase",
   SWITCH: "soopSwitch",
+  BUTTON: "soopButton",
+  CHART: "soopChart",
+  DROPDOWN: "soopDropdown",
+  GAUGE: "soopGauge",
+  IMAGE: "soopImage",
+  LIST: "soopList",
+  SLIDER: "soopSlider",
+  SWITCH: "soopSwitch",
+  TEXT: "soopText",
 };
 
 exports.FRONT_SOCKET_TYPE = FRONT_SOCKET_TYPE;

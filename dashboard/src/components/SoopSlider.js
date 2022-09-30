@@ -5,6 +5,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { mainColor, fontSize, fontColor } from "../assets/DesignOption";
 
 const SliderContainer = styled.div`
+  position: absolute;
+  top: 100px;
   width: 300px;
   display: flex;
   color: ${fontColor.light};
