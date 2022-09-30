@@ -19,16 +19,22 @@ module.exports = function (RED) {
         mediapipeGlobalConfig.openNode = this;
         node.on("input", async function (msg) {
             try {
-                mediapipeGlobalConfig.pid = exec(`python ${__dirname}/mediapipe/main.py`);
+                exec(`python ${__dirname}/mediapipe/main.py`);
                 await sleep(4000);
                 
                 mediapipeGlobalConfig.client.on('data', function(data) {
                     
+                    // receive data
                     msg.payload = data.toString();
+
+                    // MediaPipe is already open. result is holistic data
+                    // => send to holistic node.
                     if(mediapipeGlobalConfig.mediapipeEnable){
                         mediapipeGlobalConfig.holisticNode.send(msg);
                         mediapipeGlobalConfig.send();
                     }else{
+                        // Mediapipe Server connection is estblished.
+                        // send to Open node.
                         mediapipeGlobalConfig.mediapipeEnable = true;
                         mediapipeGlobalConfig.openNode.send(msg);
                     }
@@ -36,6 +42,12 @@ module.exports = function (RED) {
                 });
 
                 mediapipeGlobalConfig.client.on('disconnect', function(data) {
+                    try {
+                        mediapipeGlobalConfig.client.off('data');
+                        mediapipeGlobalConfig.client.off('disconnect');
+                    } catch (error) {
+                        console.log(error);
+                    }
                     mediapipeGlobalConfig.mediapipeEnable = false;
                 });
 

@@ -11,9 +11,9 @@ module.exports = function (RED) {
             if(!mediapipeGlobalConfig.running){
                 mediapipeGlobalConfig.send();
             }
-            // mediapipeGlobalConfig.client.write(msg.payload);
-            // node.status(200).send(msg);
-            // node.error(e);
+
+            // Sending result is handled together by Open.js.
+            // node.send(msg.payload);
         });
     }
 

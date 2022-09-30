@@ -20,20 +20,21 @@ def openServer():
         print("MediaPipe Start Failed.", e)
         return
 
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_socket.bind((HOST, PORT))
-    server_socket.listen()
-    print("The server was successfully started.")
     try:
-        print('>> Wait')
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_socket.bind((HOST, PORT))
+        server_socket.listen()
+        print("The server was successfully started.")
 
+
+        print('>> Wait')
         client_socket, addr = server_socket.accept()
 
-        # Connection is esh
+        # Connection is estblished
         client_sockets.append(client_socket)
         print("connection Success", len(client_sockets))
-        threaded(client_socket, addr)
+        dataCommunication(client_socket, addr)
 
         # connection is closed.
         closeServer()
@@ -56,17 +57,16 @@ def closeServer():
         pass
 
 
-# 쓰레드에서 실행되는 코드입니다.
-# 접속한 클라이언트마다 새로운 쓰레드가 생성되어 통신을 하게 됩니다.
-def threaded(client_socket, addr):
+# When Connection is estblished.
+def dataCommunication(client_socket, addr):
     global client_sockets
     print('>> Connected by :', addr[0], ':', addr[1])
 
-    # 클라이언트가 접속을 끊을 때 까지 반복합니다.
+    # Repeat until the client disconnects.
     while True:
         try:
 
-            # 데이터가 수신될 때 까지 대기
+            # Wait for data to be received
             data = client_socket.recv(10000000)
             # receive empty data when client is destroyed
             if not data:
