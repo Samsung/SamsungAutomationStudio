@@ -31,16 +31,14 @@ const SoopPieChart = () => {
   // TODO: props.states로 올때는 종속성 배열에 넣어놓아도 무한루프 안빠질것이다 허허 ㅠㅜ
   const [chartData, setChartData] = useState({ datasets: [] });
   const [chartOptions, setChartOptions] = useState({});
-  const currentLabels = Object.keys(exampleData.states);
-  const currentData = Object.keys(exampleData.states).map(key => exampleData.states[key][0].value);
 
   useEffect(() => {
     const currentChartData = {
-      labels: currentLabels,
+      labels: Object.keys(exampleData.states),
       datasets: [
         {
           label: "# of Votes",
-          data: currentData,
+          data: Object.keys(exampleData.states).map(key => exampleData.states[key][0].value),
           backgroundColor: [
             "rgba(17, 83, 252, 0.2)",
             "rgba(245, 182, 48, 0.2)",
