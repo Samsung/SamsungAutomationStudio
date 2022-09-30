@@ -17,7 +17,7 @@ def openServer():
     try : 
         startMediaPipe()
     except e:
-        print("Server Open Failed.", e)
+        print("MediaPipe Start Failed.", e)
         return
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,18 +26,23 @@ def openServer():
     server_socket.listen()
     print("The server was successfully started.")
     try:
-        while True:
-            print('>> Wait')
+        print('>> Wait')
 
-            client_socket, addr = server_socket.accept()
-            client_sockets.append(client_socket)
-            start_new_thread(threaded, (client_socket, addr))
-            print("참가자 수 : ", len(client_sockets))
+        client_socket, addr = server_socket.accept()
+
+        # Connection is esh
+        client_sockets.append(client_socket)
+        print("connection Success", len(client_sockets))
+        threaded(client_socket, addr)
+
+        # connection is closed.
+        closeServer()
             
     except Exception as e :
-        print('에러는? : ',e)
+        print('Exception : ',e)
 
     finally:
+        print('MediaPipe Server Closed.')
         server_socket.close()
 
 def closeServer():

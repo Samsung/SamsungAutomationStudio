@@ -7,10 +7,12 @@ module.exports = function (RED) {
         RED.nodes.createNode(node, config);
         node.on("input", function (msg){
             try {
-                mediapipeGlobalConfig.client.write('close');
-                mediapipeGlobalConfig.mediapipeEnable = false;
-                // mediapipeGlobalConfig.client.off('data');
-                // mediapipeGlobalConfig.pid.kill('SIGINT');
+                mediapipeGlobalConfig.queue.push('close');
+
+                if(!mediapipeGlobalConfig.running){
+                    mediapipeGlobalConfig.send();
+                    mediapipeGlobalConfig.mediapipeEnable = false;
+                }
                 msg.payload = 'success';
             } catch (error) {
                 console.log(error);

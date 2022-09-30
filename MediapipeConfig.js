@@ -10,6 +10,7 @@ module.exports = {
     queue : [],
     send : function(){
         if(!this.mediapipeEnable){
+            console.log("Mediapipe is not set.");
             this.running = false;
             return;
         }
