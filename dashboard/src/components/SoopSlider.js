@@ -35,7 +35,9 @@ const SoopSlider = ({ node, states }) => {
   const [value, setValue] = useState(exampleData.payload);
 
   useEffect(() => {
-    if (Array.isArray(states)) setValue(states[0].value);
+    if (Array.isArray(states) && states[0]) {
+      setValue(states[0].value);
+    }
   }, [states]);
 
   const muiTheme = createTheme({
