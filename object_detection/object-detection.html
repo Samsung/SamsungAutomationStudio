@@ -6,11 +6,18 @@
       defaults: {
           dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
           registerSocketUrl : {value : 'ws://localhost:1880/ws/register'},
-          field: {value:"payload",
+
+          objField: {value:"payload",
                   label:"payload",
-                  validate:RED.validators.typedInput("fieldType", false)},
-          fieldType: {value:"msg"},
+                  validate:RED.validators.typedInput("objFieldType", false)},
+          objFieldType: {value:"msg"},
+
+          poseField: {value:"payload",
+                  label:"payload",
+                  validate:RED.validators.typedInput("poseFieldType", false)},
+          poseFieldType: {value:"msg"}
       },
+
       inputs: 3,
       outputs: 1,
       icon: "font-awesome/fa-object-ungroup",
@@ -38,17 +45,30 @@
 
           const that = this;
           const stateId = RED.editor.generateViewStateId("node", this, "");
-            if (!this.field) {
-                this.field = 'payload';
-                $("#node-input-field").val("payload");
+            if (!this.objField) {
+                this.objField = 'payload';
+                $("#node-input-objField").val("payload");
             }
-            if (!this.fieldType) {
-                this.fieldType = 'msg';
+            if (!this.objFieldType) {
+                this.objFieldType = 'msg';
             }
-            $("#node-input-field").typedInput({
+            $("#node-input-objField").typedInput({
                 default: 'msg',
                 types: ['msg','flow','global'],
-                typeField: $("#node-input-fieldType")
+                typeField: $("#node-input-objFieldType")
+            });
+
+            if (!this.poseField) {
+                this.poseField = 'payload';
+                $("#node-input-poseField").val("payload");
+            }
+            if (!this.poseFieldType) {
+                this.poseFieldType = 'msg';
+            }
+            $("#node-input-poseField").typedInput({
+                default: 'msg',
+                types: ['msg','flow','global'],
+                typeField: $("#node-input-poseFieldType")
             });
 
       },
@@ -72,9 +92,15 @@
     </div>
 
     <div class="form-row">
-      <label for="node-input-field"><i class="fa fa-ellipsis-h"></i> Property </label>
-      <input type="text" id="node-input-field" placeholder="payload" style="width:250px;">
-      <input type="hidden" id="node-input-fieldType">
+      <label for="node-input-objField"><i class="fa fa-ellipsis-h"></i> Objects </label>
+      <input type="text" id="node-input-objField" placeholder="payload" style="width:250px;">
+      <input type="hidden" id="node-input-objFieldType">
+    </div>
+
+    <div class="form-row">
+      <label for="node-input-poseField"><i class="fa fa-ellipsis-h"></i> Poses </label>
+      <input type="text" id="node-input-poseField" placeholder="payload" style="width:250px;">
+      <input type="hidden" id="node-input-poseFieldType">
     </div>
   
     <div class="form-row" style="text-align: left;">
@@ -96,9 +122,9 @@
       <dt>Data Socket Url</dt>
       <dd>Socket URI to send and receive data. (default: 'ws://localhost:1880/ws/data')</dd>
       <dt>Register Socket Url</dt>
-      <dd>Socket URI to send and receive data for object registration for detecting. (default: 'ws://localhost:1880/ws/data')</dd>
-      <dt>Property</dt>
-      <dd>call saved data about object regitstaion from database</dd>
+      <dd>Socket URI to send and receive data for object registration for detecting. (default: 'ws://localhost:1880/ws/register')</dd>
+      <dt>Property : objects and poses</dt>
+      <dd>call saved data about object and poses regitstaion from database</dd>
       <dt>Camera Test</dt>
       <dd>Preview webcam camera.</dd>
     </dl>

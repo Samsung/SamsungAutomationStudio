@@ -134,7 +134,7 @@ module.exports.code = (config) => {
     
     <body>
         <div id="app">
-            <header id="title">OBJECT DETECTION DISPLAY</header>
+            <header id="title">OBJECT DETECTION DISPLAY <button id="test-btn">click!</button></header>
             <div id="main">
                 <section id="frame">
                     <video id="video" width="640" height="480" autoplay muted playsinline></video>
@@ -218,6 +218,7 @@ module.exports.code = (config) => {
             let preset = ""
             let savedObjects = []
             let registered = "${config.registered}".split(',');
+            let registeredPose = "${config.registeredPose}".split(',');
             let = detectedCnt = 1;
             let database;
     
@@ -232,30 +233,39 @@ module.exports.code = (config) => {
             //const dataWebSocket = new WebSocket("ws://localhost:1880/ws/data")
             const registerResultTable = document.getElementById("detected-objects-table");
             
-            let savedPose = [{ name: 'seat' }, { name: 'armup' }]
-            let savedObject = [{ name: 'person' }, { name: 'chair' }, { name: 'cellphone' }, { name: 'cup' }]
+            const testBtn = document.getElementById("test-btn");
+            testBtn.addEventListener("click", function(){
+                console.log(registeredPose);
+                console.log(registered);
+            })
+
+
+
+            let savedPose = registeredPose
+            let savedObject = registered
+            
             let poseDropdown = document.getElementById('pose');
             let objectDropdown = document.getElementById('object');
             
             savedPose.forEach(pose => {;
                 let tmp = document.createElement('option');
-                tmp.value = pose.name;
-                tmp.innerText = pose.name;
+                tmp.value = pose
+                tmp.innerText = pose
                 poseDropdown.appendChild(tmp);
             })
 
             savedObject.forEach(object => {;
                 let tmp = document.createElement('option');
-                tmp.value = object.name;
-                tmp.innerText = object.name;
+                tmp.value = object
+                tmp.innerText = object
                 objectDropdown.appendChild(tmp);
             })
     
             document.getElementById('pose-object-mapping-btn').setAttribute('style', '')
             document.getElementById('pose-object-mapping-btn').addEventListener('click', () => {
-                let nodes = document.getElementById('pose-object-mapping').children
-                let pose = getVal(nodes.pose);
-                let object = getVal(nodes.object);
+                let nodes = document.getElementById('pose-object-mapping')
+                let pose = getVal(document.getElementById('pose'));
+                let object = getVal(document.getElementById('object'));
                 let value = document.getElementById('pose-object-name').value
     
                 function getVal(node) {

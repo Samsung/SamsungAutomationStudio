@@ -11,17 +11,37 @@ module.exports = function(RED){
         }
 
             node.on('input', function(msg, send){
-                let savedName = config.field;
 
-                if(config.fieldType === "flow"){
-                    config.registered = this.context().flow.get(String(savedName));
+                console.log("config");
+                console.log(config.objField);
+                console.log(config.poseField);
+                
+                let savedObjName = config.objField;
+                let savedPoseName = config.poseField;
+
+                if(config.objFieldType === "flow"){
+                    config.registered = this.context().flow.get(String(savedObjName));
                 }
-                else if(config.fieldType === "global"){
-                    config.registered = this.context().global.get(String(savedName));
+                else if(config.objFieldType === "global"){
+                    config.registered = this.context().global.get(String(savedObjName));
                 }
                 else{
-                    config.registered = this.context().node.get(String(savedName));
+                    config.registered = this.context().node.get(String(savedObjName));
                 }
+
+                
+                if(config.poseFieldType === "flow"){
+                    config.registeredPose = this.context().flow.get(String(savedPoseName));
+                }
+                else if(config.poseFieldType === "global"){
+                    config.registeredPose = this.context().global.get(String(savedPoseName));
+                }
+                else{
+                    config.registeredPose = this.context().node.get(String(savedPoseName));
+                }
+
+
+
                 msg.payload = HTML()
                 send = send || function(){this.send.apply(this, arguments)}
                 send(msg)
