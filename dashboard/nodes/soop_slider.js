@@ -33,45 +33,54 @@ module.exports = function (RED) {
       });
     });
 
+    dashboard.addNode({
+      node: node,
+      onMessage: message => {
+        node.send({
+          payload: message.value,
+        });
+      },
+    });
+
     // send node configuration
     /* Currently, html<->js communication is used by config
      ** When it need to change by using socket communication
      ** It needs to revise
      */
-    var done = dashboard.emitState({
-      /** time: timestamp
-       *  nodeId: unique id of the node
-       *  nodeType: type of the node
-       *  node: node object
-       *  tab: tab of the node
-       *  group: group of the node
-       *  size: size of the node [height, width]
-       *  name: name of the node
-       *  color: color of the node
-       *  label: label of the node
-       *  tooltip: tooltip of the node
-       *  range: range of the slider [min, max, step]
-       *  when: option for when to send data at dashboard side (always/release)
-       *  invert: Boolean value for whether slider (min, max) is inverted or not
-       *  payload: Number value of slider
-       */
-      time: "",
-      nodeId: node.id,
-      nodeType: "slider",
-      node: node,
-      tab: tab,
-      group: group,
-      size: [config.height || 1, config.width || group.config.width || 6],
-      name: config.name,
+    // var done = dashboard.emitState({
+    //   /** time: timestamp
+    //    *  nodeId: unique id of the node
+    //    *  nodeType: type of the node
+    //    *  node: node object
+    //    *  tab: tab of the node
+    //    *  group: group of the node
+    //    *  size: size of the node [height, width]
+    //    *  name: name of the node
+    //    *  color: color of the node
+    //    *  label: label of the node
+    //    *  tooltip: tooltip of the node
+    //    *  range: range of the slider [min, max, step]
+    //    *  when: option for when to send data at dashboard side (always/release)
+    //    *  invert: Boolean value for whether slider (min, max) is inverted or not
+    //    *  payload: Number value of slider
+    //    */
+    //   time: "",
+    //   nodeId: node.id,
+    //   nodeType: "slider",
+    //   node: node,
+    //   tab: tab,
+    //   group: group,
+    //   size: [config.height || 1, config.width || group.config.width || 6],
+    //   name: config.name,
 
-      color: config.colorPicking,
-      label: config.label,
-      tooltip: config.tooltip,
-      range: [min, max, step],
-      when: config.send || "always",
-      invert: parseFloat(config.min) > parseFloat(config.max) ? true : false,
-      payload: Math.max(min, Math.min(max, value)),
-    });
+    //   color: config.colorPicking,
+    //   label: config.label,
+    //   tooltip: config.tooltip,
+    //   range: [min, max, step],
+    //   when: config.send || "always",
+    //   invert: parseFloat(config.min) > parseFloat(config.max) ? true : false,
+    //   payload: Math.max(min, Math.min(max, value)),
+    // });
 
     // if (node.pass) {
     //     node.status({shape:"dot",fill:"grey",text:msg.payload});
@@ -82,7 +91,7 @@ module.exports = function (RED) {
     // }
 
     // close node
-    node.on("close", done);
+    // node.on("close", done);
   }
   RED.nodes.registerType("soop_slider", SoopSliderNode);
 };

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Slider } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { mainColor, fontSize, fontColor } from "../assets/DesignOption";
+import { sendMessage } from "../utils/socket";
 
 const SliderContainer = styled.div`
   width: 100%;
@@ -48,9 +49,14 @@ const SoopSlider = ({ node, states }) => {
     },
   });
 
-  useEffect(() => {
-    // TODO: value에서 변경이 생기면, socket통해서 runtime에도 전달해야 한다.
-  }, []);
+  function onChangeCommited(e, v) {
+    setValue(v);
+    sendMessage(node.id, { value: v });
+  }
+
+  function onChangeValue(e, v) {
+    setValue(v);
+  }
 
   return (
     <>
@@ -64,9 +70,8 @@ const SoopSlider = ({ node, states }) => {
             min={node.min}
             max={node.max}
             step={node.step}
-            onChange={(_, value) => {
-              setValue(value);
-            }}
+            onChange={onChangeValue}
+            onChangeCommitted={onChangeCommited}
           />
         </ThemeProvider>
       </SliderContainer>
