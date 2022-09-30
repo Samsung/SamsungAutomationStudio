@@ -21,11 +21,11 @@ const DropdownContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const SoopDropdown = () => {
+const SoopDropdown = ({ node, states }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [currentOptions, setCurrentOptions] = useState([]);
   const [currentLabel, setCurrentLabel] = useState("");
-
+  console.log(node);
   const exampleData = {
     node: {
       label: "dropdown라벨",
@@ -39,14 +39,20 @@ const SoopDropdown = () => {
   const onChange = e => {
     setSelectedOption(e.target.value);
     // TODO: sendMessage 활성화하기
-    // sendMessage(node.id, { value: option });
+    sendMessage(node.id, { value: e.target.value });
   };
 
   useEffect(() => {
-    const optionsArray = Object.entries(exampleData.node.option);
+    console.log("리액트 드롭다운 컴포넌트 결과: ", node, states);
+    const optionsArray = node.options.map(opt => {
+      return opt.label;
+    });
+    if (Array.isArray(states) && states[0]) {
+      setSelectedOption(states[0].key);
+    }
     setCurrentOptions(optionsArray);
-    setCurrentLabel(exampleData.node.label);
-  }, []);
+    setCurrentLabel(node.label);
+  }, [node, states]);
 
   return (
     <>
@@ -56,8 +62,8 @@ const SoopDropdown = () => {
           <Select labelId="soop-dashboard-select-label" label={currentLabel} value={selectedOption} onChange={onChange}>
             {currentOptions.map((cOption, idx) => {
               return (
-                <MenuItem key={idx} value={cOption[0]}>
-                  {cOption[1]}
+                <MenuItem key={idx} value={idx}>
+                  {cOption}
                 </MenuItem>
               );
             })}
