@@ -19,19 +19,39 @@
 
       // // update tab state
       // RED.nodes.eachConfig(node => {
-      //   if (node.type == "soop_tab") dashboardState.tabs.push(node);
+      //   if (node.type == "soop_tab") dashboardState.tabs.push({ tabId: node.id, tabName: node.name, groups: [] });
       // });
 
       // // update group state
       // RED.nodes.eachConfig(node => {
-      //   for (tab in dashboardState.tabs) {
-      //     if (tab.id == node.tabId) {
-      //       if (Array.isArray(tab.groups)) {
-      //         tab.groups.push(node);
-      //       } else {
-      //         tab.groups = [node];
+      //   if (node.type == "soop_group") {
+      //     for (const tab of dashboardState.tabs) {
+      //       if (tab.tabId == node.tabId) {
+      //         if (Array.isArray(tab.groups)) {
+      //           tab.groups.push({
+      //             groupId: node.id,
+      //             groupName: node.name,
+      //             x: node.x,
+      //             y: node.y,
+      //             w: node.w,
+      //             h: node.h,
+      //             nodes: [],
+      //           });
+      //         } else {
+      //           tab.groups = [
+      //             {
+      //               groupId: node.id,
+      //               groupName: node.name,
+      //               x: node.x,
+      //               y: node.y,
+      //               w: node.w,
+      //               h: node.h,
+      //               nodes: [],
+      //             },
+      //           ];
+      //         }
+      //         break;
       //       }
-      //       break;
       //     }
       //   }
       // });
@@ -39,13 +59,13 @@
       // // update node state
       // RED.nodes.eachNode(node => {
       //   if (node.type.indexOf("soop") !== -1) {
-      //     for (tab in dashboardState.tabs) {
-      //       for (group in tab.groups) {
-      //         if (group.id == node.groupId) {
+      //     for (const tab of dashboardState.tabs) {
+      //       for (const group of tab.groups) {
+      //         if (group.groupId == node.groupId) {
       //           if (Array.isArray(group.nodes)) {
-      //             group.nodes.push(node);
+      //             group.nodes.push({ editor: node, states: [] });
       //           } else {
-      //             group.nodes = [node];
+      //             group.nodes = [{ editor: node, states: [] }];
       //           }
       //         }
       //       }
