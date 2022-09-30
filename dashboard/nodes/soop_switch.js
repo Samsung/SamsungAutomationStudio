@@ -15,5 +15,5 @@ module.exports = function (RED) {
     });
   }
 
-  RED.nodes.registerType("soopSwitch", SwitchNode);
+  RED.nodes.registerType("soop_switch", SwitchNode);
 };

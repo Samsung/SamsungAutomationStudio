@@ -73,11 +73,11 @@ const SwitchHandle = styled.span`
   transition: 0.2s;
 `;
 
-const SoopSwitch = props => {
+const SoopSwitch = ({ node, states }) => {
   const [switchState, setSwitchState] = useState(false);
 
   useUpdateHook(() => {
-    sendMessage(props.nodeId, { switchState });
+    sendMessage(node.id, { switchState });
   }, [switchState]);
 
   function onSwitchChange(e) {
@@ -88,8 +88,8 @@ const SoopSwitch = props => {
     <SwitchContainer>
       <SwitchLabel>스위치 노드</SwitchLabel>
       <SwitchWrapper>
-        <SwitchInput type="checkbox" id={`switch-${props.nodeId}`} checked={switchState} onChange={onSwitchChange} />
-        <SwitchArea htmlFor={`switch-${props.nodeId}`} className="switch_area">
+        <SwitchInput type="checkbox" id={`switch-${node.id}`} checked={switchState} onChange={onSwitchChange} />
+        <SwitchArea htmlFor={`switch-${node.id}`} className="switch_area">
           <SwitchHandle className="switch_handle"></SwitchHandle>
         </SwitchArea>
       </SwitchWrapper>

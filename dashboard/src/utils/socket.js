@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { setInitNode } from "./store";
+import { setInitNode, updateNode } from "./store";
 
 const { FRONT_SOCKET_TYPE } = require("../../common/common");
 
@@ -16,8 +16,8 @@ export const initlaizeSocket = dispatch => {
     dispatch(setInitNode(states));
   });
 
-  socket.on(FRONT_SOCKET_TYPE.UPDATE_NODE, node => {
-    console.log(node);
+  socket.on(FRONT_SOCKET_TYPE.UPDATE_NODE, updateData => {
+    dispatch(updateNode(updateData));
   });
 };
 
