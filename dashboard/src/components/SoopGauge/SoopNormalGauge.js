@@ -1,22 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Gauge from "react-svg-gauge";
-import { mainColor } from "../../assets/DesignOption";
+import { mainColor, fontColor, fontSize } from "../../assets/DesignOption";
 
 const SoopNormalGauge = () => {
-  // TODO: props로 value 받기
-  const value = 10;
-  const label = "Label";
+  const exampleData = {
+    node: {
+      nodeId: "dfg124w4",
+      gType: "gauge",
+      label: "라벨입니당",
+      range: [0, 100],
+      units: "%",
+      color: "purple",
+    },
+    states: {
+      value: 34,
+    },
+  };
 
-  // TODO: 크기 비율: 5*4
+  const [currentValue, setCurrentValue] = useState(1);
+  const [currentLabel, setCurrentLabel] = useState("");
+
+  useEffect(() => {
+    setCurrentValue(exampleData.states.value);
+    setCurrentLabel(exampleData.node.label);
+  }, []);
+
+  // TODO: width, height 전달
 
   return (
     <>
       <Gauge
-        value={value}
+        value={currentValue}
         width={200}
         height={160}
-        label={label}
-        color={mainColor.blue}
+        label={currentLabel}
+        color={mainColor[exampleData.node.color]}
+        topLabelStyle={{ fontSize: fontSize.md, fontFamily: "Pretendard-Bold", fill: fontColor.light }}
+        valueLabelStyle={{ fontSize: fontSize.xl, fontFamily: "Pretendard-Regular", fill: fontColor.light }}
+        minMaxLabelStyle={{ fontSize: fontSize.sm, fontFamily: "Pretendard-Regular", fill: fontColor.light }}
+        valueFormatter={value => `${value}${exampleData.node.units}`}
       />
     </>
   );
