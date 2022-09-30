@@ -77,7 +77,7 @@ def dataCommunication(client_socket, addr):
                 data = data.decode()
                 print('>> Received from ' + addr[0], ':', addr[1], data)
                 if data == "sendTest":
-                    client_socket.send("success".encode('ascii'))
+                    client_socket.send("MediaPipe Server(v0.1) is started successfully".encode('ascii'))
                 elif data == "close" :
                     closeServer()
                     break
