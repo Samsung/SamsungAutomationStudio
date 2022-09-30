@@ -42,9 +42,9 @@ module.exports = function (RED) {
         const fps = this.timer ? totalFrame / config.timer / 1000 : 5;
 
         const cmd = "ffmpeg";
-        const arg = `-i ${rtspURL.split("//")[0]}//${MNID}:${PAT}@${
-          rtspURL.split("//")[1]
-        } -f image2 -vf fps=fps=${fps} ${saveURL}%d.png`;
+        const arg = `-thread_queue_size 512 -i ${
+          rtspURL.split("//")[0]
+        }//${MNID}:${PAT}@${rtspURL.split("//")[1]} -r ${fps} ${saveURL}%d.png`;
         this.timer = Number(config.timer || 0) * 1000;
         this.activeProcesses = {};
         this.oldrc = false.toString();
