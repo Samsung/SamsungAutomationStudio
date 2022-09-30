@@ -46,4 +46,4 @@ def predict(data):
         keypoints = extract_keypoints(results)
         return repr(keypoints)[6:-1]
     except Exception as e :
-        raise Exception(e + "mediaPipe Error")
+        raise Exception(str(e) + "mediaPipe Error")
