@@ -49,28 +49,35 @@ function initSocket(io) {
   });
 }
 
-function emitState(state) {
+function emitState(state, isTimeSeries = false) {
   const nodeId = state.node_id;
-  state.time = Date.now();
 
-  if (globalNodes && globalNodes.hasOwnProperty(nodeId)) {
-    if (Array.isArray(globalNodes[nodeId].states)) {
-      globalNodes[nodeId].states.push(state);
-    } else {
-      globalNodes[nodeId].states = [state];
-    }
-  } else {
+  if (globalNodes && !globalNodes.hasOwnProperty(nodeId)) {
     globalNodes[nodeId] = {
-      states: [state],
+      states: [],
     };
   }
 
-  emit(state);
+  if (!Array.isArray(globalNodes[nodeId].states)) {
+    globalNodes[nodeId].states = [];
+  }
+
+  if (isTimeSeries) {
+    state.time = Date.now();
+  } else {
+    globalNodes[nodeId].states = [];
+  }
+
+  const sendState = { ...state };
+  delete sendState.node_id;
+
+  globalNodes[nodeId].states.push(sendState);
+
+  emit(nodeId, sendState, isTimeSeries);
 }
 
-function emit(state) {
-  if (Array.isArray(state)) io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, state);
-  else io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, [state]);
+function emit(nodeId, state, isTimeSeries) {
+  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, isTimeSeries, state: state });
 }
 
 function setInitNodes(nodes) {
