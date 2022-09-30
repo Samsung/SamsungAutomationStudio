@@ -21,6 +21,17 @@ function node(state = initialState, action) {
       const newState = { ...state };
       const updateData = action.updateData;
 
+      // for (let i = 0; i < newState.tabs.length; ++i) {
+      //   for (let j = 0; j < newState.tabs[i].groups.length; ++j) {
+      //     for (let k = 0; k < newState.tabs[i].groups[j].nodes.length; ++k) {
+      //       if (newState.tabs[i].groups[j].nodes[k].id == updateData.nodeId) {
+      //         if (updateData.isTimeSeries) newState.tabs[i].groups[j].nodes[k].states.push(updateData.state);
+      //         else newState.tabs[i].groups[j].nodes[k].states = [updateData.state];
+      //       }
+      //     }
+      //   }
+      // }
+
       if (updateData && updateData.state) {
         if (updateData.isTimeSeries) newState.nodes[updateData.nodeId].states.push(updateData.state);
         else newState.nodes[updateData.nodeId].states = [updateData.state];
