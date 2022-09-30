@@ -22,6 +22,9 @@
   .styled4 {
     background: #8443f6;
   }
+  .styled5 {
+    background: #08C792;
+  }
 </style>
 <script type="text/javascript">
   RED.nodes.registerType("soop_slider", {
@@ -39,13 +42,12 @@
      *  oneditsave: function called when edit window is okayed
      */
     category: "soop-dashboard",
-    color: "rgb(255, 189, 27)",
+    color: "rgb(100, 189, 27)",
     defaults: {
       /* Node Properties (value, required, validate, type)
        *  name: node name on palette
        *  label: node label on dashboard
        *  group: group information of the node
-       *  order: order of the node
        *  width, height: size of node
        *  min, max, step: property of slider
        *  colorPicking: color of node in dashboard
@@ -59,7 +61,6 @@
         type: "ui_group",
         required: true,
       },
-      order: { value: 0 },
       width: {
         value: 0,
         validate: function (v) {
@@ -88,21 +89,18 @@
         value: 1,
       },
       colorPicking: {
-        value: "colorPicking1",
+        value: "blue",
       },
       pass: { value: true },
       send: { value: "always" },
     },
     inputs: 1,
     outputs: 1,
-    icon: "ui_slider.png",
+    icon: "font-awesome/fa-sliders",
     paletteLabel: "soop_slider",
     label: function () {
       return this.name || "soop_slider";
     },
-    // labelStyle: function() {
-    //     return this.name ? "node_label_italic" : "";
-    // },
     oneditprepare: function () {
       $("#node-input-size").elementSizer({
         width: "#node-input-width",
@@ -113,6 +111,19 @@
       if (!$("#node-input-send").val()) {
         $("#node-input-send").val("always");
       }
+
+      // Check input radio form according to picked color
+      var colors = $("input[type=radio][name=colorPicking]");
+
+      for(const item of colors){
+        if(item.value === this.colorPicking){
+          item.checked = true;
+          break;
+        }
+      }
+    },
+    oneditsave: function () {
+      this.colorPicking = $("input[type=radio][name=colorPicking]:checked")[0].value;
     },
   });
 </script>
@@ -133,14 +144,16 @@
   <!-- Color -->
   <div class="form-row">
     <label for="node-input-color"><i class="fa fa fa-tint"></i> Color</label>
-    <input type="radio" name="colorPicking" id="colorPicking1" style="width: 0px;" />
+    <input type="radio" name="colorPicking" id="colorPicking1" style="width: 0px;" value="blue" />
     <label class="styled1" for="colorPicking1" style="width: 60px;text-align: center;">blue</label>
-    <input type="radio" name="colorPicking" id="colorPicking2" style="width: 0px;" />
+    <input type="radio" name="colorPicking" id="colorPicking2" style="width: 0px;" value="orange" />
     <label class="styled2" for="colorPicking2" style="width: 60px;text-align: center;">orange</label>
-    <input type="radio" name="colorPicking" id="colorPicking3" style="width: 0px;" />
+    <input type="radio" name="colorPicking" id="colorPicking3" style="width: 0px;" value="pink" />
     <label class="styled3" for="colorPicking3" style="width: 60px;text-align: center;">pink</label>
-    <input type="radio" name="colorPicking" id="colorPicking4" style="width: 0px;" />
+    <input type="radio" name="colorPicking" id="colorPicking4" style="width: 0px;" value="purple" />
     <label class="styled4" for="colorPicking4" style="width: 60px;text-align: center;">purple</label>
+    <input type="radio" name="colorPicking" id="colorPicking5" style="width: 0px;" value="green" />
+    <label class="styled5" for="colorPicking5" style="width: 60px;text-align: center;">green</label>
   </div>
   <!-- Label -->
   <div class="form-row">
