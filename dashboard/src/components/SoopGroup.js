@@ -22,6 +22,8 @@ const Group = styled.div`
 `;
 
 const GroupName = styled.div`
+  position: absolute;
+  z-index: 99;
   width: 100%;
   height: 30px;
   display: flex;
@@ -68,9 +70,12 @@ const SoopGroup = ({ group, index }) => {
       {group.nodes.map(node => {
         drawNode(node);
       })}
-      {/* <SoopButton />
-      <SoopSwitch nodeId={Math.random()} /> */}
+      {/* <SoopButton /> */}
+      {/* <SoopSwitch nodeId={Math.random()} /> */}
+      {/* <SoopSlider /> */}
       {/* <SoopChart /> */}
+      {/* <SoopGauge /> */}
+      <SoopImage />
     </Group>
   );
 };
