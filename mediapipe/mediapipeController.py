@@ -39,8 +39,11 @@ def predict(data):
         img = cv2.imdecode(img, cv2.IMREAD_COLOR)
     except Exception as e:
         raise Exception(e + "cv2.imdecode Error")
-        
+
     #img = cv2.imread(f'./mediapipe/{name}.jpg')
-    image, results = mediapipe_detection(img, holistic)
-    keypoints = extract_keypoints(results)
-    return repr(keypoints)[6:-1]
+    try :
+        image, results = mediapipe_detection(img, holistic)
+        keypoints = extract_keypoints(results)
+        return repr(keypoints)[6:-1]
+    except Exception as e :
+        raise Exception(e + "mediaPipe Error")
