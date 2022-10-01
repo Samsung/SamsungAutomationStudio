@@ -103,8 +103,8 @@
         const registerBtn = document.getElementById("captrue-btn");
         const context = canvas.getContext("2d");
         const result = document.getElementById("detected-result-message")
-        const registerWebSocket = new WebSocket("${config.registerSocketUrl}")
-        const dataWebSocket = new WebSocket("${config.dataSocketUrl}")
+        const registerWebSocket = new WebSocket("ws://localhost:1880/ws/register")
+        const dataWebSocket = new WebSocket("ws://localhost:1880/ws/data")
         const _form = document.getElementById("regi-form")
 
 
