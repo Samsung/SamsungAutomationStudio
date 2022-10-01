@@ -19,6 +19,7 @@ const { FRONT_SOCKET_TYPE, EDITOR_SOCKET_TYPE, DASHBOARD_PATH } = require("./com
 
 let io = null;
 let globalNodes = {};
+let globalState = { tabs: [] };
 
 function init(RED) {
   const app = RED.httpNode || RED.httpAdmin;
@@ -32,7 +33,12 @@ function init(RED) {
 
 function initSocket(io) {
   io.on("connection", socket => {
-    socket.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitNodes());
+    socket.emit(FRONT_SOCKET_TYPE.INIT_DASHBOARD_STATE, getState());
+
+    socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, state => {
+      setState(state);
+      io.emit(FRONT_SOCKET_TYPE.INIT_DASHBOARD_STATE, getState());
+    });
 
     socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, message => {
       const node = globalNodes[message.nodeId].runtime;
@@ -41,26 +47,13 @@ function initSocket(io) {
         node.onMessage(message);
       }
     });
-
-    socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, nodes => {
-      setInitNodes(nodes);
-      io.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitNodes());
-    });
   });
 }
 
 function emitState(state, isTimeSeries = false) {
   const nodeId = state.node_id;
 
-  if (globalNodes && !globalNodes.hasOwnProperty(nodeId)) {
-    globalNodes[nodeId] = {
-      states: [],
-    };
-  }
-
-  if (!Array.isArray(globalNodes[nodeId].states)) {
-    globalNodes[nodeId].states = [];
-  }
+  if (globalNodes && !globalNodes.hasOwnProperty(nodeId)) return;
 
   if (isTimeSeries) {
     state.time = Date.now();
@@ -77,25 +70,7 @@ function emitState(state, isTimeSeries = false) {
 }
 
 function emit(nodeId, state, isTimeSeries) {
-  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, isTimeSeries, state: state });
-}
-
-function setInitNodes(nodes) {
-  const exist = {};
-  for (let i = 0; i < nodes.length; ++i) {
-    if (!globalNodes[nodes[i].id]) globalNodes[nodes[i].id] = {};
-
-    globalNodes[nodes[i].id].editor = nodes[i];
-    globalNodes[nodes[i].id].states = [];
-
-    exist[nodes[i].id] = true;
-  }
-
-  Object.keys(globalNodes).map(key => {
-    if (!exist[key]) {
-      delete globalNodes[key];
-    }
-  });
+  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE_STATE, { nodeId, isTimeSeries, state });
 }
 
 function addNode(nodeObject) {
@@ -103,24 +78,57 @@ function addNode(nodeObject) {
   const node = nodeObject.node;
   if (!node) return;
 
-  if (globalNodes && globalNodes.hasOwnProperty(node.id)) {
-    globalNodes[node.id].runtime = nodeObject;
-  } else {
-    globalNodes[node.id] = {
-      runtime: nodeObject,
-      states: [],
-    };
-  }
+  globalNodes[node.id] = {
+    ...nodeObject,
+    states: [],
+  };
 }
 
-function getInitNodes() {
-  const initNodes = {};
-  Object.keys(globalNodes).map(key => {
-    initNodes[key] = {
-      editor: globalNodes[key].editor,
-      states: globalNodes[key].states,
-    };
-  });
+function setState(state) {
+  globalState = { ...state };
+  syncGlobalNode();
+}
 
-  return initNodes;
+function getState() {
+  const tabs = [];
+  for (const tab of globalState.tabs) {
+    const tabObject = { ...tab };
+
+    const groups = [];
+    for (const group of tab.groups) {
+      const groupObject = { ...group };
+
+      const nodes = [];
+      for (const node of group.nodes) {
+        nodes.push({
+          ...node,
+          states: globalNodes[node.id].states,
+        });
+      }
+
+      groupObject.nodes = nodes;
+      groups.push(groupObject);
+    }
+
+    tabObject.groups = groups;
+    tabs.push(tabObject);
+  }
+
+  return { tabs: tabs };
+}
+
+function syncGlobalNode() {
+  const exists = {};
+
+  for (const tab of globalState.tabs) {
+    for (const group of tab.groups) {
+      for (const node of group.nodes) {
+        exists[node.id] = true;
+      }
+    }
+  }
+
+  for (const id in globalNodes) {
+    if (!exists[id]) delete globalNodes[id];
+  }
 }
