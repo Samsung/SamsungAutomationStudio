@@ -5,78 +5,66 @@ module.exports = function (RED) {
     const node = this;
     RED.nodes.createNode(node, config);
 
-    node.on("input", function (msg, send, done) {
+    // const group = RED.nodes.getNode(config.group);
+    // if (!group) {
+    // node.error('Group is undefined.')
+    //   return;
+    // }
+    // var tab = RED.nodes.getNode(group.config.tab);
+    // if (!tab) {
+    // node.error('Tab is undefined.')
+    //   return;
+    // }
+    const group = "";
+    const chartType = config.chartType;
+    let state = {
+      // nodeId: node.id,
+      node_id: node.id,
+      nodeType: "chart",
+      group: group,
+      // tab: tab,
+      size: [
+        // parseInt(config.height || group.config.width / 2 + 1 || 4),
+        // parseInt(config.width || group.config.width || 6),
+        parseInt(4),
+        parseInt(6),
+        parseInt(config.widgetX),
+        parseInt(config.widgetY),
+      ],
+      // label: config.label,
+      title: config.label,
+      chartType: config.chartType,
+      legend: config.legend === "true" ? true : false,
+      blankLabel: config.blankLabel,
+      isTimeSeries: config.isTimeSeries,
+    };
+
+    if (chartType === "line" || chartType === "bar") {
+      state = Object.assign(state, {
+        xAxisFormat: config.xAxisFormat,
+        yMin: config.yMin ? parseInt(config.yMin) : "",
+        yMax: config.yMax ? parseInt(config.yMax) : "",
+        customValue: config.xAxisFormat === "custom" ? config.customValue : "",
+      });
+    }
+    // send state to dashboard
+    dashboard.emitState(state, config.isTimeSeries);
+    node.on("input", function (msg, done) {
       if (isNaN(msg.payload)) {
+        node.error("Payload is not a number.");
         return;
       }
-
-      const group = RED.nodes.getNode(config.group);
-      if (!group) {
-        return;
-      }
-      var tab = RED.nodes.getNode(group.config.tab);
-      if (!tab) {
-        return;
-      }
-      const chartType = config.chartType;
-      let extra = {};
-      let state = {
-        nodeId: node.id,
-        nodeType: "chart",
-        group: group,
-        size: [
-          parseInt(config.height || group.config.width / 2 + 1 || 4),
-          parseInt(config.width || group.config.width || 6),
-          parseInt(config.widgetX),
-          parseInt(config.widgetY),
-        ],
-        title: config.label,
-        chartType: config.chartType,
-        data: { label: msg.topic ? msg.topic : "dataset", value: msg.payload },
-        legend: config.legend,
-        blankLabel: config.blankLabel,
-      };
-
-      if (chartType === "line") {
-        extra = {
-          RmMethod: config.removePastDataPoints ? "point" : "time",
-          RmTime: config.removePastData * config.removePastDataUnit,
-          RmPoint: config.removePastDataPoints,
-          xAxisFormat: config.xAxisFormat,
-          yMin: config.yMin,
-          yMax: config.yMax,
-          interpolate: config.interpolate,
-          customValue: config.xAxisFormat === "custom" ? config.customValue : "",
-        };
-      } else if (chartType === "bar") {
-        extra = {
-          yMin: config.yMin,
-          yMax: config.yMax,
-        };
-      } else if (chartType === "horizontalBar") {
-        extra = {
-          xMin: config.xMin,
-          xMax: config.xMax,
-        };
-      } else {
-        extra = {
-          cutout: parseInt(config.cutout || 0),
-        };
-      }
-      state = Object.assign(state, extra);
-
-      // send state to dashboard
-      dashboard.emitState(state);
-
-      // send message
-      send =
-        send ||
-        function () {
-          node.send.apply(node, arguments);
-        };
-      msg.payload = state;
-      send(msg);
-
+      dashboard.emitState(
+        {
+          node_id: node.id,
+          data: {
+            [msg.label]: {
+              value: parseInt(msg.payload),
+            },
+          },
+        },
+        config.isTimeSeries,
+      );
       // done
       if (done) done();
     });
