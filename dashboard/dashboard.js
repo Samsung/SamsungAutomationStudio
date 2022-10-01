@@ -19,7 +19,7 @@ const { FRONT_SOCKET_TYPE, EDITOR_SOCKET_TYPE, DASHBOARD_PATH } = require("./com
 
 let io = null;
 let globalNodes = {};
-let globalState = {};
+let globalState = { tabs: [] };
 
 function init(RED) {
   const app = RED.httpNode || RED.httpAdmin;
@@ -33,17 +33,12 @@ function init(RED) {
 
 function initSocket(io) {
   io.on("connection", socket => {
-    socket.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitNodes());
-    // socket.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitState());
+    socket.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitState());
 
-    socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, nodes => {
-      setInitNodes(nodes);
-      io.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitNodes());
+    socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, state => {
+      setInitState(state);
+      io.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitState());
     });
-    // socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, state => {
-    //   setInitState(state);
-    //   io.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitState());
-    // });
 
     socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, message => {
       const node = globalNodes[message.nodeId].runtime;
@@ -78,36 +73,6 @@ function emit(nodeId, state, isTimeSeries) {
   io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, isTimeSeries, state: state });
 }
 
-function setInitNodes(nodes) {
-  const exist = {};
-  for (let i = 0; i < nodes.length; ++i) {
-    if (!globalNodes[nodes[i].id]) globalNodes[nodes[i].id] = {};
-
-    globalNodes[nodes[i].id].editor = nodes[i];
-    globalNodes[nodes[i].id].states = [];
-
-    exist[nodes[i].id] = true;
-  }
-
-  Object.keys(globalNodes).map(key => {
-    if (!exist[key]) {
-      delete globalNodes[key];
-    }
-  });
-}
-
-function getInitNodes() {
-  const initNodes = {};
-  Object.keys(globalNodes).map(key => {
-    initNodes[key] = {
-      editor: globalNodes[key].editor,
-      states: globalNodes[key].states,
-    };
-  });
-
-  return initNodes;
-}
-
 function addNode(nodeObject) {
   if (typeof nodeObject != "object") return;
   const node = nodeObject.node;
@@ -119,53 +84,54 @@ function addNode(nodeObject) {
   };
 }
 
-// function setInitState(state) {
-//   globalState = { ...state };
-//   syncGlobalNode();
-// }
+function setInitState(state) {
+  globalState = { ...state };
+  syncGlobalNode();
+}
 
-// function getInitState() {
-//   const initState = {};
+function getInitState() {
+  const initState = {};
 
-//   const tabs = [];
-//   for (const tab of globalState.tabs) {
-//     const initTab = { ...tab };
+  const tabs = [];
+  for (const tab of globalState.tabs) {
+    const initTab = { ...tab };
 
-//     const groups = [];
-//     for (const group of globalState.groups) {
-//       const initGroup = { ...group };
+    const groups = [];
+    for (const group of tab.groups) {
+      const initGroup = { ...group };
 
-//       const nodes = [];
-//       for (const node of group.nodes) {
-//         nodes.push({
-//           editor: node,
-//           states: globalNodes[node.id].states,
-//         });
-//       }
+      const nodes = [];
+      for (const node of group.nodes) {
+        nodes.push({
+          editor: node,
+          states: globalNodes[node.id].states,
+        });
+      }
 
-//       initGroup.nodes = nodes;
-//       groups.push(initGroup);
-//     }
+      initGroup.nodes = nodes;
+      groups.push(initGroup);
+    }
 
-//     initTab.groups = groups;
-//     tabs.push(initTab);
-//   }
+    initTab.groups = groups;
+    tabs.push(initTab);
+  }
 
-//   return initState;
-// }
+  initState.tabs = tabs;
+  return initState;
+}
 
-// function syncGlobalNode() {
-//   const exists = {};
+function syncGlobalNode() {
+  const exists = {};
 
-//   for (const tab of globalState.tabs) {
-//     for (const group of tab.groups) {
-//       for (const node of group.nodes) {
-//         exists[node.id] = true;
-//       }
-//     }
-//   }
+  for (const tab of globalState.tabs) {
+    for (const group of tab.groups) {
+      for (const node of group.nodes) {
+        exists[node.id] = true;
+      }
+    }
+  }
 
-//   for (const id in globalNodes) {
-//     if (!exists[id]) delete globalNodes[id];
-//   }
-// }
+  for (const id in globalNodes) {
+    if (!exists[id]) delete globalNodes[id];
+  }
+}

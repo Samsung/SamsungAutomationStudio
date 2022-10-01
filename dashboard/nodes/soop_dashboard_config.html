@@ -13,78 +13,39 @@
 
   function initializeDashboardConfig() {
     RED.events.on("deploy", function () {
-      // const dashboardState = {
-      //   tabs: [],
-      // };
+      const dashboardState = {
+        tabs: [],
+      };
 
-      // // update tab state
-      // RED.nodes.eachConfig(node => {
-      //   if (node.type == "soop_tab") dashboardState.tabs.push({ tabId: node.id, tabName: node.name, groups: [] });
-      // });
+      // update tab state
+      RED.nodes.eachConfig(node => {
+        if (node.type == "soop_tab") {
+          const tabObject = {
+            tabId: node.id,
+            tabName: node.name,
+            groups: [],
+          };
 
-      // // update group state
-      // RED.nodes.eachConfig(node => {
-      //   if (node.type == "soop_group") {
-      //     for (const tab of dashboardState.tabs) {
-      //       if (tab.tabId == node.tabId) {
-      //         if (Array.isArray(tab.groups)) {
-      //           tab.groups.push({
-      //             groupId: node.id,
-      //             groupName: node.name,
-      //             x: node.x,
-      //             y: node.y,
-      //             w: node.w,
-      //             h: node.h,
-      //             nodes: [],
-      //           });
-      //         } else {
-      //           tab.groups = [
-      //             {
-      //               groupId: node.id,
-      //               groupName: node.name,
-      //               x: node.x,
-      //               y: node.y,
-      //               w: node.w,
-      //               h: node.h,
-      //               nodes: [],
-      //             },
-      //           ];
-      //         }
-      //         break;
-      //       }
-      //     }
-      //   }
-      // });
+          for (const group of node.users) {
+            const groupObject = {
+              tabId: group.id,
+              tabName: group.name,
+              nodes: [],
+            };
 
-      // // update node state
-      // RED.nodes.eachNode(node => {
-      //   if (node.type.indexOf("soop") !== -1) {
-      //     for (const tab of dashboardState.tabs) {
-      //       for (const group of tab.groups) {
-      //         if (group.groupId == node.groupId) {
-      //           if (Array.isArray(group.nodes)) {
-      //             group.nodes.push({ editor: node, states: [] });
-      //           } else {
-      //             group.nodes = [{ editor: node, states: [] }];
-      //           }
-      //         }
-      //       }
-      //     }
-      //   }
-      // });
+            for (const node of group.users) {
+              groupObject.nodes.push(node);
+            }
 
-      // dashboardConfigNode = createDashboardConfigNode();
-      // socket.emit(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, dashboardState);
+            tabObject.groups.push(groupObject);
+          }
 
-      const dashboardNodes = [];
-      RED.nodes.eachNode(node => {
-        if (node.type.indexOf("soop") !== -1) {
-          dashboardNodes.push(node);
+          dashboardState.tabs.push(tabObject);
         }
       });
 
       dashboardConfigNode = createDashboardConfigNode();
-      socket.emit(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, dashboardNodes);
+      socket.emit(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, dashboardState);
     });
   }
 
