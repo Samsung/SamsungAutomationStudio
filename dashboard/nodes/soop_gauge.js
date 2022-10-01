@@ -15,7 +15,7 @@ module.exports = function (RED) {
     }
 
     let state = {
-      nodeId: config.id,
+      node_id: config.id,
       nodeType: config.type,
       group: config.group,
       size: [config.width, config.height],
@@ -27,12 +27,14 @@ module.exports = function (RED) {
       range: [config.min, config.max],
       value: config.min,
       units: config.units,
-      colorPicking: config.colorPicking,
+      color: config.colorPicking,
     };
 
     node.on("input", function (msg) {
       let form = config.format.replace(/{{/g, "").replace(/}}/g, "").replace(/\s/g, "") || "_zzz_zzz_zzz_";
-      form = form.split("|")[0];
+
+      if (form.split(".")[0] != "msg") return;
+      form = form.split(".")[1];
       let value = RED.util.getMessageProperty(msg, form);
       if (value !== undefined) {
         if (!isNaN(parseFloat(value))) {
