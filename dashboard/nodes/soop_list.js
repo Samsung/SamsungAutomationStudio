@@ -15,7 +15,7 @@ module.exports = function (RED) {
     }
 
     let state = {
-      nodeId: config.id,
+      node_id: node.id,
       nodeType: config.type,
       group: config.group,
       size: [config.width, config.height],
@@ -32,7 +32,6 @@ module.exports = function (RED) {
         state.options = [];
         msg.payload.forEach(function (v) {
           let o = {
-            check: false,
             value: v,
           };
           state.options.push(o);
@@ -43,11 +42,6 @@ module.exports = function (RED) {
 
     dashboard.addNode({
       node: node,
-      onMessage: message => {
-        // console.log(message);
-        // node.send("received message from a dashboard");
-        this.state.options = message.options;
-      },
     });
   }
   RED.nodes.registerType("soop_list", SoopListNode);

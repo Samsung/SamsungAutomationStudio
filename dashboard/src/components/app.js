@@ -19,13 +19,7 @@ const { SOOP_NODE_TYPE } = require("../../common/common");
 
 const App = () => {
   const dispatch = useDispatch();
-  const node = useSelector(state => state.node);
-  const [nodes, setNodes] = useState({});
-
-  useEffect(() => {
-    setNodes(node.nodes);
-  }, [node]);
-
+  const dashboard = useSelector(state => state.dashboard);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
 
@@ -158,18 +152,22 @@ const App = () => {
     };
   }, []);
 
-  const drawNode = node => {
-    switch (node?.editor?.type) {
-      case SOOP_NODE_TYPE.SWITCH:
-        return <SoopSwitch key={node.editor.id} node={node.editor} />;
-      case SOOP_NODE_TYPE.SLIDER:
-        return <SoopSlider key={node.editor.id} node={node.editor} states={node.states} />;
-      case SOOP_NODE_TYPE.GAUGE:
-        return <SoopGauge key={node.editor.id} node={node.editor} states={node.states} />;
-      case SOOP_NODE_TYPE.DROPDOWN:
-        return <SoopDropdown key={node.editor.id} node={node.editor} states={node.states} />;
-    }
-  };
+  useEffect(() => {
+    console.log(dashboard);
+  }, [dashboard]);
+
+  return <>dashboard</>;
+
+  // const drawNode = node => {
+  //   switch (node?.editor?.type) {
+  //     case SOOP_NODE_TYPE.SWITCH:
+  //       return <SoopSwitch key={node.editor.id} node={node.editor} />;
+  //     case SOOP_NODE_TYPE.SLIDER:
+  //       return <SoopSlider key={node.editor.id} node={node.editor} states={node.states} />;
+  //     case SOOP_NODE_TYPE.GAUGE:
+  //       return <SoopGauge key={node.editor.id} node={node.editor} states={node.states} />;
+  //   }
+  // };
 
   // return <>{Object.keys(nodes).map(key => drawNode(nodes[key]))}</>;
 

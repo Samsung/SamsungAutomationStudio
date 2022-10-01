@@ -23,7 +23,7 @@
     background: #8443f6;
   }
   .styled5 {
-    background: #08C792;
+    background: #08c792;
   }
 </style>
 <script type="text/javascript">
@@ -58,7 +58,7 @@
       label: { value: "" },
       tooltip: { value: "" },
       group: {
-        type: "ui_group",
+        type: "soop_group",
         required: true,
       },
       width: {
@@ -117,8 +117,8 @@
       // Check input radio form according to picked color
       var colors = $("input[type=radio][name=colorPicking]");
 
-      for(const item of colors){
-        if(item.value === this.colorPicking){
+      for (const item of colors) {
+        if (item.value === this.colorPicking) {
           item.checked = true;
           break;
         }

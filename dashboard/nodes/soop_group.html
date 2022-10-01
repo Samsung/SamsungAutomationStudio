@@ -1,0 +1,96 @@
+<script type="text/javascript">
+    // convert to i18 text
+
+    function c_soop_group(x) {
+        return RED._("soopsasm-dashboard/soop_group:soop_group." + x);
+    }
+    RED.nodes.registerType('soop_group', {
+        category: 'config',
+        defaults: {
+            name: {
+                value: c_soop_group("label.default")
+            },
+            tab: {
+                type: "soop_tab",
+                required: true
+            },
+            order: {
+                value: 0
+            },
+            displayVisible: {
+                value: true
+            },
+            width: {
+                value: 3
+            },
+            height: {
+                value: 2
+            },
+            groupX: {
+                value: 0
+            },
+            groupY: {
+                value: 0
+            },
+
+            disabled: {
+                value: false
+            },
+            hidden: {
+                value: false
+            },
+            groupState: {
+                value: new Array()
+            },
+            includedNodesId: {
+                value: new Array()
+            }
+        },
+        paletteLabel: 'SOOPSASM GROUP',
+        label: function() {
+            var tabNode = RED.nodes.node(this.tab);
+            if (tabNode) {
+                return "[" + (tabNode.name || c_soop_group("label.tab")) + "] " + (this.name || c_soop_group("label.group"));
+            }
+            return "[" + c_soop_group("label.unassigned") + "] " + (this.name || c_soop_group("label.group"));
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+            console.log('oneditprepare');
+            groupLoc.groupLocationDefaultSetting(this.tab);
+        }
+
+    });
+</script>
+<script type="text/html" data-template-name="soop_group">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="soop_group.label.name"></span></label>
+        <input type="text" id="node-config-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-tab"><i class="fa fa-table"></i> <span data-i18n="soop_group.label.tab"></span></label>
+        <input type="text" id="node-config-input-tab">
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-height"><span data-i18n="soop_group.label.height"></span></label>
+        <input id="node-input-height" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-width"><span data-i18n="soop_group.label.width"></span></label>
+        <input id="node-input-width" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-groupX"><span data-i18n="soop_group.label.x"></span></label>
+        <input id="node-input-groupY" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-groupY"><span data-i18n="soop_group.label.y"></span></label>
+        <input id="node-input-groupY" />
+    </div>
+    <div class="form-row">
+        <input style="margin:10px 0px 10px 102px; width:20px;" type="checkbox" checked id="node-config-input-disp"> <label style="width:auto" for="node-config-input-disp"><span data-i18n="soop_group.display-name"></span></label>
+    </div>
+</script>

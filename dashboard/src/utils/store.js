@@ -1,34 +1,24 @@
 import { createStore, combineReducers } from "redux";
 
-const SET_INIT_NODE = "node/SET_INIT_NODE";
-const UPDATE_NODE = "node/UPDATE_NODE";
+const INIT_DASHBOARD_STATE = "dashboard/INIT_DASHBOARD_STATE";
+const UPDATE_NODE_STATE = "dashboard/UPDATE_NODE_STATE";
 
-export const setInitNode = nodes => ({ type: SET_INIT_NODE, nodes });
-export const updateNode = updateData => ({ type: UPDATE_NODE, updateData });
+export const initDashboard = dashboard => ({ type: INIT_DASHBOARD_STATE, dashboard });
+export const updateNode = updateData => ({ type: UPDATE_NODE_STATE, updateData });
 
-const initialState = {
-  nodes: {},
-};
+const initialState = {};
 
-function node(state = initialState, action) {
+function Dashboard(state = initialState, action) {
   switch (action.type) {
-    case SET_INIT_NODE:
+    case INIT_DASHBOARD_STATE:
       return {
         ...state,
-        nodes: action.nodes,
+        ...action.dashboard,
       };
-    case UPDATE_NODE:
+    case UPDATE_NODE_STATE:
       const newState = { ...state };
-      const updateData = action.updateData;
-
-      if (updateData && updateData.state) {
-        if (updateData.isTimeSeries) newState.nodes[updateData.nodeId].states.push(updateData.state);
-        else newState.nodes[updateData.nodeId].states = [updateData.state];
-      }
-
-      return {
-        ...newState,
-      };
+      pushNodeState(newState, action.updateData);
+      return newState;
   }
 
   return state;
@@ -36,20 +26,36 @@ function node(state = initialState, action) {
 
 export const updateGrid = (newGrid, tabId) => ({ type: "updateGrid", newGrid, tabId });
 
-// const initialGrid = { id: [{ i: 0, w: 1, h: 1, x: 1, y: 1, static: true }] };
-
 function tabsGrid(state = {}, action) {
   switch (action.type) {
     case "updateGrid":
       const newState = { ...state };
       const { newGrid, tabId } = action;
       newState[tabId] = newGrid;
-      console.log("리듀서:", newState);
       return newState;
     default:
       return state;
   }
 }
 
-const rootReducer = combineReducers({ node, tabsGrid });
+const rootReducer = combineReducers({ dashboard: Dashboard, tabsGrid });
 export const store = createStore(rootReducer);
+
+/**
+ * util functions
+ */
+function pushNodeState(newState, updateData) {
+  const dashboard = newState.dashboard;
+
+  for (let i = 0; i < dashboard.tabs.length; ++i) {
+    for (let j = 0; j < dashboard.tabs[i].groups.length; ++j) {
+      for (let k = 0; k < dashboard.tabs[i].groups[j].nodes.length; ++k) {
+        if (dashboard.tabs[i].groups[j].nodes[k].id == updateData.nodeId) {
+          if (updateData.isTimeSeries) dashboard.tabs[i].groups[j].nodes[k].states.push(updateData.state);
+          else dashboard.tabs[i].groups[j].nodes[k].states = [updateData.state];
+          return;
+        }
+      }
+    }
+  }
+}

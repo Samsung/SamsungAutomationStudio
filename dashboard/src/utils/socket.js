@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { setInitNode, updateNode } from "./store";
+import { initDashboard, updateNode } from "./store";
 
 const { FRONT_SOCKET_TYPE } = require("../../common/common");
 
@@ -12,11 +12,11 @@ export const initlaizeSocket = dispatch => {
     console.info(`socket connected : ${socket.id}`);
   });
 
-  socket.on(FRONT_SOCKET_TYPE.INIT_NODE, states => {
-    dispatch(setInitNode(states));
+  socket.on(FRONT_SOCKET_TYPE.INIT_DASHBOARD_STATE, states => {
+    dispatch(initDashboard(states));
   });
 
-  socket.on(FRONT_SOCKET_TYPE.UPDATE_NODE, updateData => {
+  socket.on(FRONT_SOCKET_TYPE.UPDATE_NODE_STATE, updateData => {
     dispatch(updateNode(updateData));
   });
 };
