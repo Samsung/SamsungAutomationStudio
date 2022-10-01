@@ -41,13 +41,49 @@ const App = () => {
             groupName: "그룹이름 1",
             x: 0,
             y: 0,
-            w: 2,
+            w: 4,
             h: 4,
             nodes: [{}, {}],
           },
           {
             groupId: "그룹ID 2 (숫자)",
             groupName: "그룹이름 2",
+            x: 0,
+            y: 0,
+            w: 4,
+            h: 4,
+            nodes: [{}, {}],
+          },
+          {
+            groupId: "그룹ID 3 (숫자)",
+            groupName: "그룹이름 3",
+            x: 0,
+            y: 0,
+            w: 4,
+            h: 4,
+            nodes: [{}, {}],
+          },
+          {
+            groupId: "그룹ID 4 (숫자)",
+            groupName: "그룹이름 4",
+            x: 0,
+            y: 0,
+            w: 2,
+            h: 4,
+            nodes: [{}, {}],
+          },
+          {
+            groupId: "그룹ID 5 (숫자)",
+            groupName: "그룹이름 5",
+            x: 0,
+            y: 0,
+            w: 2,
+            h: 4,
+            nodes: [{}, {}],
+          },
+          {
+            groupId: "그룹ID 6 (숫자)",
+            groupName: "그룹이름 6",
             x: 0,
             y: 0,
             w: 2,
@@ -137,6 +173,8 @@ const App = () => {
         return <SoopSlider key={node.editor.id} node={node.editor} states={node.states} />;
       case SOOP_NODE_TYPE.GAUGE:
         return <SoopGauge key={node.editor.id} node={node.editor} states={node.states} />;
+      case SOOP_NODE_TYPE.DROPDOWN:
+        return <SoopDropdown key={node.editor.id} node={node.editor} states={node.states} />;
     }
   };
 
