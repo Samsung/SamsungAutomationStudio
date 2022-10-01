@@ -1,0 +1,345 @@
+<script type="text/html" data-help-name="data-extractor">
+  <p>A node that extracts specific data you want from REST API response.
+    The criteria for extraction is specific paths checked by user.
+  </p>
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>name</dt>
+    <dd>You can tag or naming this data extraction node.</dd>
+    <dt>Type<span class="property-type">require</span></dt>
+    <dd>You can choose the type of input data format between JSON and XML.</dd>
+    <dt>URL<span class="property-type">require</span></dt>
+    <dd>This URL makes the data structure tree of API response keys.</dd>
+    <dt>Path<span class="property-type">optional</span></dt>
+    <dd>This Paths is a list of path that is checked in key tree.</dd>
+    <dt>Key<span class="property-type">optional</span></dt>
+    <dd>This Key Tree is made by URL response.
+      And it provides data path checkboxes for extracting specific data.
+    </dd>
+  </dl>
+</script>
+
+<script type="text/javascript">
+  (function () {
+    let treeList;
+    let tree = [];
+    let = [];
+
+    RED.nodes.registerType("data-extractor", {
+      category: "Data Extraction",
+      color: "#00bffe", 
+      defaults: {
+        name: {
+          value: "Data Extractor",
+        },
+        url: {
+          value: "",
+        },
+        paths: {
+          value: [],
+        },
+        response_type: {
+          value: "",
+        }
+      },
+      inputs: 1,
+      outputs: 1,
+      icon: "font-awesome/fa-crosshairs",
+      paletteLabel: "Data Extractor",
+      label: function () {
+        return "Data Extractor";
+      },
+      oneditsave: function () {
+        this.tree = tree;
+        this.paths = paths;
+      },
+      oneditprepare: function () {
+        treeList = $("<div>")
+          .css({ width: "100%", height: "100%" })
+          .appendTo(".node-input-api-tree")
+          .treeList({});
+
+        $("#node-input-response_type").typedInput({
+          types: [
+            {
+              value: "Type",
+              options: [
+                { value: "json", label: "JSON" },
+                { value: "xml", label: "XML" },
+              ],
+            },
+          ],
+        });
+
+        if (this.tree !== undefined) {
+          tree = this.tree;
+          treeList.treeList("data", tree);
+        }
+        if (this.paths !== undefined) {
+          paths = this.paths;
+          showPath();
+        }
+
+        $("#node-input-read").on("click", function () {
+          let type = $("#node-input-response_type").typedInput("value");
+
+          fetch($("#node-input-url").val())
+            .then(function (response) {
+              if (type === "json") {
+                return response.json();
+              } else if (type === "xml") {
+                return response.text();
+              }
+            })
+            .then(function (json) {
+              if (type === "xml") {
+                let xmlNode = new DOMParser().parseFromString(json, "text/xml");
+                json = xmlToJson.parse(xmlNode);
+              }
+              tree = [];
+              makeKeyTree(json, tree);
+              treeList.treeList("data", tree);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
+
+        treeList.on("treelistselect", function (event, item) {
+          if (item === undefined || Object.keys(item).length === 0) {
+            return;
+          }
+
+          if (item.selected) {
+            if (item.parent !== undefined) {
+              item.parent.treeList.select(true);
+            }
+          } else if (!item.selected) {
+            if (item.children !== undefined) {
+              for (let n of item.children) {
+                if (n.selected) {
+                  n.treeList.select(false);
+                }
+              }
+              return;
+            }
+          }
+
+          paths = [];
+          for (let item of tree) {
+            generatePath(item, "");
+          }
+          showPath();
+        });
+      },
+    });
+
+    function showPath() {
+      let res = "";
+      if (typeof paths === "string") {
+        paths = JSON.parse(paths);
+      }
+      for (let path of paths) {
+        res += path + "\n";
+      }
+      if (res) {
+        $("#node-input-path").val(res);
+      }
+    }
+
+    function generatePath(item, pre) {
+      if (!item.selected) {
+        return;
+      }
+
+      let cur = item.depth === 0 ? item.label : pre + "." + item.label;
+      if (item.children === undefined) {
+        paths.push(cur);
+        return;
+      }
+
+      let childChecked = false;
+      for (let n of item.children) {
+        if (n.selected) {
+          childChecked = true;
+          generatePath(n, cur);
+        }
+      }
+      if (!childChecked) {
+        paths.push(cur);
+      }
+    }
+
+    function makeKeyTree(json, subtree) {
+      if (Array.isArray(json) && json.length > 0) {
+        makeKeyTree(json[0], subtree);
+        return;
+      }
+      let keys = Object.keys(json);
+      for (let key of keys) {
+        subtree.push(makeTreeItem(key));
+        if (
+          typeof json[key] === "object" &&
+          json[key] !== null &&
+          Object.keys(json[key]).length > 0
+        ) {
+          subtree[subtree.length - 1]["children"] = [];
+          makeKeyTree(json[key], subtree[subtree.length - 1]["children"]);
+        }
+      }
+    }
+
+    function makeTreeItem(label) {
+      return {
+        label: label,
+        checkbox: true,
+        selected: false,
+        expanded: true,
+      };
+    }
+  })();
+</script>
+<script type="text/html" data-template-name="data-extractor">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;"/>
+  </div>
+  <div class="form-row">
+    <label for="node-input-type"><i class="fa fa-file-o"></i> Type</label>
+    <input type="text" id="node-input-response_type" style="width:70%;">
+  </div>
+  <div class="form-row">
+    <label for="node-input-url"><i class="fa fa-globe"></i> URL</label>
+    <input type="text" id="node-input-url" placeholder="URL" style="width: 60%" />
+    <button type="button" class="red-ui-button" id="node-input-read">Read</button>
+  </div>
+  <div class="form-row">
+    <label for="node-input-path"><i class="fa fa-bookmark"></i> Path</label>
+    <textarea id="node-input-path" disabled style="height: 80px; width: 100%;"></textarea>
+  </div>
+  <div class="form-row node-input-api-tree" style="height: calc(80% - 40px);">
+    <label for="node-input-api-tree"><i class="fa fa-key"></i></i> Key</label>
+  </div>
+</script>
+
+<script type="text/javascript">
+  if (typeof Object.assign != "function") {
+    Object.defineProperty(Object, "assign", {
+      value: function assign(target, varArgs) {
+        "use strict";
+        if (target == null) {
+          throw new TypeError("Cannot convert undefined or null to object");
+        }
+
+        var to = Object(target);
+
+        for (var index = 1; index < arguments.length; index++) {
+          var nextSource = arguments[index];
+
+          if (nextSource != null) {
+            for (var nextKey in nextSource) {
+              if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                to[nextKey] = nextSource[nextKey];
+              }
+            }
+          }
+        }
+        return to;
+      },
+      writable: true,
+      configurable: true,
+    });
+  }
+
+  var xmlToJson = (function () {
+    var self = this;
+
+    self.addToParent = function (parent, nodeName, obj) {
+      if (!parent[nodeName]) {
+        parent[nodeName] = obj;
+      } else {
+        if (!Array.isArray(parent[nodeName])) {
+          var tmp = parent[nodeName];
+          parent[nodeName] = [];
+          parent[nodeName].push(tmp);
+        }
+        parent[nodeName].push(obj);
+      }
+    };
+
+    self.convertXMLStringToDoc = function (str) {
+      var xmlDoc = null;
+
+      if (str && typeof str === "string") {
+        var parser = new DOMParser();
+
+        xmlDoc = parser.parseFromString(str, "application/xml");
+      }
+
+      return xmlDoc;
+    };
+
+    self.isXML = function (data) {
+      var documentElement = (data ? data.ownerDocument || data : 0).documentElement;
+      return documentElement ? documentElement.nodeName.toLowerCase() !== "html" : false;
+    };
+
+    self.parseAttributes = function (node) {
+      var attributes = node.attributes,
+        obj = {};
+
+      if (node.hasAttributes()) {
+        for (var i = 0; i < attributes.length; i++) {
+          obj[attributes[i].name] = self.parseValue(attributes[i].value);
+        }
+      }
+      return obj;
+    };
+
+    self.parseChildren = function (parent, childNodes) {
+      if (childNodes.length > 0) {
+        for (var i = 0; i < childNodes.length; i++) {
+          if (childNodes[i].nodeType == 1) {
+            self.parseNode(parent, childNodes[i]);
+          }
+        }
+      }
+    };
+
+    self.parseNode = function (parent, node) {
+      var nodeName = node.nodeName,
+        obj = Object.assign({}, self.parseAttributes(node)),
+        tmp = null;
+
+      if (node.childNodes.length == 1 && node.childNodes[0].nodeType == 3) {
+        if (node.hasAttributes()) {
+          obj["text"] = self.parseValue(node.childNodes[0].nodeValue);
+        } else {
+          obj = self.parseValue(node.childNodes[0].nodeValue);
+        }
+      } else {
+        self.parseChildren(obj, node.childNodes);
+      }
+      self.addToParent(parent, nodeName, obj);
+      return parent;
+    };
+    this.parseValue = function (val) {
+      var num = Number(val);
+
+      if (val.toLowerCase() === "true" || val.toLowerCase() === "false") {
+        return val.toLowerCase() == "true";
+      }
+
+      return isNaN(num) ? val.trim() : val.length == 0 ? null : num;
+    };
+
+    return {
+      parse: function (xml) {
+        if (xml && typeof xml === "string") {
+          xml = self.convertXMLStringToDoc(xml);
+        }
+        return xml && self.isXML(xml) ? self.parseNode({}, xml.firstChild) : null;
+      },
+    };
+  })();
+</script>

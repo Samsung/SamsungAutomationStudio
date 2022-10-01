@@ -1,1 +1,0 @@
-# data-path-generator
