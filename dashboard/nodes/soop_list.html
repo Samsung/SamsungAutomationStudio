@@ -3,42 +3,19 @@
     category: "soop-dashboard",
     color: "rgb(255, 189, 27)",
     defaults: {
-      name: {
-        value: "",
-      },
-      label: {
-        value: "list_name",
-      },
-      group: {
-        type: "ui_group",
-        required: true,
-      },
-      width: {
-        value: 0,
-      },
-      height: {
-        value: 0,
-      },
-      tooltip: {
-        value: "",
-      },
+      name: { value: "" },
+      label: { value: "list_name" },
+      group: { type: "soop_group", required: true },
+      width: { value: 0 },
+      height: { value: 0 },
+      widgetX: { value: 0, validate: RED.validators.number(), required: true },
+      widgetY: { value: 0, validate: RED.validators.number(), required: true },
+      tooltip: { value: "list_node" },
       listType: { value: "ol" },
-      options: {
-        value: [{ check: false, value: "" }],
-      },
+      options: { value: [{ value: "" }] },
     },
     inputs: 1,
     icon: "ui_dropdown.png",
-    paletteLabel: "new_list",
-    outputLabels: function () {
-      return this.min + " - " + this.max;
-    },
-    label: function () {
-      return this.name || (~this.label.indexOf("{{") ? null : this.label) || "new_list";
-    },
-    labelStyle: function () {
-      return this.name ? "node_label_italic" : "";
-    },
     oneditprepare: function () {
       if (this.listType === undefined) {
         this.listType = "ol";
@@ -49,18 +26,6 @@
         width: "#node-input-width",
         height: "#node-input-height",
         group: "#node-input-group",
-      });
-
-      $("#node-input-listType").on("change", function () {
-        isCheckbox = false;
-        if ($(this).val() === "checkbox") isCheckbox = true;
-        else isCheckbox = false;
-
-        var options = $("#node-input-option-container").children();
-        options.each(function (i) {
-          if (isCheckbox) $(this).find(".node-input-option-check").show();
-          else $(this).find(".node-input-option-check").hide();
-        });
       });
 
       function generateOption(i, option) {
@@ -78,13 +43,6 @@
         $(
           '<i style="color:#eee; cursor:move; margin-left:3px;" class="node-input-option-handle fa fa-bars"></i>',
         ).appendTo(row);
-
-        var checkField = $("<input/>", {
-          class: "node-input-option-check",
-          type: "checkbox",
-          style: "margin-left:7px;width:calc(5%);",
-          checked: option.check == "on" ? true : false,
-        }).appendTo(row);
 
         var valueField = $("<input/>", {
           class: "node-input-option-value",
@@ -137,7 +95,6 @@
       options.each(function (i) {
         var option = $(this);
         var o = {
-          check: option.find(".node-input-option-check:checked").val(),
           value: option.find(".node-input-option-value").val(),
         };
 
@@ -153,10 +110,19 @@
     <input type="text" id="node-input-group" />
   </div>
   <div class="form-row">
-    <label><i class="fa fa-object-group"></i> Size</label>
-    <input type="hidden" id="node-input-width" />
-    <input type="hidden" id="node-input-height" />
-    <button class="editor-button" id="node-input-size"></button>
+    <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
+    <div id="node-input-group-table" style="width:70%; display: inline-block;">
+      <div style="margin-bottom:10px">
+        <label for="node-input-widgetX" style="width:auto;">x</label>
+        <input type="text" id="node-input-widgetX" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-widgetY" style="width:auto;">y </label>
+        <input type="text" id="node-input-widgetY" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-width" style="width:auto;">w</label>
+        <input type="text" id="node-input-width" value="1" style="width:30px; margin-right:10px;" />
+        <label for="node-input-height" style="width:auto;">h</label>
+        <input type="text" id="node-input-height" value="1" style="width:30px; margin-right:10px;" />
+      </div>
+    </div>
   </div>
   <div class="form-row">
     <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
@@ -199,5 +165,28 @@
 </script>
 
 <script type="text/html" data-help-name="soop_list">
-  <p>Adds a list type widget to the user interface.</p>
+  <p>Adds a list on the dashboard</p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">String</span></dt>
+    <dd>the payload of the message</dd>
+  </dl>
+
+  <h3>Details</h3>
+  <ol class="node-ports">
+    <li>
+      List Type
+      <dl class="message-properties">
+        <dt>Ordered, Unordered, Checkbox <span class="property-type">String</span></dt>
+        <dd>The list has several modes. ordered list, unordered list, checkobx list</dd>
+      </dl>
+    </li>
+    <li>
+      Forward Input
+      <dl class="message-properties">
+        <dt>Input list <span class="property-type">String Array</span></dt>
+        <dd>Sets the input array to options.</dd>
+      </dl>
+    </li>
+  </ol>
 </script>
