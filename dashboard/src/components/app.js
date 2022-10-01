@@ -142,14 +142,7 @@ const App = () => {
       },
     ],
   };
-  // const asdlkfjsadkfj;
 
-  // useEffect(() => {
-  //   asdlkfjsadkfj = currentTab'
-
-  // }, [currentTab])
-
-  // const exampleTab = ["우리집", "너네집", "으하"];
   const handleIsEditing = data => {
     setIsEditing(data);
   };
