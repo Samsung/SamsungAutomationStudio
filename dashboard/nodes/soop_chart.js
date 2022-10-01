@@ -5,29 +5,24 @@ module.exports = function (RED) {
     const node = this;
     RED.nodes.createNode(node, config);
 
-    // const group = RED.nodes.getNode(config.group);
-    // if (!group) {
-    // node.error('Group is undefined.')
-    //   return;
-    // }
-    // var tab = RED.nodes.getNode(group.config.tab);
-    // if (!tab) {
-    // node.error('Tab is undefined.')
-    //   return;
-    // }
-    const group = "";
+    const group = RED.nodes.getNode(config.group);
+    if (!group) {
+      return;
+    }
+    var tab = RED.nodes.getNode(group.config.tab);
+    if (!tab) {
+      return;
+    }
     const chartType = config.chartType;
     let state = {
       // nodeId: node.id,
       node_id: node.id,
       nodeType: "chart",
       group: group,
-      // tab: tab,
+      tab: tab,
       size: [
-        // parseInt(config.height || group.config.width / 2 + 1 || 4),
-        // parseInt(config.width || group.config.width || 6),
-        parseInt(4),
-        parseInt(6),
+        parseInt(config.height || group.config.height / 2 + 1 || 4),
+        parseInt(config.width || group.config.width || 6),
         parseInt(config.widgetX),
         parseInt(config.widgetY),
       ],
