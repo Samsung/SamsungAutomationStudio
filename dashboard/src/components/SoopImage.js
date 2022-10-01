@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
+// FIXME: x, y, w, h 계산하기
 const Image = styled.img`
   width: 100%;
   height: 100%;
@@ -12,21 +13,17 @@ const Image = styled.img`
 
 const SoopImage = () => {
   const exampleData = {
-    node: {
-      tooltip: "This is Image Node",
-      source: "link", //  upload, link
-      upload: "???",
-      link: "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-      objectFit: "cover",
-    },
-    states: {},
+    tooltip: "This is Image Node",
+    option: "link", //  upload, link
+    resource: "https://item.kakaocdn.net/do/862539f7f2171437385154b3b749990f7154249a3890514a43687a85e6b6cc82",
+    objectFit: "cover",
   };
 
-  switch (exampleData.node.source) {
+  switch (exampleData.option) {
     case "upload":
-      return <Image src="" objectFit={exampleData.node.objectFit} />;
+      return <Image src={`data:image/jpg;base64,${exampleData.resource}`} objectFit={exampleData.objectFit} />;
     case "link":
-      return <Image src={exampleData.node.link} objectFit={exampleData.node.objectFit} />;
+      return <Image src={exampleData.resource} objectFit={exampleData.objectFit} />;
   }
 };
 

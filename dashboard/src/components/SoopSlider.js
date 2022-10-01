@@ -5,13 +5,15 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { mainColor, fontSize, fontColor } from "../assets/DesignOption";
 import { sendMessage } from "../utils/socket";
 
+// TODO: exampleData -> props
+// TODO: x, y, w, h에서 받아오면 계산하기
+// TODO: top, left 옵션줘서 위치 배정하기, 그룹제목이 기본 30px
 const SliderContainer = styled.div`
   width: 100%;
   padding: 5px 10px;
   box-sizing: border-box;
   position: absolute;
   top: 100px;
-  width: 300px;
   display: flex;
   color: ${fontColor.light};
   font-family: "Pretendard-Bold";
@@ -25,18 +27,18 @@ const SliderLabel = styled.div`
 `;
 
 const SoopSlider = ({ node, states }) => {
+  console.log(node);
   const exampleData = {
-    color: "pink",
+    color: "purple",
     label: "This is Label!",
     tooltip: "slider_label",
-    range: [0, 100, 5],
     when: "always",
     invert: false,
-    payload: 50,
+    states: [{ value: 50 }],
   };
 
   // FIXME: 현재 보이는 값 -> props에서 들어오는 것으로 수정해야 한다.
-  const [value, setValue] = useState(exampleData.payload);
+  const [value, setValue] = useState("");
 
   useEffect(() => {
     if (Array.isArray(states) && states[0]) {
@@ -47,7 +49,7 @@ const SoopSlider = ({ node, states }) => {
   const muiTheme = createTheme({
     palette: {
       primary: {
-        main: mainColor[exampleData.color],
+        main: mainColor[node.colorPicking],
       },
     },
   });
@@ -64,7 +66,7 @@ const SoopSlider = ({ node, states }) => {
   return (
     <>
       <SliderContainer>
-        <SliderLabel>{exampleData.label}</SliderLabel>
+        <SliderLabel>{node.label}</SliderLabel>
         <ThemeProvider theme={muiTheme}>
           <Slider
             value={value}

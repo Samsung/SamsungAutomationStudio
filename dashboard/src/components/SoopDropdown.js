@@ -21,19 +21,19 @@ const DropdownContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const SoopDropdown = ({ node, states }) => {
+const SoopDropdown = node => {
   const [selectedOption, setSelectedOption] = useState("");
   const [currentOptions, setCurrentOptions] = useState([]);
   const [currentLabel, setCurrentLabel] = useState("");
-  console.log(node);
   const exampleData = {
-    node: {
-      label: "dropdown라벨",
-      tooltip: "dropdown node",
-      placeholder: "Select option",
-      option: { option1: "value1", option2: "value2" },
-    },
-    states: {},
+    label: "dropdown라벨",
+    tooltip: "툴팁",
+    options: [
+      { label: "val1", value: "0", type: "str" },
+      { label: "val2", value: "1", type: "str" },
+      { label: "val3", value: "2", type: "str" },
+    ],
+    states: [{}],
   };
 
   const onChange = e => {
@@ -43,12 +43,11 @@ const SoopDropdown = ({ node, states }) => {
   };
 
   useEffect(() => {
-    console.log("리액트 드롭다운 컴포넌트 결과: ", node, states);
     const optionsArray = node.options.map(opt => {
       return opt.label;
     });
-    if (Array.isArray(states) && states[0]) {
-      setSelectedOption(states[0].key);
+    if (Array.isArray(node.states) && states[0]) {
+      setSelectedOption(node.states[0].key);
     }
     setCurrentOptions(optionsArray);
     setCurrentLabel(node.label);

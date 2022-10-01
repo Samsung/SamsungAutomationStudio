@@ -3,8 +3,20 @@ import styled from "styled-components";
 import { fontColor, fontSize } from "../assets/DesignOption";
 
 const ListContainer = styled.div`
+  position: absolute;
+  top: 30px;
+
+  width: 100%;
+  padding: 5px 10px;
+  box-sizing: border-box;
   color: ${fontColor.light};
   font-size: ${fontSize.md};
+`;
+
+const ListWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 1px 0;
 `;
 
 const ListLabel = styled.span`
@@ -23,14 +35,14 @@ const SoopList = () => {
   // FIXME: 전역 상태로 변경
   const exampleData = {
     type: "checkbox",
-    option: ["value1", "value2"],
-    checked: [true, false],
+    options: [{ value: "val1" }, { value: "val2" }],
     label: "라벨이당",
     tooltip: "툴팁이당",
   };
-  const [optionChecked, setOptionChecked] = useState(exampleData.checked);
+  const oC = Array.from({ length: exampleData.options.length }, () => false);
+  const [optionChecked, setOptionChecked] = useState(oC);
 
-  const onClickCheck = (idx) => {
+  const onClickCheck = idx => {
     const tmpChecked = optionChecked.map((opt, i) => {
       if (idx === i) {
         return !optionChecked[i];
@@ -42,22 +54,22 @@ const SoopList = () => {
   };
 
   switch (exampleData.type) {
-    case "ordered":
+    case "ol":
       return (
         <ListContainer>
-          <ol>
-            {exampleData.option.map((item, idx) => {
-              return <li key={idx}>{item}</li>;
+          <ol style={{ margin: 0 }}>
+            {exampleData.options.map((item, idx) => {
+              return <li key={idx}>{item.value}</li>;
             })}
           </ol>
         </ListContainer>
       );
-    case "unordered":
+    case "ul":
       return (
         <ListContainer>
-          <ul>
-            {exampleData.option.map((item, idx) => {
-              return <li key={idx}>{item}</li>;
+          <ul style={{ margin: 0 }}>
+            {exampleData.options.map((item, idx) => {
+              return <li key={idx}>{item.value}</li>;
             })}
           </ul>
         </ListContainer>
@@ -65,40 +77,36 @@ const SoopList = () => {
     case "checkbox":
       return (
         <ListContainer>
-          {exampleData.option.map((item, idx) => {
+          {exampleData.options.map((item, idx) => {
             return (
               <div key={idx}>
                 {optionChecked[idx] ? (
-                  <>
+                  <ListWrapper>
                     <input
                       type="checkbox"
                       id={idx}
-                      name={item}
+                      name={item.value}
                       defaultChecked
                       onClick={() => {
                         onClickCheck(idx);
                       }}
                     />
-                    <ListLabel
-                      htmlFor={idx}
-                      idx={idx}
-                      optionChecked={optionChecked}
-                    >
-                      {item}
+                    <ListLabel htmlFor={idx} idx={idx} optionChecked={optionChecked}>
+                      {item.value}
                     </ListLabel>
-                  </>
+                  </ListWrapper>
                 ) : (
-                  <>
+                  <ListWrapper>
                     <input
                       type="checkbox"
                       id={idx}
-                      name={item}
+                      name={item.value}
                       onClick={() => {
                         onClickCheck(idx);
                       }}
                     />
-                    <label htmlFor={idx}>{item}</label>
-                  </>
+                    <label htmlFor={idx}>{item.value}</label>
+                  </ListWrapper>
                 )}
               </div>
             );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { fontSize, fontColor } from "../assets/DesignOption";
 
@@ -14,39 +14,64 @@ const flexOption = [
 
 const height = 48; // FIXME: 추후 그리드 사이즈에 맞게 바뀔것, width도 마찬가지
 
-const BoardText = styled.div`
+const BoardTextContainer = styled.div`
+  position: absolute;
+  top: 30px;
   display: flex;
-  flex-direction: ${flexOption[3][0]};
-  justify-content: ${flexOption[3][1]};
+  flex-direction: ${props => flexOption[props.layout][0]};
+  justify-content: ${props => flexOption[props.layout][1]};
   align-items: center;
-  width: 200px;
+  width: 100%;
   height: ${height}px;
-  font-size: ${fontSize.md};
+  font-size: ${props => props.fontSize}px;
   color: ${fontColor.light};
-  padding: 0;
-  margin: 0;
+  padding: 5px 10px;
+  box-sizing: border-box;
 `;
 
 const BoardTextLabel = styled.div`
-  margin: 0px 10px;
+  margin: 0px;
 `;
 
 const BoardTextValue = styled.div`
-  margin: 0px 10px;
+  margin: 0px;
   font-family: "Pretendard-Bold";
 `;
 
 const SoopText = () => {
+  const [currentLabel, setCurrentLabel] = useState("");
+  const [currentValue, setCurrentValue] = useState("");
+
+  const exampleData = {
+    label: "라벨이당",
+    format: "{{msg.payload}}",
+    layout: 4,
+    fontSize: 16,
+    value: "보여지는 값입니다.",
+    states: [{ value: "payload" }],
+  };
+
+  useEffect(() => {
+    if (Array.isArray(exampleData.states) && exampleData.states[0]) {
+      setCurrentValue(exampleData.states[0].value);
+    } else {
+      setCurrentValue(exampleData.value);
+    }
+    setCurrentLabel(exampleData.label);
+
+    // node, states
+  }, []);
+
   return (
     <>
-      <BoardText>
+      <BoardTextContainer fontSize={exampleData.fontSize} layout={exampleData.layout}>
         <BoardTextLabel>
-          <span>label</span>
+          <span>{currentLabel}</span>
         </BoardTextLabel>
         <BoardTextValue>
-          <span>value</span>
+          <span>{currentValue}</span>
         </BoardTextValue>
-      </BoardText>
+      </BoardTextContainer>
     </>
   );
 };
