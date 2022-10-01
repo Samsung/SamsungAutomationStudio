@@ -33,11 +33,11 @@ function init(RED) {
 
 function initSocket(io) {
   io.on("connection", socket => {
-    socket.emit(FRONT_SOCKET_TYPE.INIT_NODE, getState());
+    socket.emit(FRONT_SOCKET_TYPE.INIT_DASHBOARD_STATE, getState());
 
     socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, state => {
       setState(state);
-      io.emit(FRONT_SOCKET_TYPE.INIT_NODE, getState());
+      io.emit(FRONT_SOCKET_TYPE.INIT_DASHBOARD_STATE, getState());
     });
 
     socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, message => {
@@ -70,7 +70,7 @@ function emitState(state, isTimeSeries = false) {
 }
 
 function emit(nodeId, state, isTimeSeries) {
-  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, isTimeSeries, state });
+  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE_STATE, { nodeId, isTimeSeries, state });
 }
 
 function addNode(nodeObject) {
