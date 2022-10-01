@@ -23,7 +23,6 @@ const App = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
 
-
   /**FIXME: 추후 state에서 받아오는 정보로 수정필요 */
   const tmpData = {
     tabs: [
@@ -165,7 +164,6 @@ const App = () => {
   }, [dashboard]);
 
   return <>dashboard</>;
-
 
   // const drawNode = node => {
   //   switch (node?.editor?.type) {
