@@ -1,9 +1,9 @@
 <script type="text/javascript">
   RED.nodes.registerType("soop_chart", {
-    category: "soop-dashboard", // 이후 수정되어야할 부분
+    category: "soop-dashboard",
     color: "rgb(100, 189, 27)", // 이후 수정되어야할 부분
     defaults: {
-      group: { type: "soop_group", required: true }, // 이후 수정되어야할 부분
+      group: { type: "soop_group", required: true },
       width: {
         value: 0,
         validate: function (value) {
@@ -20,55 +20,33 @@
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
       label: { value: "chart_name" },
       chartType: { value: "line" },
-      removePastData: { value: 1, validate: RED.validators.number(), required: true },
-      removePastDataUnit: { value: "3600", required: true },
-      removePastDataPoints: {
-        value: "",
-        validate: function (value) {
-          return value === "" || RED.validators.number();
-        },
-      },
       xAxisFormat: { value: "HH:mm:ss" },
       customValue: { value: "" },
-      xMin: {
-        value: "",
-        validate: function (value) {
-          return value === "" || RED.validators.number();
-        },
-      },
-      xMax: {
-        value: "",
-        validate: function (value) {
-          return value === "" || RED.validators.number();
-        },
-      },
       yMin: {
         value: "",
         validate: function (value) {
-          return value === "" || RED.validators.number();
+          return value === "" || (RED.validators.number() && !(value > $("#node-input-yMax").val()));
         },
       },
       yMax: {
         value: "",
         validate: function (value) {
-          return value === "" || RED.validators.number();
+          return value === "" || (RED.validators.number() && !($("#node-input-yMin").val() > value));
         },
       },
+      isTimeSeries: { value: false },
       legend: { value: "false" },
-      interpolate: { value: "linear", required: true },
-      cutout: { value: 0, validate: RED.validators.number() },
       blankLabel: { value: "" },
       name: { value: "" },
     },
     inputs: 1,
-    outputs: 1,
-    icon: "ui_chart.png",
-    paletteLabel: "soop chart",
+    outputs: 0,
+    align: "left",
+    icon: "font-awesome/fa-line-chart",
+    paletteLabel: "soop_chart",
     inputLabels: function () {
       return `${this.chartType} chart data`;
     },
-    outputLabels: ["chart state"],
-    align: "right",
     label: function () {
       return this.name || (~this.label.indexOf("{{") ? null : this.label) || "new_chart";
     },
@@ -76,6 +54,7 @@
       return this.name ? "node_label_italic" : "";
     },
     oneditprepare: function () {
+      // 이후 삭제
       $("#node-input-size").elementSizer({
         width: "#node-input-width",
         height: "#node-input-height",
@@ -92,23 +71,21 @@
       if (!$("#node-input-chartType").val()) {
         $("#node-input-chartType").val("line");
       }
-      if (!$("#node-input-removePastData").val()) {
-        $("#node-input-removePastData").val("1");
-      }
-      if (!$("#node-input-removePastDataUnit").val()) {
-        $("#node-input-removePastDataUnit").val("3600");
-      }
       if (!$("#node-input-xAxisFormat").val()) {
         $("#node-input-xAxisFormat").val("HH:mm:ss");
       }
       if (!$("#node-input-legend").val()) {
-        $("#node-input-legend").val("false");
+        $("#node-input-legend").val(false);
       }
-      if (!$("#node-input-interpolate").val()) {
-        $("#node-input-interpolate").val("linear");
-      }
-      if (!$("#node-input-cutout").val()) {
-        $("#node-input-cutout").val("0");
+      // If line chart, input must be time-series data.
+      if ($("#node-input-chartType").val() === "line") {
+        $("#node-input-isTimeSeries").prop("checked", true);
+        $("#node-input-isTimeSeries").attr("disabled", true);
+      } else if ($("#node-input-chartType").val() === "pie") {
+        $("#node-input-isTimeSeries").prop("checked", false);
+        $("#node-input-isTimeSeries").attr("disabled", true);
+      } else {
+        $("#node-input-isTimeSeries").attr("disabled", false);
       }
 
       $("#node-input-xAxisFormat").on("change", function () {
@@ -121,18 +98,20 @@
 
       $("#node-input-chartType").on("change", function () {
         $(".chart-property").hide();
+        $("#node-input-isTimeSeries").prop("checked", true);
+        $("#node-input-isTimeSeries").attr("disabled", true);
         if ($(this).val() === "line") {
           $(".line").show();
         } else if ($(this).val() === "bar") {
           $(".bar").show();
-        } else if ($(this).val() === "horizontalBar") {
-          $(".horizontalBar").show();
+          $("#node-input-isTimeSeries").attr("disabled", false);
         } else {
-          // pie
           $(".pie").show();
+          $("#node-input-isTimeSeries").prop("checked", false);
         }
       });
     },
+    oneditsave: function () {},
   });
 </script>
 
@@ -148,13 +127,6 @@
     <button class="editor-button" id="node-input-size"></button>
   </div>
   <div class="form-row">
-    <label for="node-input-position"><i class="fa fa-object-fa-arrows-alt"></i> Position</label>
-    <label for="node-input-widgetX" style="margin-right: 5px; width: auto;">X</label>
-    <input type="text" id="node-input-widgetX" style="width: 50px;" />
-    <label for="node-input-widgetY" style="margin-left:20px; margin-right: 5px; width: auto;">Y</label>
-    <input type="text" id="node-input-widgetY" style="width: 50px;" />
-  </div>
-  <div class="form-row">
     <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
     <input type="text" id="node-input-label" />
   </div>
@@ -166,27 +138,18 @@
     >
       <option value="line">&#xf201; Line chart</option>
       <option value="bar">&#xf080; Bar chart</option>
-      <option value="horizontalBar">&#xf080; Horizontal bar chart</option>
       <option value="pie">&#xf200; Pie chart</option>
     </select>
-  </div>
-  <div class="form-row" id="removePastData" class="chart-property line">
-    <label for="node-input-xAxis"><i class="fa fa-arrows-h"></i> X-axis</label>
-    <label for="node-input-removePastData" style="width:auto">Last </label>
-    <input type="text" id="node-input-removePastData" style="width:50px;" />
-    <select id="node-input-removePastDataUnit" style="width:80px;">
-      <option value="1">seconds</option>
-      <option value="60">minutes</option>
-      <option value="3600">hours</option>
-      <option value="86400">days</option>
-      <option value="604800">weeks</option>
-    </select>
-    <label for="node-input-removePastDataPoints" style="width:auto; margin: 0 10px;">OR</label>
-    <input type="text" id="node-input-removePastDataPoints" style="width:60px;" placeholder="1000" />
-    <span style="margin-left:5px;">points</span>
+    <input
+      type="checkbox"
+      id="node-input-isTimeSeries"
+      name="isTimeSeries"
+      style="width:auto; margin-top:0; margin-left: 10px;"
+    />
+    <label for="node-input-isTimeSeries"> Time-series</label>
   </div>
 
-  <div class="form-row" id="xAxisFormat" class="chart-property line">
+  <div class="form-row chart-property line bar" id="xAxisFormat">
     <label for="node-input-xAxisFormat"><i class="fa fa-clock-o"></i> X-axis Format</label>
     <select id="node-input-xAxisFormat" style="width:150px; margin-right:10px;">
       <option value="HH:mm:ss">HH:mm:ss</option>
@@ -201,16 +164,7 @@
       <input type="text" id="node-input-customValue" style="width:120px; margin:0px;" />
     </span>
   </div>
-
-  <div class="form-row" id="xAxis" class="chart-property horizontalBar">
-    <label for="node-input-xAxis"><i class="fa fa-arrows-h"></i> X-axis</label>
-    <label for="node-input-xMin" style="width:auto">min</label>
-    <input type="text" id="node-input-xMin" style="width:90px; margin: 0 5px 0 0;" />
-    <label for="node-input-xMax" style="width:auto">max</label>
-    <input type="text" id="node-input-xMax" style="width:90px;" />
-  </div>
-
-  <div class="form-row" id="yAxis" class="chart-property line bar">
+  <div class="form-row chart-property line bar" id="yAxis">
     <label for="node-input-yAxis"><i class="fa fa-arrows-v"></i> Y-axis</label>
     <label for="node-input-yMin" style="width:auto">min</label>
     <input type="text" id="node-input-yMin" style="width:90px; margin: 0 5px 0 0;" />
@@ -224,21 +178,6 @@
       <option value="false">None</option>
       <option value="true">Show</option>
     </select>
-    <span id="interpolate" class="chart-property line">
-      <label for="node-input-interpolate" style="width:auto">Interpolate</label>
-      <select id="node-input-interpolate" style="width:120px; margin-left:0;">
-        <option value="linear">Linear</option>
-        <option value="step">Step</option>
-        <option value="cubic">Cubic</option>
-        <option value="cubic-mono">Cubic-mono</option>
-      </select>
-    </span>
-
-    <span id="cutout" class="chart-property pie">
-      <label for="node-input-cutout" style="width:auto">Cutout</label>
-      <input type="text" id="node-input-cutout" style="width:40px;" />
-      <span style="margin-left:5px;">%</span>
-    </span>
   </div>
 
   <div class="form-row">
