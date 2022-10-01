@@ -24,10 +24,11 @@ module.exports = function (RED) {
         parseInt(config.widgetX),
         parseInt(config.widgetY),
       ],
-      background: config.background,
+      name: config.name,
+      label: config.label,
+      color: config.background,
       shape: config.shape,
       tooltip: config.tooltip,
-      icon: config.icon,
     };
     // send to dashboard
     dashboard.emitState(state);

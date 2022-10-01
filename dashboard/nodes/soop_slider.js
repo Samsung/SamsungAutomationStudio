@@ -4,35 +4,19 @@ module.exports = function (RED) {
   function SoopSliderNode(config) {
     // Node-specific code
     RED.nodes.createNode(this, config);
-    this.pass = config.pass; // pass input flow or not
-    // this.state = [" "," "]; // save node state
 
     var node = this;
 
-    // node.status({}); // setting status below node at palette
+    // var group = RED.nodes.getNode(config.group);
+    // if (!group) {
+    //   return;
+    // }
+    // var tab = RED.nodes.getNode(group.config.tab);
+    // if (!tab) {
+    //   return;
+    // }
 
-    var group = RED.nodes.getNode(config.group);
-    if (!group) {
-      return;
-    }
-    var tab = RED.nodes.getNode(group.config.tab);
-    if (!tab) {
-      return;
-    }
-
-    var min = Math.min(config.min, config.max);
-    var max = Math.max(config.max, config.min);
-    var step = Math.abs(config.step) || 1;
-    var value = min;
-
-    // Receive msg from upstream node in a flow
-    node.on("input", function (msg) {
-      dashboard.emitState({
-        node_id: node.id,
-        value: parseInt(msg.payload),
-      });
-    });
-
+    // Add node information & event listener from dashboard
     dashboard.addNode({
       node: node,
       onMessage: message => {
@@ -41,57 +25,33 @@ module.exports = function (RED) {
         });
       },
     });
+    
+    // Send runtime information to dashboard
+    var step = config.step > Math.abs(config.min - config.max) ? 1 : config.step;
+    var state = {
+      nodeId: node.id,
+      nodeType: config.type,
+      group: config.group, // need to revise
+      size: [], // need to revise
+      name: config.name,
+      color: config.colorPicking,
+      label: config.label,
+      tooltip: config.tooltip,
+      range: [config.min, config.max, step],
+      when: config.send,
+      invert: parseFloat(config.min) > parseFloat(config.max) ? true : false,
+      payload: Math.min(config.min, config.max),
+    }
 
-    // send node configuration
-    /* Currently, html<->js communication is used by config
-     ** When it need to change by using socket communication
-     ** It needs to revise
-     */
-    // var done = dashboard.emitState({
-    //   /** time: timestamp
-    //    *  nodeId: unique id of the node
-    //    *  nodeType: type of the node
-    //    *  node: node object
-    //    *  tab: tab of the node
-    //    *  group: group of the node
-    //    *  size: size of the node [height, width]
-    //    *  name: name of the node
-    //    *  color: color of the node
-    //    *  label: label of the node
-    //    *  tooltip: tooltip of the node
-    //    *  range: range of the slider [min, max, step]
-    //    *  when: option for when to send data at dashboard side (always/release)
-    //    *  invert: Boolean value for whether slider (min, max) is inverted or not
-    //    *  payload: Number value of slider
-    //    */
-    //   time: "",
-    //   nodeId: node.id,
-    //   nodeType: "slider",
-    //   node: node,
-    //   tab: tab,
-    //   group: group,
-    //   size: [config.height || 1, config.width || group.config.width || 6],
-    //   name: config.name,
+    dashboard.emitState(state);
 
-    //   color: config.colorPicking,
-    //   label: config.label,
-    //   tooltip: config.tooltip,
-    //   range: [min, max, step],
-    //   when: config.send || "always",
-    //   invert: parseFloat(config.min) > parseFloat(config.max) ? true : false,
-    //   payload: Math.max(min, Math.min(max, value)),
-    // });
-
-    // if (node.pass) {
-    //     node.status({shape:"dot",fill:"grey",text:msg.payload});
-    // }
-    // else {
-    //     node.state[1] = msg.payload;
-    //     node.status({shape:"dot",fill:"grey",text:node.state[1] + " | " + node.state[1]});
-    // }
-
-    // close node
-    // node.on("close", done);
+    // Receive msg from upstream node in a flow
+    node.on("input", function (msg) {
+      if(config.pass){
+        state.payload = Math.max(config.min, Math.min(config.max, parseInt(msg.payload)));
+        dashboard.emitState(state);
+      }
+    });
   }
   RED.nodes.registerType("soop_slider", SoopSliderNode);
 };

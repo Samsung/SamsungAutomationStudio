@@ -1,6 +1,4 @@
-<script src="socket.io/socket.io.js"></script>
 <script type="text/javascript">
-
     // Temporally save recent file in base64 format
     var strImage;
 
@@ -37,7 +35,6 @@
             *  name: node name on palette
             *  tooltip: tooltip of the image
             *  group: group information of the node
-            *  order: order of the node
             *  width, height: size of node
             *  source: image upload option 
             *  uploads: base64 string of uploaded local image file
@@ -108,10 +105,8 @@
         oneditsave: function () {
             if($('#node-input-source').val() === "upload"){
                 this.uploads = strImage;
-                console.log("T",this.uploads);
             }else{
                 this.uploads = "";
-                console.log("F",this.uploads);
             }
         }
     });
@@ -167,21 +162,24 @@
 </script>
 
 <script type="text/html" data-help-name="soop_image">
-    <p>Helper Text is not ready</p>
-    <p>It'll be revised</p>
-    <!--
-    <p>Adds a slider widget to the user interface.</p>
-    <p>The user can change its value between the limits (<b>min</b> and <b>max</b>). Each value change
-    will generate a message with the value set as <b>payload</b>.</p>
-    <p>A vertical slider can be created by setting the size so that the height is greater than the width.</p>
-    <p>The slider can be reversed by setting the min value larger than the max value. e.g. min 100, max 0.</p>
-    <p>If a <b>Topic</b> is specified, it will be added as <code>msg.topic</code>.</p>
-    <p>An input <code>msg.payload</code> will be converted to a number, and used to preset a value.
-    The <b>min</b> value will be used if conversion fails,
-    and it will update the user interface. If the value changes, it will also be passed to the output.</p>
-    <p>The label can also be set by a message property by setting
-    the field to the name of the property, for example <code>{{msg.topic}}</code>.</p>
-    <p>Setting <code>msg.enabled</code> to <code>false</code> will disable the slider output.</p>
-    <p>If a <b>Class</b> is specified, it will be added to the parent card. This way you can style the card and the elements inside it with custom CSS. The Class can be set at runtime by setting a <code>msg.className</code> string property.</p>
-    -->
+    <p>Shows an image on the dashboard</p>
+    <h3>Details</h3>
+    <ol class="node-ports">
+    <li>Image Source
+        <dl class="message-properties">
+            <dt>source <span class="property-type">upload | link</span></dt>
+            <dd>Option for image source.</dd>
+            <dt>uploads <span class="property-type">file</span></dt>
+            <dd>Image source with uploaded local image file.</dd>
+            <dt>link <span class="property-type">string</span></dt>
+            <dd>Image source with image URL.</dd>
+        </dl>
+    </li>
+    <li>Object Fit
+        <dl class="message-properties">
+            <dt>fits <span class="property-type">fill | contain | cover</span></dt>
+            <dd>Show option of the image.</dd>
+        </dl>
+    </li>
+    </ol>
 </script>

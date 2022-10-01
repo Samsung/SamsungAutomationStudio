@@ -13,13 +13,25 @@ module.exports = function(RED) {
         // var tab = RED.nodes.getNode(group.config.tab);
         // if (!tab) { return; }
 
-        // Send Runtime information to react
+        // Add node information
         dashboard.addNode({
             node: node,
             onMessage: (message) => {
               console.log(message);
-              node.send("received message from a dashboard");
             },
+        });
+
+        // Send runtime information to dashboard
+        dashboard.emitState({
+            nodeId: node.id,
+            nodeType: config.type,
+            group: config.group, // need to revise
+            size: [], // need to revise
+            name: config.name,
+            tooltip: config.tooltip,
+            option: config.source,
+            resource: config.source == "upload" ? config.uploads : config.link,
+            fit: config.fits,
         });
     }
     RED.nodes.registerType("soop_image", SoopImageNode);
