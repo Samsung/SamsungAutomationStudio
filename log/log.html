@@ -1,0 +1,41 @@
+<script type="text/javascript">
+    RED.nodes.registerType("log", {
+        category: 'D5MI',
+        color: "#03bafc",
+        defaults: {
+            logDirectory: { value: '/var/log/nodered/D5MI' }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-object-ungroup",
+        label: function () {
+            return this.name || "log"
+        },
+    });
+</script>
+
+
+<script type="text/html" data-template-name="log">
+    <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    
+    <div class="form-row">
+      <label for="node-input-logDirectory"><i class="fa fa-tag"></i>log-diractory</label>
+      <input type="text" id="node-input-logDirectory" placeholder="(default) '/var/log/nodered/D5MI'">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="log">
+    <p>A node that records information of pose and object detected in log file</p>
+  
+    <h3>Properties</h3>
+    <dl class="message-properties">
+      <dt>Name</dt>
+      <dd>The label of the Node assigned by the user.</dd>
+      <dt>The object which has information of pose and objects detected</dt>
+      <dd>Directory for log file (default: '/var/log/nodered/D5MI')</dd>
+    </dl>
+    
+  </script>
