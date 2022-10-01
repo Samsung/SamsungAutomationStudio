@@ -24,23 +24,18 @@ const App = () => {
   const [currentTab, setCurrentTab] = useState(0);
 
   useEffect(() => {
-    console.log(dashboard);
-  }, [dashboard]);
-
-  const handleIsEditing = data => {
-    setIsEditing(data);
-  };
-  const handleCurrentTab = tabIdx => {
-    setCurrentTab(tabIdx);
-  };
-
-  useEffect(() => {
     initlaizeSocket(dispatch);
 
     return () => {
       disconnectSocket();
     };
   }, []);
+
+  useEffect(() => {
+    console.log(dashboard);
+  }, [dashboard]);
+
+  return <>dashboard</>;
 
   // const drawNode = node => {
   //   switch (node?.editor?.type) {
@@ -53,8 +48,6 @@ const App = () => {
   //   }
   // };
   // return <>{Object.keys(nodes).map(key => drawNode(nodes[key]))}</>;
-
-  return <>dashboard</>;
 
   // return (
   //   <>
