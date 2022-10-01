@@ -1,0 +1,36 @@
+<script type="text/javascript">
+    // convert to i18 text
+
+    var tabCount = new Array();
+    RED.nodes.registerType('soop_tab', {
+        category: 'config',
+        defaults: {
+            name: {
+                value: RED._("soopsasm-dashboard/soop_tab:soop_tab.label.tab")
+            },
+        },
+        paletteLabel: 'SOOPSASM Tab',
+        label: function() {
+            return this.name || RED._("soopsasm-dashboard/soop_tab:soop_tab.label.tab ");
+        },
+        oneditprepare: function() {
+            RED.nodes.eachConfig(function(node) {
+                if (node.type == "soop_tab" && (tabCount.indexOf(node.id) < 0)) {
+                    tabCount.push(node.id);
+                }
+            })
+            if (!(this.name.includes('Tab #'))) {
+                document.getElementById("node-config-input-name").value = 'Tab #' + String(tabCount.length);
+            }
+
+        }
+
+    })
+</script>
+
+<script type="text/html" data-template-name="soop_tab">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="soop_tab.label.name"></span></label>
+        <input type="text" id="node-config-input-name">
+    </div>
+</script>

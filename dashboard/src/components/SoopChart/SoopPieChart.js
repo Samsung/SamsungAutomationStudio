@@ -5,6 +5,7 @@ import { fontSize, fontColor } from "../../assets/DesignOption";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 // FIXME: width, height 둘 중 작은 것을 기준으로 제작이 되게!!
+// FIXME: width, height 둘 중 작은 것을 기준으로 제작이 되게!!
 
 // FIXME: props로 넘어오게 될 것.
 // FIXME: 나중에 받을 때 {node, states}로 구조분해할당받기

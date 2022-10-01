@@ -1,0 +1,185 @@
+<script type="text/javascript">
+    // Temporally save recent file in base64 format
+    var strImage;
+
+    // When user uploads image, change image file into base64 string and save it.
+    function uploadFile(info){
+        const reader = new FileReader();
+        reader.onload = function() {
+            const base64 = this.result.replace(/.*base64,/, '');
+            
+            strImage = base64;
+        };
+        reader.readAsDataURL(info.files[0]);
+    }
+
+    // Register Image Node
+    RED.nodes.registerType('soop_image', {
+        /* Node definitions
+        *  category: palette category
+        *  color: background color
+        *  defaults: node property
+        *  inputs: # of input
+        *  outputs: # of output
+        *  icon: icon image
+        *  paletteLabel: node name in palette
+        *  label: function that returns value for the label name
+        *  labelstyle: function that returns css-style for the label
+        *  oneditprepare: function called when edit window is opened
+        *  oneditsave: function called when edit window is okayed
+        */
+        category: "soop-dashboard",
+        color: 'rgb(100, 189, 27)',
+        defaults: {
+            /* Node Properties (value, required, validate, type)
+            *  name: node name on palette
+            *  tooltip: tooltip of the image
+            *  group: group information of the node
+            *  width, height: size of node
+            *  source: image upload option 
+            *  uploads: base64 string of uploaded local image file
+            *  link: URL of the image file
+            *  fits: cut option of the image
+            */
+            name: { value: '' },
+            tooltip: { value: '' },
+            group: {
+                type: 'ui_group',
+                required: true
+            },
+            width: {
+                value: 0,
+                validate: function(v) {
+                    var width = v || 0;
+                    var currentGroup = $('#node-input-group').val() || this.group;
+                    var groupNode = RED.nodes.node(currentGroup);
+                    var valid = !groupNode || +width <= +groupNode.width;
+                    $("#node-input-size").toggleClass("input-error", !valid);
+                    return valid;
+                }
+            },
+            height: {
+                value: 0
+            },
+            source: { value: 'upload' },
+            uploads: { value: "" },
+            link: { value: "" },
+            fits: { value: 'fill' },
+        },
+        inputs: 0,
+        outputs: 0,
+        icon: "font-awesome/fa-picture-o",
+        paletteLabel: 'soop_image',
+        label: function() {
+            return this.name || 'soop_image';
+        },
+
+        oneditprepare: function() {
+            $("#node-input-size").elementSizer({
+                width: "#node-input-width",
+                height: "#node-input-height",
+                group: "#node-input-group"
+            });
+
+            // On change event, change dom element
+            $('#node-input-source').on("change", function() {
+                if ($('#node-input-source').val() === "upload") {
+                    $('#node-input-link').val('');
+                    $(".form-row-link").hide();
+                    $(".form-row-upload").show();
+                }
+                else if ($('#node-input-source').val() === "link") {
+                    $('#node-input-upload').val('');
+                    $(".form-row-upload").hide();
+                    $(".form-row-link").show();
+                }
+            });
+            
+            // According to input, call event function
+            $('#node-input-source').change();
+
+            // Set default fit option
+            if (!$("#node-input-fits").val()) { $("#node-input-fits").val("fill") }
+            
+        },
+        oneditsave: function () {
+            if($('#node-input-source').val() === "upload"){
+                this.uploads = strImage;
+            }else{
+                this.uploads = "";
+            }
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="soop_image">
+    <!-- Group -->
+    <div class="form-row">
+        <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+        <input type="text" id="node-input-group">
+    </div>
+    <!-- Size -->
+    <div class="form-row">
+        <label><i class="fa fa-object-group"></i> Size</label>
+        <input type="hidden" id="node-input-width">
+        <input type="hidden" id="node-input-height">
+        <button class="editor-button" id="node-input-size"></button>
+    </div>
+    <!-- Source -->
+    <div class="form-row">
+        <label for="node-input-source"><i class="fa fa-file-image-o"></i> Source</label>
+        <select id="node-input-source" style="width:204px">
+            <option value="upload">Upload Image</option>
+            <option value="link">File URL</option>
+        </select>
+    </div>
+    <!-- Source-Upload -->
+    <div class="form-row form-row-upload">
+        <label for="node-input-upload" style="text-align:right;"><i class="fa fa-upload"></i> File</label>
+        <input type="file" id="node-input-upload" accept="image/*" onchange="uploadFile(this)" style="width:204px">
+    </div>
+    <!-- Source-URL -->
+    <div class="form-row form-row-link">
+        <label for="node-input-link" style="text-align:right;"><i class="fa fa-link"></i> URL</label>
+        <input type="text" id="node-input-link" style="width:204px">
+    </div>
+
+    <!-- Object fit -->
+    <div class="form-row">
+        <label for="node-input-fits"><i class="fa fa-crop"></i> Object fit</label>
+        <select id="node-input-fits" style="width:204px">
+            <option value="fill">fill</option>
+            <option value="contain">contain</option>
+            <option value="cover">cover</option>
+        </select>
+    </div>
+    <!-- Name -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="soop_image">
+    <p>Shows an image on the dashboard</p>
+    <h3>Details</h3>
+    <ol class="node-ports">
+    <li>Image Source
+        <dl class="message-properties">
+            <dt>source <span class="property-type">upload | link</span></dt>
+            <dd>Option for image source.</dd>
+            <dt>uploads <span class="property-type">file</span></dt>
+            <dd>Image source with uploaded local image file.</dd>
+            <dt>link <span class="property-type">string</span></dt>
+            <dd>Image source with image URL.</dd>
+        </dl>
+    </li>
+    <li>Object Fit
+        <dl class="message-properties">
+            <dt>fits <span class="property-type">fill | contain | cover</span></dt>
+            <dd>Show option of the image.</dd>
+        </dl>
+    </li>
+    </ol>
+</script>

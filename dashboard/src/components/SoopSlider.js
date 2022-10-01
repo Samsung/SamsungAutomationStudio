@@ -26,6 +26,11 @@ const SliderLabel = styled.div`
   margin: auto 10px;
 `;
 
+const SEND_TYPE = {
+  ALWAYS: "always",
+  RELEASE: "release",
+};
+
 const SoopSlider = ({ node, states }) => {
   console.log(node);
   const exampleData = {
@@ -54,13 +59,13 @@ const SoopSlider = ({ node, states }) => {
     },
   });
 
-  function onChangeCommited(e, v) {
-    setValue(v);
-    sendMessage(node.id, { value: v });
+  function onChangeCommitted(e, v) {
+    if (node.send == SEND_TYPE.RELEASE) sendMessage(node.id, { value: v });
   }
 
   function onChangeValue(e, v) {
     setValue(v);
+    if (node.send == SEND_TYPE.ALWAYS) sendMessage(node.id, { value: v });
   }
 
   return (
@@ -76,7 +81,7 @@ const SoopSlider = ({ node, states }) => {
             max={node.max}
             step={node.step}
             onChange={onChangeValue}
-            onChangeCommitted={onChangeCommited}
+            onChangeCommitted={onChangeCommitted}
           />
         </ThemeProvider>
       </SliderContainer>

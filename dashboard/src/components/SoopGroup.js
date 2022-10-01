@@ -37,7 +37,7 @@ const GroupName = styled.div`
   padding: 3px 10px;
 `;
 
-const SoopGroup = ({ group, index }) => {
+const SoopGroup = ({ group, index, index }) => {
   // TODO: 노드 그룹 정보들을 받아오면 그룹의 설정에 따라서 변경이 가능하다.
   // 그리고 노드의 렌더링도 여기서 해야한다... ㅠㅜㅠㅜ
   const drawNode = node => {

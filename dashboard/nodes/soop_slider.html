@@ -87,6 +87,8 @@
       },
       step: {
         value: 1,
+        required: true,
+        validate: RED.validators.number(),
       },
       colorPicking: {
         value: "blue",
@@ -205,18 +207,49 @@
 </script>
 
 <script type="text/html" data-help-name="soop_slider">
-  <p>Helper Text is not ready</p>
-  <p>It'll be revised</p>
+  <p>Adds a slider on the dashboard</p>
+  <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">number</span></dt>
+        <dd> the payload of the message </dd>
+    </dl>
+
+  <h3>Outputs</h3>    
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">number</span></dt>
+        <dd> the payload of the message. </dd>
+    </dl>  
+
+  <h3>Details</h3>
+  <ol class="node-ports">
+    <li>Slider Range
+        <dl class="message-properties">
+            <dt>min, max, step <span class="property-type">number</span></dt>
+            <dd>Minimum, maximum, interval value of the slider.</dd>
+        </dl>
+    </li>
+    <li>Forward Input
+        <dl class="message-properties">
+            <dt>pass <span class="property-type">boolean</span></dt>
+            <dd>Option for forwarding input msg or not, when input arrives.</dd>
+        </dl>
+    </li>
+    <li>Send Payload
+      <dl class="message-properties">
+          <dt>send <span class="property-type">always | release</span></dt>
+          <dd>Option for receiving modified value from the dashboard.</dd>
+          <dd>Send received value whenever the slider value changed or when the user releases the slider.</dd>
+      </dl>
+    </li>
+  </ol>
   <!--
-    <p>Adds a slider widget to the user interface.</p>
-	<p>The user can change its value between the limits (<b>min</b> and <b>max</b>). Each value change
-    will generate a message with the value set as <b>payload</b>.</p>
     <p>A vertical slider can be created by setting the size so that the height is greater than the width.</p>
-    <p>The slider can be reversed by setting the min value larger than the max value. e.g. min 100, max 0.</p>
-    <p>An input <code>msg.payload</code> will be converted to a number, and used to preset a value.
-    The <b>min</b> value will be used if conversion fails,
-    and it will update the user interface. If the value changes, it will also be passed to the output.</p>
-    <p>Setting <code>msg.enabled</code> to <code>false</code> will disable the slider output.</p>
-    <p>If a <b>Class</b> is specified, it will be added to the parent card. This way you can style the card and the elements inside it with custom CSS. The Class can be set at runtime by setting a <code>msg.className</code> string property.</p>
-    -->
+    <p>The slider can be reversed by setting the min value larger than the max value.</p>
+    <p>An input <code>msg.payload</code> will be converted to a number. The <b>min</b> value will be used if conversion fails.</p>
+  -->
+
+  <h3>References</h3>
+    <ul>
+      <li><a href="https://fontawesome.com/v4/icons/">FontAwesome</a> - the icon on a button</li>
+    </ul>
 </script>
