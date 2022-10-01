@@ -23,7 +23,7 @@ const App = () => {
   const [nodes, setNodes] = useState({});
 
   useEffect(() => {
-    setNodes(node.nodes);
+    if (node && node.nodes) setNodes(node.nodes);
   }, [node]);
 
   const [isEditing, setIsEditing] = useState(false);

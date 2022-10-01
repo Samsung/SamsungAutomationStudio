@@ -10,7 +10,7 @@ const initialState = {
   nodes: {},
 };
 
-function node(state = initialState, action) {
+function Node(state = initialState, action) {
   switch (action.type) {
     case SET_INIT_NODE:
       return {
@@ -19,31 +19,30 @@ function node(state = initialState, action) {
       };
     case UPDATE_NODE:
       const newState = { ...state };
-      const updateData = action.updateData;
-
-      // for (let i = 0; i < newState.tabs.length; ++i) {
-      //   for (let j = 0; j < newState.tabs[i].groups.length; ++j) {
-      //     for (let k = 0; k < newState.tabs[i].groups[j].nodes.length; ++k) {
-      //       if (newState.tabs[i].groups[j].nodes[k].id == updateData.nodeId) {
-      //         if (updateData.isTimeSeries) newState.tabs[i].groups[j].nodes[k].states.push(updateData.state);
-      //         else newState.tabs[i].groups[j].nodes[k].states = [updateData.state];
-      //       }
-      //     }
-      //   }
-      // }
-
-      if (updateData && updateData.state) {
-        if (updateData.isTimeSeries) newState.nodes[updateData.nodeId].states.push(updateData.state);
-        else newState.nodes[updateData.nodeId].states = [updateData.state];
-      }
-
-      return {
-        ...newState,
-      };
+      pushNodeState(newState, action.updateData);
+      return newState;
   }
 
   return state;
 }
 
-const rootReducer = combineReducers({ node });
+const rootReducer = combineReducers({ Node });
 export const store = createStore(rootReducer);
+
+/**
+ * util functions
+ */
+function pushNodeState(newState, updateData) {
+  const nodes = newState.nodes;
+
+  for (let i = 0; i < nodes.tabs.length; ++i) {
+    for (let j = 0; j < nodes.tabs[i].groups.length; ++j) {
+      for (let k = 0; k < nodes.tabs[i].groups[j].nodes.length; ++k) {
+        if (nodes.tabs[i].groups[j].nodes[k].id == updateData.nodeId) {
+          if (updateData.isTimeSeries) nodes.tabs[i].groups[j].nodes[k].states.push(updateData.state);
+          else nodes.tabs[i].groups[j].nodes[k].states = [updateData.state];
+        }
+      }
+    }
+  }
+}

@@ -33,11 +33,11 @@ function init(RED) {
 
 function initSocket(io) {
   io.on("connection", socket => {
-    socket.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitState());
+    socket.emit(FRONT_SOCKET_TYPE.INIT_NODE, getState());
 
     socket.on(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, state => {
-      setInitState(state);
-      io.emit(FRONT_SOCKET_TYPE.INIT_NODE, getInitState());
+      setState(state);
+      io.emit(FRONT_SOCKET_TYPE.INIT_NODE, getState());
     });
 
     socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, message => {
@@ -70,7 +70,7 @@ function emitState(state, isTimeSeries = false) {
 }
 
 function emit(nodeId, state, isTimeSeries) {
-  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, isTimeSeries, state: state });
+  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE, { nodeId, isTimeSeries, state });
 }
 
 function addNode(nodeObject) {
@@ -84,40 +84,37 @@ function addNode(nodeObject) {
   };
 }
 
-function setInitState(state) {
+function setState(state) {
   globalState = { ...state };
   syncGlobalNode();
 }
 
-function getInitState() {
-  const initState = {};
-
+function getState() {
   const tabs = [];
   for (const tab of globalState.tabs) {
-    const initTab = { ...tab };
+    const tabObject = { ...tab };
 
     const groups = [];
     for (const group of tab.groups) {
-      const initGroup = { ...group };
+      const groupObject = { ...group };
 
       const nodes = [];
       for (const node of group.nodes) {
         nodes.push({
-          editor: node,
+          ...node,
           states: globalNodes[node.id].states,
         });
       }
 
-      initGroup.nodes = nodes;
-      groups.push(initGroup);
+      groupObject.nodes = nodes;
+      groups.push(groupObject);
     }
 
-    initTab.groups = groups;
-    tabs.push(initTab);
+    tabObject.groups = groups;
+    tabs.push(tabObject);
   }
 
-  initState.tabs = tabs;
-  return initState;
+  return { tabs: tabs };
 }
 
 function syncGlobalNode() {
