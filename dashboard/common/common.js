@@ -12,13 +12,15 @@ const DASHBOARD_PATH = "/dashboard";
 
 const SOOP_NODE_TYPE = {
   CONFIG: "soop_dashboard_config",
-  SWITCH: "soop_switch",
-  SLIDER: "soop_slider",
   BUTTON: "soop_button",
   CHART: "soop_chart",
-  GAUGE: "soop_gauge",
-  LIST: "soop_list",
   DROPDOWN: "soop_dropdown",
+  GAUGE: "soop_gauge",
+  IMAGE: "soop_image",
+  LIST: "soop_list",
+  SLIDER: "soop_slider",
+  SWITCH: "soop_switch",
+  TEXT: "soop_text",
 };
 
 exports.FRONT_SOCKET_TYPE = FRONT_SOCKET_TYPE;

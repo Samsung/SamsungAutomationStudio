@@ -81,7 +81,7 @@ const SoopGrid = ({ size: { width }, isEditing, tab }) => {
       >
         {tab.groups.map((group, index) => (
           <GridItem key={group.groupId} className="widget" data-grid={layouts.lg[index]} isEditing={isEditing}>
-            <SoopGroup group={group} />
+            <SoopGroup group={group} index={index} />
           </GridItem>
         ))}
       </ResponsiveGridLayout>

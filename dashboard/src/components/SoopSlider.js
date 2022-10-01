@@ -9,6 +9,9 @@ const SliderContainer = styled.div`
   width: 100%;
   padding: 5px 10px;
   box-sizing: border-box;
+  position: absolute;
+  top: 100px;
+  width: 300px;
   display: flex;
   color: ${fontColor.light};
   font-family: "Pretendard-Bold";
