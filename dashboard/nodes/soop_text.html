@@ -1,0 +1,226 @@
+<style>
+  .nr-db-text-layout {
+    position: relative;
+    display: inline-block;
+    width: 90px;
+    height: 60px;
+    border-radius: 3px;
+    border: 1px solid #bbb;
+    cursor: pointer;
+    color: #666;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  .nr-db-text-layout.selected,
+  .nr-db-text-layout:hover {
+    border-color: #333;
+    color: #333;
+  }
+  .nr-db-text-layout span {
+    position: absolute;
+  }
+  .nr-db-text-layout-value {
+    font-weight: bold;
+  }
+  .nr-db-text-layout-row span {
+    top: 20px;
+  }
+  .nr-db-text-layout-0 .nr-db-text-layout-label {
+    left: 2px;
+  }
+  .nr-db-text-layout-0 .nr-db-text-layout-value {
+    left: 34px;
+  }
+  .nr-db-text-layout-1 .nr-db-text-layout-label {
+    left: 2px;
+  }
+  .nr-db-text-layout-1 .nr-db-text-layout-value {
+    right: 2px;
+  }
+  .nr-db-text-layout-2 .nr-db-text-layout-label {
+    left: 11px;
+  }
+  .nr-db-text-layout-2 .nr-db-text-layout-value {
+    right: 11px;
+  }
+  .nr-db-text-layout-3 .nr-db-text-layout-label {
+    right: 40px;
+  }
+  .nr-db-text-layout-3 .nr-db-text-layout-value {
+    right: 2px;
+  }
+
+  .nr-db-text-layout-col span {
+    width: 90px;
+    text-align: center;
+    left: 0px;
+  }
+  .nr-db-text-layout-4 .nr-db-text-layout-label {
+    top: 12px;
+  }
+  .nr-db-text-layout-4 .nr-db-text-layout-value {
+    top: 26px;
+  }
+  .nr-db-text-layout-checkbox {
+    display: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+    border: 1px solid #bbb;
+    position: absolute;
+    right: -5px;
+    top: -5px;
+    background: #fff;
+  }
+  .nr-db-text-layout.selected .nr-db-text-layout-checkbox {
+    display: inline-block;
+    box-shadow: inset 0px 0px 0px 2px #fff;
+    background: #333;
+    border-color: #333;
+  }
+</style>
+
+<script type="text/javascript">
+  RED.nodes.registerType("soop_text", {
+    category: "soop-dashboard",
+    color: "rgb(255, 189, 27)",
+    defaults: {
+      name: {
+        value: "",
+      },
+      label: {
+        value: "text_name",
+      },
+      group: {
+        type: "ui_group",
+        required: true,
+      },
+      width: {
+        value: 0,
+      },
+      height: {
+        value: 0,
+      },
+      format: { value: "{{msg.payload}}" },
+      layout: { value: "0" },
+      fontSize: { value: "16", required: true, validate: RED.validators.number() },
+    },
+    inputs: 1,
+    icon: "text.png",
+    oneditprepare: function () {
+      $("#node-input-size").elementSizer({
+        width: "#node-input-width",
+        height: "#node-input-height",
+        group: "#node-input-group",
+      });
+
+      $(".nr-db-text-layout-" + (this.layout || "row-spread")).addClass("selected");
+
+      [
+        ".nr-db-text-layout-0",
+        ".nr-db-text-layout-1",
+        ".nr-db-text-layout-2",
+        ".nr-db-text-layout-3",
+        ".nr-db-text-layout-4",
+      ].forEach(function (id) {
+        $(id).click(function (e) {
+          $(".nr-db-text-layout").removeClass("selected");
+          $(this).addClass("selected");
+          $("#node-input-layout").val(id.substring(".nr-db-text-layout-".length));
+          e.preventDefault();
+        });
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="soop_text">
+  <div class="form-row">
+    <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+    <input type="text" id="node-input-group" />
+  </div>
+  <div class="form-row">
+    <label><i class="fa fa-object-group"></i> Size</label>
+    <input type="hidden" id="node-input-width" />
+    <input type="hidden" id="node-input-height" />
+    <button class="editor-button" id="node-input-size"></button>
+  </div>
+  <div class="form-row">
+    <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+    <input type="text" id="node-input-label" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-format"><i class="fa fa-i-cursor"></i> Value Format</label>
+    <input type="text" id="node-input-format" placeholder="{{msg.payload}}" />
+  </div>
+  <div class="form-row">
+    <label style="vertical-align: top"><i class="fa fa-th-large"></i> Layout</label>
+    <div style="display:inline-block">
+      <input type="hidden" id="node-input-layout" /><input type="hidden" id="node-input-layoutAlign" />
+      <div>
+        <a href="#" class="nr-db-text-layout nr-db-text-layout-row nr-db-text-layout-0">
+          <span class="nr-db-text-layout-label">label</span>
+          <span class="nr-db-text-layout-value">value</span>
+          <div class="nr-db-text-layout-checkbox"></div>
+        </a>
+        <a href="#" class="nr-db-text-layout nr-db-text-layout-row nr-db-text-layout-1">
+          <span class="nr-db-text-layout-label">label</span>
+          <span class="nr-db-text-layout-value">value</span>
+          <div class="nr-db-text-layout-checkbox"></div>
+        </a>
+        <a href="#" class="nr-db-text-layout nr-db-text-layout-row nr-db-text-layout-2">
+          <span class="nr-db-text-layout-label">label</span>
+          <span class="nr-db-text-layout-value">value</span>
+          <div class="nr-db-text-layout-checkbox"></div>
+        </a>
+      </div>
+      <div>
+        <a href="#" class="nr-db-text-layout nr-db-text-layout-row nr-db-text-layout-3">
+          <span class="nr-db-text-layout-label">label</span>
+          <span class="nr-db-text-layout-value">value</span>
+          <div class="nr-db-text-layout-checkbox"></div>
+        </a>
+        <a href="#" class="nr-db-text-layout nr-db-text-layout-col nr-db-text-layout-4">
+          <span class="nr-db-text-layout-label">label</span>
+          <span class="nr-db-text-layout-value">value</span>
+          <div class="nr-db-text-layout-checkbox"></div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="node-input-fontSize"><i class="fa fa-i-cursor"></i> Font Size</label>
+    <input type="number" id="node-input-fontSize" style="width:50px" /> px
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="soop_text">
+  <p>Adds a text on the dashboard</p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">String</span></dt>
+    <dd>the payload of the message</dd>
+  </dl>
+
+  <h3>Details</h3>
+  <ol class="node-ports">
+    <li>
+      Value Format
+      <dl class="message-properties">
+        <dt>payload, topic <span class="property-type">String</span></dt>
+        <dd>msg.payload, msg.topic, Other msg parameters are also available.</dd>
+      </dl>
+    </li>
+    <li>
+      Layout
+      <dl class="message-properties">
+        <dt>Five Layouts <span class="property-type">boolean</span></dt>
+        <dd>print text to the selected layout.</dd>
+      </dl>
+    </li>
+  </ol>
+</script>
