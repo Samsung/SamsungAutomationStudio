@@ -35,8 +35,8 @@ const App = () => {
             groupName: "그룹이름 1",
             x: 0,
             y: 0,
-            w: 4,
-            h: 4,
+            w: 1,
+            h: 1,
             nodes: [{}, {}],
           },
           {
@@ -63,7 +63,7 @@ const App = () => {
             x: 0,
             y: 0,
             w: 2,
-            h: 4,
+            h: 3,
             nodes: [{}, {}],
           },
           {
@@ -72,7 +72,7 @@ const App = () => {
             x: 0,
             y: 0,
             w: 2,
-            h: 4,
+            h: 3,
             nodes: [{}, {}],
           },
           {
@@ -156,7 +156,7 @@ const App = () => {
     console.log(dashboard);
   }, [dashboard]);
 
-  return <>dashboard</>;
+  // return <>dashboard</>;
 
   // const drawNode = node => {
   //   switch (node?.editor?.type) {
