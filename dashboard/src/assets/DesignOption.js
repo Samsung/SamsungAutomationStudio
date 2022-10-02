@@ -41,18 +41,19 @@ const calculateWidth = (w, currentGroupWidth, currentGroupW) => {
   if (w === currentGroupW) {
     return currentGroupWidth;
   }
-  const unitWidth = Math.round((currentGroupWidth + (currentGroupW - 1) * 10) / currentGroupW);
+  const unitWidth = Math.round(currentGroupWidth / currentGroupW);
   return unitWidth * w;
 };
 
 const calculateLeft = (x, currentGroupWidth, currentGroupW) => {
-  const unitWidth = Math.round((currentGroupWidth + (currentGroupW - 1) * 10) / currentGroupW);
+  const unitWidth = Math.round(currentGroupWidth / currentGroupW);
   return unitWidth * x;
 };
 
 const calculateHeight = (h, currentGroupH, isNameVisible = "true") => {
   if (isNameVisible === "true") {
-    const unitHeight = (currentGroupH * 75 + (currentGroupH - 1) * 10 - 30) / currentGroupH;
+    const unitHeight = Math.round((currentGroupH * 75 + (currentGroupH - 1) * 10 - 30) / currentGroupH);
+    console.log("단위높이: ", unitHeight);
     return unitHeight * h;
   } else {
     return h * 75;

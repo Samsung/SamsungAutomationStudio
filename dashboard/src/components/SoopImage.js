@@ -1,29 +1,55 @@
 import React from "react";
 import styled from "styled-components";
+import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
 
 // FIXME: x, y, w, h 계산하기
 const Image = styled.img`
-  width: 100%;
-  height: 100%;
+position: absolute;
+left: ${({ layout }) => `${layout[0]}px;`}
+top: ${({ layout }) => `${layout[1]}px;`}
+width: ${({ layout }) => `${layout[2]}px;`}
+height:${({ layout }) => `${layout[3]}px;`}
   object-fit: ${({ objectFit }) => {
     return objectFit;
   }}}
-  border-radius: 10px;
+  border-radius: ${({ isFull }) => isFull && `10px;`}
 `;
 
-const SoopImage = () => {
+const SoopImage = props => {
+  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
+
   const exampleData = {
     tooltip: "This is Image Node",
+    widgetX: 0,
+    widgetY: 0,
+    width: 4,
+    height: 4,
     option: "link", //  upload, link
-    resource: "https://item.kakaocdn.net/do/862539f7f2171437385154b3b749990f7154249a3890514a43687a85e6b6cc82",
+    resource: "https://www.sjpost.co.kr/news/photo/202007/53199_48342_4214.jpg",
     objectFit: "cover",
   };
 
+  const layout = [
+    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
+    calculateTop(exampleData.widgetY),
+    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
+    calculateHeight(exampleData.height, currentGroupH),
+  ];
+
+  const isFull = exampleData.width === currentGroupW && exampleData.height === currentGroupH ? true : false;
+
   switch (exampleData.option) {
     case "upload":
-      return <Image src={`data:image/jpg;base64,${exampleData.resource}`} objectFit={exampleData.objectFit} />;
+      return (
+        <Image
+          isFull={isFull}
+          layout={layout}
+          src={`data:image/jpg;base64,${exampleData.resource}`}
+          objectFit={exampleData.objectFit}
+        />
+      );
     case "link":
-      return <Image src={exampleData.resource} objectFit={exampleData.objectFit} />;
+      return <Image isFull={isFull} layout={layout} src={exampleData.resource} objectFit={exampleData.objectFit} />;
   }
 };
 

@@ -147,7 +147,7 @@ const SoopGroup = ({ group, index }) => {
       {group.nodes.map(node => {
         drawNode(node);
       })}
-      <SoopButton currentGroupWidth={currentGroupWidth} currentGroupW={group.w} currentGroupH={group.h}></SoopButton>
+      <SoopGauge currentGroupWidth={currentGroupWidth} currentGroupW={group.w} currentGroupH={group.h}></SoopGauge>
     </Group>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { sendMessage } from "../utils/socket";
 import { mainColor, gradientColor, fontSize } from "../assets/DesignOption";
@@ -8,13 +8,13 @@ const ButtonContainer = styled.div`
   position: absolute;
   left: ${({ layout }) => `${layout[0]}px;`}
   top: ${({ layout }) => `${layout[1]}px;`}
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: ${({ layout }) => `${layout[2]}px;`}
   height:${({ layout }) => `${layout[3]}px;`}
   padding: 5px 10px;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   `;
 
 const Button = styled.button`
@@ -97,10 +97,10 @@ const SoopButton = props => {
   const { currentGroupW, currentGroupWidth, currentGroupH } = props;
   const exampleData = {
     nodeId: "abcde",
-    x: 0,
-    y: 0,
-    w: 1,
-    h: 1,
+    widgetX: 0,
+    widgetY: 0,
+    width: 1,
+    height: 1,
     label: "SAM",
     background: "green",
     shape: "circle",
@@ -108,10 +108,10 @@ const SoopButton = props => {
   };
 
   const layout = [
-    calculateLeft(exampleData.x, currentGroupWidth, currentGroupW),
-    calculateTop(exampleData.y),
-    calculateWidth(exampleData.w, currentGroupWidth, currentGroupW),
-    calculateHeight(exampleData.h, currentGroupH),
+    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
+    calculateTop(exampleData.widgetY),
+    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
+    calculateHeight(exampleData.height, currentGroupH),
   ];
 
   return (
