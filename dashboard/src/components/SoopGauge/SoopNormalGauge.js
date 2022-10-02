@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Gauge from "react-svg-gauge";
 import { mainColor, fontColor, fontSize } from "../../assets/DesignOption";
 
-const SoopNormalGauge = () => {
+const SoopNormalGauge = props => {
+  const { layout } = props;
   const exampleData = {
     nodeId: "dfg124w4",
     gType: "gauge",
@@ -31,13 +32,17 @@ const SoopNormalGauge = () => {
     <>
       <Gauge
         value={currentValue}
-        width={200}
-        height={160}
+        width={layout[2]}
+        height={layout[3]}
         min={range[0]}
         max={range[1]}
         label={currentLabel}
         color={mainColor[exampleData.color]}
-        topLabelStyle={{ fontSize: fontSize.md, fontFamily: "Pretendard-Bold", fill: fontColor.light }}
+        topLabelStyle={{
+          fontSize: fontSize.md,
+          fontFamily: "Pretendard-Bold",
+          fill: fontColor.light,
+        }}
         valueLabelStyle={{ fontSize: fontSize.xl, fontFamily: "Pretendard-Regular", fill: fontColor.light }}
         minMaxLabelStyle={{ fontSize: fontSize.sm, fontFamily: "Pretendard-Regular", fill: fontColor.light }}
         valueFormatter={value => `${value}${exampleData.units}`}

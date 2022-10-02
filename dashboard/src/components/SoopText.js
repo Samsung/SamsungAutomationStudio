@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { fontSize, fontColor } from "../assets/DesignOption";
+import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
 
-// FIXME: mode에 따른 색상변경 있음
-// FIXME: Layout에 따른 배치 변경 있음
 const flexOption = [
   ["row", "flex-start"],
   ["row", "flex-end"],
@@ -12,17 +11,16 @@ const flexOption = [
   ["column", "center"],
 ];
 
-const height = 48; // FIXME: 추후 그리드 사이즈에 맞게 바뀔것, width도 마찬가지
-
 const BoardTextContainer = styled.div`
   position: absolute;
-  top: 30px;
+  left: ${({ layout }) => `${layout[0]}px;`}
+  top: ${({ layout }) => `${layout[1]}px;`}
   display: flex;
-  flex-direction: ${props => flexOption[props.layout][0]};
-  justify-content: ${props => flexOption[props.layout][1]};
+  flex-direction: ${({ textLayout }) => flexOption[textLayout][0]};
+  justify-content: ${({ textLayout }) => flexOption[textLayout][1]};
   align-items: center;
-  width: 100%;
-  height: ${height}px;
+  width: ${({ layout }) => `${layout[2]}px;`}
+  height:${({ layout }) => `${layout[3]}px;`}
   font-size: ${props => props.fontSize}px;
   color: ${fontColor.light};
   padding: 5px 10px;
@@ -38,18 +36,31 @@ const BoardTextValue = styled.div`
   font-family: "Pretendard-Bold";
 `;
 
-const SoopText = () => {
+const SoopText = props => {
+  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
+
   const [currentLabel, setCurrentLabel] = useState("");
   const [currentValue, setCurrentValue] = useState("");
 
   const exampleData = {
     label: "라벨이당",
     format: "{{msg.payload}}",
+    widgetX: 0,
+    widgetY: 0,
+    width: 2,
+    height: 1,
     layout: 4,
     fontSize: 16,
     value: "보여지는 값입니다.",
     states: [{ value: "payload" }],
   };
+
+  const layout = [
+    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
+    calculateTop(exampleData.widgetY),
+    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
+    calculateHeight(exampleData.height, currentGroupH),
+  ];
 
   useEffect(() => {
     if (Array.isArray(exampleData.states) && exampleData.states[0]) {
@@ -64,7 +75,7 @@ const SoopText = () => {
 
   return (
     <>
-      <BoardTextContainer fontSize={exampleData.fontSize} layout={exampleData.layout}>
+      <BoardTextContainer fontSize={exampleData.fontSize} textLayout={exampleData.layout} layout={layout}>
         <BoardTextLabel>
           <span>{currentLabel}</span>
         </BoardTextLabel>

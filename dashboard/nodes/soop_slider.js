@@ -7,15 +7,6 @@ module.exports = function (RED) {
 
     var node = this;
 
-    // var group = RED.nodes.getNode(config.group);
-    // if (!group) {
-    //   return;
-    // }
-    // var tab = RED.nodes.getNode(group.config.tab);
-    // if (!tab) {
-    //   return;
-    // }
-
     // Add node information & event listener from dashboard
     dashboard.addNode({
       node: node,
@@ -28,9 +19,11 @@ module.exports = function (RED) {
 
     // Receive msg from upstream node in a flow
     node.on("input", function (msg) {
-      if (config.pass) {
-        state.payload = Math.max(config.min, Math.min(config.max, parseInt(msg.payload)));
-        dashboard.emitState(state);
+      if(config.pass && parseInt(msg.payload) != NaN){
+        dashboard.emitState({
+          nodeId: node.id,
+          value: Math.max(config.min, Math.min(config.max, parseInt(msg.payload)))
+        })
       }
     });
   }

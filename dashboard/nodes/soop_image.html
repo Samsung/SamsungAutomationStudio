@@ -1,4 +1,101 @@
 <script type="text/javascript">
+    // Group, Tab
+    const imagePositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
+    function getGroupGrid(nodeId) {
+        const groupId = $("#node-input-group").val();
+        const groupNode = RED.nodes.node(groupId);
+        groupNode._def.reflectEdit(groupId, nodeId);
+        return groupNode.groupState;
+    }
+    function getXYWH() {
+        const x = parseInt($("#node-input-widgetX").val());
+        const y = parseInt($("#node-input-widgetY").val());
+        const w = parseInt($("#node-input-width").val());
+        const h = parseInt($("#node-input-height").val());
+        return { x, y, w, h };
+    }
+    // Validate the widget to place on (x, y, w, h).
+    function validateXYWH(arr) {
+        const { x, y, w, h } = getXYWH();
+        // If x, y, w, h is under or over idx of arr -> return false
+        if (x < 0 || y < 0 || w <= 0 || h <= 0 || w > 12 || x + w > arr[0].length || y + h > arr.length) {
+        return false;
+        }
+        // If the space is alredy filled, return false
+        for (let i = x; i < x + w; i++) {
+        for (let j = y; j < y + h; j++) {
+            if (arr[j][i]) {
+            return false;
+            }
+        }
+        }
+        return true;
+    }
+    // Create a table with array
+    function newTable(arr) {
+        const row = arr.length;
+        const col = arr[0].length;
+        // Append a row for column header(1,2,....)
+        $("#group-table>tbody").append('<tr id="col-header"></tr>');
+        $("#col-header").append("<th></th>");
+        for (let j = 0; j < col; j++) {
+        $("#col-header").append(`<th scope="col">${j}</th>`);
+        }
+        // Append group row and col
+        for (let i = 0; i < row; i++) {
+        // append row
+        $("#group-table>tbody").append(`<tr id="row${i}"></tr>`);
+        // Append a col for row header(1,2,...)
+        $(`#row${i}`).append(`<th scope="row" class="row-header">${i}</th>`);
+        // Append col
+        for (let j = 0; j < col; j++) {
+            const tag = `<td id="col${j}" class="col ${arr[i][j] ? "filled" : "empty"}" ></td>`;
+            $(`#row${i}`).append(tag);
+        }
+        }
+        // Table Design
+        $(".col").css("border", "dotted black 1px");
+        $(".col").css("width", "20px");
+        $(".col").css("height", "20px");
+        $(".filled").css("background-color", "#DEDEDE");
+        $(".empty").css("background-color", "#FFFFFF");
+        $("th").css("border", "none");
+    }
+    // Remove color for new node and return the original color for filled or empty space
+    function removeColor(w, h) {
+        for (let i = 0; i < w; i++) {
+        for (let j = 0; j < h; j++) {
+            $(`#row${j}>#col${i}`).removeClass("new-node");
+        }
+        }
+        $(".filled").css("background-color", "#DEDEDE");
+        $(".empty").css("background-color", "#FFFFFF");
+    }
+    // Add color for new node
+    function addColor() {
+        const { x, y, w, h } = getXYWH();
+        for (let i = x; i < x + w; i++) {
+        for (let j = y; j < y + h; j++) {
+            $(`#row${j}>#col${i}`).addClass("new-node");
+        }
+        }
+        $(".new-node").css("background-color", "#D9E5FF");
+    }
+    // Add new node on group grid
+    function addNewNode(arr) {
+        // Remove 'new-node' class in every row-col
+        const { x, y, w, h } = getXYWH();
+        removeColor(arr[0].length, arr.length);
+        // if (x, y, w, h) is ok, then put. or error.
+        if (validateXYWH(arr)) {
+        addColor();
+        $(imagePositionSelector).removeClass("input-error");
+        } else {
+        $(imagePositionSelector).addClass("input-error");
+        console.log(`You can not put a node on (${y}, ${x})`);
+        }
+    }
+
     // Temporally save recent file in base64 format
     var strImage;
 
@@ -29,42 +126,30 @@
         *  oneditsave: function called when edit window is okayed
         */
         category: "soop-dashboard",
-        color: 'rgb(100, 189, 27)',
+        color: '#5F86FE',
         defaults: {
             /* Node Properties (value, required, validate, type)
             *  name: node name on palette
             *  tooltip: tooltip of the image
             *  group: group information of the node
             *  width, height: size of node
-            *  source: image upload option 
+            *  option: image upload option 
             *  uploads: base64 string of uploaded local image file
             *  link: URL of the image file
-            *  fits: cut option of the image
+            *  fit: cut option of the image
             */
+            group: { type: "soop_group", required: true },
+            width: { value: 1, validate: RED.validators.number(), required: true },
+            height: { value: 1, validate: RED.validators.number(), required: true },
+            widgetX: { value: 0, validate: RED.validators.number(), required: true },
+            widgetY: { value: 0, validate: RED.validators.number(), required: true },
+
             name: { value: '' },
             tooltip: { value: '' },
-            group: {
-                type: 'ui_group',
-                required: true
-            },
-            width: {
-                value: 0,
-                validate: function(v) {
-                    var width = v || 0;
-                    var currentGroup = $('#node-input-group').val() || this.group;
-                    var groupNode = RED.nodes.node(currentGroup);
-                    var valid = !groupNode || +width <= +groupNode.width;
-                    $("#node-input-size").toggleClass("input-error", !valid);
-                    return valid;
-                }
-            },
-            height: {
-                value: 0
-            },
-            source: { value: 'upload' },
+            option: { value: 'upload' },
             uploads: { value: "" },
             link: { value: "" },
-            fits: { value: 'fill' },
+            fit: { value: 'fill' },
         },
         inputs: 0,
         outputs: 0,
@@ -75,20 +160,34 @@
         },
 
         oneditprepare: function() {
-            $("#node-input-size").elementSizer({
-                width: "#node-input-width",
-                height: "#node-input-height",
-                group: "#node-input-group"
-            });
+            $.fn.groupTable = function (arr) {
+                $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+                newTable(arr);
+                $(imagePositionSelector).on("change", () => addNewNode(arr));
+            };
+            $("#node-input-group-table").groupTable(getGroupGrid(this.id));
+
+            if (!$("#node-input-widgetX").val()) {
+                $("#node-input-widgetX").val(0);
+            }
+            if (!$("#node-input-widgetY").val()) {
+                $("#node-input-widgetY").val(0);
+            }
+            if (!$("#node-input-width").val()) {
+                $("#node-input-width").val(1);
+            }
+            if (!$("#node-input-height").val()) {
+                $("#node-input-height").val(1);
+            }
 
             // On change event, change dom element
-            $('#node-input-source').on("change", function() {
-                if ($('#node-input-source').val() === "upload") {
+            $('#node-input-option').on("change", function() {
+                if ($('#node-input-option').val() === "upload") {
                     $('#node-input-link').val('');
                     $(".form-row-link").hide();
                     $(".form-row-upload").show();
                 }
-                else if ($('#node-input-source').val() === "link") {
+                else if ($('#node-input-option').val() === "link") {
                     $('#node-input-upload').val('');
                     $(".form-row-upload").hide();
                     $(".form-row-link").show();
@@ -96,18 +195,20 @@
             });
             
             // According to input, call event function
-            $('#node-input-source').change();
+            $('#node-input-option').change();
 
             // Set default fit option
-            if (!$("#node-input-fits").val()) { $("#node-input-fits").val("fill") }
+            if (!$("#node-input-fit").val()) { $("#node-input-fit").val("fill") }
             
         },
         oneditsave: function () {
-            if($('#node-input-source').val() === "upload"){
+            if($('#node-input-option').val() === "upload"){
                 this.uploads = strImage;
+                this.link = "";
             }else{
                 this.uploads = "";
             }
+            // console.log(this);
         }
     });
 </script>
@@ -120,15 +221,24 @@
     </div>
     <!-- Size -->
     <div class="form-row">
-        <label><i class="fa fa-object-group"></i> Size</label>
-        <input type="hidden" id="node-input-width">
-        <input type="hidden" id="node-input-height">
-        <button class="editor-button" id="node-input-size"></button>
+        <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
+        <div id="node-input-group-table" style="width:70%; display: inline-block;">
+          <div style="margin-bottom:10px">
+            <label for="node-input-widgetX" style="width:auto;">x</label>
+            <input type="text" id="node-input-widgetX" value="0" style="width:30px; margin-right:10px;" />
+            <label for="node-input-widgetY" style="width:auto;">y </label>
+            <input type="text" id="node-input-widgetY" value="0" style="width:30px; margin-right:10px;" />
+            <label for="node-input-width" style="width:auto;">w</label>
+            <input type="text" id="node-input-width" value="1" style="width:30px; margin-right:10px;" />
+            <label for="node-input-height" style="width:auto;">h</label>
+            <input type="text" id="node-input-height" value="1" style="width:30px; margin-right:10px;" />
+          </div>
+        </div>
     </div>
-    <!-- Source -->
+    <!-- Option -->
     <div class="form-row">
-        <label for="node-input-source"><i class="fa fa-file-image-o"></i> Source</label>
-        <select id="node-input-source" style="width:204px">
+        <label for="node-input-option"><i class="fa fa-file-image-o"></i> Option</label>
+        <select id="node-input-option" style="width:204px">
             <option value="upload">Upload Image</option>
             <option value="link">File URL</option>
         </select>
@@ -146,8 +256,8 @@
 
     <!-- Object fit -->
     <div class="form-row">
-        <label for="node-input-fits"><i class="fa fa-crop"></i> Object fit</label>
-        <select id="node-input-fits" style="width:204px">
+        <label for="node-input-fit"><i class="fa fa-crop"></i> Object fit</label>
+        <select id="node-input-fit" style="width:204px">
             <option value="fill">fill</option>
             <option value="contain">contain</option>
             <option value="cover">cover</option>
@@ -167,7 +277,7 @@
     <ol class="node-ports">
     <li>Image Source
         <dl class="message-properties">
-            <dt>source <span class="property-type">upload | link</span></dt>
+            <dt>option <span class="property-type">upload | link</span></dt>
             <dd>Option for image source.</dd>
             <dt>uploads <span class="property-type">file</span></dt>
             <dd>Image source with uploaded local image file.</dd>
@@ -177,7 +287,7 @@
     </li>
     <li>Object Fit
         <dl class="message-properties">
-            <dt>fits <span class="property-type">fill | contain | cover</span></dt>
+            <dt>fit <span class="property-type">fill | contain | cover</span></dt>
             <dd>Show option of the image.</dd>
         </dl>
     </li>

@@ -1,3 +1,46 @@
+<style>
+  input[type="radio"] {
+    opacity: 0;
+  }
+  input[type="radio"] + label {
+    border: none;
+    color: white;
+    border-radius: 5px;
+  }
+  input[name="color"]:checked + label {
+    width: 70px !important;
+    border: none !important;
+    height: 30px !important;
+    line-height: 30px;
+    font-size: 16px;
+  }
+  input[name="shape"]:checked + label {
+    border: 3px solid #666 !important;
+  }
+  .btn-styled1 {
+    background: linear-gradient(91.29deg, #1153fc 0%, #5f86fe 100%);
+  }
+  .btn-styled2 {
+    background: linear-gradient(91.29deg, #ff7e42 0%, #febf7d 100%);
+  }
+  .btn-styled3 {
+    background: linear-gradient(91.29deg, #fd5988 0%, #f8a899 100%);
+  }
+  .btn-styled4 {
+    background: linear-gradient(91.29deg, #8443f6 0%, #7793fe 100%);
+  }
+  .btn-styled5 {
+    background: linear-gradient(91.29deg, #08c792 0%, #2afeb7 100%);
+  }
+  .button {
+    text-align: center;
+    border: solid 2px #d9d9d9;
+    color: white;
+    background-color: #d9d9d9;
+    font-size: 10px;
+    padding: 5px;
+  }
+</style>
 <script type="text/javascript">
   const gaugePositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
   function getGroupGrid(nodeId) {
@@ -108,20 +151,13 @@
       gType: { value: "gauge" },
       format: { value: "{{msg.payload}}" },
       units: { value: "%" },
-      colorPicking: {
-        value: "blue",
-      },
+      color: { value: "blue" },
       min: { value: 0, required: true, validate: RED.validators.number() },
       max: { value: 100, required: true, validate: RED.validators.number() },
+      value: { value: "" },
     },
     inputs: 1,
-    inputLabels: function () {
-      return this.min + " - " + this.max;
-    },
     icon: "gauge.png",
-    outputLabels: function () {
-      return this.min + " - " + this.max;
-    },
     oneditprepare: function () {
       $.fn.groupTable = function (arr) {
         $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
@@ -130,23 +166,33 @@
       };
       $("#node-input-group-table").groupTable(getGroupGrid(this.id));
 
-      if (this.gType === undefined) {
-        this.gType = "gauge";
-        $("#node-input-gtype").val("gauge");
+      $("#node-input-gType").on("change", function () {
+        if ($(this).val() === "liquid") {
+          $("#node-input-min").val(0);
+          $("#node-input-max").val(100);
+          $("#node-input-units").val("%");
+          $("#node-input-min").attr("readonly", true);
+          $("#node-input-max").attr("readonly", true);
+          $("#node-input-units").attr("readonly", true);
+        } else {
+          $("#node-input-min").attr("readonly", false);
+          $("#node-input-max").attr("readonly", false);
+          $("#node-input-units").attr("readonly", false);
+        }
+      });
+
+      if (this.color === undefined) {
+        $("input[type=radio][name=color]")[0].checked = true;
       }
 
-      if (this.colorPicking === undefined) {
-        this.colorPicking = "blue";
-        $("input[type=radio][name=colorPicking]")[0].checked = true;
-      }
-
-      let pickers = $("input[type=radio][name=colorPicking]");
+      let pickers = $("input[type=radio][name=color]");
       for (var i = 0; i < pickers.length; i++) {
-        if (pickers[i].value == this.colorPicking) pickers[i].checked = true;
+        if (pickers[i].value == this.color) pickers[i].checked = true;
       }
     },
     oneditsave: function () {
-      this.colorPicking = $("input[type=radio][name=colorPicking]:checked")[0].value;
+      this.color = $("input[type=radio][name=color]:checked")[0].value;
+      $("#node-input-value").val($("#node-input-min").val());
     },
   });
 </script>
@@ -192,6 +238,7 @@
     <input type="text" id="node-input-units" placeholder="%" />
   </div>
   <div class="form-row">
+    <input type="hidden" id="node-input-value" />
     <label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
     <span for="node-input-min">min</span>
     <input type="text" id="node-input-min" style="width:60px" />
@@ -200,16 +247,16 @@
   </div>
   <div class="form-row">
     <label for="node-input-color"><i class="fa fa fa-tint"></i> Color</label>
-    <input type="radio" name="colorPicking" id="colorPicking1" style="width: 0px;" value="blue" />
-    <label class="styled1" for="colorPicking1" style="width: 60px;text-align: center;">blue</label>
-    <input type="radio" name="colorPicking" id="colorPicking2" style="width: 0px;" value="orange" />
-    <label class="styled2" for="colorPicking2" style="width: 60px;text-align: center;">orange</label>
-    <input type="radio" name="colorPicking" id="colorPicking3" style="width: 0px;" value="pink" />
-    <label class="styled3" for="colorPicking3" style="width: 60px;text-align: center;">pink</label>
-    <input type="radio" name="colorPicking" id="colorPicking4" style="width: 0px;" value="purple" />
-    <label class="styled4" for="colorPicking4" style="width: 60px;text-align: center;">purple</label>
-    <input type="radio" name="colorPicking" id="colorPicking5" style="width: 0px;" value="green" />
-    <label class="styled5" for="colorPicking5" style="width: 60px;text-align: center;">green</label>
+    <input type="radio" name="color" id="color1" style="width: 0px;" value="blue" />
+    <label class="styled1" for="color1" style="width: 60px;text-align: center;">blue</label>
+    <input type="radio" name="color" id="color2" style="width: 0px;" value="orange" />
+    <label class="styled2" for="color2" style="width: 60px;text-align: center;">orange</label>
+    <input type="radio" name="color" id="color3" style="width: 0px;" value="pink" />
+    <label class="styled3" for="color3" style="width: 60px;text-align: center;">pink</label>
+    <input type="radio" name="color" id="color4" style="width: 0px;" value="purple" />
+    <label class="styled4" for="color4" style="width: 60px;text-align: center;">purple</label>
+    <input type="radio" name="color" id="color5" style="width: 0px;" value="green" />
+    <label class="styled5" for="color5" style="width: 60px;text-align: center;">green</label>
   </div>
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>

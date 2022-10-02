@@ -119,11 +119,6 @@
       };
       $("#node-input-group-table").groupTable(getGroupGrid(this.id));
 
-      if (this.listType === undefined) {
-        this.listType = "ol";
-        $("#node-input-type").val("ol");
-      }
-
       function generateOption(i, option) {
         var container = $("<li/>", {
           style: "background: #fff; margin:0; padding:8px 0px 0px; border-bottom: 1px solid #ccc;",

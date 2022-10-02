@@ -26,7 +26,7 @@ const SoopBarChart = () => {
   const exampleData = {
     title: "bar timeseries chart",
     chartType: "bar",
-    legend: true,
+    legend: "false",
     blankLabel: "no data",
     xAxisFormat: "HH:mm:ss",
     yMin: 0,
@@ -88,10 +88,6 @@ const SoopBarChart = () => {
   const [chartData, setChartData] = useState({ datasets: [] });
   const [chartOptions, setChartOptions] = useState({});
 
-  // const timeSeries = Date.now();
-  // const timeseriesToDateMoment = moment(timeSeries).format( exampleData.xAxisFormat);
-  // console.log("moment 변환", timeseriesToDateMoment);
-
   useEffect(() => {
     if (!exampleData.isTimeSeries) {
       const currentChartData = {
@@ -136,7 +132,7 @@ const SoopBarChart = () => {
           },
           // 범례 변경
           legend: {
-            display: exampleData.legend,
+            display: exampleData.legend === "true" ? true : false,
             labels: {
               font: {
                 family: "Pretendard-Regular",
@@ -206,7 +202,7 @@ const SoopBarChart = () => {
           },
           // 범례 변경
           legend: {
-            display: exampleData.legend,
+            display: exampleData.legend === "true" ? true : false,
             labels: {
               font: {
                 family: "Pretendard-Regular",

@@ -27,6 +27,104 @@
   }
 </style>
 <script type="text/javascript">
+  // group, tab
+  const sliderPositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
+  function getGroupGrid(nodeId) {
+    const groupId = $("#node-input-group").val();
+    const groupNode = RED.nodes.node(groupId);
+    groupNode._def.reflectEdit(groupId, nodeId);
+    return groupNode.groupState;
+  }
+  function getXYWH() {
+    const x = parseInt($("#node-input-widgetX").val());
+    const y = parseInt($("#node-input-widgetY").val());
+    const w = parseInt($("#node-input-width").val());
+    const h = parseInt($("#node-input-height").val());
+    return { x, y, w, h };
+  }
+  // Validate the widget to place on (x, y, w, h).
+  function validateXYWH(arr) {
+    const { x, y, w, h } = getXYWH();
+    // If x, y, w, h is under or over idx of arr -> return false
+    if (x < 0 || y < 0 || w <= 0 || h <= 0 || w > 12 || x + w > arr[0].length || y + h > arr.length) {
+      return false;
+    }
+    // If the space is alredy filled, return false
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        if (arr[j][i]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  // Create a table with array
+  function newTable(arr) {
+    const row = arr.length;
+    const col = arr[0].length;
+    // Append a row for column header(1,2,....)
+    $("#group-table>tbody").append('<tr id="col-header"></tr>');
+    $("#col-header").append("<th></th>");
+    for (let j = 0; j < col; j++) {
+      $("#col-header").append(`<th scope="col">${j}</th>`);
+    }
+    // Append group row and col
+    for (let i = 0; i < row; i++) {
+      // append row
+      $("#group-table>tbody").append(`<tr id="row${i}"></tr>`);
+      // Append a col for row header(1,2,...)
+      $(`#row${i}`).append(`<th scope="row" class="row-header">${i}</th>`);
+      // Append col
+      for (let j = 0; j < col; j++) {
+        const tag = `<td id="col${j}" class="col ${arr[i][j] ? "filled" : "empty"}" ></td>`;
+        $(`#row${i}`).append(tag);
+      }
+    }
+    // Table Design
+    $(".col").css("border", "dotted black 1px");
+    $(".col").css("width", "20px");
+    $(".col").css("height", "20px");
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+    $("th").css("border", "none");
+  }
+  // Remove color for new node and return the original color for filled or empty space
+  function removeColor(w, h) {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        $(`#row${j}>#col${i}`).removeClass("new-node");
+      }
+    }
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+  }
+  // Add color for new node
+  function addColor() {
+    const { x, y, w, h } = getXYWH();
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        $(`#row${j}>#col${i}`).addClass("new-node");
+      }
+    }
+    $(".new-node").css("background-color", "#D9E5FF");
+  }
+  // Add new node on group grid
+  function addNewNode(arr) {
+    // Remove 'new-node' class in every row-col
+    const { x, y, w, h } = getXYWH();
+    removeColor(arr[0].length, arr.length);
+    // if (x, y, w, h) is ok, then put. or error.
+    if (validateXYWH(arr)) {
+      addColor();
+      $(sliderPositionSelector).removeClass("input-error");
+    } else {
+      $(sliderPositionSelector).addClass("input-error");
+      console.log(`You can not put a node on (${y}, ${x})`);
+    }
+  }
+
+
   RED.nodes.registerType("soop_slider", {
     /* Node definitions
      *  category: palette category
@@ -42,7 +140,7 @@
      *  oneditsave: function called when edit window is okayed
      */
     category: "soop-dashboard",
-    color: "rgb(100, 189, 27)",
+    color: "#1153FC",
     defaults: {
       /* Node Properties (value, required, validate, type)
        *  name: node name on palette
@@ -52,29 +150,19 @@
        *  min, max, step: property of slider
        *  colorPicking: color of node in dashboard
        *  pass: boolean option for whether pass input or not
-       *  send: option for when to send msg through flow
+       *  when: option for when to send msg through flow
        */
+      group: { type: "soop_group", required: true },
+      width: { value: 1, validate: RED.validators.number(), required: true },
+      height: { value: 1, validate: RED.validators.number(), required: true },
+      widgetX: { value: 0, validate: RED.validators.number(), required: true },
+      widgetY: { value: 0, validate: RED.validators.number(), required: true },
+      colorPicking: {
+        value: "blue",
+      },
       name: { value: "" },
       label: { value: "" },
       tooltip: { value: "" },
-      group: {
-        type: "soop_group",
-        required: true,
-      },
-      width: {
-        value: 0,
-        validate: function (v) {
-          var width = v || 0;
-          var currentGroup = $("#node-input-group").val() || this.group;
-          var groupNode = RED.nodes.node(currentGroup);
-          var valid = !groupNode || +width <= +groupNode.width;
-          $("#node-input-size").toggleClass("input-error", !valid);
-          return valid;
-        },
-      },
-      height: {
-        value: 0,
-      },
       min: {
         value: 0,
         required: true,
@@ -90,11 +178,10 @@
         required: true,
         validate: RED.validators.number(),
       },
-      colorPicking: {
-        value: "blue",
-      },
       pass: { value: true },
-      send: { value: "always" },
+      when: { value: "always" },
+      invert: { value: parseFloat(this.min) > parseFloat(this.max) ? true : false },
+      value: { value: Math.min(this.min, this.max) }
     },
     inputs: 1,
     outputs: 1,
@@ -104,14 +191,28 @@
       return this.name || "soop_slider";
     },
     oneditprepare: function () {
-      $("#node-input-size").elementSizer({
-        width: "#node-input-width",
-        height: "#node-input-height",
-        group: "#node-input-group",
-      });
+      $.fn.groupTable = function (arr) {
+        $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        $(sliderPositionSelector).on("change", () => addNewNode(arr));
+      };
+      $("#node-input-group-table").groupTable(getGroupGrid(this.id));
 
-      if (!$("#node-input-send").val()) {
-        $("#node-input-send").val("always");
+      if (!$("#node-input-widgetX").val()) {
+        $("#node-input-widgetX").val(0);
+      }
+      if (!$("#node-input-widgetY").val()) {
+        $("#node-input-widgetY").val(0);
+      }
+      if (!$("#node-input-width").val()) {
+        $("#node-input-width").val(1);
+      }
+      if (!$("#node-input-height").val()) {
+        $("#node-input-height").val(1);
+      }
+
+      if (!$("#node-input-when").val()) {
+        $("#node-input-when").val("always");
       }
 
       // Check input radio form according to picked color
@@ -126,6 +227,8 @@
     },
     oneditsave: function () {
       this.colorPicking = $("input[type=radio][name=colorPicking]:checked")[0].value;
+      this.step = $("#node-input-step").val() > Math.abs($("#node-input-max").val() - $("#node-input-min").val()) ? 1 : $("#node-input-step").val();
+      // console.log(this);
     },
   });
 </script>
@@ -138,10 +241,19 @@
   </div>
   <!-- Size -->
   <div class="form-row">
-    <label><i class="fa fa-object-group"></i> Size</label>
-    <input type="hidden" id="node-input-width" />
-    <input type="hidden" id="node-input-height" />
-    <button class="editor-button" id="node-input-size"></button>
+    <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
+    <div id="node-input-group-table" style="width:70%; display: inline-block;">
+      <div style="margin-bottom:10px">
+        <label for="node-input-widgetX" style="width:auto;">x</label>
+        <input type="text" id="node-input-widgetX" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-widgetY" style="width:auto;">y </label>
+        <input type="text" id="node-input-widgetY" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-width" style="width:auto;">w</label>
+        <input type="text" id="node-input-width" value="1" style="width:30px; margin-right:10px;" />
+        <label for="node-input-height" style="width:auto;">h</label>
+        <input type="text" id="node-input-height" value="1" style="width:30px; margin-right:10px;" />
+      </div>
+    </div>
   </div>
   <!-- Color -->
   <div class="form-row">
@@ -184,13 +296,13 @@
     </label>
     <input type="checkbox" checked id="node-input-pass" style="display:inline-block; width:auto; vertical-align:top;" />
   </div>
-  <!-- Send -->
+  <!-- When -->
   <div class="form-row">
     <label style="width:auto" for="node-input-payload"><i class="fa fa-envelope-o"></i> Send <code>msg</code></label>
   </div>
   <div class="form-row">
-    <label style="padding-left:25px; margin-right:-25px" for="node-input-send">When</label>
-    <select id="node-input-send" style="width:204px">
+    <label style="padding-left:25px; margin-right:-25px" for="node-input-when">When</label>
+    <select id="node-input-when" style="width:204px">
       <option value="always">always value changed</option>
       <option value="release">only after slider released</option>
     </select>
@@ -236,7 +348,7 @@
     </li>
     <li>Send Payload
       <dl class="message-properties">
-          <dt>send <span class="property-type">always | release</span></dt>
+          <dt>when <span class="property-type">always | release</span></dt>
           <dd>Option for receiving modified value from the dashboard.</dd>
           <dd>Send received value whenever the slider value changed or when the user releases the slider.</dd>
       </dl>
