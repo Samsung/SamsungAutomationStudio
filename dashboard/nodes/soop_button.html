@@ -42,7 +42,7 @@
   }
 </style>
 <script type="text/javascript">
-  const chartPositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
+  const buttonPositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
   function getGroupGrid(nodeId) {
     const groupId = $("#node-input-group").val();
     const groupNode = RED.nodes.node(groupId);
@@ -131,9 +131,9 @@
     // if (x, y, w, h) is ok, then put. or error.
     if (validateXYWH(arr)) {
       addColor();
-      $(chartPositionSelector).removeClass("input-error");
+      $(buttonPositionSelector).removeClass("input-error");
     } else {
-      $(chartPositionSelector).addClass("input-error");
+      $(buttonPositionSelector).addClass("input-error");
       console.log(`You can not put a node on (${y}, ${x})`);
     }
   }
@@ -172,7 +172,7 @@
       $.fn.groupTable = function (arr) {
         $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
         newTable(arr);
-        $(chartPositionSelector).on("change", () => addNewNode(arr));
+        $(buttonPositionSelector).on("change", () => addNewNode(arr));
       };
       $("#node-input-group-table").groupTable(getGroupGrid(this.id));
 
