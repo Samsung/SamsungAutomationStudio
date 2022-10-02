@@ -28,15 +28,14 @@ const SoopLiquidGauge = () => {
     nodeId: "dfg124w4",
     gType: "donut",
     label: "라벨입니당",
-    range: [0, 5],
-    units: "mg/l",
+    range: [0, 100], // 의미없음.. 무조건 100기준으로 나와요
+    units: "%",
     color: "orange",
-    states: [{ value: 50 }],
+    states: [{ value: 80 }],
   };
 
   const [currentValue, setCurrentValue] = useState(1);
   const [currentLabel, setCurrentLabel] = useState("");
-  const [convertedValue, setConvertedValue] = useState(1);
 
   // FIXME: 사이즈 계산 후 변경되어야 한다. w/h 중 작은 크기의 반!
   const radius = 90;
