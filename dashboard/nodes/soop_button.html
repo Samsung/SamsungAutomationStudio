@@ -7,25 +7,29 @@
     color: white;
     border-radius: 5px;
   }
-  input[type="radio"]:checked + label {
-    border: 3px solid #fd5988;
+  input[name="background"]:checked + label {
+    width: 70px !important;
+    border: none !important;
+    height: 30px !important;
+    line-height: 30px;
+    font-size: 16px;
   }
   input[name="shape"]:checked + label {
-    border: 3px solid #fd5988 !important;
+    border: 3px solid #666 !important;
   }
-  .styled1 {
+  .btn-styled1 {
     background: linear-gradient(91.29deg, #1153fc 0%, #5f86fe 100%);
   }
-  .styled2 {
+  .btn-styled2 {
     background: linear-gradient(91.29deg, #ff7e42 0%, #febf7d 100%);
   }
-  .styled3 {
+  .btn-styled3 {
     background: linear-gradient(91.29deg, #fd5988 0%, #f8a899 100%);
   }
-  .styled4 {
+  .btn-styled4 {
     background: linear-gradient(91.29deg, #8443f6 0%, #7793fe 100%);
   }
-  .styled5 {
+  .btn-styled5 {
     background: linear-gradient(91.29deg, #08c792 0%, #2afeb7 100%);
   }
   .button {
@@ -38,29 +42,114 @@
   }
 </style>
 <script type="text/javascript">
+  const chartPositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
+  function getGroupGrid(nodeId) {
+    const groupId = $("#node-input-group").val();
+    const groupNode = RED.nodes.node(groupId);
+    groupNode._def.reflectEdit(groupId, nodeId);
+    return groupNode.groupState;
+  }
+  function getXYWH() {
+    const x = parseInt($("#node-input-widgetX").val());
+    const y = parseInt($("#node-input-widgetY").val());
+    const w = parseInt($("#node-input-width").val());
+    const h = parseInt($("#node-input-height").val());
+    return { x, y, w, h };
+  }
+  // Validate the widget to place on (x, y, w, h).
+  function validateXYWH(arr) {
+    const { x, y, w, h } = getXYWH();
+    // If x, y, w, h is under or over idx of arr -> return false
+    if (x < 0 || y < 0 || w <= 0 || h <= 0 || w > 12 || x + w > arr[0].length || y + h > arr.length) {
+      return false;
+    }
+    // If the space is alredy filled, return false
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        if (arr[j][i]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  // Create a table with array
+  function newTable(arr) {
+    const row = arr.length;
+    const col = arr[0].length;
+    // Append a row for column header(1,2,....)
+    $("#group-table>tbody").append('<tr id="col-header"></tr>');
+    $("#col-header").append("<th></th>");
+    for (let j = 0; j < col; j++) {
+      $("#col-header").append(`<th scope="col">${j}</th>`);
+    }
+    // Append group row and col
+    for (let i = 0; i < row; i++) {
+      // append row
+      $("#group-table>tbody").append(`<tr id="row${i}"></tr>`);
+      // Append a col for row header(1,2,...)
+      $(`#row${i}`).append(`<th scope="row" class="row-header">${i}</th>`);
+      // Append col
+      for (let j = 0; j < col; j++) {
+        const tag = `<td id="col${j}" class="col ${arr[i][j] ? "filled" : "empty"}" ></td>`;
+        $(`#row${i}`).append(tag);
+      }
+    }
+    // Table Design
+    $(".col").css("border", "dotted black 1px");
+    $(".col").css("width", "20px");
+    $(".col").css("height", "20px");
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+    $("th").css("border", "none");
+  }
+  // Remove color for new node and return the original color for filled or empty space
+  function removeColor(w, h) {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        $(`#row${j}>#col${i}`).removeClass("new-node");
+      }
+    }
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+  }
+  // Add color for new node
+  function addColor() {
+    const { x, y, w, h } = getXYWH();
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        $(`#row${j}>#col${i}`).addClass("new-node");
+      }
+    }
+    $(".new-node").css("background-color", "#D9E5FF");
+  }
+  // Add new node on group grid
+  function addNewNode(arr) {
+    // Remove 'new-node' class in every row-col
+    const { x, y, w, h } = getXYWH();
+    removeColor(arr[0].length, arr.length);
+    // if (x, y, w, h) is ok, then put. or error.
+    if (validateXYWH(arr)) {
+      addColor();
+      $(chartPositionSelector).removeClass("input-error");
+    } else {
+      $(chartPositionSelector).addClass("input-error");
+      console.log(`You can not put a node on (${y}, ${x})`);
+    }
+  }
   RED.nodes.registerType("soop_button", {
     category: "soop-dashboard",
-    color: "rgb(100, 189, 27)", // 이후 수정되어야할 부분
+    color: "#1153FC",
     defaults: {
-      group: { type: "soop_group", required: true }, // 이후 수정되어야할 부분
-      width: {
-        value: 0,
-        validate: function (value) {
-          const width = value || 0;
-          const currentGroup = $("#node-input-group").val() || this.group;
-          const groupNode = RED.nodes.node(currentGroup);
-          const valid = !groupNode || +width <= +groupNode.width;
-          $("#node-input-size").toggleClass("input-error", !valid);
-          return valid;
-        },
-      },
-      height: { value: 0 },
+      // group: { type: "soop_group", required: true },
+      width: { value: 1, validate: RED.validators.number(), required: true },
+      height: { value: 1, validate: RED.validators.number(), required: true },
       widgetX: { value: 0, validate: RED.validators.number(), required: true },
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
       label: { value: "button_name" },
       tooltip: { value: "" },
-      background: { value: "blue" },
-      shape: { value: "rounded-rectangle" },
+      background: { value: "blue", required: true },
+      shape: { value: "rounded-rectangle", required: true },
       payload: { value: "", validate: RED.validators.typedInput("payloadType") },
       payloadType: { value: "str" },
       topic: { value: "topic", validate: RED.validators.typedInput("topicType") },
@@ -80,11 +169,12 @@
       return this.name ? "node_label_italic" : "";
     },
     oneditprepare: function () {
-      $("#node-input-size").elementSizer({
-        width: "#node-input-width",
-        height: "#node-input-height",
-        group: "#node-input-group",
-      });
+      $.fn.groupTable = function (arr) {
+        $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        $(chartPositionSelector).on("change", () => addNewNode(arr));
+      };
+      $("#node-input-group-table").groupTable(getGroupGrid(this.id));
 
       $("#node-input-payload").typedInput({
         default: "str",
@@ -103,6 +193,12 @@
       }
       if (!$("#node-input-widgetY").val()) {
         $("#node-input-widgetY").val(0);
+      }
+      if (!$("#node-input-width").val()) {
+        $("#node-input-width").val(1);
+      }
+      if (!$("#node-input-height").val()) {
+        $("#node-input-height").val(1);
       }
 
       if (this.background === undefined) {
@@ -136,17 +232,19 @@
     <input type="text" id="node-input-group" />
   </div>
   <div class="form-row">
-    <label for="node-input-size"><i class="fa fa-object-group"></i> Size</label>
-    <input type="hidden" id="node-input-width" />
-    <input type="hidden" id="node-input-height" />
-    <button class="editor-button" id="node-input-size"></button>
-  </div>
-  <div class="form-row">
-    <label for="node-input-position"><i class="fa fa-object-fa-arrows-alt"></i> Position</label>
-    <label for="node-input-widgetX" style="margin-right: 5px; width: auto;">X</label>
-    <input type="text" id="node-input-widgetX" style="width: 50px;" />
-    <label for="node-input-widgetY" style="margin-left:20px; margin-right: 5px; width: auto;">Y</label>
-    <input type="text" id="node-input-widgetY" style="width: 50px;" />
+    <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
+    <div id="node-input-group-table" style="width:70%; display: inline-block;">
+      <div style="margin-bottom:10px">
+        <label for="node-input-widgetX" style="width:auto;">x</label>
+        <input type="text" id="node-input-widgetX" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-widgetY" style="width:auto;">y </label>
+        <input type="text" id="node-input-widgetY" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-width" style="width:auto;">w</label>
+        <input type="text" id="node-input-width" value="1" style="width:30px; margin-right:10px;" />
+        <label for="node-input-height" style="width:auto;">h</label>
+        <input type="text" id="node-input-height" value="1" style="width:30px; margin-right:10px;" />
+      </div>
+    </div>
   </div>
   <!-- <div class="form-row">
     <label for="node-input-icon"><i class="fa fa-picture-o"></i> Icon</label>
@@ -163,15 +261,15 @@
   <div class="form-row">
     <label for="node-input-background"><i class="fa fa-tint"></i> Color</label>
     <input type="radio" name="background" id="blue" style="width: 0px;" value="blue" />
-    <label class="styled1" for="blue" style="width: 55px; text-align: center;">blue</label>
+    <label class="btn-styled1" for="blue" style="width: 55px; text-align: center;">blue</label>
     <input type="radio" name="background" id="orange" style="width: 0px;" value="orange" />
-    <label class="styled2" for="orange" style="width: 55px; text-align: center;">orange</label>
+    <label class="btn-styled2" for="orange" style="width: 55px; text-align: center;">orange</label>
     <input type="radio" name="background" id="pink" style="width: 0px;" value="pink" />
-    <label class="styled3" for="pink" style="width: 55px; text-align: center;">pink</label>
+    <label class="btn-styled3" for="pink" style="width: 55px; text-align: center;">pink</label>
     <input type="radio" name="background" id="purple" style="width: 0px;" value="purple" />
-    <label class="styled4" for="purple" style="width: 55px; text-align: center;">purple</label>
+    <label class="btn-styled4" for="purple" style="width: 55px; text-align: center;">purple</label>
     <input type="radio" name="background" id="green" style="width: 0px;" value="green" />
-    <label class="styled5" for="green" style="width: 55px; text-align: center;">green</label>
+    <label class="btn-styled5" for="green" style="width: 55px; text-align: center;">green</label>
   </div>
   <div class="form-row">
     <label for="node-input-shape"><i class="fa fa-square"></i> Shape</label>

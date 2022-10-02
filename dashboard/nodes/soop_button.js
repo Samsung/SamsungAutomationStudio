@@ -5,34 +5,6 @@ module.exports = function (RED) {
     const node = this;
     RED.nodes.createNode(node, config);
 
-    const group = RED.nodes.getNode(config.group);
-    if (!group) {
-      return;
-    }
-    var tab = RED.nodes.getNode(group.config.tab);
-    if (!tab) {
-      return;
-    }
-
-    let state = {
-      nodeId: node.id,
-      nodeType: "button",
-      group: group,
-      size: [
-        parseInt(config.height || 1),
-        parseInt(config.width || group.config.width || 6),
-        parseInt(config.widgetX),
-        parseInt(config.widgetY),
-      ],
-      name: config.name,
-      label: config.label,
-      color: config.background,
-      shape: config.shape,
-      tooltip: config.tooltip,
-    };
-    // send to dashboard
-    dashboard.emitState(state);
-
     // when button clicked, the payload and topic would be...
     payload = config.payload;
     payloadType = config.payloadType;
@@ -69,7 +41,7 @@ module.exports = function (RED) {
       },
     });
 
-    node.on("input", function (msg, send, done) {
+    node.on("input", function (msg, done) {
       if (config.getInput) {
         sendMessage(msg);
       }
