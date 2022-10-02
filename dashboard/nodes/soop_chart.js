@@ -4,6 +4,9 @@ module.exports = function (RED) {
   function SoopChartNode(config) {
     const node = this;
     RED.nodes.createNode(node, config);
+    dashboard.addNode({
+      node: node,
+    });
 
     node.on("input", function (msg, done) {
       if (isNaN(msg.payload)) {
@@ -13,11 +16,8 @@ module.exports = function (RED) {
       dashboard.emitState(
         {
           nodeId: node.id,
-          data: {
-            [msg.label]: {
-              value: +msg.payload,
-            },
-          },
+          value: +msg.payload,
+          label: msg.label,
         },
         config.isTimeSeries,
         true,
