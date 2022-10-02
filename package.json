@@ -39,9 +39,7 @@
       "soop_list": "dashboard/nodes/soop_list.js",
       "soop_text": "dashboard/nodes/soop_text.js",
       "soop_image": "dashboard/nodes/soop_image.js",
-      "soop_data_format": "dashboard/nodes/soop_data_format.js",
-      "soop_group": "dashboard/nodes/soop_group.js",
-      "soop_tab": "dashboard/nodes/soop_tab.js"
+      "soop_data_format": "dashboard/nodes/soop_data_format.js"
     }
   },
   "dependencies": {
