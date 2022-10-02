@@ -45,14 +45,28 @@ export const store = createStore(rootReducer);
  * util functions
  */
 function pushNodeState(newState, updateData) {
-  const dashboard = newState.dashboard;
-
+  const dashboard = newState;
   for (let i = 0; i < dashboard.tabs.length; ++i) {
     for (let j = 0; j < dashboard.tabs[i].groups.length; ++j) {
       for (let k = 0; k < dashboard.tabs[i].groups[j].nodes.length; ++k) {
         if (dashboard.tabs[i].groups[j].nodes[k].id == updateData.nodeId) {
-          if (updateData.isTimeSeries) dashboard.tabs[i].groups[j].nodes[k].states.push(updateData.state);
-          else dashboard.tabs[i].groups[j].nodes[k].states = [updateData.state];
+          if (updateData.isLabeled) {
+            const updateState = updateData.state;
+            const label = updateState.label;
+            delete updateState.label;
+            if (updateData.isTimeSeries) {
+              if (Array.isArray(dashboard.tabs[i].groups[j].nodes[k].states))
+                dashboard.tabs[i].groups[j].nodes[k].states = {};
+              if (!dashboard.tabs[i].groups[j].nodes[k].states[label])
+                dashboard.tabs[i].groups[j].nodes[k].states[label] = [];
+              dashboard.tabs[i].groups[j].nodes[k].states[label].push(updateState);
+            } else dashboard.tabs[i].groups[j].nodes[k].states[label] = [updateState];
+          } else {
+            if (updateData.isTimeSeries) {
+              dashboard.tabs[i].groups[j].nodes[k].states.push(updateData.state);
+            } else dashboard.tabs[i].groups[j].nodes[k].states = [updateData.state];
+          }
+
           return;
         }
       }
