@@ -103,7 +103,7 @@
       height: { value: 1, validate: RED.validators.number(), required: true },
       widgetX: { value: 0, validate: RED.validators.number(), required: true },
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
-      label: { value: "chart_name" },
+      title: { value: "chart_name" },
       chartType: { value: "line" },
       xAxisFormat: { value: "HH:mm:ss" },
       customValue: { value: "" },
@@ -133,7 +133,7 @@
       return `${this.chartType} chart data`;
     },
     label: function () {
-      return this.name || (~this.label.indexOf("{{") ? null : this.label) || "new_chart";
+      return this.name || (~this.title.indexOf("{{") ? null : this.title) || "new_chart";
     },
     labelStyle: function () {
       return this.name ? "node_label_italic" : "";
@@ -226,8 +226,8 @@
     </div>
   </div>
   <div class="form-row">
-    <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
-    <input type="text" id="node-input-label" />
+    <label for="node-input-title"><i class="fa fa-i-cursor"></i> Label</label>
+    <input type="text" id="node-input-title" />
   </div>
   <div class="form-row">
     <label for="node-input-chartType"><i class="fa fa-line-chart"></i> Type</label>

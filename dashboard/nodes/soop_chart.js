@@ -5,38 +5,6 @@ module.exports = function (RED) {
     const node = this;
     RED.nodes.createNode(node, config);
 
-    const group = RED.nodes.getNode(config.group);
-    if (!group) {
-      return;
-    }
-    var tab = RED.nodes.getNode(group.config.tab);
-    if (!tab) {
-      return;
-    }
-    const chartType = config.chartType;
-    let state = {
-      nodeId: node.id,
-      nodeType: "chart",
-      group: group,
-      tab: tab,
-      size: [+config.width, +config.height, +config.widgetX, +config.widgetY],
-      title: config.label,
-      chartType: config.chartType,
-      legend: config.legend === "true" ? true : false,
-      blankLabel: config.blankLabel,
-      isTimeSeries: config.isTimeSeries,
-    };
-
-    if (chartType === "line" || chartType === "bar") {
-      state = Object.assign(state, {
-        xAxisFormat: config.xAxisFormat,
-        yMin: config.yMin ? +config.yMin : "",
-        yMax: config.yMax ? +config.yMax : "",
-        customValue: config.xAxisFormat === "custom" ? config.customValue : "",
-      });
-    }
-    // send state to dashboard
-    dashboard.emitState(state, config.isTimeSeries);
     node.on("input", function (msg, done) {
       if (isNaN(msg.payload)) {
         node.error("Payload is not a number.");
@@ -44,7 +12,7 @@ module.exports = function (RED) {
       }
       dashboard.emitState(
         {
-          node_id: node.id,
+          nodeId: node.id,
           data: {
             [msg.label]: {
               value: +msg.payload,
@@ -52,6 +20,7 @@ module.exports = function (RED) {
           },
         },
         config.isTimeSeries,
+        true,
       );
       // done
       if (done) done();
