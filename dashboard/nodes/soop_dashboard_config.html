@@ -28,8 +28,12 @@
 
           for (const group of node.users) {
             const groupObject = {
-              tabId: group.id,
-              tabName: group.name,
+              groupId: group.id,
+              groupName: group.name,
+              groupX: group.groupX,
+              groupY: group.groupY,
+              width: group.width,
+              height: group.height,
               nodes: [],
             };
 
