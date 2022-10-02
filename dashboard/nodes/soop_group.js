@@ -29,6 +29,7 @@ module.exports = function(RED) {
             node: node,
         });
     }
+  }
 
-    RED.nodes.registerType("soop_group", GroupNode);
+  RED.nodes.registerType("soop_group", GroupNode);
 };
