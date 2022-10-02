@@ -3,44 +3,70 @@ import styled from "styled-components";
 import SoopLiquidGauge from "./SoopGauge/SoopLiquidGauge";
 import SoopDonutGauge from "./SoopGauge/SoopDonutGauge";
 import SoopNormalGauge from "./SoopGauge/SoopNormalGauge";
+import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
 
-// TODO: exampleData -> props
-// TODO: x, y, w, h에서 받아오면 계산하기
-// TODO: top, left 옵션줘서 위치 배정하기, 그룹제목이 기본 30px
 const GaugeContainer = styled.div`
   position: absolute;
-  top: 30px;
-
+  left: ${({ layout }) => `${layout[0]}px;`}
+  top: ${({ layout }) => `${layout[1]}px;`}
+  width: ${({ layout }) => `${layout[2]}px;`}
+  height:${({ layout }) => `${layout[3]}px;`}
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 240px;
   padding: 5px 10px;
   box-sizing: border-box;
 `;
 
-const SoopGauge = () => {
-  // FIXME: 넘겨받은 데이터에 따라서 return되는 component가 다르다
-  const type = "liquid";
+const GaugeNormalContainer = styled.div`
+  position: absolute;
+  left: ${({ layout }) => `${layout[0]}px;`}
+  top: ${({ layout }) => `${layout[1]}px;`}
+  width: ${({ layout }) => `${layout[2]}px;`}
+  height:${({ layout }) => `${layout[3]}px;`}
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+`;
+
+const SoopGauge = props => {
+  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
+
+  const exampleData = {
+    nodeId: "abcde",
+    widgetX: 0,
+    widgetY: 0,
+    width: 2,
+    height: 2,
+  };
+
+  const layout = [
+    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
+    calculateTop(exampleData.widgetY),
+    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
+    calculateHeight(exampleData.height, currentGroupH),
+  ];
+
+  const type = "gauge";
 
   switch (type) {
     case "gauge":
       return (
-        <GaugeContainer>
-          <SoopNormalGauge />
-        </GaugeContainer>
+        <GaugeNormalContainer layout={layout}>
+          <SoopNormalGauge layout={layout} />
+        </GaugeNormalContainer>
       );
     case "donut":
       return (
-        <GaugeContainer>
-          <SoopDonutGauge />
+        <GaugeContainer layout={layout}>
+          <SoopDonutGauge radius={Math.min(layout[2], layout[3])} />
         </GaugeContainer>
       );
     case "liquid":
       return (
-        <GaugeContainer>
-          <SoopLiquidGauge />
+        <GaugeContainer layout={layout}>
+          <SoopLiquidGauge radius={Math.min(layout[2], layout[3])} />
         </GaugeContainer>
       );
   }
