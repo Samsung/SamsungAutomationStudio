@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import SoopButton from "./SoopButton";
 import SoopChart from "./SoopChart";
@@ -38,40 +38,116 @@ const GroupName = styled.div`
 `;
 
 const SoopGroup = ({ group, index }) => {
-  // TODO: 노드 그룹 정보들을 받아오면 그룹의 설정에 따라서 변경이 가능하다.
-  // 그리고 노드의 렌더링도 여기서 해야한다... ㅠㅜㅠㅜ
+  const [currentGroupWidth, setCurrentGroupWidth] = useState("");
+  const ref = useRef(null);
+
   const drawNode = node => {
     switch (node?.editor?.type) {
       case SOOP_NODE_TYPE.BUTTON:
-        return <SoopButton key={node.editor.id} nodeId={node.editor.id} />;
+        return (
+          <SoopButton
+            key={node.editor.id}
+            nodeId={node.editor.id}
+            currentGroupWidth={currentGroupWidth}
+            currentGroupW={group.w}
+            currentGroupH={group.h}
+          />
+        );
       case SOOP_NODE_TYPE.CHART:
-        return <SoopChart key={node.editor.id} nodeId={node.editor.id} />;
+        return (
+          <SoopChart
+            key={node.editor.id}
+            nodeId={node.editor.id}
+            currentGroupWidth={currentGroupWidth}
+            currentGroupW={group.w}
+            currentGroupH={group.h}
+          />
+        );
       case SOOP_NODE_TYPE.DROPDOWN:
-        return <SoopDropdown key={node.editor.id} nodeId={node.editor.id} />;
+        return (
+          <SoopDropdown
+            key={node.editor.id}
+            nodeId={node.editor.id}
+            currentGroupWidth={currentGroupWidth}
+            currentGroupW={group.w}
+            currentGroupH={group.h}
+          />
+        );
       case SOOP_NODE_TYPE.GAUGE:
-        return <SoopGauge key={node.editor.id} nodeId={node.editor.id} />;
+        return (
+          <SoopGauge
+            key={node.editor.id}
+            nodeId={node.editor.id}
+            currentGroupWidth={currentGroupWidth}
+            currentGroupW={group.w}
+            currentGroupH={group.h}
+          />
+        );
       case SOOP_NODE_TYPE.IMAGE:
-        return <SoopImage key={node.editor.id} nodeId={node.editor.id} />;
+        return (
+          <SoopImage
+            key={node.editor.id}
+            nodeId={node.editor.id}
+            currentGroupWidth={currentGroupWidth}
+            currentGroupW={group.w}
+            currentGroupH={group.h}
+          />
+        );
       case SOOP_NODE_TYPE.LIST:
-        return <SoopList key={node.editor.id} nodeId={node.editor.id} />;
+        return (
+          <SoopList
+            key={node.editor.id}
+            nodeId={node.editor.id}
+            currentGroupWidth={currentGroupWidth}
+            currentGroupW={group.w}
+            currentGroupH={group.h}
+          />
+        );
       case SOOP_NODE_TYPE.SLIDER:
-        return <SoopSlider key={node.editor.id} nodeId={node.editor.id} />;
+        return (
+          <SoopSlider
+            key={node.editor.id}
+            nodeId={node.editor.id}
+            currentGroupWidth={currentGroupWidth}
+            currentGroupW={group.w}
+            currentGroupH={group.h}
+          />
+        );
       case SOOP_NODE_TYPE.SWITCH:
-        return <SoopSwitch key={node.editor.id} nodeId={node.editor.id} />;
+        return (
+          <SoopSwitch
+            key={node.editor.id}
+            nodeId={node.editor.id}
+            currentGroupWidth={currentGroupWidth}
+            currentGroupW={group.w}
+            currentGroupH={group.h}
+          />
+        );
       case SOOP_NODE_TYPE.TEXT:
-        return <SoopText key={node.editor.id} nodeId={node.editor.id} />;
+        return (
+          <SoopText
+            key={node.editor.id}
+            nodeId={node.editor.id}
+            currentGroupWidth={currentGroupWidth}
+            currentGroupW={group.w}
+            currentGroupH={group.h}
+          />
+        );
     }
   };
   const nameHidden = false;
-  // const currentGroupWidth = Group.current.offsetWidth;
+
+  useEffect(() => {
+    setCurrentGroupWidth(ref.current.offsetWidth);
+  }, []);
 
   return (
-    <Group>
+    <Group ref={ref}>
       {!nameHidden && <GroupName>{group.groupName}</GroupName>}
       {group.nodes.map(node => {
         drawNode(node);
       })}
-      <SoopImage></SoopImage>
+      <SoopGauge currentGroupWidth={currentGroupWidth} currentGroupW={group.w} currentGroupH={group.h}></SoopGauge>
     </Group>
   );
 };

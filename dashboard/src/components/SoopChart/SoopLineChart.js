@@ -28,12 +28,12 @@ const SoopLineChart = () => {
   const exampleData = {
     title: "bar timeseries chart",
     chartType: "bar",
-    legend: true,
+    legend: "true",
     blankLabel: "no data",
     xAxisFormat: "HH:mm:ss",
     yMin: 0,
     yMax: 10,
-    isTimeSeriesData: true,
+    isTimeSeries: true,
     id: "노드의 id",
     states: {
       냉장고: [
@@ -97,7 +97,7 @@ const SoopLineChart = () => {
         borderWidth: 1,
       };
     });
-    console.log("지금저장된 datasets", currentDatasets);
+
     const currentChartData = {
       labels: currentLabels,
       datasets: currentDatasets,
@@ -118,7 +118,7 @@ const SoopLineChart = () => {
         },
         // 범례 변경
         legend: {
-          display: exampleData.legend,
+          display: exampleData.legend === "true" ? true : false,
           labels: {
             font: {
               family: "Pretendard-Regular",

@@ -1,24 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { sendMessage } from "../utils/socket";
 import { mainColor, gradientColor, fontSize } from "../assets/DesignOption";
-
-// TODO: exampleData -> props
-// TODO: x, y, w, h에서 받아오면 계산하기
-// TODO: top, left 옵션줘서 위치 배정하기
-const height = 48; // FIXME: 추후 그리드 사이즈에 맞게 바뀔것, width도 마찬가지
+import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
 
 const ButtonContainer = styled.div`
   position: absolute;
-  top: 100px;
-
+  left: ${({ layout }) => `${layout[0]}px;`}
+  top: ${({ layout }) => `${layout[1]}px;`}
+  width: ${({ layout }) => `${layout[2]}px;`}
+  height:${({ layout }) => `${layout[3]}px;`}
+  padding: 5px 10px;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  padding: 5px 10px;
-  box-sizing: border-box;
-`;
+  `;
 
 const Button = styled.button`
   background: linear-gradient(
@@ -33,11 +30,10 @@ const Button = styled.button`
       100%
   );
   width: 100%;
-  height: ${height}px;
+  height: 100%;
   font-size: ${fontSize.md};
   font-family: "Pretendard-Medium";
   color: white;
-  padding: 0.25em 1em;
   border: 0px;
 
   border-radius: ${props => {
@@ -69,20 +65,19 @@ const ButtonCircle = styled.button`
   background: linear-gradient(
     91.29deg,
     ${props => {
-        return mainColor[props.exampleData.background];
-      }}
+      return mainColor[props.exampleData.background];
+    }}
       0%,
     ${props => {
-        return gradientColor[props.exampleData.background];
-      }}
+      return gradientColor[props.exampleData.background];
+    }}
       100%
   );
-  width: 100px;
-  height: 100px;
+  width: ${({ radius }) => `${radius - 1}px;`}
+  height: ${({ radius }) => `${radius - 1}px;`}
   font-size: ${fontSize.md};
   font-family: "Pretendard-Medium";
   color: white;
-  padding: 0.25em;
   border: 0px;
   border-radius: 100%;
 
@@ -99,21 +94,35 @@ const ButtonCircle = styled.button`
 `;
 
 const SoopButton = props => {
+  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
   const exampleData = {
     nodeId: "abcde",
-    w: 2,
-    h: 1,
-    label: "SAMSUNG",
+    widgetX: 0,
+    widgetY: 0,
+    width: 1,
+    height: 1,
+    label: "SAM",
     background: "green",
-    shape: "rectangle",
+    shape: "circle",
     tooltip: "button node",
   };
 
+  const layout = [
+    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
+    calculateTop(exampleData.widgetY),
+    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
+    calculateHeight(exampleData.height, currentGroupH),
+  ];
+
   return (
     <>
-      <ButtonContainer>
+      <ButtonContainer layout={layout}>
         {exampleData.shape === "circle" ? (
-          <ButtonCircle onClick={sendMessage(exampleData.nodeId)} exampleData={exampleData}>
+          <ButtonCircle
+            onClick={sendMessage(exampleData.nodeId)}
+            exampleData={exampleData}
+            radius={Math.min(layout[2], layout[3])}
+          >
             {exampleData.label}
           </ButtonCircle>
         ) : (

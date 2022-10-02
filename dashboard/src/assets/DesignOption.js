@@ -37,6 +37,43 @@ const fontSize = {
   xxl: "48px",
 };
 
-// const fontWeight = {};
+const calculateWidth = (w, currentGroupWidth, currentGroupW) => {
+  if (w === currentGroupW) {
+    return currentGroupWidth;
+  }
+  const unitWidth = Math.round(currentGroupWidth / currentGroupW);
+  return unitWidth * w;
+};
 
-export { mainColor, gradientColor, bgColor, groupColor, fontColor, fontSize };
+const calculateLeft = (x, currentGroupWidth, currentGroupW) => {
+  const unitWidth = Math.round(currentGroupWidth / currentGroupW);
+  return unitWidth * x;
+};
+
+const calculateHeight = (h, currentGroupH, isNameVisible = "true") => {
+  if (isNameVisible === "true") {
+    const unitHeight = Math.round((currentGroupH * 75 + (currentGroupH - 1) * 10 - 30) / currentGroupH);
+    console.log("단위높이: ", unitHeight);
+    return unitHeight * h;
+  } else {
+    return h * 75;
+  }
+};
+
+const calculateTop = (y, isNameVisible = "true") => {
+  if (isNameVisible === "true") return 30 + y * 70;
+  else return y * 75;
+};
+
+export {
+  mainColor,
+  gradientColor,
+  bgColor,
+  groupColor,
+  fontColor,
+  fontSize,
+  calculateHeight,
+  calculateLeft,
+  calculateTop,
+  calculateWidth,
+};

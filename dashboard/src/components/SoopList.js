@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { fontColor, fontSize } from "../assets/DesignOption";
+import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
 
 const ListContainer = styled.div`
   position: absolute;
-  top: 30px;
-
-  width: 100%;
+  left: ${({ layout }) => `${layout[0]}px;`}
+  top: ${({ layout }) => `${layout[1]}px;`}
+  width: ${({ layout }) => `${layout[2]}px;`}
+  height:${({ layout }) => `${layout[3]}px;`}
   padding: 5px 10px;
   box-sizing: border-box;
   color: ${fontColor.light};
@@ -31,16 +33,29 @@ const ListLabel = styled.span`
   }};
 `;
 
-const SoopList = () => {
+const SoopList = props => {
+  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
+
   // FIXME: 전역 상태로 변경
   const exampleData = {
     type: "checkbox",
     options: [{ value: "val1" }, { value: "val2" }],
+    widgetX: 1,
+    widgetY: 1,
+    width: 1,
+    height: 1,
     label: "라벨이당",
     tooltip: "툴팁이당",
   };
   const oC = Array.from({ length: exampleData.options.length }, () => false);
   const [optionChecked, setOptionChecked] = useState(oC);
+
+  const layout = [
+    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
+    calculateTop(exampleData.widgetY),
+    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
+    calculateHeight(exampleData.height, currentGroupH),
+  ];
 
   const onClickCheck = idx => {
     const tmpChecked = optionChecked.map((opt, i) => {
@@ -56,7 +71,7 @@ const SoopList = () => {
   switch (exampleData.type) {
     case "ol":
       return (
-        <ListContainer>
+        <ListContainer layout={layout}>
           <ol style={{ margin: 0 }}>
             {exampleData.options.map((item, idx) => {
               return <li key={idx}>{item.value}</li>;
@@ -66,7 +81,7 @@ const SoopList = () => {
       );
     case "ul":
       return (
-        <ListContainer>
+        <ListContainer layout={layout}>
           <ul style={{ margin: 0 }}>
             {exampleData.options.map((item, idx) => {
               return <li key={idx}>{item.value}</li>;
@@ -76,7 +91,7 @@ const SoopList = () => {
       );
     case "checkbox":
       return (
-        <ListContainer>
+        <ListContainer layout={layout}>
           {exampleData.options.map((item, idx) => {
             return (
               <div key={idx}>

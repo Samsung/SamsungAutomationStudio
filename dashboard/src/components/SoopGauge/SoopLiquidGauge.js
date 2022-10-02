@@ -7,7 +7,7 @@ import { mainColor, gradientColor, fontColor, fontSize } from "../../assets/Desi
 
 // FIXME: wh, 중 작은 사이즈에 맞추기!!
 const LiquidGaugeWrapper = styled.div`
-  width: 180px;
+  height: ${({ radius }) => `${radius}px;`}
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -20,33 +20,28 @@ const LiquidGaugeLabel = styled.div`
   color: ${fontColor.light};
   font-size: ${fontSize.md};
   font-family: "Pretendard-Bold";
-  margin: 0 auto 15px;
 `;
 
-const SoopLiquidGauge = () => {
+const SoopLiquidGauge = props => {
+  const { radius } = props;
   const exampleData = {
     nodeId: "dfg124w4",
     gType: "donut",
     label: "라벨입니당",
-    range: [0, 5],
-    units: "mg/l",
+    range: [0, 100], // 의미없음.. 무조건 100기준으로 나와요
+    units: "%",
     color: "orange",
-    states: [{ value: 50 }],
+    states: [{ value: 80 }],
   };
 
   const [currentValue, setCurrentValue] = useState(1);
   const [currentLabel, setCurrentLabel] = useState("");
-  const [convertedValue, setConvertedValue] = useState(1);
-
-  // FIXME: 사이즈 계산 후 변경되어야 한다. w/h 중 작은 크기의 반!
-  const radius = 90;
 
   useEffect(() => {
     if (Array.isArray(exampleData.states) && exampleData.states[0]) {
       setCurrentValue(exampleData.states[0].value);
     }
     setCurrentLabel(exampleData.label);
-    const calculation = setConvertedValue();
   }, []);
 
   const startColor = mainColor[exampleData.color];
@@ -77,12 +72,12 @@ const SoopLiquidGauge = () => {
 
   return (
     <>
-      <LiquidGaugeWrapper>
+      <LiquidGaugeWrapper radius={radius}>
         <LiquidGaugeLabel>{currentLabel}</LiquidGaugeLabel>
         <LiquidFillGauge
           style={{ margin: "0 0" }}
-          width={radius * 2}
-          height={radius * 2}
+          width={radius - 22}
+          height={radius - 22}
           value={currentValue}
           unit={exampleData.units} // percent는 단위로
           textSize={1}

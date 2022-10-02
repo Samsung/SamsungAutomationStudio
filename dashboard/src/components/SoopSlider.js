@@ -4,17 +4,18 @@ import { Slider } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { mainColor, fontSize, fontColor } from "../assets/DesignOption";
 import { sendMessage } from "../utils/socket";
+import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
 
-// TODO: exampleData -> props
-// TODO: x, y, w, h에서 받아오면 계산하기
-// TODO: top, left 옵션줘서 위치 배정하기, 그룹제목이 기본 30px
 const SliderContainer = styled.div`
-  width: 100%;
+  position: absolute;
+  width: ${({ layout }) => `${layout[2]}px;`}
+  height:${({ layout }) => `${layout[3]}px;`}
   padding: 5px 10px;
   box-sizing: border-box;
-  position: absolute;
-  top: 100px;
+  left: ${({ layout }) => `${layout[0]}px;`}
+  top: ${({ layout }) => `${layout[1]}px;`}
   display: flex;
+  align-items: center;
   color: ${fontColor.light};
   font-family: "Pretendard-Bold";
   font-size: ${fontSize.md};
@@ -31,16 +32,28 @@ const SEND_TYPE = {
   RELEASE: "release",
 };
 
-const SoopSlider = ({ node, states }) => {
-  console.log(node);
+const SoopSlider = props => {
+  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
+
   const exampleData = {
     color: "purple",
     label: "This is Label!",
     tooltip: "slider_label",
     when: "always",
     invert: false,
+    widgetX: 1,
+    widgetY: 1,
+    width: 2,
+    height: 1,
     states: [{ value: 50 }],
   };
+
+  const layout = [
+    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
+    calculateTop(exampleData.widgetY),
+    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
+    calculateHeight(exampleData.height, currentGroupH),
+  ];
 
   // FIXME: 현재 보이는 값 -> props에서 들어오는 것으로 수정해야 한다.
   const [value, setValue] = useState("");
@@ -70,8 +83,8 @@ const SoopSlider = ({ node, states }) => {
 
   return (
     <>
-      <SliderContainer>
-        <SliderLabel>{node.label}</SliderLabel>
+      <SliderContainer layout={layout}>
+        <SliderLabel>{exampleData.label}</SliderLabel>
         <ThemeProvider theme={muiTheme}>
           <Slider
             value={value}

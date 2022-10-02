@@ -14,7 +14,7 @@ const SoopPieChart = () => {
     title: "pie chart",
     chartType: "pie",
     cutout: 0,
-    legend: true,
+    legend: "true",
     blankLabel: "no data",
     id: "노드의 id",
     states: {
@@ -74,8 +74,7 @@ const SoopPieChart = () => {
         },
         //범례 변경
         legend: {
-          display: exampleData.legend,
-          // position: "top",
+          display: exampleData.legend === "true" ? true : false,
           labels: {
             font: {
               family: "Pretendard-Regular",
