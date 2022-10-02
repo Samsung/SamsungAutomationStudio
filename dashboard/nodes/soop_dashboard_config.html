@@ -13,15 +13,39 @@
 
   function initializeDashboardConfig() {
     RED.events.on("deploy", function () {
-      const dashboardNodes = [];
-      RED.nodes.eachNode(node => {
-        if (node.type.indexOf("soop") !== -1) {
-          dashboardNodes.push(node);
+      const dashboardState = {
+        tabs: [],
+      };
+
+      // update tab state
+      RED.nodes.eachConfig(node => {
+        if (node.type == "soop_tab") {
+          const tabObject = {
+            tabId: node.id,
+            tabName: node.name,
+            groups: [],
+          };
+
+          for (const group of node.users) {
+            const groupObject = {
+              tabId: group.id,
+              tabName: group.name,
+              nodes: [],
+            };
+
+            for (const node of group.users) {
+              groupObject.nodes.push(node);
+            }
+
+            tabObject.groups.push(groupObject);
+          }
+
+          dashboardState.tabs.push(tabObject);
         }
       });
 
       dashboardConfigNode = createDashboardConfigNode();
-      socket.emit(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, dashboardNodes);
+      socket.emit(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, dashboardState);
     });
   }
 

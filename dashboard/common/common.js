@@ -1,6 +1,6 @@
 const FRONT_SOCKET_TYPE = {
-  INIT_NODE: "init-node",
-  UPDATE_NODE: "udpate-node",
+  INIT_DASHBOARD_STATE: "init-dashboard-state",
+  UPDATE_NODE_STATE: "update-node-state",
   RECEIVE_MESSAGE: "receive-message",
 };
 
@@ -18,6 +18,7 @@ const SOOP_NODE_TYPE = {
   GAUGE: "soop_gauge",
   IMAGE: "soop_image",
   LIST: "soop_list",
+  DROPDOWN: "soop_dropdown",
   SLIDER: "soop_slider",
   SWITCH: "soop_switch",
   TEXT: "soop_text",

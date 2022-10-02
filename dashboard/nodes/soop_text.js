@@ -1,7 +1,7 @@
 module.exports = function (RED) {
   const dashboard = require("../dashboard")(RED);
 
-  function SoopGaugeNode(config) {
+  function SoopTextNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
 
@@ -21,33 +21,27 @@ module.exports = function (RED) {
       size: [config.width, config.height],
       name: config.name,
       time: "",
-      gType: config.gType,
       label: config.label,
       format: config.format,
-      range: [config.min, config.max],
-      value: config.min,
-      units: config.units,
-      color: config.colorPicking,
+      layout: config.layout,
+      fontSize: config.fontSize,
+      value: config.value,
     };
 
     node.on("input", function (msg) {
       let form = config.format.replace(/{{/g, "").replace(/}}/g, "").replace(/\s/g, "") || "_zzz_zzz_zzz_";
-
       if (form.split(".")[0] != "msg") return;
+
       form = form.split(".")[1];
       let value = RED.util.getMessageProperty(msg, form);
-      if (value !== undefined) {
-        if (!isNaN(parseFloat(value))) {
-          value = parseFloat(value);
-        }
-      } else {
-        if (!isNaN(parseFloat(msg.payload))) {
-          value = parseFloat(msg.payload);
-        }
-      }
-      state.value = value;
+      if (value !== undefined) state.value = value;
+
       dashboard.emitState(state);
     });
+
+    dashboard.addNode({
+      node: node,
+    });
   }
-  RED.nodes.registerType("soop_gauge", SoopGaugeNode);
+  RED.nodes.registerType("soop_text", SoopTextNode);
 };

@@ -1,6 +1,4 @@
 <script type="text/javascript">
-    // convert to i18 text
-
     var tabCount = new Array();
     RED.nodes.registerType('soop_tab', {
         category: 'config',
@@ -8,6 +6,9 @@
             name: {
                 value: RED._("soopsasm-dashboard/soop_tab:soop_tab.label.tab")
             },
+            includedGroups: {
+                value: []
+            }
         },
         paletteLabel: 'SOOPSASM Tab',
         label: function() {

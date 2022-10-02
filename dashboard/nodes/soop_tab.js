@@ -4,6 +4,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         this.config = {
             name: config.name,
+            includedGroups: config.includedGroups
         };
     }
 
