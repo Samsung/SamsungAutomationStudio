@@ -301,6 +301,7 @@ module.exports.code = (config) => {
                 function predict() {
                     context.drawImage(video, 0, 0);
                     model.detect(canvas).then(predictions => {
+                        console.log(predictions)
     
                         objects = [...predictions]
     
@@ -309,7 +310,7 @@ module.exports.code = (config) => {
                                 dataWebSocket.send(JSON.stringify({ dataType : "object", data : 
                                 
                                 predictions.filter((element) => {
-                                    return registered.includes(element[1])
+                                    return registered.includes(element.class)
                                 })
                             
                             }));
