@@ -35,6 +35,7 @@
       "soop_slider": "dashboard/nodes/soop_slider.js",
       "soop_dropdown": "dashboard/nodes/soop_dropdown.js",
       "soop_list": "dashboard/nodes/soop_list.js",
+      "soop_text": "dashboard/nodes/soop_text.js",
       "soop_image": "dashboard/nodes/soop_image.js"
     }
   },
