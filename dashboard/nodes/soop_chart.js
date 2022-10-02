@@ -15,18 +15,11 @@ module.exports = function (RED) {
     }
     const chartType = config.chartType;
     let state = {
-      // nodeId: node.id,
-      node_id: node.id,
+      nodeId: node.id,
       nodeType: "chart",
       group: group,
       tab: tab,
-      size: [
-        parseInt(config.height || group.config.height / 2 + 1 || 4),
-        parseInt(config.width || group.config.width || 6),
-        parseInt(config.widgetX),
-        parseInt(config.widgetY),
-      ],
-      // label: config.label,
+      size: [+config.width, +config.height, +config.widgetX, +config.widgetY],
       title: config.label,
       chartType: config.chartType,
       legend: config.legend === "true" ? true : false,
@@ -37,8 +30,8 @@ module.exports = function (RED) {
     if (chartType === "line" || chartType === "bar") {
       state = Object.assign(state, {
         xAxisFormat: config.xAxisFormat,
-        yMin: config.yMin ? parseInt(config.yMin) : "",
-        yMax: config.yMax ? parseInt(config.yMax) : "",
+        yMin: config.yMin ? +config.yMin : "",
+        yMax: config.yMax ? +config.yMax : "",
         customValue: config.xAxisFormat === "custom" ? config.customValue : "",
       });
     }
@@ -54,7 +47,7 @@ module.exports = function (RED) {
           node_id: node.id,
           data: {
             [msg.label]: {
-              value: parseInt(msg.payload),
+              value: +msg.payload,
             },
           },
         },
