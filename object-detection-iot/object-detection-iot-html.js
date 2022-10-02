@@ -1,7 +1,6 @@
 module.exports.code = (config) => {
     return String.raw`
     <html>
-
     <head>
         <style>
             body, html {
@@ -45,7 +44,10 @@ module.exports.code = (config) => {
                 border: 8px solid rgb(15, 195, 39);
             }
     
-            #frame>canvas {
+            #frame> #canvas {
+                width: 640px;
+                aspect-ratio: 4/3;
+                box-sizing: border-box;
                 position: absolute;
                 left: 10%;
             }
@@ -137,8 +139,8 @@ module.exports.code = (config) => {
             <header id="title">OBJECT DETECTION DISPLAY <button id="test-btn">click!</button></header>
             <div id="main">
                 <section id="frame">
-                    <video id="video" width="640" height="480" autoplay muted playsinline></video>
-                    <canvas id="canvas"></canvas>
+                <canvas id="video"></canvas>
+                    <canvas id="canvas" width="1920" height="1080"></canvas>
                     
                 </section>
         
@@ -201,8 +203,7 @@ module.exports.code = (config) => {
         </div>
         
     
-    
-        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -239,9 +240,6 @@ module.exports.code = (config) => {
                 console.log(registeredPose);
                 console.log(registered);
             })
-
-
-
             let savedPose = registeredPose
             let savedObject = registered
             
@@ -254,7 +252,6 @@ module.exports.code = (config) => {
                 tmp.innerText = pose
                 poseDropdown.appendChild(tmp);
             })
-
             savedObject.forEach(object => {;
                 let tmp = document.createElement('option');
                 tmp.value = object
@@ -292,22 +289,41 @@ module.exports.code = (config) => {
                 return false;
             }
     
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-                .then(function (stream) {
-                    video.srcObject = stream;
-                });
+            const rtspUrl = 'ws://${config.serverUrl}:${config.rtspPort}'
+            const rtspTest = new WebSocket(rtspUrl)
+
+            rtspTest.onmessage = function (e) {
+                if (e.data.size > 8) {
+                    rtspTest.close()
+                    const rtspClient = new WebSocket(rtspUrl)
+                    const player = new jsmpeg(rtspClient, {
+                        canvas: video
+                    })
+                    
+                    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                    .then(function (stream) {
+                        video.srcObject = stream;
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+                }
+            }
     
             cocoSsd.load().then(model => {
                 predict();
                 function predict() {
-                    context.drawImage(video, 0, 0);
+                    // const image = new Image()
+                    // image.addEventListener("load", () => {
+                    //     ctx.drawImage(image, 0, 0, 1080, 1920);
+                    // })
+                    context.putImageData(video.getContext('2d').getImageData(0,0,video.width, video.height), 0, 0);
                     model.detect(canvas).then(predictions => {
                         console.log(predictions)
     
                         objects = [...predictions]
     
                         if (validation(predictions)) {
-
                                 dataWebSocket.send(JSON.stringify({ dataType : "object", data : 
                                 
                                 predictions.filter((element) => {
@@ -332,7 +348,6 @@ module.exports.code = (config) => {
                             context.fillText(predictions[i].class + ' ' + parseInt(predictions[i].score * 100) + '%', predictions[i].bbox[0], predictions[i].bbox[1]);
                             context.fillRect(predictions[i].bbox[0] + predictions[i].bbox[2] / 2 - 1, predictions[i].bbox[1] + predictions[i].bbox[3] / 2 - 1, 2, 2);
                         }
-
                         objects.forEach((element) => {
                             if (!detected.includes(element["class"])) {
                                 detected.push(element["class"]);
