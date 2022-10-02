@@ -25,7 +25,7 @@ module.exports = function (RED) {
                 if (err) throw err
             })
 
-            return
+            return msg.payload
         })
     }
 

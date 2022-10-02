@@ -301,7 +301,6 @@ module.exports.code = (config) => {
                 function predict() {
                     context.drawImage(video, 0, 0);
                     model.detect(canvas).then(predictions => {
-                        console.log(predictions)
     
                         objects = [...predictions]
     
