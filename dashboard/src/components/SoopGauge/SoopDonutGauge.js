@@ -28,32 +28,38 @@ const DonutGaugeLabel = styled.div`
 const SoopDonutGauge = () => {
   // FIXME: card 크기로 수정
   const exampleData = {
-    node: {
-      nodeId: "dfg124w4",
-      gType: "donut",
-      label: "라벨입니당",
-      range: [0, 100],
-      units: "%%%",
-      color: "blue",
-    },
-    states: {
-      value: 100,
-    },
+    nodeId: "dfg124w4",
+    gType: "donut",
+    label: "라벨입니당",
+    range: [10, 20],
+    units: "",
+    color: "blue",
+    states: [{ value: 13 }],
   };
 
   const [currentValue, setCurrentValue] = useState(1);
   const [currentLabel, setCurrentLabel] = useState("");
+  const [range, setRange] = useState("");
+  const [endValue, setEndValue] = useState("");
 
   useEffect(() => {
-    setCurrentValue(exampleData.states.value);
-    setCurrentLabel(exampleData.node.label);
+    if (Array.isArray(exampleData.states) && exampleData.states[0]) {
+      setCurrentValue(exampleData.states[0].value);
+    }
+    setCurrentLabel(exampleData.label);
+    setRange([exampleData.range[0], exampleData.range[1]]);
   }, []);
 
   return (
     <>
       <DonutGaugeWrapper>
         <DonutGaugeLabel>{currentLabel}</DonutGaugeLabel>
-        <AnimatedProgressProvider valueStart={0} valueEnd={currentValue} duration={1.4} easingFunction={easeQuadInOut}>
+        <AnimatedProgressProvider
+          valueStart={range[0]}
+          valueEnd={currentValue}
+          duration={1.4}
+          easingFunction={easeQuadInOut}
+        >
           {currentValue => {
             const roundedValue = Math.round(currentValue);
             return (
@@ -66,7 +72,7 @@ const SoopDonutGauge = () => {
                   alignItems: "center",
                 }}
               >
-                {exampleData.node.units.length === 1 ? (
+                {exampleData.units.length === 1 ? (
                   <div
                     style={{
                       color: fontColor.light,
@@ -81,7 +87,7 @@ const SoopDonutGauge = () => {
                   >
                     <strong>
                       {roundedValue}
-                      {exampleData.node.units}
+                      {exampleData.units}
                     </strong>
                   </div>
                 ) : (
@@ -105,20 +111,22 @@ const SoopDonutGauge = () => {
                     >
                       {roundedValue}
                     </div>
-                    <div style={{ fontSize: fontSize.sm }}>{exampleData.node.units}</div>
+                    <div style={{ fontSize: fontSize.sm }}>{exampleData.units}</div>
                   </div>
                 )}
                 <CircularProgressbar
                   value={currentValue}
+                  minValue={range[0]}
+                  maxValue={range[1]}
                   strokeWidth="12"
                   styles={{
                     path: {
-                      stroke: `url(#${exampleData.node.nodeId})`,
+                      stroke: `url(#${exampleData.nodeId})`,
                       height: "100%",
                     },
                   }}
                 ></CircularProgressbar>
-                <GradientSVG colorOption={exampleData.node.color} rotation={0} idCSS={exampleData.node.nodeId} />
+                <GradientSVG colorOption={exampleData.color} rotation={0} idCSS={exampleData.nodeId} />
               </div>
             );
           }}

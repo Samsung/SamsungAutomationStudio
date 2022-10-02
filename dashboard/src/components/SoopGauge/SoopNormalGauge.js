@@ -4,25 +4,25 @@ import { mainColor, fontColor, fontSize } from "../../assets/DesignOption";
 
 const SoopNormalGauge = () => {
   const exampleData = {
-    node: {
-      nodeId: "dfg124w4",
-      gType: "gauge",
-      label: "라벨입니당",
-      range: [0, 100],
-      units: "%",
-      color: "purple",
-    },
-    states: {
-      value: 34,
-    },
+    nodeId: "dfg124w4",
+    gType: "gauge",
+    label: "라벨입니당",
+    range: [10, 20],
+    units: "",
+    color: "purple",
+    states: [{ value: 13 }],
   };
 
   const [currentValue, setCurrentValue] = useState(1);
   const [currentLabel, setCurrentLabel] = useState("");
+  const [range, setRange] = useState("");
 
   useEffect(() => {
-    setCurrentValue(exampleData.states.value);
-    setCurrentLabel(exampleData.node.label);
+    if (Array.isArray(exampleData.states) && exampleData.states[0]) {
+      setCurrentValue(exampleData.states[0].value);
+    }
+    setCurrentLabel(exampleData.label);
+    setRange([exampleData.range[0], exampleData.range[1]]);
   }, []);
 
   // TODO: width, height 전달
@@ -33,12 +33,14 @@ const SoopNormalGauge = () => {
         value={currentValue}
         width={200}
         height={160}
+        min={range[0]}
+        max={range[1]}
         label={currentLabel}
-        color={mainColor[exampleData.node.color]}
+        color={mainColor[exampleData.color]}
         topLabelStyle={{ fontSize: fontSize.md, fontFamily: "Pretendard-Bold", fill: fontColor.light }}
         valueLabelStyle={{ fontSize: fontSize.xl, fontFamily: "Pretendard-Regular", fill: fontColor.light }}
         minMaxLabelStyle={{ fontSize: fontSize.sm, fontFamily: "Pretendard-Regular", fill: fontColor.light }}
-        valueFormatter={value => `${value}${exampleData.node.units}`}
+        valueFormatter={value => `${value}${exampleData.units}`}
       />
     </>
   );

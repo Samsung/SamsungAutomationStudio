@@ -22,25 +22,37 @@ const GaugeContainer = styled.div`
 
 const SoopGauge = () => {
   // FIXME: 넘겨받은 데이터에 따라서 return되는 component가 다르다
-  const type = "liquid";
+  const type = "gauge";
 
   switch (type) {
     case "gauge":
       return (
         <GaugeContainer>
-          <SoopNormalGauge />
+          (
+          <GaugeContainer>
+            <SoopNormalGauge />
+          </GaugeContainer>
+          )
         </GaugeContainer>
       );
     case "donut":
       return (
         <GaugeContainer>
-          <SoopDonutGauge />
+          (
+          <GaugeContainer>
+            <SoopDonutGauge />
+          </GaugeContainer>
+          )
         </GaugeContainer>
       );
     case "liquid":
       return (
         <GaugeContainer>
-          <SoopLiquidGauge />
+          (
+          <GaugeContainer>
+            <SoopLiquidGauge />
+          </GaugeContainer>
+          )
         </GaugeContainer>
       );
   }

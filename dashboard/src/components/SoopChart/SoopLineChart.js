@@ -26,20 +26,18 @@ const SoopLineChart = () => {
     "rgba(255, 135, 66, 0.8)",
   ];
   const exampleData = {
-    node: {
-      title: "bar timeseries chart",
-      chartType: "bar",
-      legend: true,
-      blankLabel: "no data",
-      xAxisFormat: "HH:mm:ss",
-      yMin: 0,
-      yMax: 10,
-      isTimeSeriesData: true,
-    },
+    title: "bar timeseries chart",
+    chartType: "bar",
+    legend: true,
+    blankLabel: "no data",
+    xAxisFormat: "HH:mm:ss",
+    yMin: 0,
+    yMax: 10,
+    isTimeSeriesData: true,
     id: "노드의 id",
     states: {
       냉장고: [
-        { value: 1, time: 1664544739836 },
+        { value: 9, time: 1664544739836 },
         { value: 2, time: 1664545142444 },
         { value: 3, time: 1664545186484 },
         { value: 6, time: 1664545206079 },
@@ -88,7 +86,7 @@ const SoopLineChart = () => {
   useEffect(() => {
     const currentDatasetsLabel = Object.keys(exampleData.states);
     const currentLabels = exampleData.states[currentDatasetsLabel[0]].map(data =>
-      moment(data.time).format(exampleData.node.xAxisFormat),
+      moment(data.time).format(exampleData.xAxisFormat),
     );
     const currentDatasets = Object.keys(exampleData.states).map((key, idx) => {
       return {
@@ -111,7 +109,7 @@ const SoopLineChart = () => {
         // 제목 변경
         title: {
           display: true,
-          text: exampleData.node.title,
+          text: exampleData.title,
           color: fontColor.light,
           font: {
             family: "Pretendard-Bold",
@@ -120,7 +118,7 @@ const SoopLineChart = () => {
         },
         // 범례 변경
         legend: {
-          display: exampleData.node.legend,
+          display: exampleData.legend,
           labels: {
             font: {
               family: "Pretendard-Regular",
@@ -133,8 +131,8 @@ const SoopLineChart = () => {
       // 축 변경
       scales: {
         y: {
-          min: exampleData.node.yMin,
-          max: exampleData.node.yMax,
+          min: exampleData.yMin,
+          max: exampleData.yMax,
           ticks: {
             font: {
               family: "Pretendard-Light",

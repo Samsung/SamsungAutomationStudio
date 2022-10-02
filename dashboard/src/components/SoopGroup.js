@@ -8,6 +8,7 @@ import SoopImage from "./SoopImage";
 import SoopList from "./SoopList";
 import SoopSlider from "./SoopSlider";
 import SoopSwitch from "./SoopSwitch";
+import SoopText from "./SoopText";
 import { fontSize, fontColor } from "../assets/DesignOption";
 
 const { SOOP_NODE_TYPE } = require("../../common/common");
@@ -42,23 +43,23 @@ const SoopGroup = ({ group, index }) => {
   const drawNode = node => {
     switch (node?.editor?.type) {
       case SOOP_NODE_TYPE.BUTTON:
-        return <SoopButton />;
+        return <SoopButton key={node.editor.id} nodeId={node.editor.id} />;
       case SOOP_NODE_TYPE.CHART:
-        return <SoopChart />;
+        return <SoopChart key={node.editor.id} nodeId={node.editor.id} />;
       case SOOP_NODE_TYPE.DROPDOWN:
-        return <SoopDropdown />;
+        return <SoopDropdown key={node.editor.id} nodeId={node.editor.id} />;
       case SOOP_NODE_TYPE.GAUGE:
-        return <SoopGauge />;
+        return <SoopGauge key={node.editor.id} nodeId={node.editor.id} />;
       case SOOP_NODE_TYPE.IMAGE:
-        return <SoopImage />;
+        return <SoopImage key={node.editor.id} nodeId={node.editor.id} />;
       case SOOP_NODE_TYPE.LIST:
-        return <SoopList />;
+        return <SoopList key={node.editor.id} nodeId={node.editor.id} />;
       case SOOP_NODE_TYPE.SLIDER:
-        return <SoopSlider />;
+        return <SoopSlider key={node.editor.id} nodeId={node.editor.id} />;
       case SOOP_NODE_TYPE.SWITCH:
         return <SoopSwitch key={node.editor.id} nodeId={node.editor.id} />;
       case SOOP_NODE_TYPE.TEXT:
-        return <SoopText />;
+        return <SoopText key={node.editor.id} nodeId={node.editor.id} />;
     }
   };
   const nameHidden = false;
@@ -70,12 +71,7 @@ const SoopGroup = ({ group, index }) => {
       {group.nodes.map(node => {
         drawNode(node);
       })}
-      {/* <SoopButton /> */}
-      {/* <SoopSwitch nodeId={Math.random()} /> */}
-      {/* <SoopSlider /> */}
-      {/* <SoopChart /> */}
-      {/* <SoopGauge /> */}
-      <SoopImage />
+      <SoopImage></SoopImage>
     </Group>
   );
 };

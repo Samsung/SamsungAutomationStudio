@@ -3,6 +3,9 @@ import styled from "styled-components";
 import SoopGroup from "./SoopGroup";
 import { Responsive as ResponsiveGridLayout } from "react-grid-layout";
 import { withSize } from "react-sizeme";
+import { useDispatch, useSelector } from "react-redux";
+import { updateGrid } from "../utils/store";
+import useUpdateEffect from "../hooks/UpdateHook";
 
 const GridContainer = styled.div`
   height: 700px;
@@ -13,27 +16,20 @@ const GridContainer = styled.div`
   }
 `;
 
-/** 노드가 들어간 그룹이 있다.
- * cursor 형태도 지정
- */
 const GridItem = styled.div`
-  cursor: ${({ isEditing }) => {
-    if (isEditing) {
-      return "grab";
-    }
-  }};
+  cursor: ${({ isEditing }) => isEditing && "grab"};
 
   &:active {
-    ${({ isEditing }) => {
-      if (isEditing) {
-        return "cursor: grabbing";
-      }
-    }};
+    ${({ isEditing }) => isEditing && "curr: grabbing"};
   }
 `;
 
 const SoopGrid = ({ size: { width }, isEditing, tab }) => {
-  const initialGroupGrid = tab.groups.map((group, idx) => {
+  const { groups } = tab;
+  const dispatch = useDispatch();
+  const tabsGrid = useSelector(state => state.tabsGrid);
+
+  const initialGroupGrid = groups.map(group => {
     return {
       i: group.groupId,
       w: group.w,
@@ -43,28 +39,27 @@ const SoopGrid = ({ size: { width }, isEditing, tab }) => {
       static: !isEditing,
     };
   });
-  console.log("초기 그리드", initialGroupGrid);
-  const initialLayouts = {
-    lg: initialGroupGrid,
-  };
-  const [layouts, setLayouts] = useState(initialLayouts);
+  const [layouts, setLayouts] = useState({ lg: initialGroupGrid });
 
   const onLayoutChange = (_, allLayouts) => {
     setLayouts(allLayouts);
   };
 
   useEffect(() => {
+    if (!!tabsGrid[tab.tabId]) {
+      const currentLayouts = tabsGrid[tab.tabId];
+      setLayouts(currentLayouts);
+    }
+  }, []);
+
+  useUpdateEffect(() => {
+    console.log("업데이트시 호출");
     const currentLayouts = layouts.lg.map(item => {
       return { ...item, static: !isEditing };
     });
     setLayouts({ lg: currentLayouts });
-    console.log("저장된 그리드", layouts);
+    dispatch(updateGrid({ lg: currentLayouts }, tab.tabId));
   }, [isEditing]);
-
-  // FIXME: localStorage에 저장하기
-  // const onLayoutSave = () => {
-  //   saveToLS("layouts", layouts);
-  // };
 
   return (
     <GridContainer>
@@ -90,27 +85,3 @@ const SoopGrid = ({ size: { width }, isEditing, tab }) => {
 };
 
 export default withSize({ refreshMode: "debounce", refreshRate: 60 })(SoopGrid);
-
-// FIXME: LocalStorage에서 가져오기
-// const [layouts, setLayouts] = useState(getFromLS("layouts") || initialLayouts);
-// function getFromLS(key) {
-//   let ls = {};
-//   if (global.localStorage) {
-//     try {
-//       ls = JSON.parse(global.localStorage.getItem("rgl-8")) || {};
-//     } catch (e) {}
-//   }
-//   return ls[key];
-// }
-
-// FIXME: LocalStorage에 저장하기
-// function saveToLS(key, value) {
-//   if (global.localStorage) {
-//     global.localStorage.setItem(
-//       "rgl-8",
-//       JSON.stringify({
-//         [key]: value,
-//       }),
-//     );
-//   }
-// }

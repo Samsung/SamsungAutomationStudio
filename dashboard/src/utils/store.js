@@ -24,7 +24,21 @@ function Dashboard(state = initialState, action) {
   return state;
 }
 
-const rootReducer = combineReducers({ dashboard: Dashboard });
+export const updateGrid = (newGrid, tabId) => ({ type: "updateGrid", newGrid, tabId });
+
+function tabsGrid(state = {}, action) {
+  switch (action.type) {
+    case "updateGrid":
+      const newState = { ...state };
+      const { newGrid, tabId } = action;
+      newState[tabId] = newGrid;
+      return newState;
+    default:
+      return state;
+  }
+}
+
+const rootReducer = combineReducers({ dashboard: Dashboard, tabsGrid });
 export const store = createStore(rootReducer);
 
 /**

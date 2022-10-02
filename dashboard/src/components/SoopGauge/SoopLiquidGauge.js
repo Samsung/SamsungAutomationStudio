@@ -25,32 +25,32 @@ const LiquidGaugeLabel = styled.div`
 
 const SoopLiquidGauge = () => {
   const exampleData = {
-    node: {
-      nodeId: "dfg124w4",
-      gType: "donut",
-      label: "라벨입니당",
-      range: [0, 100],
-      units: "mg/l",
-      color: "green",
-    },
-    states: {
-      value: 70,
-    },
+    nodeId: "dfg124w4",
+    gType: "donut",
+    label: "라벨입니당",
+    range: [0, 5],
+    units: "mg/l",
+    color: "orange",
+    states: [{ value: 50 }],
   };
 
   const [currentValue, setCurrentValue] = useState(1);
   const [currentLabel, setCurrentLabel] = useState("");
+  const [convertedValue, setConvertedValue] = useState(1);
 
   // FIXME: 사이즈 계산 후 변경되어야 한다. w/h 중 작은 크기의 반!
   const radius = 90;
 
   useEffect(() => {
-    setCurrentValue(exampleData.states.value);
-    setCurrentLabel(exampleData.node.label);
+    if (Array.isArray(exampleData.states) && exampleData.states[0]) {
+      setCurrentValue(exampleData.states[0].value);
+    }
+    setCurrentLabel(exampleData.label);
+    const calculation = setConvertedValue();
   }, []);
 
-  const startColor = mainColor[exampleData.node.color];
-  const endColor = gradientColor[exampleData.node.color];
+  const startColor = mainColor[exampleData.color];
+  const endColor = gradientColor[exampleData.color];
 
   const interpolate = interpolateRgb(startColor, endColor);
   const fillColor = interpolate(currentValue / 100);
@@ -84,7 +84,7 @@ const SoopLiquidGauge = () => {
           width={radius * 2}
           height={radius * 2}
           value={currentValue}
-          unit={exampleData.node.units} // percent는 단위로
+          unit={exampleData.units} // percent는 단위로
           textSize={1}
           textOffsetX={0}
           textOffsetY={15}
@@ -122,14 +122,11 @@ const SoopLiquidGauge = () => {
           }}
           textStyle={{
             fill: color(fontColor.light).toString(),
-            fontFamily: "Arial",
+            fontFamily: "Pretendard-Medium",
           }}
           waveTextStyle={{
             fill: color("#fff").toString(),
-            fontFamily: "Arial",
-          }}
-          onClick={() => {
-            this.setState({ value: Math.random() * 100 });
+            fontFamily: "Pretendard-Medium",
           }}
         />
       </LiquidGaugeWrapper>

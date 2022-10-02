@@ -136,14 +136,7 @@ const App = () => {
       },
     ],
   };
-  // const asdlkfjsadkfj;
 
-  // useEffect(() => {
-  //   asdlkfjsadkfj = currentTab'
-
-  // }, [currentTab])
-
-  // const exampleTab = ["우리집", "너네집", "으하"];
   const handleIsEditing = data => {
     setIsEditing(data);
   };
@@ -175,34 +168,35 @@ const App = () => {
   //       return <SoopGauge key={node.editor.id} node={node.editor} states={node.states} />;
   //   }
   // };
+
   // return <>{Object.keys(nodes).map(key => drawNode(nodes[key]))}</>;
 
-  // return (
-  //   <>
-  //     <SoopNavbar
-  //       isEditing={isEditing}
-  //       handleIsEditing={handleIsEditing}
-  //       currentTab={currentTab}
-  //       handleCurrentTab={handleCurrentTab}
-  //       tmpData={tmpData}
-  //     />
+  return (
+    <>
+      <SoopNavbar
+        isEditing={isEditing}
+        handleIsEditing={handleIsEditing}
+        currentTab={currentTab}
+        handleCurrentTab={handleCurrentTab}
+        tmpData={tmpData}
+      />
 
-  //     {tmpData.tabs.map((tab, idx) => {
-  //       if (currentTab === idx) {
-  //         console.log(tab);
-  //         return <SoopGrid key={tab.tabId} isEditing={isEditing} currentTab={currentTab} tmpData={tmpData} tab={tab} />;
-  //       }
-  //     })}
-  //     {/* <SoopGroup />
-  //     <SoopList />
-  //     <SoopButton />
-  //     <SoopText />
-  //     <SoopSlider />
-  //     <SoopGauge />
-  //     <SoopChart />
-  //     <SoopDropdown /> */}
-  //   </>
-  // );
+      {tmpData.tabs.map((tab, idx) => {
+        if (currentTab === idx) {
+          console.log(tab);
+          return <SoopGrid key={tab.tabId} isEditing={isEditing} currentTab={currentTab} tmpData={tmpData} tab={tab} />;
+        }
+      })}
+      {/* <SoopGroup />
+      <SoopList />
+      <SoopButton />
+      <SoopText />
+      <SoopSlider />
+      <SoopGauge />
+      <SoopChart />
+      <SoopDropdown /> */}
+    </>
+  );
 };
 
 export default App;
