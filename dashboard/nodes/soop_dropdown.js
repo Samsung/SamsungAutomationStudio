@@ -6,26 +6,24 @@ module.exports = function (RED) {
     this.multiple = config.multiple || false;
     this.state = [" ", " "];
     var node = this;
-    node.status({});
 
-    var group = RED.nodes.getNode(config.group);
-    if (!group) {
-      return;
-    }
-    var tab = RED.nodes.getNode(group.config.tab);
-    if (!tab) {
-      return;
-    }
+    // var group = RED.nodes.getNode(config.group);
+    // if (!group) {
+    //   return;
+    // }
+    // var tab = RED.nodes.getNode(group.config.tab);
+    // if (!tab) {
+    //   return;
+    // }
 
+    const group = "";
     var control = {
       nodeId: node.id,
       nodeType: "dropdown",
       group: group,
-      size: [config.width || group.config.width || 3, config.height || 1],
+      size: [parseInt(config.width), parseInt(config.height), parseInt(config.widgetX), parseInt(config.widgetY)],
       label: config.label,
       tooltip: config.tooltip,
-      width: config.width || group.config.width || 3,
-      height: config.height || 1,
       name: config.name || "",
       time: "",
     };
@@ -37,7 +35,7 @@ module.exports = function (RED) {
 
     node.on("input", function (msg) {
       dashboard.emitState({
-        node_id: node.id,
+        nodeId: node.id,
         key: msg.payload,
       });
     });

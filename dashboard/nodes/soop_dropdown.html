@@ -1,16 +1,109 @@
-<style></style>
 <script type="text/javascript">
+  const dropdownPositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
+  function getGroupGrid(nodeId) {
+    const groupId = $("#node-input-group").val();
+    const groupNode = RED.nodes.node(groupId);
+    groupNode._def.reflectEdit(groupId, nodeId);
+    return groupNode.groupState;
+  }
+  function getXYWH() {
+    const x = parseInt($("#node-input-widgetX").val());
+    const y = parseInt($("#node-input-widgetY").val());
+    const w = parseInt($("#node-input-width").val());
+    const h = parseInt($("#node-input-height").val());
+    return { x, y, w, h };
+  }
+  // Validate the widget to place on (x, y, w, h).
+  function validateXYWH(arr) {
+    const { x, y, w, h } = getXYWH();
+    // If x, y, w, h is under or over idx of arr -> return false
+    if (x < 0 || y < 0 || w <= 0 || h <= 0 || w > 12 || x + w > arr[0].length || y + h > arr.length) {
+      return false;
+    }
+    // If the space is alredy filled, return false
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        if (arr[j][i]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  // Create a table with array
+  function newTable(arr) {
+    const row = arr.length;
+    const col = arr[0].length;
+    // Append a row for column header(1,2,....)
+    $("#group-table>tbody").append('<tr id="col-header"></tr>');
+    $("#col-header").append("<th></th>");
+    for (let j = 0; j < col; j++) {
+      $("#col-header").append(`<th scope="col">${j}</th>`);
+    }
+    // Append group row and col
+    for (let i = 0; i < row; i++) {
+      // append row
+      $("#group-table>tbody").append(`<tr id="row${i}"></tr>`);
+      // Append a col for row header(1,2,...)
+      $(`#row${i}`).append(`<th scope="row" class="row-header">${i}</th>`);
+      // Append col
+      for (let j = 0; j < col; j++) {
+        const tag = `<td id="col${j}" class="col ${arr[i][j] ? "filled" : "empty"}" ></td>`;
+        $(`#row${i}`).append(tag);
+      }
+    }
+    // Table Design
+    $(".col").css("border", "dotted black 1px");
+    $(".col").css("width", "20px");
+    $(".col").css("height", "20px");
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+    $("th").css("border", "none");
+  }
+  // Remove color for new node and return the original color for filled or empty space
+  function removeColor(w, h) {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        $(`#row${j}>#col${i}`).removeClass("new-node");
+      }
+    }
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+  }
+  // Add color for new node
+  function addColor() {
+    const { x, y, w, h } = getXYWH();
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        $(`#row${j}>#col${i}`).addClass("new-node");
+      }
+    }
+    $(".new-node").css("background-color", "#D9E5FF");
+  }
+  // Add new node on group grid
+  function addNewNode(arr) {
+    // Remove 'new-node' class in every row-col
+    const { x, y, w, h } = getXYWH();
+    removeColor(arr[0].length, arr.length);
+    // if (x, y, w, h) is ok, then put. or error.
+    if (validateXYWH(arr)) {
+      addColor();
+      $(dropdownPositionSelector).removeClass("input-error");
+    } else {
+      $(dropdownPositionSelector).addClass("input-error");
+      console.log(`You can not put a node on (${y}, ${x})`);
+    }
+  }
   RED.nodes.registerType("soop_dropdown", {
     category: "soop-dashboard",
-    color: "rgb(255, 189, 27)",
+    color: "#1153FC",
     defaults: {
       name: { value: "" },
       label: { value: "dropdown" },
       tooltip: { value: "" },
       group: { type: "soop_group", required: true },
-      order: { value: 0 },
-      width: { value: 0 },
-      height: { value: 0 },
+      width: { value: 1, validate: RED.validators.number(), required: true },
+      height: { value: 1, validate: RED.validators.number(), required: true },
       widgetX: { value: 0, validate: RED.validators.number(), required: true },
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
       options: {
@@ -30,14 +123,17 @@
     outputs: 1,
     icon: "ui_dropdown.png",
     oneditprepare: function () {
+      $.fn.groupTable = function (arr) {
+        $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        $(dropdownPositionSelector).on("change", () => addNewNode(arr));
+      };
+      $("#node-input-group-table").groupTable(getGroupGrid(this.id));
+
       if (this.multiple === undefined) {
         $("#node-input-multiple").prop("checked", false);
       }
-      $("#node-input-size").elementSizer({
-        width: "#node-input-width",
-        height: "#node-input-height",
-        group: "#node-input-group",
-      });
+
       var un = new Set(
         this.options.map(function (o) {
           return o.value;

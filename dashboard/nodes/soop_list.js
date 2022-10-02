@@ -5,20 +5,21 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     const node = this;
 
-    var group = RED.nodes.getNode(config.group);
-    if (!group) {
-      return;
-    }
-    var tab = RED.nodes.getNode(group.config.tab);
-    if (!tab) {
-      return;
-    }
+    // var group = RED.nodes.getNode(config.group);
+    // if (!group) {
+    //   return;
+    // }
+    // var tab = RED.nodes.getNode(group.config.tab);
+    // if (!tab) {
+    //   return;
+    // }
 
+    const group = "";
     let state = {
-      node_id: node.id,
+      nodeId: node.id,
       nodeType: config.type,
-      group: config.group,
-      size: [config.width, config.height],
+      group: group,
+      size: [parseInt(config.width), parseInt(config.height), parseInt(config.widgetX), parseInt(config.widgetY)],
       name: config.name,
       time: "",
       label: config.label,
