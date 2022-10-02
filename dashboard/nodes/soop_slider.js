@@ -20,7 +20,6 @@ module.exports = function (RED) {
     // Receive msg from upstream node in a flow
     node.on("input", function (msg) {
       if(config.pass && parseInt(msg.payload) != NaN){
-        state.payload = 
         dashboard.emitState({
           nodeId: node.id,
           value: Math.max(config.min, Math.min(config.max, parseInt(msg.payload)))

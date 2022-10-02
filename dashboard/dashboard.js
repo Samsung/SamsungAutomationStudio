@@ -50,27 +50,35 @@ function initSocket(io) {
   });
 }
 
-function emitState(state, isTimeSeries = false) {
-  const nodeId = state.node_id;
+function emitState(state, isTimeSeries = false, isLabeled = false) {
+  const nodeId = state.nodeId;
+  const label = state.label;
 
   if (globalNodes && !globalNodes.hasOwnProperty(nodeId)) return;
+  const sendState = { ...state };
+  delete sendState.nodeId;
+  delete sendState.label;
+
+  if (isLabeled && Array.isArray(globalNodes[nodeId].states)) globalNodes[nodeId].states = {};
+
+  if (isLabeled && globalNodes[nodeId].states && !globalNodes[nodeId].states[label])
+    globalNodes[nodeId].states[label] = [];
 
   if (isTimeSeries) {
-    state.time = Date.now();
+    sendState.time = Date.now();
   } else {
-    globalNodes[nodeId].states = [];
+    if (isLabeled && globalNodes[nodeId].states[label]) globalNodes[nodeId].states[label] = [];
+    else globalNodes[nodeId].states = [];
   }
 
-  const sendState = { ...state };
-  delete sendState.node_id;
+  if (isLabeled) globalNodes[nodeId].states[label].push(sendState);
+  else globalNodes[nodeId].states.push(sendState);
 
-  globalNodes[nodeId].states.push(sendState);
-
-  emit(nodeId, sendState, isTimeSeries);
+  emit(nodeId, sendState, isTimeSeries, isLabeled);
 }
 
-function emit(nodeId, state, isTimeSeries) {
-  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE_STATE, { nodeId, isTimeSeries, state });
+function emit(nodeId, state, isTimeSeries, isLabeled) {
+  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE_STATE, { nodeId, isTimeSeries, isLabeled, state });
 }
 
 function addNode(nodeObject) {
@@ -100,6 +108,7 @@ function getState() {
 
       const nodes = [];
       for (const node of group.nodes) {
+        if (!globalNodes[node.id]) continue;
         nodes.push({
           ...node,
           states: globalNodes[node.id].states,
