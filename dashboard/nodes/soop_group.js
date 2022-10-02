@@ -1,6 +1,4 @@
 module.exports = function(RED) {
-    const dashboard = require("../dashboard")(RED);
-
     function GroupNode(config) {
         const node = this;
         RED.nodes.createNode(this, config);
@@ -25,9 +23,6 @@ module.exports = function(RED) {
         for (var i = 0; i < this.config.height; i++) {
             this.config.groupState[i] = new Array(this.config.width);
         }
-        dashboard.addNode({
-            node: node,
-        });
     }
   }
 
