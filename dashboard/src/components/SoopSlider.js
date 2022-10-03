@@ -34,7 +34,7 @@ const SEND_TYPE = {
 };
 
 const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
-  console.log("슬라이더: ", node);
+
   const layout = [
     calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
     calculateTop(parseInt(node.widgetY)),
@@ -73,12 +73,12 @@ const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) =
         <SliderLabel>{node.label}</SliderLabel>
         <ThemeProvider theme={muiTheme}>
           <Slider
-            value={value}
+            value={parseInt(value)}
             aria-label="Default"
             valueLabelDisplay="auto"
             min={node.min}
             max={node.max}
-            step={node.step}
+            step={parseInt(node.step)}
             onChange={onChangeValue}
             onChangeCommitted={onChangeCommitted}
           />

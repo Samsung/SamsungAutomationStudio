@@ -52,7 +52,7 @@ function pushNodeState(newState, updateData) {
         if (dashboard.tabs[i].groups[j].nodes[k].id == updateData.nodeId) {
           if (updateData.isLabeled) {
             const updateState = updateData.state;
-            const label = updateState.label;
+            const label = "" + updateState.label;
             delete updateState.label;
             if (updateData.isTimeSeries) {
               if (Array.isArray(dashboard.tabs[i].groups[j].nodes[k].states))
