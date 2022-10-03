@@ -60,6 +60,13 @@ def closeServer():
 
 # When Connection is estblished.
 def dataCommunication(client_socket, addr):
+    if len(client_sockets) > 1:
+        client_socket.send("Only one connection is allowed.".encode('ascii'))
+        client_sockets.remove(client_socket)
+        client_socket.close()
+        return
+
+
     global client_sockets
     print('>> Connected by :', addr[0], ':', addr[1])
 
