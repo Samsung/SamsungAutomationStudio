@@ -101,6 +101,7 @@
       console.log(`You can not put a node on (${y}, ${x})`);
     }
   }
+
   function changeGroup(arr) {
     if ($("#node-input-group-table > table").length) {
       const row = arr.length;
@@ -374,27 +375,19 @@
 
   <h3>Inputs</h3>
   <dl class="message-properties">
-    <dt>
-      payload
-      <span class="property-type">number</span>
-    </dt>
+    <dt>payload<span class="property-type">number</span></dt>
     <dd>the data value.</dd>
-    <dt class="optional">topic <span class="property-type">string</span></dt>
+    <dt class="optional">label <span class="property-type">string</span></dt>
     <dd>the label for dataset.</dd>
-  </dl>
-  <h3>Outputs</h3>
-  <dl class="message-properties">
-    <dt>payload <span class="property-type">object</span></dt>
-    <dd>the state of chart.</dd>
   </dl>
 
   <h3>Details</h3>
-  <p>Choose the type of chart: Line, Bar(Horizontal, Vertical), Pie.</p>
+  <p>Choose the type of chart: Line, Bar, Pie.</p>
   <p>
-    The value of X-axis defines the time when the input received and that of Y-axis defines the
+    The value of X-axis defines the time when the input received or the name of data and that of Y-axis defines the
     <code>msg.payload</code>.
   </p>
-  <p>The max and min value of X-axis and Y-axis is optional.</p>
+  <p>The max and min value of and Y-axis is optional.</p>
   <p>Before any data is received, the Blank label will be displayed.</p>
   <h3>References</h3>
   <ul>
