@@ -25,6 +25,10 @@ module.exports = function (RED) {
         value: value,
       });
     });
+
+    dashboard.addNode({
+      node: node,
+    });
   }
   RED.nodes.registerType("soop_gauge", SoopGaugeNode);
 };
