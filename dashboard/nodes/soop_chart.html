@@ -90,11 +90,9 @@
             w,
             h
         } = getXYWH();
-        console.log(x, y, w, h)
         for (let i = x; i < x + w; i++) {
             for (let j = y; j < y + h; j++) {
                 $(`#row${j}>#col${i}`).addClass("new-node");
-                console.log($(`#row${j}>#col${i}`));
             }
         }
         $(".new-node").css("background-color", "#D9E5FF");
@@ -102,8 +100,6 @@
     // Add new node on group grid
     function addNewNode(arr) {
         // Remove 'new-node' class in every row-col
-        console.log('this is addNewNode');
-        console.log(arr);
         const {
             x,
             y,
@@ -113,7 +109,6 @@
         removeColor(arr[0].length, arr.length);
         // if (x, y, w, h) is ok, then put. or error.
         if (validateXYWH(arr)) {
-            console.log('validate worked');
             addColor();
             $(chartPositionSelector).removeClass("input-error");
         } else {
@@ -263,6 +258,7 @@
                 }
             });
         },
+        oneditsave: function() {},
         oneditresize: function() {
             $.fn.groupTable2 = function(arr) {
                 if ($("#node-input-group-table > table").length && $("#node-input-group-table").children("table").length >= 1) {
@@ -275,8 +271,8 @@
                 document.getElementById("node-input-height").value = '';
 
             };
-            $("#node-input-group-table").groupTable2(getGroupGrid(this.id));
-        },
+            $("#node-input-group-table").groupTable2(getGroupGrid(this.id))
+        }
     });
 </script>
 
@@ -307,10 +303,10 @@
     <div class="form-row">
         <label for="node-input-chartType"><i class="fa fa-line-chart"></i> Type</label>
         <select id="node-input-chartType" style="width:190px; font-family:'FontAwesome','Helvetica Neue', Helvetica, Arial, sans-serif">
-      <option value="line">&#xf201; Line chart</option>
-      <option value="bar">&#xf080; Bar chart</option>
-      <option value="pie">&#xf200; Pie chart</option>
-    </select>
+        <option value="line">&#xf201; Line chart</option>
+        <option value="bar">&#xf080; Bar chart</option>
+        <option value="pie">&#xf200; Pie chart</option>
+      </select>
         <input type="checkbox" id="node-input-isTimeSeries" name="isTimeSeries" style="width:auto; margin-top:0; margin-left: 10px;" />
         <label for="node-input-isTimeSeries"> Time-series</label>
     </div>
@@ -318,17 +314,17 @@
     <div class="form-row chart-property line bar" id="xAxisFormat">
         <label for="node-input-xAxisFormat"><i class="fa fa-clock-o"></i> X-axis Format</label>
         <select id="node-input-xAxisFormat" style="width:150px; margin-right:10px;">
-      <option value="HH:mm:ss">HH:mm:ss</option>
-      <option value="HH:mm">HH:mm</option>
-      <option value="dd HH:mm">Day HH:mm</option>
-      <option value="D/M">Date/Month</option>
-      <option value="Y-M-D">Year-Month-Date</option>
-      <option value="custom">custom</option>
-      <option value="auto">automatic</option>
-    </select>
+        <option value="HH:mm:ss">HH:mm:ss</option>
+        <option value="HH:mm">HH:mm</option>
+        <option value="dd HH:mm">Day HH:mm</option>
+        <option value="D/M">Date/Month</option>
+        <option value="Y-M-D">Year-Month-Date</option>
+        <option value="custom">custom</option>
+        <option value="auto">automatic</option>
+      </select>
         <span id="custom-value" class="chart-property">
-      <input type="text" id="node-input-customValue" style="width:120px; margin:0px;" />
-    </span>
+        <input type="text" id="node-input-customValue" style="width:120px; margin:0px;" />
+      </span>
     </div>
     <div class="form-row chart-property line bar" id="yAxis">
         <label for="node-input-yAxis"><i class="fa fa-arrows-v"></i> Y-axis</label>
@@ -341,9 +337,9 @@
     <div class="form-row">
         <label for="node-input-legend">Legend</label>
         <select id="node-input-legend" style="width:120px; margin-right:10px;">
-      <option value="false">None</option>
-      <option value="true">Show</option>
-    </select>
+        <option value="false">None</option>
+        <option value="true">Show</option>
+      </select>
     </div>
 
     <div class="form-row">
@@ -363,9 +359,9 @@
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>
-      payload
-      <span class="property-type">number</span>
-    </dt>
+        payload
+        <span class="property-type">number</span>
+      </dt>
         <dd>the data value.</dd>
         <dt class="optional">topic <span class="property-type">string</span></dt>
         <dd>the label for dataset.</dd>
