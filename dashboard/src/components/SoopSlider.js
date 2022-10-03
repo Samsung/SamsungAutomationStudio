@@ -24,7 +24,8 @@ const SliderContainer = styled.div`
 const SliderLabel = styled.div`
   display: inline-block;
   width: fit-content;
-  margin: auto 10px;
+  white-space: nowrap;
+  margin-right: 13px;
 `;
 
 const SEND_TYPE = {
@@ -33,35 +34,21 @@ const SEND_TYPE = {
 };
 
 const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
-  const exampleData = {
-    color: "purple",
-    label: "This is Label!",
-    tooltip: "slider_label",
-    when: "always",
-    invert: false,
-    widgetX: 1,
-    widgetY: 1,
-    width: 2,
-    height: 1,
-    states: [{ value: 50 }],
-  };
 
   const layout = [
-    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
-    calculateTop(exampleData.widgetY),
-    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
-    calculateHeight(exampleData.height, currentGroupH),
+    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node.widgetY)),
+    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node.height), currentGroupH),
   ];
 
-  // FIXME: 현재 보이는 값 -> props에서 들어오는 것으로 수정해야 한다.
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState("");
 
   useEffect(() => {
     if (Array.isArray(node.states) && node.states[0]) {
-      const v = parseInt(node.states[0].value);
-      if (Number.isInteger(v)) setValue(node.states[0].value);
+      setValue(node.states[0].value);
     }
-  }, [node.states]);
+  }, [node]);
 
   const muiTheme = createTheme({
     palette: {
@@ -83,7 +70,7 @@ const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) =
   return (
     <>
       <SliderContainer layout={layout}>
-        <SliderLabel>{exampleData.label}</SliderLabel>
+        <SliderLabel>{node.label}</SliderLabel>
         <ThemeProvider theme={muiTheme}>
           <Slider
             value={parseInt(value)}

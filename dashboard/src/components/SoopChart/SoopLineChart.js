@@ -80,8 +80,8 @@ const SoopLineChart = ({ node }) => {
       // 축 변경
       scales: {
         y: {
-          min: node.yMin,
-          max: node.yMax,
+          min: parseInt(node.yMin),
+          max: parseInt(node.yMax),
           ticks: {
             font: {
               family: "Pretendard-Light",

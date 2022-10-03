@@ -27,7 +27,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log(dashboard);
+    // console.log(dashboard);
   }, [dashboard]);
 
   return (
@@ -44,7 +44,7 @@ const App = () => {
 
           {dashboard.tabs.map((tab, idx) => {
             if (currentTab === idx) {
-              console.log(tab);
+              // console.log(tab);
               return <SoopGrid key={tab.tabId} isEditing={isEditing} tab={tab} />;
             }
           })}

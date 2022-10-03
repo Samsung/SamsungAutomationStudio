@@ -33,28 +33,16 @@ const ListLabel = styled.span`
   }};
 `;
 
-const SoopList = props => {
-  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
-
-  // FIXME: 전역 상태로 변경
-  const exampleData = {
-    type: "checkbox",
-    options: [{ value: "val1" }, { value: "val2" }],
-    widgetX: 1,
-    widgetY: 1,
-    width: 1,
-    height: 1,
-    label: "라벨이당",
-    tooltip: "툴팁이당",
-  };
-  const oC = Array.from({ length: exampleData.options.length }, () => false);
+const SoopList = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+  console.log("리스트노드: ", node);
+  const oC = Array.from({ length: node.options.length }, () => false);
   const [optionChecked, setOptionChecked] = useState(oC);
 
   const layout = [
-    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
-    calculateTop(exampleData.widgetY),
-    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
-    calculateHeight(exampleData.height, currentGroupH),
+    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node.widgetY)),
+    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node.height), currentGroupH),
   ];
 
   const onClickCheck = idx => {
@@ -68,12 +56,12 @@ const SoopList = props => {
     setOptionChecked(tmpChecked);
   };
 
-  switch (exampleData.type) {
+  switch (node.listType) {
     case "ol":
       return (
         <ListContainer layout={layout}>
           <ol style={{ margin: 0 }}>
-            {exampleData.options.map((item, idx) => {
+            {node.options.map((item, idx) => {
               return <li key={idx}>{item.value}</li>;
             })}
           </ol>
@@ -83,7 +71,7 @@ const SoopList = props => {
       return (
         <ListContainer layout={layout}>
           <ul style={{ margin: 0 }}>
-            {exampleData.options.map((item, idx) => {
+            {node.options.map((item, idx) => {
               return <li key={idx}>{item.value}</li>;
             })}
           </ul>
@@ -92,7 +80,7 @@ const SoopList = props => {
     case "checkbox":
       return (
         <ListContainer layout={layout}>
-          {exampleData.options.map((item, idx) => {
+          {node.options.map((item, idx) => {
             return (
               <div key={idx}>
                 {optionChecked[idx] ? (

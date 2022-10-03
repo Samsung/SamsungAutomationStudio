@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { mainColor, groupColor, fontColor, fontSize } from "../assets/DesignOption";
 import { sendMessage } from "../utils/socket";
 import useUpdateHook from "../hooks/UpdateHook";
 import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
-
-// TODO: exampleData -> props
-// TODO: x, y, w, h에서 받아오면 계산하기
-// TODO: top, left 옵션줘서 위치 배정하기
 
 const SwitchContainer = styled.div`
   position: absolute;
@@ -74,12 +70,11 @@ const SwitchHandle = styled.span`
   transition: 0.2s;
 `;
 
-const SoopSwitch = props => {
-  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
+const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
   const [switchState, setSwitchState] = useState(false);
 
   const exampleData = {
-    nodeId: "abcde",
+    id: "abcde",
     widgetX: 0,
     widgetY: 0,
     width: 1,
@@ -91,10 +86,10 @@ const SoopSwitch = props => {
   };
 
   const layout = [
-    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
-    calculateTop(exampleData.widgetY),
-    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
-    calculateHeight(exampleData.height, currentGroupH),
+    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node.widgetY)),
+    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node.height), currentGroupH),
   ];
 
   useUpdateHook(() => {
@@ -107,16 +102,16 @@ const SoopSwitch = props => {
 
   return (
     <SwitchContainer layout={layout}>
-      <SwitchLabel>{exampleData.label}</SwitchLabel>
+      <SwitchLabel>{node.label}</SwitchLabel>
       <SwitchWrapper>
         <SwitchInput
           type="checkbox"
-          id={`switch-${exampleData.nodeId}`}
+          id={`switch-${node.id}`}
           checked={switchState}
           onChange={onSwitchChange}
-          switchColor={exampleData.background}
+          switchColor={node.background}
         />
-        <SwitchArea htmlFor={`switch-${exampleData.nodeId}`} className="switch_area">
+        <SwitchArea htmlFor={`switch-${node.id}`} className="switch_area">
           <SwitchHandle className="switch_handle"></SwitchHandle>
         </SwitchArea>
       </SwitchWrapper>
