@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType("log", {
+    RED.nodes.registerType("object-detection-log", {
         category: 'D5MI',
         color: "#03bafc",
         defaults: {
@@ -9,13 +9,13 @@
         outputs: 1,
         icon: "font-awesome/fa-object-ungroup",
         label: function () {
-            return this.name || "log"
+            return this.name || "object-detection-log"
         },
     });
 </script>
 
 
-<script type="text/html" data-template-name="log">
+<script type="text/html" data-template-name="object-detection-log">
     <div class="form-row">
       <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
       <input type="text" id="node-input-name" placeholder="Name">
@@ -27,7 +27,7 @@
     </div>
 </script>
 
-<script type="text/html" data-help-name="log">
+<script type="text/html" data-help-name="object-detection-log">
     <p>A node that records information of pose and object detected in log file</p>
   
     <h3>Properties</h3>
