@@ -48,9 +48,12 @@
         groupLocationDefaultSetting: function(tNode, gNode) {
             var tabNode = RED.nodes.node(tNode);
             var maxHeight = 0;
+            tabNode.includedGroups = [];
+            tabNode.includedGroupsName = [];
             RED.nodes.eachConfig(function(node) {
                 if (node.type == 'soop_group') {
                     if (node.tab == tabNode.id && tabNode.includedGroupsName.indexOf(node.id) < 0) {
+
                         tabNode.includedGroups.push({
                             id: node.id,
                             width: node.width,
@@ -58,7 +61,7 @@
                             groupX: node.groupX,
                             groupY: node.groupY
                         });
-                        tabNode.includedGroupsName.push(node.id)
+                        tabNode.includedGroupsName.push(node.id);
                     }
                 }
             });
@@ -93,7 +96,6 @@
                 }
             }
 
-
             for (var i = 0; i < tabNode.includedGroups.length; i++) {
                 dataCheck = true;
                 for (var tmpY = 0; tmpY < maxHeight; tmpY++) {
@@ -115,9 +117,11 @@
                     }
                 }
             }
+
             for (var i = 0; i < tabNode.includedGroups.length; i++) {
                 if (gNode == tabNode.includedGroups[i].id) {
                     var groupNode = RED.nodes.node(gNode);
+
                     return {
                         gX: tabNode.includedGroups[i].groupX,
                         gY: tabNode.includedGroups[i].groupY
