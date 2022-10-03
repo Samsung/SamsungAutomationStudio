@@ -32,9 +32,7 @@ const SEND_TYPE = {
   RELEASE: "release",
 };
 
-const SoopSlider = props => {
-  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
-
+const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
   const exampleData = {
     color: "purple",
     label: "This is Label!",
@@ -56,13 +54,14 @@ const SoopSlider = props => {
   ];
 
   // FIXME: 현재 보이는 값 -> props에서 들어오는 것으로 수정해야 한다.
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
-    if (Array.isArray(states) && states[0]) {
-      setValue(states[0].value);
+    if (Array.isArray(node.states) && node.states[0]) {
+      const v = parseInt(node.states[0].value);
+      if (Number.isInteger(v)) setValue(node.states[0].value);
     }
-  }, [states]);
+  }, [node.states]);
 
   const muiTheme = createTheme({
     palette: {
@@ -87,12 +86,12 @@ const SoopSlider = props => {
         <SliderLabel>{exampleData.label}</SliderLabel>
         <ThemeProvider theme={muiTheme}>
           <Slider
-            value={value}
+            value={parseInt(value)}
             aria-label="Default"
             valueLabelDisplay="auto"
             min={node.min}
             max={node.max}
-            step={node.step}
+            step={parseInt(node.step)}
             onChange={onChangeValue}
             onChangeCommitted={onChangeCommitted}
           />
