@@ -57,7 +57,6 @@ function emitState(state, isTimeSeries = false, isLabeled = false) {
   if (globalNodes && !globalNodes.hasOwnProperty(nodeId)) return;
   const sendState = { ...state };
   delete sendState.nodeId;
-  delete sendState.label;
 
   if (isLabeled && Array.isArray(globalNodes[nodeId].states)) globalNodes[nodeId].states = {};
 
