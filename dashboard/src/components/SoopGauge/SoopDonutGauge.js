@@ -25,7 +25,7 @@ const DonutGaugeLabel = styled.div`
 `;
 
 const DonutSizeWrapper = styled.div`
-  width: ${({ radius }) => `${radius - 23}px;`};
+  width: ${({ radius }) => `${radius - 25}px;`};
 `;
 
 const SoopDonutGauge = ({ radius, node }) => {
@@ -38,7 +38,7 @@ const SoopDonutGauge = ({ radius, node }) => {
       setCurrentValue(node.states[0].value);
     }
     setCurrentLabel(node.label);
-    setRange([node.range[0], node.range[1]]);
+    setRange([parseInt(node.min), parseInt(node.max)]);
   }, [node]);
 
   return (

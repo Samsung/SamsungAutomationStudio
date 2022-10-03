@@ -19,9 +19,6 @@ const ChartContainer = styled.div`
 `;
 
 const SoopChart = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
-  console.log("차트노드: ", node);
-  console.log("차트노드: ", currentGroupW, currentGroupWidth, currentGroupH);
-
   const layout = [
     calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
     calculateTop(parseInt(node.widgetY)),

@@ -5,7 +5,6 @@ import { interpolateRgb } from "d3-interpolate";
 import LiquidFillGauge from "react-liquid-gauge";
 import { mainColor, gradientColor, fontColor, fontSize } from "../../assets/DesignOption";
 
-// FIXME: wh, 중 작은 사이즈에 맞추기!!
 const LiquidGaugeWrapper = styled.div`
   height: ${({ radius }) => `${radius}px;`}
   display: flex;
@@ -68,7 +67,7 @@ const SoopLiquidGauge = ({ radius, node }) => {
           width={radius - 22}
           height={radius - 22}
           value={currentValue}
-          unit={node.units} // percent는 단위로
+          unit={node.units}
           textSize={1}
           textOffsetX={0}
           textOffsetY={15}

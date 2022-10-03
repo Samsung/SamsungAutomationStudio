@@ -12,10 +12,8 @@ const SoopNormalGauge = ({ layout, node }) => {
       setCurrentValue(node.states[0].value);
     }
     setCurrentLabel(node.label);
-    setRange([node.range[0], node.range[1]]);
+    setRange([parseInt(node.min), parseInt(node.max)]);
   }, [node]);
-
-  // TODO: width, height 전달
 
   return (
     <>

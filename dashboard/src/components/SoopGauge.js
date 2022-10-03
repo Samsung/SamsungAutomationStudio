@@ -31,7 +31,6 @@ const GaugeNormalContainer = styled.div`
 `;
 
 const SoopGauge = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
-  console.log("게이지 노드: ", node);
   const layout = [
     calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
     calculateTop(parseInt(node.widgetY)),
@@ -39,9 +38,7 @@ const SoopGauge = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) =>
     calculateHeight(parseInt(node.height), currentGroupH),
   ];
 
-  const type = "gauge";
-
-  switch (type) {
+  switch (node.gType) {
     case "gauge":
       return (
         <GaugeNormalContainer layout={layout}>
