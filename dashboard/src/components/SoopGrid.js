@@ -29,16 +29,18 @@ const SoopGrid = ({ size: { width }, isEditing, tab }) => {
   const dispatch = useDispatch();
   const tabsGrid = useSelector(state => state.tabsGrid);
 
-  const initialGroupGrid = groups.map(group => {
-    return {
-      i: group.groupId,
-      w: parseInt(group.width),
-      h: parseInt(group.height),
-      x: parseInt(group.groupX),
-      y: parseInt(group.groupY),
-      static: !isEditing,
-    };
-  });
+  const initialGroupGrid = Array.isArray(groups)
+    ? groups.map(group => {
+        return {
+          i: group.groupId,
+          w: parseInt(group.width),
+          h: parseInt(group.height),
+          x: parseInt(group.groupX),
+          y: parseInt(group.groupY),
+          static: !isEditing,
+        };
+      })
+    : [];
   const [layouts, setLayouts] = useState({ lg: initialGroupGrid });
 
   const onLayoutChange = (_, allLayouts) => {
@@ -73,11 +75,12 @@ const SoopGrid = ({ size: { width }, isEditing, tab }) => {
         compactType="vertical"
         containerPadding={[20, 0]}
       >
-        {tab.groups.map((group, index) => (
-          <GridItem key={group.groupId} className="widget" data-grid={layouts.lg[index]} isEditing={isEditing}>
-            <SoopGroup group={group} index={index} />
-          </GridItem>
-        ))}
+        {Array.isArray(groups) &&
+          groups.map((group, index) => (
+            <GridItem key={group.groupId} className="widget" data-grid={layouts.lg[index]} isEditing={isEditing}>
+              <SoopGroup group={group} index={index} />
+            </GridItem>
+          ))}
       </ResponsiveGridLayout>
     </GridContainer>
   );

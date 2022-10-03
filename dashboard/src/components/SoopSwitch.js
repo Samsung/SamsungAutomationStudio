@@ -73,27 +73,15 @@ const SwitchHandle = styled.span`
 const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
   const [switchState, setSwitchState] = useState(false);
 
-  const exampleData = {
-    id: "abcde",
-    widgetX: 0,
-    widgetY: 0,
-    width: 1,
-    height: 1,
-    label: "SAM",
-    background: "green",
-    shape: "circle",
-    tooltip: "button node",
-  };
-
   const layout = [
-    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node.widgetY)),
-    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node.height), currentGroupH),
+    calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node?.widgetY)),
+    calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node?.height), currentGroupH),
   ];
 
   useUpdateHook(() => {
-    sendMessage(node.id, { switchState });
+    sendMessage(node?.id, { switchState });
   }, [switchState]);
 
   function onSwitchChange(e) {
@@ -102,16 +90,16 @@ const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) =
 
   return (
     <SwitchContainer layout={layout}>
-      <SwitchLabel>{node.label}</SwitchLabel>
+      <SwitchLabel>{node?.label}</SwitchLabel>
       <SwitchWrapper>
         <SwitchInput
           type="checkbox"
-          id={`switch-${node.id}`}
+          id={`switch-${node?.id}`}
           checked={switchState}
           onChange={onSwitchChange}
-          switchColor={node.background}
+          switchColor={node?.background}
         />
-        <SwitchArea htmlFor={`switch-${node.id}`} className="switch_area">
+        <SwitchArea htmlFor={`switch-${node?.id}`} className="switch_area">
           <SwitchHandle className="switch_handle"></SwitchHandle>
         </SwitchArea>
       </SwitchWrapper>

@@ -26,26 +26,26 @@ const SoopDropdown = ({ currentGroupW, currentGroupWidth, currentGroupH, node })
   const [currentLabel, setCurrentLabel] = useState("");
 
   const layout = [
-    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node.widgetY)),
-    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node.height), currentGroupH),
+    calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node?.widgetY)),
+    calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node?.height), currentGroupH),
   ];
 
   const onChange = e => {
     setSelectedOption(e.target.value);
-    sendMessage(node.id, { value: e.target.value });
+    sendMessage(node?.id, { value: e.target.value });
   };
 
   useEffect(() => {
-    const optionsArray = node.options.map(opt => {
+    const optionsArray = node?.options.map(opt => {
       return opt.label;
     });
-    if (Array.isArray(node.states) && node.states[0]) {
-      setSelectedOption(node.states[0].key);
+    if (Array.isArray(node?.states) && node?.states[0]) {
+      setSelectedOption(node?.states[0].key);
     }
     setCurrentOptions(optionsArray);
-    setCurrentLabel(node.label);
+    setCurrentLabel(node?.label);
   }, [node]);
 
   return (
@@ -54,13 +54,14 @@ const SoopDropdown = ({ currentGroupW, currentGroupWidth, currentGroupH, node })
         <FormControl fullWidth>
           <InputLabel id="soop-dashboard-select-label">{currentLabel}</InputLabel>
           <Select labelId="soop-dashboard-select-label" label={currentLabel} value={selectedOption} onChange={onChange}>
-            {currentOptions.map((cOption, idx) => {
-              return (
-                <MenuItem key={idx} value={idx}>
-                  {cOption}
-                </MenuItem>
-              );
-            })}
+            {Arrau.isArray(currentOptions) &&
+              currentOptions.map((cOption, idx) => {
+                return (
+                  <MenuItem key={idx} value={idx}>
+                    {cOption}
+                  </MenuItem>
+                );
+              })}
           </Select>
         </FormControl>
       </DropdownContainer>

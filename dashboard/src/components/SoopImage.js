@@ -17,20 +17,20 @@ const Image = styled.img`
 
 const SoopImage = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
   const layout = [
-    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node.widgetY)),
-    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node.height), currentGroupH),
+    calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node?.widgetY)),
+    calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node?.height), currentGroupH),
   ];
-  const isFull = parseInt(node.width) === currentGroupW && parseInt(node.height) === currentGroupH ? true : false;
+  const isFull = parseInt(node?.width) === currentGroupW && parseInt(node?.height) === currentGroupH ? true : false;
 
-  switch (node.option) {
+  switch (node?.option) {
     case "upload":
       return (
-        <Image isFull={isFull} layout={layout} src={`data:image/jpg;base64,${node.uploads}`} objectFit={node.fit} />
+        <Image isFull={isFull} layout={layout} src={`data:image/jpg;base64,${node?.uploads}`} objectFit={node?.fit} />
       );
     case "link":
-      return <Image isFull={isFull} layout={layout} src={node.link} objectFit={node.fit} />;
+      return <Image isFull={isFull} layout={layout} src={node?.link} objectFit={node?.fit} />;
   }
 };
 
