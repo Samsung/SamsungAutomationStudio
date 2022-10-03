@@ -11,11 +11,11 @@ const SoopPieChart = ({ node }) => {
 
   useEffect(() => {
     const currentChartData = {
-      labels: Object.keys(node.states),
+      labels: Object.keys(node?.states),
       datasets: [
         {
           label: "# of Votes",
-          data: Object.keys(node.states).map(key => node.states[key][0].value),
+          data: Object.keys(node?.states)?.map(key => node?.states[key][0].value),
           backgroundColor: [
             "rgba(17, 83, 252, 0.2)",
             "rgba(245, 182, 48, 0.2)",
@@ -43,7 +43,7 @@ const SoopPieChart = ({ node }) => {
         // 제목 변경
         title: {
           display: true,
-          text: node.title,
+          text: node?.title,
           color: fontColor.light,
           font: {
             family: "Pretendard-Bold",
@@ -52,7 +52,7 @@ const SoopPieChart = ({ node }) => {
         },
         //범례 변경
         legend: {
-          display: node.legend === "true" ? true : false,
+          display: node?.legend === "true" ? true : false,
           labels: {
             font: {
               family: "Pretendard-Regular",

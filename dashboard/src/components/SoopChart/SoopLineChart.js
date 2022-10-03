@@ -29,18 +29,20 @@ const SoopLineChart = ({ node }) => {
   const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
-    if (node && !node.states) return;
-    const currentDatasetsLabel = Object.keys(node.states);
+    if (node && !node?.states) return;
+    const currentDatasetsLabel = Object.keys(node?.states);
 
-    if (!Array.isArray(currentDatasetsLabel) || !Array.isArray(node.states[currentDatasetsLabel[0]])) return;
+    if (!Array.isArray(currentDatasetsLabel) || !Array.isArray(node?.states[currentDatasetsLabel[0]])) return;
     /** currentLabels mean x-axis values */
-    const currentLabels = node.states[currentDatasetsLabel[0]].map(data => moment(data.time).format(node.xAxisFormat));
+    const currentLabels = node?.states[currentDatasetsLabel[0]]?.map(data =>
+      moment(data?.time).format(node?.xAxisFormat),
+    );
 
     /** currentDatasets mean y-axis values */
-    const currentDatasets = Object.keys(node.states).map((key, idx) => {
+    const currentDatasets = Object.keys(node?.states)?.map((key, idx) => {
       return {
         label: key,
-        data: node.states[key].map(d => d.value),
+        data: node?.states[key]?.map(d => d.value),
         backgroundColor: bdColor[idx % 6],
         borderColor: bdColor[idx % 6],
         borderWidth: 1,
@@ -58,7 +60,7 @@ const SoopLineChart = ({ node }) => {
         // 제목 변경
         title: {
           display: true,
-          text: node.title,
+          text: node?.title,
           color: fontColor.light,
           font: {
             family: "Pretendard-Bold",
@@ -67,7 +69,7 @@ const SoopLineChart = ({ node }) => {
         },
         // 범례 변경
         legend: {
-          display: node.legend === "true" ? true : false,
+          display: node?.legend === "true" ? true : false,
           labels: {
             font: {
               family: "Pretendard-Regular",
@@ -80,8 +82,8 @@ const SoopLineChart = ({ node }) => {
       // 축 변경
       scales: {
         y: {
-          min: parseInt(node.yMin),
-          max: parseInt(node.yMax),
+          min: parseInt(node?.yMin),
+          max: parseInt(node?.yMax),
           ticks: {
             font: {
               family: "Pretendard-Light",

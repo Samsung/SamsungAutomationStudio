@@ -34,11 +34,12 @@ const SoopDonutGauge = ({ radius, node }) => {
   const [range, setRange] = useState("");
 
   useEffect(() => {
-    if (Array.isArray(node.states) && node.states[0]) {
-      setCurrentValue(node.states[0].value);
+    if (!node) return;
+    if (Array.isArray(node?.states) && node?.states[0]) {
+      setCurrentValue(node?.states[0].value);
     }
-    setCurrentLabel(node.label);
-    setRange([parseInt(node.min), parseInt(node.max)]);
+    setCurrentLabel(node?.label);
+    setRange([parseInt(node?.min), parseInt(node?.max)]);
   }, [node]);
 
   return (
@@ -64,7 +65,7 @@ const SoopDonutGauge = ({ radius, node }) => {
                     alignItems: "center",
                   }}
                 >
-                  {node.units.length === 1 ? (
+                  {node?.units.length === 1 ? (
                     <div
                       style={{
                         color: fontColor.light,
@@ -79,7 +80,7 @@ const SoopDonutGauge = ({ radius, node }) => {
                     >
                       <strong>
                         {roundedValue}
-                        {node.units}
+                        {node?.units}
                       </strong>
                     </div>
                   ) : (
@@ -103,7 +104,7 @@ const SoopDonutGauge = ({ radius, node }) => {
                       >
                         {roundedValue}
                       </div>
-                      <div style={{ fontSize: fontSize.sm }}>{node.units}</div>
+                      <div style={{ fontSize: fontSize.sm }}>{node?.units}</div>
                     </div>
                   )}
                   <CircularProgressbar
@@ -113,12 +114,12 @@ const SoopDonutGauge = ({ radius, node }) => {
                     strokeWidth="12"
                     styles={{
                       path: {
-                        stroke: `url(#${node.id})`,
+                        stroke: `url(#${node?.id})`,
                         height: "100%",
                       },
                     }}
                   ></CircularProgressbar>
-                  <GradientSVG colorOption={node.color} rotation={0} idCSS={node.id} />
+                  <GradientSVG colorOption={node?.color} rotation={0} idCSS={node?.id} />
                 </div>
               );
             }}

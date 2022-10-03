@@ -153,7 +153,7 @@ const SoopGroup = ({ group }) => {
   return (
     <Group ref={ref}>
       {!nameHidden && <GroupName>{group.groupName}</GroupName>}
-      {group.nodes.map(node => drawNode(node))}
+      {group && Array.isArray(group.nodes) && group.nodes.map(node => drawNode(node))}
     </Group>
   );
 };

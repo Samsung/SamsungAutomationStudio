@@ -34,15 +34,14 @@ const ListLabel = styled.span`
 `;
 
 const SoopList = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
-  console.log("리스트노드: ", node);
-  const oC = Array.from({ length: node.options.length }, () => false);
+  const oC = Array.from({ length: node?.options.length }, () => false);
   const [optionChecked, setOptionChecked] = useState(oC);
 
   const layout = [
-    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node.widgetY)),
-    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node.height), currentGroupH),
+    calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node?.widgetY)),
+    calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node?.height), currentGroupH),
   ];
 
   const onClickCheck = idx => {
@@ -56,14 +55,16 @@ const SoopList = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => 
     setOptionChecked(tmpChecked);
   };
 
-  switch (node.listType) {
+  switch (node?.listType) {
     case "ol":
       return (
         <ListContainer layout={layout}>
           <ol style={{ margin: 0 }}>
-            {node.options.map((item, idx) => {
-              return <li key={idx}>{item.value}</li>;
-            })}
+            {node &&
+              Array.isArray(node.options) &&
+              node.options.map((item, idx) => {
+                return <li key={idx}>{item.value}</li>;
+              })}
           </ol>
         </ListContainer>
       );
@@ -71,7 +72,7 @@ const SoopList = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => 
       return (
         <ListContainer layout={layout}>
           <ul style={{ margin: 0 }}>
-            {node.options.map((item, idx) => {
+            {node?.options.map((item, idx) => {
               return <li key={idx}>{item.value}</li>;
             })}
           </ul>
@@ -80,40 +81,42 @@ const SoopList = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => 
     case "checkbox":
       return (
         <ListContainer layout={layout}>
-          {node.options.map((item, idx) => {
-            return (
-              <div key={idx}>
-                {optionChecked[idx] ? (
-                  <ListWrapper>
-                    <input
-                      type="checkbox"
-                      id={idx}
-                      name={item.value}
-                      defaultChecked
-                      onClick={() => {
-                        onClickCheck(idx);
-                      }}
-                    />
-                    <ListLabel htmlFor={idx} idx={idx} optionChecked={optionChecked}>
-                      {item.value}
-                    </ListLabel>
-                  </ListWrapper>
-                ) : (
-                  <ListWrapper>
-                    <input
-                      type="checkbox"
-                      id={idx}
-                      name={item.value}
-                      onClick={() => {
-                        onClickCheck(idx);
-                      }}
-                    />
-                    <label htmlFor={idx}>{item.value}</label>
-                  </ListWrapper>
-                )}
-              </div>
-            );
-          })}
+          {node &&
+            Array.isArray(node.options) &&
+            node?.options.map((item, idx) => {
+              return (
+                <div key={idx}>
+                  {optionChecked[idx] ? (
+                    <ListWrapper>
+                      <input
+                        type="checkbox"
+                        id={idx}
+                        name={item.value}
+                        defaultChecked
+                        onClick={() => {
+                          onClickCheck(idx);
+                        }}
+                      />
+                      <ListLabel htmlFor={idx} idx={idx} optionChecked={optionChecked}>
+                        {item.value}
+                      </ListLabel>
+                    </ListWrapper>
+                  ) : (
+                    <ListWrapper>
+                      <input
+                        type="checkbox"
+                        id={idx}
+                        name={item.value}
+                        onClick={() => {
+                          onClickCheck(idx);
+                        }}
+                      />
+                      <label htmlFor={idx}>{item.value}</label>
+                    </ListWrapper>
+                  )}
+                </div>
+              );
+            })}
         </ListContainer>
       );
   }

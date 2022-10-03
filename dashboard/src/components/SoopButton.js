@@ -21,11 +21,11 @@ const Button = styled.button`
   background: linear-gradient(
     91.29deg,
     ${props => {
-      return mainColor[props.node.background];
+      return mainColor[props?.node?.background];
     }}
       0%,
     ${props => {
-      return gradientColor[props.node.background];
+      return gradientColor[props?.node?.background];
     }}
       100%
   );
@@ -37,13 +37,13 @@ const Button = styled.button`
   border: 0px;
 
   border-radius: ${props => {
-    switch (props.node.shape) {
+    switch (props?.node?.shape) {
       case "rectangle":
         return "0px;";
       case "rounded-rectangle":
         return "5px;";
       case "pill":
-        return `${props.layout[3] / 2}px;`;
+        return `${props?.layout[3] / 2}px;`;
     }
   }}
 
@@ -63,11 +63,11 @@ const ButtonCircle = styled.button`
   background: linear-gradient(
     91.29deg,
     ${props => {
-      return mainColor[props.node.background];
+      return mainColor[props?.node?.background];
     }}
       0%,
     ${props => {
-      return gradientColor[props.node.background];
+      return gradientColor[props?.node?.background];
     }}
       100%
   );
@@ -93,22 +93,22 @@ const ButtonCircle = styled.button`
 
 const SoopButton = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
   const layout = [
-    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node.widgetY)),
-    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node.height), currentGroupH),
+    calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node?.widgetY)),
+    calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node?.height), currentGroupH),
   ];
 
   return (
     <>
       <ButtonContainer layout={layout}>
-        {node.shape === "circle" ? (
-          <ButtonCircle onClick={sendMessage(node.id)} node={node} radius={Math.min(layout[2], layout[3])}>
-            {node.label}
+        {node?.shape === "circle" ? (
+          <ButtonCircle onClick={sendMessage(node?.id)} node={node} radius={Math.min(layout[2], layout[3])}>
+            {node?.label}
           </ButtonCircle>
         ) : (
-          <Button onClick={sendMessage(node.id)} node={node} layout={layout}>
-            {node.label}
+          <Button onClick={sendMessage(node?.id)} node={node} layout={layout}>
+            {node?.label}
           </Button>
         )}
       </ButtonContainer>

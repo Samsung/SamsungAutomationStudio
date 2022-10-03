@@ -35,49 +35,49 @@ const WHEN_TYPE = {
 
 const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
   const layout = [
-    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node.widgetY)),
-    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node.height), currentGroupH),
+    calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node?.widgetY)),
+    calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node?.height), currentGroupH),
   ];
 
   const [value, setValue] = useState("0");
 
   useEffect(() => {
-    if (Array.isArray(node.states) && node.states[0]) {
-      setValue(node.states[0].value);
+    if (Array.isArray(node?.states) && node?.states[0]) {
+      setValue(node?.states[0]?.value);
     }
   }, [node]);
 
   const muiTheme = createTheme({
     palette: {
       primary: {
-        main: mainColor[node.colorPicking],
+        main: mainColor[node?.colorPicking],
       },
     },
   });
 
   function onChangeCommitted(e, v) {
-    if (node.when == WHEN_TYPE.RELEASE) sendMessage(node.id, { value: v });
+    if (node?.when == WHEN_TYPE.RELEASE) sendMessage(node?.id, { value: v });
   }
 
   function onChangeValue(e, v) {
     setValue(v);
-    if (node.when == WHEN_TYPE.ALWAYS) sendMessage(node.id, { value: v });
+    if (node?.when == WHEN_TYPE.ALWAYS) sendMessage(node?.id, { value: v });
   }
 
   return (
     <>
       <SliderContainer layout={layout}>
-        <SliderLabel>{node.label}</SliderLabel>
+        <SliderLabel>{node?.label}</SliderLabel>
         <ThemeProvider theme={muiTheme}>
           <Slider
             value={parseInt(value)}
             aria-label="Default"
             valueLabelDisplay="auto"
-            min={node.min}
-            max={node.max}
-            step={parseInt(node.step)}
+            min={node?.min}
+            max={node?.max}
+            step={parseInt(node?.step)}
             onChange={onChangeValue}
             onChangeCommitted={onChangeCommitted}
           />

@@ -10,6 +10,7 @@ const App = () => {
   const dashboard = useSelector(state => state.dashboard);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
+  const [tabs, setTabs] = useState([]);
 
   const handleIsEditing = data => {
     setIsEditing(data);
@@ -27,31 +28,24 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // console.log(dashboard);
+    if (dashboard && Array.isArray(dashboard.tabs)) setTabs(dashboard.tabs);
   }, [dashboard]);
 
   return (
     <>
-      {Object.keys(dashboard).length !== 0 ? (
-        <>
-          <SoopNavbar
-            isEditing={isEditing}
-            handleIsEditing={handleIsEditing}
-            currentTab={currentTab}
-            handleCurrentTab={handleCurrentTab}
-            dashboard={dashboard}
-          />
+      <SoopNavbar
+        isEditing={isEditing}
+        handleIsEditing={handleIsEditing}
+        currentTab={currentTab}
+        handleCurrentTab={handleCurrentTab}
+        tabs={tabs}
+      />
 
-          {dashboard.tabs.map((tab, idx) => {
-            if (currentTab === idx) {
-              // console.log(tab);
-              return <SoopGrid key={tab.tabId} isEditing={isEditing} tab={tab} />;
-            }
-          })}
-        </>
-      ) : (
-        <></>
-      )}
+      {tabs.map((tab, idx) => {
+        if (currentTab === idx) {
+          return <SoopGrid key={tab.tabId} isEditing={isEditing} tab={tab} />;
+        }
+      })}
     </>
   );
 };

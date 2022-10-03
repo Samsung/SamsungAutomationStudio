@@ -26,14 +26,15 @@ const SoopLiquidGauge = ({ radius, node }) => {
   const [currentLabel, setCurrentLabel] = useState("");
 
   useEffect(() => {
-    if (Array.isArray(node.states) && node.states[0]) {
-      setCurrentValue(node.states[0].value);
+    if (!node) return;
+    if (Array.isArray(node?.states) && node?.states[0]) {
+      setCurrentValue(node?.states[0].value);
     }
-    setCurrentLabel(node.label);
+    setCurrentLabel(node?.label);
   }, [node]);
 
-  const startColor = mainColor[node.color];
-  const endColor = gradientColor[node.color];
+  const startColor = mainColor[node?.color];
+  const endColor = gradientColor[node?.color];
 
   const interpolate = interpolateRgb(startColor, endColor);
   const fillColor = interpolate(currentValue / 100);
@@ -67,7 +68,7 @@ const SoopLiquidGauge = ({ radius, node }) => {
           width={radius - 22}
           height={radius - 22}
           value={currentValue}
-          unit={node.units}
+          unit={node?.units}
           textSize={1}
           textOffsetX={0}
           textOffsetY={15}

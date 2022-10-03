@@ -41,22 +41,22 @@ const SoopText = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => 
   const [currentValue, setCurrentValue] = useState("");
 
   const layout = [
-    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node.widgetY)),
-    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node.height), currentGroupH),
+    calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node?.widgetY)),
+    calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node?.height), currentGroupH),
   ];
 
   useEffect(() => {
-    if (Array.isArray(node.states) && node.states[0]) {
-      setCurrentValue(node.states[0].value);
+    if (Array.isArray(node?.states) && node?.states[0]) {
+      setCurrentValue(node?.states[0]?.value);
     }
-    setCurrentLabel(node.label);
+    setCurrentLabel(node?.label);
   }, [node]);
 
   return (
     <>
-      <BoardTextContainer fontSize={node.fontSize} textLayout={node.layout} layout={layout}>
+      <BoardTextContainer fontSize={node?.fontSize} textLayout={node?.layout} layout={layout}>
         <BoardTextLabel>
           <span>{currentLabel}</span>
         </BoardTextLabel>

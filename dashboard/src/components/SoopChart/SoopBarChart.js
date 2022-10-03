@@ -28,13 +28,13 @@ const SoopBarChart = ({ node }) => {
   const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
-    if (node.isTimeSeries === "false") {
+    if (node?.isTimeSeries === "false") {
       const currentChartData = {
-        labels: Object.keys(node.states),
+        labels: Object.keys(node?.states),
         datasets: [
           {
             label: "비중",
-            data: Object.keys(node.states).map(key => node.states[key][0].value),
+            data: Object.keys(node?.states)?.map(key => node?.states[key][0]?.value),
             backgroundColor: [
               "rgba(17, 83, 252, 0.4)",
               "rgba(245, 182, 48, 0.4)",
@@ -62,7 +62,7 @@ const SoopBarChart = ({ node }) => {
           // 제목 변경
           title: {
             display: true,
-            text: node.title,
+            text: node?.title,
             color: fontColor.light,
             font: {
               family: "Pretendard-Bold",
@@ -71,7 +71,7 @@ const SoopBarChart = ({ node }) => {
           },
           // 범례 변경
           legend: {
-            display: node.legend === "true" ? true : false,
+            display: node?.legend === "true" ? true : false,
             labels: {
               font: {
                 family: "Pretendard-Regular",
@@ -84,8 +84,8 @@ const SoopBarChart = ({ node }) => {
         // 축 변경
         scales: {
           y: {
-            min: node.yMin,
-            max: node.yMax,
+            min: node?.yMin,
+            max: node?.yMax,
             ticks: {
               font: {
                 family: "Pretendard-Light",
@@ -108,14 +108,14 @@ const SoopBarChart = ({ node }) => {
       setChartData(currentChartData);
       setChartOptions(currentChartOptions);
     } else {
-      const currentDatasetsLabel = Object.keys(node.states);
-      const currentLabels = node.states[currentDatasetsLabel[0]].map(data =>
-        moment(data.time).format(node.xAxisFormat),
+      const currentDatasetsLabel = Object.keys(node?.states);
+      const currentLabels = node?.states[currentDatasetsLabel[0]].map(data =>
+        moment(data.time).format(node?.xAxisFormat),
       );
-      const currentDatasets = Object.keys(node.states).map((key, idx) => {
+      const currentDatasets = Object.keys(node?.states)?.map((key, idx) => {
         return {
           label: key,
-          data: node.states[key].map(d => d.value),
+          data: node?.states[key]?.map(d => d.value),
           backgroundColor: bgColor[idx % 6],
           borderColor: bdColor[idx % 6],
           borderWidth: 1,
@@ -132,7 +132,7 @@ const SoopBarChart = ({ node }) => {
           // 제목 변경
           title: {
             display: true,
-            text: node.title,
+            text: node?.title,
             color: fontColor.light,
             font: {
               family: "Pretendard-Bold",
@@ -141,7 +141,7 @@ const SoopBarChart = ({ node }) => {
           },
           // 범례 변경
           legend: {
-            display: node.legend === "true" ? true : false,
+            display: node?.legend === "true" ? true : false,
             labels: {
               font: {
                 family: "Pretendard-Regular",
@@ -154,8 +154,8 @@ const SoopBarChart = ({ node }) => {
         // 축 변경
         scales: {
           y: {
-            min: node.yMin,
-            max: node.yMax,
+            min: node?.yMin,
+            max: node?.yMax,
             ticks: {
               font: {
                 family: "Pretendard-Light",
