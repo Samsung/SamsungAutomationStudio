@@ -28,30 +28,18 @@ const DonutSizeWrapper = styled.div`
   width: ${({ radius }) => `${radius - 23}px;`};
 `;
 
-const SoopDonutGauge = props => {
-  const { radius } = props;
-
-  const exampleData = {
-    nodeId: "dfg124w4",
-    gType: "donut",
-    label: "라벨입니당",
-    range: [0, 100],
-    units: "",
-    color: "blue",
-    states: [{ value: 13 }],
-  };
-
+const SoopDonutGauge = ({ radius, node }) => {
   const [currentValue, setCurrentValue] = useState(1);
   const [currentLabel, setCurrentLabel] = useState("");
   const [range, setRange] = useState("");
 
   useEffect(() => {
-    if (Array.isArray(exampleData.states) && exampleData.states[0]) {
-      setCurrentValue(exampleData.states[0].value);
+    if (Array.isArray(node.states) && node.states[0]) {
+      setCurrentValue(node.states[0].value);
     }
-    setCurrentLabel(exampleData.label);
-    setRange([exampleData.range[0], exampleData.range[1]]);
-  }, []);
+    setCurrentLabel(node.label);
+    setRange([node.range[0], node.range[1]]);
+  }, [node]);
 
   return (
     <>
@@ -76,7 +64,7 @@ const SoopDonutGauge = props => {
                     alignItems: "center",
                   }}
                 >
-                  {exampleData.units.length === 1 ? (
+                  {node.units.length === 1 ? (
                     <div
                       style={{
                         color: fontColor.light,
@@ -91,7 +79,7 @@ const SoopDonutGauge = props => {
                     >
                       <strong>
                         {roundedValue}
-                        {exampleData.units}
+                        {node.units}
                       </strong>
                     </div>
                   ) : (
@@ -115,7 +103,7 @@ const SoopDonutGauge = props => {
                       >
                         {roundedValue}
                       </div>
-                      <div style={{ fontSize: fontSize.sm }}>{exampleData.units}</div>
+                      <div style={{ fontSize: fontSize.sm }}>{node.units}</div>
                     </div>
                   )}
                   <CircularProgressbar
@@ -125,12 +113,12 @@ const SoopDonutGauge = props => {
                     strokeWidth="12"
                     styles={{
                       path: {
-                        stroke: `url(#${exampleData.nodeId})`,
+                        stroke: `url(#${node.id})`,
                         height: "100%",
                       },
                     }}
                   ></CircularProgressbar>
-                  <GradientSVG colorOption={exampleData.color} rotation={0} idCSS={exampleData.nodeId} />
+                  <GradientSVG colorOption={node.color} rotation={0} idCSS={node.id} />
                 </div>
               );
             }}

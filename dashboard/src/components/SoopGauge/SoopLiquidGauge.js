@@ -22,30 +22,19 @@ const LiquidGaugeLabel = styled.div`
   font-family: "Pretendard-Bold";
 `;
 
-const SoopLiquidGauge = props => {
-  const { radius } = props;
-  const exampleData = {
-    nodeId: "dfg124w4",
-    gType: "donut",
-    label: "라벨입니당",
-    range: [0, 100], // 의미없음.. 무조건 100기준으로 나와요
-    units: "%",
-    color: "orange",
-    states: [{ value: 80 }],
-  };
-
+const SoopLiquidGauge = ({ radius, node }) => {
   const [currentValue, setCurrentValue] = useState(1);
   const [currentLabel, setCurrentLabel] = useState("");
 
   useEffect(() => {
-    if (Array.isArray(exampleData.states) && exampleData.states[0]) {
-      setCurrentValue(exampleData.states[0].value);
+    if (Array.isArray(node.states) && node.states[0]) {
+      setCurrentValue(node.states[0].value);
     }
-    setCurrentLabel(exampleData.label);
-  }, []);
+    setCurrentLabel(node.label);
+  }, [node]);
 
-  const startColor = mainColor[exampleData.color];
-  const endColor = gradientColor[exampleData.color];
+  const startColor = mainColor[node.color];
+  const endColor = gradientColor[node.color];
 
   const interpolate = interpolateRgb(startColor, endColor);
   const fillColor = interpolate(currentValue / 100);
@@ -79,7 +68,7 @@ const SoopLiquidGauge = props => {
           width={radius - 22}
           height={radius - 22}
           value={currentValue}
-          unit={exampleData.units} // percent는 단위로
+          unit={node.units} // percent는 단위로
           textSize={1}
           textOffsetX={0}
           textOffsetY={15}

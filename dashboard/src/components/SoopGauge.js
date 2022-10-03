@@ -30,22 +30,13 @@ const GaugeNormalContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const SoopGauge = props => {
-  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
-
-  const exampleData = {
-    nodeId: "abcde",
-    widgetX: 0,
-    widgetY: 0,
-    width: 2,
-    height: 2,
-  };
-
+const SoopGauge = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+  console.log("게이지 노드: ", node);
   const layout = [
-    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
-    calculateTop(exampleData.widgetY),
-    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
-    calculateHeight(exampleData.height, currentGroupH),
+    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node.widgetY)),
+    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node.height), currentGroupH),
   ];
 
   const type = "gauge";
@@ -54,19 +45,19 @@ const SoopGauge = props => {
     case "gauge":
       return (
         <GaugeNormalContainer layout={layout}>
-          <SoopNormalGauge layout={layout} />
+          <SoopNormalGauge layout={layout} node={node} />
         </GaugeNormalContainer>
       );
     case "donut":
       return (
         <GaugeContainer layout={layout}>
-          <SoopDonutGauge radius={Math.min(layout[2], layout[3])} />
+          <SoopDonutGauge radius={Math.min(layout[2], layout[3])} node={node} />
         </GaugeContainer>
       );
     case "liquid":
       return (
         <GaugeContainer layout={layout}>
-          <SoopLiquidGauge radius={Math.min(layout[2], layout[3])} />
+          <SoopLiquidGauge radius={Math.min(layout[2], layout[3])} node={node} />
         </GaugeContainer>
       );
   }

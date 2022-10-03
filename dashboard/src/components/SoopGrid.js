@@ -32,10 +32,10 @@ const SoopGrid = ({ size: { width }, isEditing, tab }) => {
   const initialGroupGrid = groups.map(group => {
     return {
       i: group.groupId,
-      w: group.w,
-      h: group.h,
-      x: group.x,
-      y: group.y,
+      w: parseInt(group.width),
+      h: parseInt(group.height),
+      x: parseInt(group.groupX),
+      y: parseInt(group.groupY),
       static: !isEditing,
     };
   });
