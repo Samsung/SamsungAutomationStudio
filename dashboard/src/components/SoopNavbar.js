@@ -5,7 +5,7 @@ import { RiMenuUnfoldFill } from "react-icons/ri";
 import { AiFillSetting, AiFillSave } from "react-icons/ai";
 import IsEditingCircle from "../assets/images/isEditingCircle.gif";
 
-const SoopNavbar = ({ isEditing, handleIsEditing, currentTab, handleCurrentTab, tmpData }) => {
+const SoopNavbar = ({ isEditing, handleIsEditing, currentTab, handleCurrentTab, dashboard }) => {
   const [state, setState] = useState({
     left: false,
   });
@@ -36,7 +36,7 @@ const SoopNavbar = ({ isEditing, handleIsEditing, currentTab, handleCurrentTab, 
         onKeyDown={toggleDrawer(anchor, false)}
       >
         <List>
-          {tmpData.tabs.map((tab, index) => (
+          {dashboard.tabs.map((tab, index) => (
             <ListItem key={tab.tabId} disablePadding>
               <ListItemButton
                 onClick={() => {
@@ -71,7 +71,7 @@ const SoopNavbar = ({ isEditing, handleIsEditing, currentTab, handleCurrentTab, 
               {sideBar("left")}
             </Drawer>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontFamily: "Pretendard-Bold" }}>
-              {tmpData.tabs[currentTab].tabName}
+              {dashboard.tabs[currentTab].tabName}
             </Typography>
 
             {!isEditing ? (

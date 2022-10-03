@@ -18,43 +18,34 @@ const ChartContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const SoopChart = props => {
-  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
-
-  const exampleData = {
-    nodeId: "abcde",
-    widgetX: 0,
-    widgetY: 0,
-    width: 2,
-    height: 2,
-  };
+const SoopChart = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+  console.log("차트노드: ", node);
+  console.log("차트노드: ", currentGroupW, currentGroupWidth, currentGroupH);
 
   const layout = [
-    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
-    calculateTop(exampleData.widgetY),
-    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
-    calculateHeight(exampleData.height, currentGroupH),
+    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node.widgetY)),
+    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node.height), currentGroupH),
   ];
 
-  const type = "pie";
-
-  switch (type) {
+  switch (node.chartType) {
     case "line":
       return (
         <ChartContainer layout={layout}>
-          <SoopLineChart />
+          <SoopLineChart node={node} />
         </ChartContainer>
       );
     case "bar":
       return (
         <ChartContainer layout={layout}>
-          <SoopBarChart />
+          <SoopBarChart node={node} />
         </ChartContainer>
       );
     case "pie":
       return (
         <ChartContainer layout={layout}>
-          <SoopPieChart />
+          <SoopPieChart node={node} />
         </ChartContainer>
       );
   }

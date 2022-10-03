@@ -21,11 +21,11 @@ const Button = styled.button`
   background: linear-gradient(
     91.29deg,
     ${props => {
-      return mainColor[props.exampleData.background];
+      return mainColor[props.node.background];
     }}
       0%,
     ${props => {
-      return gradientColor[props.exampleData.background];
+      return gradientColor[props.node.background];
     }}
       100%
   );
@@ -37,15 +37,13 @@ const Button = styled.button`
   border: 0px;
 
   border-radius: ${props => {
-    switch (props.exampleData.shape) {
+    switch (props.node.shape) {
       case "rectangle":
         return "0px;";
       case "rounded-rectangle":
         return "5px;";
       case "pill":
-        return `${height / 2}px;`;
-      case "circle":
-        return "100%;";
+        return `${props.layout[3] / 2}px;`;
     }
   }}
 
@@ -65,16 +63,16 @@ const ButtonCircle = styled.button`
   background: linear-gradient(
     91.29deg,
     ${props => {
-      return mainColor[props.exampleData.background];
+      return mainColor[props.node.background];
     }}
       0%,
     ${props => {
-      return gradientColor[props.exampleData.background];
+      return gradientColor[props.node.background];
     }}
       100%
   );
-  width: ${({ radius }) => `${radius - 1}px;`}
-  height: ${({ radius }) => `${radius - 1}px;`}
+  width: ${({ radius }) => `${radius - 5}px;`}
+  height: ${({ radius }) => `${radius - 5}px;`}
   font-size: ${fontSize.md};
   font-family: "Pretendard-Medium";
   color: white;
@@ -93,41 +91,24 @@ const ButtonCircle = styled.button`
   }
 `;
 
-const SoopButton = props => {
-  const { currentGroupW, currentGroupWidth, currentGroupH } = props;
-  const exampleData = {
-    nodeId: "abcde",
-    widgetX: 0,
-    widgetY: 0,
-    width: 1,
-    height: 1,
-    label: "SAM",
-    background: "green",
-    shape: "circle",
-    tooltip: "button node",
-  };
-
+const SoopButton = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
   const layout = [
-    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
-    calculateTop(exampleData.widgetY),
-    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
-    calculateHeight(exampleData.height, currentGroupH),
+    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node.widgetY)),
+    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node.height), currentGroupH),
   ];
 
   return (
     <>
       <ButtonContainer layout={layout}>
-        {exampleData.shape === "circle" ? (
-          <ButtonCircle
-            onClick={sendMessage(exampleData.nodeId)}
-            exampleData={exampleData}
-            radius={Math.min(layout[2], layout[3])}
-          >
-            {exampleData.label}
+        {node.shape === "circle" ? (
+          <ButtonCircle onClick={sendMessage(node.id)} node={node} radius={Math.min(layout[2], layout[3])}>
+            {node.label}
           </ButtonCircle>
         ) : (
-          <Button onClick={sendMessage(exampleData.nodeId)} exampleData={exampleData}>
-            {exampleData.label}
+          <Button onClick={sendMessage(node.id)} node={node} layout={layout}>
+            {node.label}
           </Button>
         )}
       </ButtonContainer>

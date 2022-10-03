@@ -2,29 +2,18 @@ import React, { useState, useEffect } from "react";
 import Gauge from "react-svg-gauge";
 import { mainColor, fontColor, fontSize } from "../../assets/DesignOption";
 
-const SoopNormalGauge = props => {
-  const { layout } = props;
-  const exampleData = {
-    nodeId: "dfg124w4",
-    gType: "gauge",
-    label: "라벨입니당",
-    range: [10, 20],
-    units: "",
-    color: "purple",
-    states: [{ value: 13 }],
-  };
-
+const SoopNormalGauge = ({ layout, node }) => {
   const [currentValue, setCurrentValue] = useState(1);
   const [currentLabel, setCurrentLabel] = useState("");
   const [range, setRange] = useState("");
 
   useEffect(() => {
-    if (Array.isArray(exampleData.states) && exampleData.states[0]) {
-      setCurrentValue(exampleData.states[0].value);
+    if (Array.isArray(node.states) && node.states[0]) {
+      setCurrentValue(node.states[0].value);
     }
-    setCurrentLabel(exampleData.label);
-    setRange([exampleData.range[0], exampleData.range[1]]);
-  }, []);
+    setCurrentLabel(node.label);
+    setRange([node.range[0], node.range[1]]);
+  }, [node]);
 
   // TODO: width, height 전달
 
@@ -37,7 +26,7 @@ const SoopNormalGauge = props => {
         min={range[0]}
         max={range[1]}
         label={currentLabel}
-        color={mainColor[exampleData.color]}
+        color={mainColor[node.color]}
         topLabelStyle={{
           fontSize: fontSize.md,
           fontFamily: "Pretendard-Bold",
@@ -45,7 +34,7 @@ const SoopNormalGauge = props => {
         }}
         valueLabelStyle={{ fontSize: fontSize.xl, fontFamily: "Pretendard-Regular", fill: fontColor.light }}
         minMaxLabelStyle={{ fontSize: fontSize.sm, fontFamily: "Pretendard-Regular", fill: fontColor.light }}
-        valueFormatter={value => `${value}${exampleData.units}`}
+        valueFormatter={value => `${value}${node.units}`}
       />
     </>
   );

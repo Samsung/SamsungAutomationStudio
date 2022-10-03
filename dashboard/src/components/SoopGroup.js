@@ -37,100 +37,109 @@ const GroupName = styled.div`
   padding: 3px 10px;
 `;
 
-const SoopGroup = ({ group, index }) => {
-  const [currentGroupWidth, setCurrentGroupWidth] = useState("");
+const SoopGroup = ({ group }) => {
+  const [currentGroupWidth, setCurrentGroupWidth] = useState(100);
   const ref = useRef(null);
 
   const drawNode = node => {
-    switch (node?.editor?.type) {
+    switch (node?.type) {
       case SOOP_NODE_TYPE.BUTTON:
         return (
           <SoopButton
-            key={node.editor.id}
-            nodeId={node.editor.id}
+            key={node.id}
+            nodeId={node.id}
+            node={node}
             currentGroupWidth={currentGroupWidth}
-            currentGroupW={group.w}
-            currentGroupH={group.h}
+            currentGroupW={parseInt(group.width)}
+            currentGroupH={parseInt(group.height)}
           />
         );
       case SOOP_NODE_TYPE.CHART:
         return (
           <SoopChart
-            key={node.editor.id}
-            nodeId={node.editor.id}
+            key={node.id}
+            nodeId={node.id}
+            node={node}
             currentGroupWidth={currentGroupWidth}
-            currentGroupW={group.w}
-            currentGroupH={group.h}
+            currentGroupW={parseInt(group.width)}
+            currentGroupH={parseInt(group.height)}
           />
         );
       case SOOP_NODE_TYPE.DROPDOWN:
         return (
           <SoopDropdown
-            key={node.editor.id}
-            nodeId={node.editor.id}
+            key={node.id}
+            nodeId={node.id}
+            node={node}
             currentGroupWidth={currentGroupWidth}
-            currentGroupW={group.w}
-            currentGroupH={group.h}
+            currentGroupW={parseInt(group.width)}
+            currentGroupH={parseInt(group.height)}
           />
         );
       case SOOP_NODE_TYPE.GAUGE:
         return (
           <SoopGauge
-            key={node.editor.id}
-            nodeId={node.editor.id}
+            key={node.id}
+            nodeId={node.id}
+            node={node}
             currentGroupWidth={currentGroupWidth}
-            currentGroupW={group.w}
-            currentGroupH={group.h}
+            currentGroupW={parseInt(group.width)}
+            currentGroupH={parseInt(group.height)}
           />
         );
       case SOOP_NODE_TYPE.IMAGE:
         return (
           <SoopImage
-            key={node.editor.id}
-            nodeId={node.editor.id}
+            key={node.id}
+            nodeId={node.id}
+            node={node}
             currentGroupWidth={currentGroupWidth}
-            currentGroupW={group.w}
-            currentGroupH={group.h}
+            currentGroupW={parseInt(group.width)}
+            currentGroupH={parseInt(group.height)}
           />
         );
       case SOOP_NODE_TYPE.LIST:
         return (
           <SoopList
-            key={node.editor.id}
-            nodeId={node.editor.id}
+            key={node.id}
+            nodeId={node.id}
+            node={node}
             currentGroupWidth={currentGroupWidth}
-            currentGroupW={group.w}
-            currentGroupH={group.h}
+            currentGroupW={parseInt(group.width)}
+            currentGroupH={parseInt(group.height)}
           />
         );
       case SOOP_NODE_TYPE.SLIDER:
         return (
           <SoopSlider
-            key={node.editor.id}
-            nodeId={node.editor.id}
+            key={node.id}
+            nodeId={node.id}
+            node={node}
             currentGroupWidth={currentGroupWidth}
-            currentGroupW={group.w}
-            currentGroupH={group.h}
+            currentGroupW={parseInt(group.width)}
+            currentGroupH={parseInt(group.height)}
           />
         );
       case SOOP_NODE_TYPE.SWITCH:
         return (
           <SoopSwitch
-            key={node.editor.id}
-            nodeId={node.editor.id}
+            key={node.id}
+            nodeId={node.id}
+            node={node}
             currentGroupWidth={currentGroupWidth}
-            currentGroupW={group.w}
-            currentGroupH={group.h}
+            currentGroupW={parseInt(group.width)}
+            currentGroupH={parseInt(group.height)}
           />
         );
       case SOOP_NODE_TYPE.TEXT:
         return (
           <SoopText
-            key={node.editor.id}
-            nodeId={node.editor.id}
+            key={node.id}
+            nodeId={node.id}
+            node={node}
             currentGroupWidth={currentGroupWidth}
-            currentGroupW={group.w}
-            currentGroupH={group.h}
+            currentGroupW={parseInt(group.width)}
+            currentGroupH={parseInt(group.height)}
           />
         );
     }
@@ -144,10 +153,7 @@ const SoopGroup = ({ group, index }) => {
   return (
     <Group ref={ref}>
       {!nameHidden && <GroupName>{group.groupName}</GroupName>}
-      {group.nodes.map(node => {
-        drawNode(node);
-      })}
-      <SoopGauge currentGroupWidth={currentGroupWidth} currentGroupW={group.w} currentGroupH={group.h}></SoopGauge>
+      {group.nodes.map(node => drawNode(node))}
     </Group>
   );
 };

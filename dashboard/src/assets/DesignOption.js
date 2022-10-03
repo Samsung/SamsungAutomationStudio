@@ -53,7 +53,6 @@ const calculateLeft = (x, currentGroupWidth, currentGroupW) => {
 const calculateHeight = (h, currentGroupH, isNameVisible = "true") => {
   if (isNameVisible === "true") {
     const unitHeight = Math.round((currentGroupH * 75 + (currentGroupH - 1) * 10 - 30) / currentGroupH);
-    console.log("단위높이: ", unitHeight);
     return unitHeight * h;
   } else {
     return h * 75;

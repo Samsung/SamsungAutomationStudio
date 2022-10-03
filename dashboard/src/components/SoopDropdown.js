@@ -20,51 +20,33 @@ const DropdownContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const SoopDropdown = node => {
-  const { currentGroupW, currentGroupWidth, currentGroupH } = node;
-
+const SoopDropdown = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [currentOptions, setCurrentOptions] = useState([]);
   const [currentLabel, setCurrentLabel] = useState("");
-  const exampleData = {
-    label: "dropdown라벨",
-    tooltip: "툴팁",
-    widgetX: 0,
-    widgetY: 0,
-    width: 1,
-    height: 1,
-    options: [
-      { label: "val1", value: "0", type: "str" },
-      { label: "val2", value: "1", type: "str" },
-      { label: "val3", value: "2", type: "str" },
-    ],
-    states: [{}],
-  };
 
   const layout = [
-    calculateLeft(exampleData.widgetX, currentGroupWidth, currentGroupW),
-    calculateTop(exampleData.widgetY),
-    calculateWidth(exampleData.width, currentGroupWidth, currentGroupW),
-    calculateHeight(exampleData.height, currentGroupH),
+    calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
+    calculateTop(parseInt(node.widgetY)),
+    calculateWidth(parseInt(node.width), currentGroupWidth, currentGroupW),
+    calculateHeight(parseInt(node.height), currentGroupH),
   ];
 
   const onChange = e => {
     setSelectedOption(e.target.value);
-    // TODO: sendMessage 활성화하기
     sendMessage(node.id, { value: e.target.value });
   };
 
-  // TODO: useEffect 활성화하기
-  // useEffect(() => {
-  //   const optionsArray = node.options.map(opt => {
-  //     return opt.label;
-  //   });
-  //   if (Array.isArray(node.states) && states[0]) {
-  //     setSelectedOption(node.states[0].key);
-  //   }
-  //   setCurrentOptions(optionsArray);
-  //   setCurrentLabel(node.label);
-  // }, [node, states]);
+  useEffect(() => {
+    const optionsArray = node.options.map(opt => {
+      return opt.label;
+    });
+    if (Array.isArray(node.states) && node.states[0]) {
+      setSelectedOption(node.states[0].key);
+    }
+    setCurrentOptions(optionsArray);
+    setCurrentLabel(node.label);
+  }, [node]);
 
   return (
     <>
