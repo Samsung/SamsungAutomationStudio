@@ -14,13 +14,38 @@ module.exports = function (RED) {
 
 
         function HTML() {
-            return require('./object-detection-html-iot.js').code(config)
+            return require('./object-detection-iot-html.js').code(config)
         }
 
         node.on('input', function (msg, send) {
-            const rtspUrl = msg.payload.com
+            console.log(msg.payload.components.main.videoStream.stream.value)
+            const rtspUrl = msg.payload.components.main.videoStream.stream.value.OutHomeURL.split('//')[1]
             const rtspPort = config.rtspPort || 1886
             const app = express();
+            
+            let savedObjName = config.objField;
+            let savedPoseName = config.poseField;
+
+            if (config.objFieldType === "flow") {
+                config.registered = this.context().flow.get(String(savedObjName));
+            }
+            else if (config.objFieldType === "global") {
+                config.registered = this.context().global.get(String(savedObjName));
+            }
+            else {
+                config.registered = this.context().node.get(String(savedObjName));
+            }
+
+
+            if (config.poseFieldType === "flow") {
+                config.registeredPose = this.context().flow.get(String(savedPoseName));
+            }
+            else if (config.poseFieldType === "global") {
+                config.registeredPose = this.context().global.get(String(savedPoseName));
+            }
+            else {
+                config.registeredPose = this.context().node.get(String(savedPoseName));
+            }
 
             app.use(cors({
                 origin: true,
@@ -28,7 +53,7 @@ module.exports = function (RED) {
             }))
 
             const httpServer = http.createServer(app)
-
+            
             httpServer.once('error', err => {
                 if (err.code === 'EADDRINUSE') {
                     console.log('WEbSocker [RTSP] : port ${rtspPort} is already in use.')
@@ -40,18 +65,21 @@ module.exports = function (RED) {
                 stream.prototype = Stream.prototype
                 stream.prototype.constructor = stream
 
-                stream.prototype.pipeStreamToSeockerServer = function () {
+                stream.prototype.pipeStreamToSocketServer = function () {
                     this.wsServer = new ws.Server({
                         server: httpServer
                     })
                     this.wsServer.on('connection', (socker, requset) => {
-                        return this.soSockerConnect(socker, requset)
+                        return this.onSocketConnect(socker, requset)
                     })
                     this.wsServer.broadcast = function (data, opts) {
                         var results = []
                         for (let client of this.clients) {
                             if (client.readyState === 1) {
                                 results.push(client.send(data, opts))
+                            }
+                            else {
+                                results.push(console.log("WebSocket Error [RTSP] : Client from remoteAddress " + client.remoteAddress + " not connected."))
                             }
                         }
                         return results
@@ -63,7 +91,7 @@ module.exports = function (RED) {
                 const smartthingsMnid = this.credentials.smartthingsMnid
                 const smartthingsPat = this.credentials.smartthingsPat
 
-                rtspStream = new newStream({
+                rtspStream = new Stream({
                     name: 'name',
                     streamUrl: `rtsps://${smartthingsMnid}:${smartthingsPat}@${rtspUrl}`,
                     wsPort: rtspPort,
@@ -84,7 +112,7 @@ module.exports = function (RED) {
         })
     }
 
-    RED.nodes.registerType("object-detect-iotcam", PoseDetectIotcamNode, {
+    RED.nodes.registerType("object-detection-iot", ObjectDetectionNode, {
         credentials: {
             smartthingsMnid: { type: "text" },
             smartthingsPat: { type: "text" }
