@@ -36,17 +36,19 @@ const SoopNavbar = ({ isEditing, handleIsEditing, currentTab, handleCurrentTab, 
         onKeyDown={toggleDrawer(anchor, false)}
       >
         <List>
-          {dashboard.tabs.map((tab, index) => (
-            <ListItem key={tab.tabId} disablePadding>
-              <ListItemButton
-                onClick={() => {
-                  handleCurrentTab(index);
-                }}
-              >
-                <div style={{ height: 36, display: "flex", alignItems: "center" }}>{tab.tabName}</div>
-              </ListItemButton>
-            </ListItem>
-          ))}
+          {dashboard &&
+            Array.isArray(dashboard.tabs) &&
+            dashboard.tabs.map((tab, index) => (
+              <ListItem key={tab.tabId} disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    handleCurrentTab(index);
+                  }}
+                >
+                  <div style={{ height: 36, display: "flex", alignItems: "center" }}>{tab.tabName}</div>
+                </ListItemButton>
+              </ListItem>
+            ))}
         </List>
       </Box>
     );
@@ -71,7 +73,10 @@ const SoopNavbar = ({ isEditing, handleIsEditing, currentTab, handleCurrentTab, 
               {sideBar("left")}
             </Drawer>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontFamily: "Pretendard-Bold" }}>
-              {dashboard.tabs[currentTab].tabName}
+              {dashboard &&
+                Array.isArray(dashboard.tabs) &&
+                dashboard.tabs[currentTab] &&
+                dashboard.tabs[currentTab].tabName}
             </Typography>
 
             {!isEditing ? (
