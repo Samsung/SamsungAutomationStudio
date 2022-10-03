@@ -137,6 +137,22 @@
       console.log(`You can not put a node on (${y}, ${x})`);
     }
   }
+  function changeGroup(arr) {
+    if ($("#node-input-group-table > table").length) {
+      const row = arr.length;
+      const col = arr[0].length;
+      const currow = $("#group-table>tbody>tr").length - 1;
+      const curcol = $("#group-table>tbody>#row1>td").length;
+      if (currow !== row || curcol !== col) {
+        $("#node-input-group-table").children("table").remove();
+        $("#node-input-group-table").append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        addNewNode(arr);
+        $(buttonPositionSelector).off();
+        $(buttonPositionSelector).on("change", () => addNewNode(arr));
+      }
+    }
+  }
   RED.nodes.registerType("soop_button", {
     category: "soop-dashboard",
     color: "#1153FC",
@@ -218,10 +234,31 @@
       for (var i = 0; i < shapes.length; i++) {
         if (shapes[i].value == this.shape) shapes[i].checked = true;
       }
+      $("#node-input-group").on("change", () => {
+        changeGroup(getGroupGrid(this.id));
+      });
     },
     oneditsave: function () {
       this.background = $("input[type=radio][name=background]:checked")[0].value;
       this.shape = $("input[type=radio][name=shape]:checked")[0].value;
+    },
+    oneditresize: function () {
+      $.fn.groupTable2 = function (arr) {
+        changeGroup(arr);
+        if ($("#node-input-group-table > table").length) {
+          const row = arr.length;
+          const col = arr[0].length;
+          const currow = $("#group-table>tbody>tr").length - 1;
+          const curcol = $("#group-table>tbody>#row1>td").length;
+          if (currow !== row || curcol !== col) {
+            $(this).children("table").remove();
+            $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+            newTable(arr);
+            addNewNode(arr);
+          }
+        }
+      };
+      $("#node-input-group-table").groupTable2(getGroupGrid(this.id));
     },
   });
 </script>

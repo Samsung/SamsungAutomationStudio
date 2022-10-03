@@ -137,6 +137,22 @@
       console.log(`You can not put a node on (${y}, ${x})`);
     }
   }
+  function changeGroup(arr) {
+    if ($("#node-input-group-table > table").length) {
+      const row = arr.length;
+      const col = arr[0].length;
+      const currow = $("#group-table>tbody>tr").length - 1;
+      const curcol = $("#group-table>tbody>#row1>td").length;
+      if (currow !== row || curcol !== col) {
+        $("#node-input-group-table").children("table").remove();
+        $("#node-input-group-table").append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        addNewNode(arr);
+        $(gaugePositionSelector).off();
+        $(gaugePositionSelector).on("change", () => addNewNode(arr));
+      }
+    }
+  }
   RED.nodes.registerType("soop_gauge", {
     category: "soop-dashboard",
     color: "#5F86FE",
@@ -189,10 +205,31 @@
       for (var i = 0; i < pickers.length; i++) {
         if (pickers[i].value == this.color) pickers[i].checked = true;
       }
+      $("#node-input-group").on("change", () => {
+        changeGroup(getGroupGrid(this.id));
+      });
     },
     oneditsave: function () {
       this.color = $("input[type=radio][name=color]:checked")[0].value;
       $("#node-input-value").val($("#node-input-min").val());
+    },
+    oneditresize: function () {
+      $.fn.groupTable2 = function (arr) {
+        changeGroup(arr);
+        if ($("#node-input-group-table > table").length) {
+          const row = arr.length;
+          const col = arr[0].length;
+          const currow = $("#group-table>tbody>tr").length - 1;
+          const curcol = $("#group-table>tbody>#row1>td").length;
+          if (currow !== row || curcol !== col) {
+            $(this).children("table").remove();
+            $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+            newTable(arr);
+            addNewNode(arr);
+          }
+        }
+      };
+      $("#node-input-group-table").groupTable2(getGroupGrid(this.id));
     },
   });
 </script>
