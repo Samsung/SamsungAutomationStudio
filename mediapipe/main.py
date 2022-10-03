@@ -1,9 +1,10 @@
+# python 3.9.13
 # pip install -r requirements.txt
 
 import socket
 import json
 from _thread import *
-from mediapipeController import *
+from mediapipe_controller import *
 
 client_sockets = [] # 서버에 접속한 클라이언트 목록
 
@@ -16,8 +17,8 @@ def openServer():
 
     try : 
         startMediaPipe()
-    except e:
-        print("MediaPipe Start Failed.", e)
+    except Exception as e:
+        print('MediaPipe Start Failed.', str(e))
         return
 
     try:
@@ -25,7 +26,7 @@ def openServer():
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server_socket.bind((HOST, PORT))
         server_socket.listen()
-        print("The server was successfully started.")
+        print('The server was successfully started.')
 
 
         print('>> Wait')
@@ -33,7 +34,7 @@ def openServer():
 
         # Connection is estblished
         client_sockets.append(client_socket)
-        print("connection Success", len(client_sockets))
+        print('connection Success', len(client_sockets))
         dataCommunication(client_socket, addr)
 
         # connection is closed.
@@ -52,7 +53,7 @@ def closeServer():
         for server_socket in client_sockets:
             server_socket.close()
         endMediaPipe()
-        print("The server was successfully shut down.")
+        print('The server was successfully shut down.')
     except:
         pass
 
@@ -67,41 +68,51 @@ def dataCommunication(client_socket, addr):
         try:
 
             # Wait for data to be received
-            data = client_socket.recv(100000)
+            request = client_socket.recv(100000)
             # receive empty data when client is destroyed
-            if not data:
+            if not request:
                 print('>> Disconnected by ' + addr[0], ':', addr[1])
                 break
 
-            data = data.decode()
-            data = json.loads(data)
+            request = request.decode()
+            request = json.loads(request)
             
-            # data
+            # request
             # {
-            #   command : "open/close/holistic",(one of the three)
-            #   path : "" (only holistic),
-            #   result : "array"
+            #   command : 'open/close/holistic',(one of the three)
+            #   path : '' (only holistic),
+            #   result : 'array'
             # }
-            #
 
-            if data["command"] == "open" : 
-                client_socket.send("MediaPipe Server(v0.1) is started successfully".encode('ascii'))
-            elif data["command"] == "close":
+            
+            response = {
+                'command' : request['command'],
+                'result' : ''
+            }
+
+            if request['command'] == 'open' :
+                response['result'] = 'MediaPipe Server(v0.1) is started successfully'
+            elif request['command'] == 'close':
                 closeServer()
                 break
-            elif data["command"] == "holistic":
-                result = predict(data["path"])
-                client_socket.send(result.encode('ascii'))
+            elif request['command'] == 'holistic':
+                response['result'] = predict(request['path'])
             else : 
-                client_socket.send("invalid request.".encode('ascii'))
+                response['result'] = 'invalid request.'
 
+            if request['command'] != 'close':
+                client_socket.send(json.dumps(response).encode('ascii'))
+            
         except ConnectionResetError as e:
             print('>> Disconnected by ' + addr[0], ':', addr[1])
             break
 
         except Exception as e :
             print('>> Exception : ', e)
-            client_socket.send(str(e).encode('ascii'))
+            try:
+                client_socket.send(str(e).encode('ascii'))
+            except:
+                pass
 
     if client_socket in client_sockets :
         client_sockets.remove(client_socket)
