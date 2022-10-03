@@ -98,7 +98,7 @@
 
     // Temporally save recent file in base64 format
     var strImage;
-
+    var nameImage = "No file chosen";
     // When user uploads image, change image file into base64 string and save it.
     function uploadFile(info){
         const reader = new FileReader();
@@ -108,6 +108,7 @@
             strImage = base64;
         };
         reader.readAsDataURL(info.files[0]);
+        $("#node-input-filename").val(info.files[0].name);
     }
 
     // Register Image Node
@@ -180,6 +181,8 @@
                 $("#node-input-height").val(1);
             }
 
+            $("#node-input-filename").val(nameImage);
+
             // On change event, change dom element
             $('#node-input-option').on("change", function() {
                 if ($('#node-input-option').val() === "upload") {
@@ -205,10 +208,11 @@
             if($('#node-input-option').val() === "upload"){
                 this.uploads = strImage;
                 this.link = "";
+                nameImage = $("#node-input-filename").val();
             }else{
                 this.uploads = "";
+                nameImage = "No file chosen";
             }
-            // console.log(this);
         }
     });
 </script>
@@ -246,7 +250,9 @@
     <!-- Source-Upload -->
     <div class="form-row form-row-upload">
         <label for="node-input-upload" style="text-align:right;"><i class="fa fa-upload"></i> File</label>
-        <input type="file" id="node-input-upload" accept="image/*" onchange="uploadFile(this)" style="width:204px">
+        <input type="file" id="node-input-upload" accept="image/*" onchange="uploadFile(this)" style="display: none;" />
+        <input type="button" value="Choose File" onclick="document.getElementById('node-input-upload').click();" style="width:90px" />
+        <input type="text" id="node-input-filename" style="width:114px; border:none; background-color : #ffffff; color:#000000" readonly />
     </div>
     <!-- Source-URL -->
     <div class="form-row form-row-link">
