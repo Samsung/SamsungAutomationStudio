@@ -28,13 +28,12 @@ const SliderLabel = styled.div`
   margin-right: 13px;
 `;
 
-const SEND_TYPE = {
+const WHEN_TYPE = {
   ALWAYS: "always",
   RELEASE: "release",
 };
 
 const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
-
   const layout = [
     calculateLeft(parseInt(node.widgetX), currentGroupWidth, currentGroupW),
     calculateTop(parseInt(node.widgetY)),
@@ -42,7 +41,7 @@ const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) =
     calculateHeight(parseInt(node.height), currentGroupH),
   ];
 
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState("0");
 
   useEffect(() => {
     if (Array.isArray(node.states) && node.states[0]) {
@@ -59,12 +58,12 @@ const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) =
   });
 
   function onChangeCommitted(e, v) {
-    if (node.send == SEND_TYPE.RELEASE) sendMessage(node.id, { value: v });
+    if (node.when == WHEN_TYPE.RELEASE) sendMessage(node.id, { value: v });
   }
 
   function onChangeValue(e, v) {
     setValue(v);
-    if (node.send == SEND_TYPE.ALWAYS) sendMessage(node.id, { value: v });
+    if (node.when == WHEN_TYPE.ALWAYS) sendMessage(node.id, { value: v });
   }
 
   return (

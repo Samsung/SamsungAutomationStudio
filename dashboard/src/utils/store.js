@@ -16,7 +16,8 @@ function Dashboard(state = initialState, action) {
         ...action.dashboard,
       };
     case UPDATE_NODE_STATE:
-      const newState = { ...state };
+      // TO DO : avoid deep copy, should update only changed
+      const newState = JSON.parse(JSON.stringify(state));
       pushNodeState(newState, action.updateData);
       return newState;
   }
