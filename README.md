@@ -1,18 +1,17 @@
 # node-red-contrib-ffmpeg-iotcam
 
-Capture and save to image from iotcam using ffmpeg
+Capture and save to image from iotcam using ffmpeg.
+Based on node-red's **exec** node.
 <br>
 
 ## Pre-requisites
 
 - node-red
--
--
--
+- ffmpeg
 
 <br>
 
-## Install
+## Installation
 
     npm i node-red-contrib-ffmpeg-iotcam
 
