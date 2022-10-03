@@ -29,9 +29,13 @@ const SoopLineChart = ({ node }) => {
   const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
+    if (node && !node.states) return;
     const currentDatasetsLabel = Object.keys(node.states);
+
+    if (!Array.isArray(currentDatasetsLabel) || !Array.isArray(node.states[currentDatasetsLabel[0]])) return;
     /** currentLabels mean x-axis values */
     const currentLabels = node.states[currentDatasetsLabel[0]].map(data => moment(data.time).format(node.xAxisFormat));
+
     /** currentDatasets mean y-axis values */
     const currentDatasets = Object.keys(node.states).map((key, idx) => {
       return {
