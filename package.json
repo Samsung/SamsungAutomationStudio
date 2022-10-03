@@ -11,6 +11,7 @@
     "url": "git+https://github.com/TeamWildWest/node-red-contrib-ffmpeg-iotcam.git"
   },
   "keywords": [
+    "node-red",
     "smartthings",
     "iotcam",
     "ffmpeg"
