@@ -211,6 +211,26 @@
     inputs: 1,
     icon: "text.png",
     oneditprepare: function () {
+      $.fn.groupTable = function (arr) {
+        $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        $(textPositionSelector).on("change", () => addNewNode(arr));
+      };
+      $("#node-input-group-table").groupTable(getGroupGrid(this.id));
+
+      if (!$("#node-input-widgetX").val()) {
+        $("#node-input-widgetX").val(0);
+      }
+      if (!$("#node-input-widgetY").val()) {
+        $("#node-input-widgetY").val(0);
+      }
+      if (!$("#node-input-width").val()) {
+        $("#node-input-width").val(1);
+      }
+      if (!$("#node-input-height").val()) {
+        $("#node-input-height").val(1);
+      }
+
       $(".nr-db-text-layout-" + (this.layout || "row-spread")).addClass("selected");
 
       [
@@ -232,22 +252,7 @@
       });
     },
     oneditresize: function () {
-      $.fn.groupTable2 = function (arr) {
-        changeGroup(arr);
-        if ($("#node-input-group-table > table").length) {
-          const row = arr.length;
-          const col = arr[0].length;
-          const currow = $("#group-table>tbody>tr").length - 1;
-          const curcol = $("#group-table>tbody>#row1>td").length;
-          if (currow !== row || curcol !== col) {
-            $(this).children("table").remove();
-            $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
-            newTable(arr);
-            addNewNode(arr);
-          }
-        }
-      };
-      $("#node-input-group-table").groupTable2(getGroupGrid(this.id));
+      changeGroup(getGroupGrid(this.id));
     },
   });
 </script>
