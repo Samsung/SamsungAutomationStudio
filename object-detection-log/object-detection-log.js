@@ -2,7 +2,7 @@
 
 module.exports = function (RED) {
 
-    function logNode(config) {
+    function ObjectDetectionNode(config) {
         RED.nodes.createNode(this, config)
         var node = this;
         const fs = require('fs')
@@ -11,8 +11,7 @@ module.exports = function (RED) {
 
             let today = new Date();
 
-            let date = today.toLocaleString()
-            msg.payload.Date = date
+            msg.payload.Date = today
             let directory = `${config.logDirectory}`
             const isExists = fs.existsSync(directory)
             if (!isExists) {
@@ -25,9 +24,9 @@ module.exports = function (RED) {
                 if (err) throw err
             })
 
-            return
+            return msg.payload
         })
     }
 
-    RED.nodes.registerType("log", logNode);
+    RED.nodes.registerType("object-detection-log", ObjectDetectionNode);
 }
