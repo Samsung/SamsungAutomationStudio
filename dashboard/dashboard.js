@@ -41,7 +41,7 @@ function initSocket(io) {
     });
 
     socket.on(FRONT_SOCKET_TYPE.RECEIVE_MESSAGE, message => {
-      const node = globalNodes[message.nodeId].runtime;
+      const node = globalNodes[message.nodeId];
       if (!node) return;
       if (typeof node.onMessage === "function") {
         node.onMessage(message);
