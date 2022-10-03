@@ -16,8 +16,11 @@ module.exports = function (RED) {
       dashboard.emitState(
         {
           nodeId: node.id,
-          value: +msg.payload,
-          label: msg.label,
+          data: {
+            [msg.label]: {
+              value: +msg.payload,
+            },
+          },
         },
         config.isTimeSeries,
         true,
