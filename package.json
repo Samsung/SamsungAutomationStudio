@@ -14,7 +14,7 @@
       "object-detection" : "/object_detection/object-detection.js",
       "object-detection-iot" : "/object-detection-iot/object-detection-iot.js",
       "object-person-determine" : "/object-person-determine/object-person-determine.js",
-      "log" : "/log/log.js"
+      "object-detection-log" : "/object-detection-log/object-detection-log.js"
     }
   },
   "author": "",
