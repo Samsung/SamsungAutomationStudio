@@ -34,11 +34,11 @@ def predict(data):
         img = cv2.imread(data, cv2.IMREAD_COLOR)
         
     except Exception as e:
-        raise Exception(str(e) + ", open cv image read Error")
+        return str(e) + ", open cv image read Error"
 
     try :
         image, results = mediapipe_detection(img, holistic)
         keypoints = extract_keypoints(results)
         return repr(keypoints)[6:-1]
     except Exception as e :
-        raise Exception(str(e) + "mediaPipe Error")
+        return str(e) + "mediaPipe Error"

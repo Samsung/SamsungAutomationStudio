@@ -63,7 +63,7 @@ def dataCommunication(client_socket, addr):
     global client_sockets
 
     if len(client_sockets) > 1:
-        client_socket.send("Only one connection is allowed.".encode('ascii'))
+        client_socket.send('{"result" : "Only one connection is allowed."}'.encode('ascii'))
         client_sockets.remove(client_socket)
         client_socket.close()
         return
@@ -100,16 +100,18 @@ def dataCommunication(client_socket, addr):
             if request['command'] == 'open' :
                 response['result'] = 'MediaPipe Server(v0.1) is started successfully'
             elif request['command'] == 'close':
-                closeServer()
-                break
+                response['result'] = 'MediaPipe is closed successfully'
             elif request['command'] == 'holistic':
                 response['result'] = predict(request['path'])
             else : 
                 response['result'] = 'invalid request.'
 
-            if request['command'] != 'close':
-                client_socket.send(json.dumps(response).encode('ascii'))
+            client_socket.send(json.dumps(response).encode('ascii'))
             
+            if request['command'] == 'close':
+                closeServer()
+                break
+
         except ConnectionResetError as e:
             print('>> Disconnected by ' + addr[0], ':', addr[1])
             break
