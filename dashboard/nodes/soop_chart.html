@@ -101,6 +101,23 @@
       console.log(`You can not put a node on (${y}, ${x})`);
     }
   }
+
+  function changeGroup(arr) {
+    if ($("#node-input-group-table > table").length) {
+      const row = arr.length;
+      const col = arr[0].length;
+      const currow = $("#group-table>tbody>tr").length - 1;
+      const curcol = $("#group-table>tbody>#row1>td").length;
+      if (currow !== row || curcol !== col) {
+        $("#node-input-group-table").children("table").remove();
+        $("#node-input-group-table").append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        addNewNode(arr);
+        $(chartPositionSelector).off();
+        $(chartPositionSelector).on("change", () => addNewNode(arr));
+      }
+    }
+  }
   RED.nodes.registerType("soop_chart", {
     category: "soop-dashboard",
     color: "#1153FC",
@@ -242,18 +259,26 @@
           $("#node-input-isTimeSeries").prop("checked", false);
         }
       });
+      $("#node-input-group").on("change", () => {
+        changeGroup(getGroupGrid(this.id));
+      });
     },
     oneditsave: function () {},
     oneditresize: function () {
       $.fn.groupTable2 = function (arr) {
-        if ($("#node-input-group-table > table").length && $("#node-input-group-table").children("table").length >= 1) {
-          $(this).children("table").remove();
+        changeGroup(arr);
+        if ($("#node-input-group-table > table").length) {
+          const row = arr.length;
+          const col = arr[0].length;
+          const currow = $("#group-table>tbody>tr").length - 1;
+          const curcol = $("#group-table>tbody>#row1>td").length;
+          if (currow !== row || curcol !== col) {
+            $(this).children("table").remove();
+            $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+            newTable(arr);
+            addNewNode(arr);
+          }
         }
-        $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
-        newTable(arr);
-        $(chartPositionSelector).on("change", () => addNewNode(arr));
-        document.getElementById("node-input-width").value = "";
-        document.getElementById("node-input-height").value = "";
       };
       $("#node-input-group-table").groupTable2(getGroupGrid(this.id));
     },
