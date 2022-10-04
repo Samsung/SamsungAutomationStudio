@@ -69,7 +69,7 @@ const SoopLiquidGauge = ({ radius, node }) => {
           style={{ margin: "0 0" }}
           width={radius - 22}
           height={radius - 22}
-          value={currentValue}
+          value={parseInt(currentValue)}
           unit={node?.units}
           textSize={1}
           textOffsetX={0}
