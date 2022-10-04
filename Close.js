@@ -15,6 +15,7 @@ module.exports = function (RED) {
                 }
 
                 const requestData = {
+                    _msgid : msg._msgid,
                     command : "close"
                 }
                 mediapipeGlobalConfig.queue.push(JSON.stringify(requestData));

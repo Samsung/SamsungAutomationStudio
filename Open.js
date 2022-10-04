@@ -22,14 +22,15 @@ module.exports = function (RED) {
                 if(mediapipeGlobalConfig.mediapipeEnable) 
                     return;
 
-                // exec(`python ${__dirname}/mediapipe/main.py`);
-                // await sleep(4000);
+                exec(`python ${__dirname}/mediapipe/main.py`);
+                await sleep(4000);
 
                 mediapipeFunction.setEventHandler();
 
                 // connect to mediapipe server
                 mediapipeGlobalConfig.client.connect(1881, '127.0.0.1', function() {
                     const requestData = {
+                        _msgid : msg._msgid,
                         command : "open"
                     }
                     // request open server

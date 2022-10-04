@@ -93,6 +93,7 @@ def dataCommunication(client_socket, addr):
 
             
             response = {
+                '_msgid' : request['_msgid'],
                 'command' : request['command'],
                 'result' : ''
             }

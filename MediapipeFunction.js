@@ -1,16 +1,12 @@
 const net = require('net');
 const mediapipeGlobalConfig = require('./MediapipeConfig.js');
 
-function makeMessage(){
-    return {
-        _msgid: "41c3bb1b.1c25b4",
-        payload: 1664815898371,
-        topic: "",
-    }
-    
+function removeEventHandler(){
+    mediapipeGlobalConfig.client.off('data', onListen);
+    mediapipeGlobalConfig.client.off('disconnect', onDisconnect);
 }
 
-exports.send = function(){
+function send() {
     if(!mediapipeGlobalConfig.mediapipeEnable){
         console.log("Mediapipe is not set.");
         mediapipeGlobalConfig.running = false;
@@ -26,52 +22,62 @@ exports.send = function(){
     }
 }
 
-exports.setEventHandler = function(){
+
+function onListen(data){
+ 
+    // receive data
+    data = data.toString();
+    data = JSON.parse(data);
+    let msg = {
+        _msgid : data._msgid,
+        payload : "",
+        topic : ""
+    };
+    msg.payload = data.result;
+
+    switch (data.command) {
+        case "open":
+            // Mediapipe Server connection is estblished.
+            // send to Open node.
+            mediapipeGlobalConfig.mediapipeEnable = true;
+            mediapipeGlobalConfig.openNode.send(msg);
+            break;
+
+        case "close":
+            removeEventHandler();
+            mediapipeGlobalConfig.mediapipeEnable = false;
+            mediapipeGlobalConfig.running = false;
+            mediapipeGlobalConfig.client = new net.Socket();
+            mediapipeGlobalConfig.closeNode.send(msg);
+            break;
+
+        case "holistic":
+            // => send to holistic node.
+            mediapipeGlobalConfig.holisticNode.send(msg);
+            send();
+            break;
+    }
+}
+
+function onDisconnect(){
+    try {
+        mediapipeGlobalConfig.client.off('data', onListen);
+        mediapipeGlobalConfig.client.off('disconnect', onDisconnect);
+    } catch (error) {
+        console.log(error);
+    }
+    mediapipeGlobalConfig.mediapipeEnable = false;
+}
+
+
+function setEventHandler(){
     // Set Event Listener
-    mediapipeGlobalConfig.client.on('data', function(data) {
-                    
-        // receive data
-        data = data.toString();
-        data = JSON.parse(data);
-        msg.payload = data.toString();
-
-        switch (msg.command) {
-            case "open":
-                // Mediapipe Server connection is estblished.
-                // send to Open node.
-                mediapipeGlobalConfig.mediapipeEnable = true;
-                mediapipeGlobalConfig.openNode.send(msg);
-                break;
-
-            case "close":
-                removeEventHandler();
-                mediapipeGlobalConfig.mediapipeEnable = false;
-                mediapipeGlobalConfig.client = new net.Socket();
-                mediapipeGlobalConfig.closeNode.send(msg);
-                break;
-
-            case "holistic":
-                // => send to holistic node.
-                mediapipeGlobalConfig.holisticNode.send(msg);
-                send();
-                break;
-        
-        }
-    });
+    mediapipeGlobalConfig.client.on('data', onListen);
 
     // set disconnect event handler
-    mediapipeGlobalConfig.client.on('disconnect', function(data) {
-        try {
-            mediapipeGlobalConfig.client.off('data');
-            mediapipeGlobalConfig.client.off('disconnect');
-        } catch (error) {
-            console.log(error);
-        }
-        mediapipeGlobalConfig.mediapipeEnable = false;
-    });
+    mediapipeGlobalConfig.client.on('disconnect', onDisconnect);
 }
 
-exports.removeEventHandler = function(){
-    mediapipeGlobalConfig.client.off('data');
-    mediapipeGlobalConfig.client.off('disconnect');
-}
+exports.removeEventHandler = removeEventHandler;
+exports.send = send;
+exports.setEventHandler = setEventHandler;
