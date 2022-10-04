@@ -13,7 +13,6 @@
   },
 
   "scripts": {
-    "debug": "node C:/Users/seung/Documents/GitHub/node-red-1.2.9-release/red.js"
   },
   "node-red": {
     "nodes": {
