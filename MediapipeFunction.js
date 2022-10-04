@@ -53,8 +53,12 @@ function onListen(data){
             
         case "holistic":
             // => send to holistic node.
-            msg.payload = JSON.parse(msg.payload);
-            mediapipeGlobalConfig.holisticNode.send(msg);
+            try {
+                msg.payload = JSON.parse(msg.payload);
+                mediapipeGlobalConfig.holisticNode.send(msg);
+            } catch (error) {
+                console.log("Parse Error : " + msg.payload);
+            }
             send();
             break;
     }

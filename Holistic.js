@@ -17,7 +17,7 @@ module.exports = function (RED) {
                 const requestData = {
                     _msgid : msg._msgid,
                     command : "holistic",
-                    path : ((node.path === "") ? msg.payload : node.path),
+                    path : ((!node.path || node.path === "") ? msg.payload : node.path),
                     result : "array"
                 }
     
