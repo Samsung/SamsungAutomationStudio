@@ -24,7 +24,7 @@ Based on node-red's **exec** node.
 -   `SmartThings MNID`: Samsung smartthings developer MNID
 -   `SmartThings PAT`: Samsung SmartThings developer Personal Access Token
 -   `RTSP Stream URL`: Video Stream URL. If input msg has propertie `msg.rtspURL` this will be replaced that value
--   `Image save URL`: Location where image to be stored.
+-   `Image save URL`: Location where image to be stored. If input msg has propertie `msg.saveURL` this will be replaced that value
 -   `Total Frame`: Number of frames to save
 -   `Timer`: How many seconds to capture
 -   `Name`: Node's name
