@@ -49,8 +49,9 @@ module.exports = function (RED) {
                 const rtspURL = msg.rtspURL || config.rtspURL;
                 const saveURL = msg.saveURL || config.saveURL;
                 const totalFrame = config.totalFrame;
+                const COMMAND_RIFTOFF_TIME = 5;
                 const fps = config.timer
-                    ? totalFrame / (config.timer * 0.7)
+                    ? totalFrame / (config.timer - COMMAND_RIFTOFF_TIME)
                     : 5;
 
                 const cmd = "ffmpeg";
