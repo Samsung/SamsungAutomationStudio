@@ -7,7 +7,6 @@ import AnimatedProgressProvider from "./AnimatedProgressProvider";
 import GradientSVG from "./GradientSVG";
 import { fontSize, fontColor } from "../../assets/DesignOption";
 
-// FIXME: wh, 중 작은 사이즈에 맞추기!!
 const DonutGaugeWrapper = styled.div`
   display: flex;
   flex-direction: column;

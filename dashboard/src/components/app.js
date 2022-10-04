@@ -29,7 +29,6 @@ const App = () => {
 
   useEffect(() => {
     if (dashboard && Array.isArray(dashboard.tabs)) setTabs(dashboard.tabs);
-    console.log(dashboard);
   }, [dashboard]);
 
   return (

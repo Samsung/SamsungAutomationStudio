@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
 
-// FIXME: x, y, w, h 계산하기
 const Image = styled.img`
   position: absolute;
   left: ${({ layout }) => `${layout[0]}px;`}

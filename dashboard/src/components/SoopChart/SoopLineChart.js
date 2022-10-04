@@ -57,7 +57,6 @@ const SoopLineChart = ({ node }) => {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        // 제목 변경
         title: {
           display: true,
           text: node?.title,
@@ -67,7 +66,6 @@ const SoopLineChart = ({ node }) => {
             size: fontSize.md,
           },
         },
-        // 범례 변경
         legend: {
           display: node?.legend === "true" ? true : false,
           labels: {
@@ -79,7 +77,6 @@ const SoopLineChart = ({ node }) => {
           },
         },
       },
-      // 축 변경
       scales: {
         y: {
           min: parseInt(node?.yMin),

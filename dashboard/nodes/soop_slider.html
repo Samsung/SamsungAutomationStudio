@@ -120,7 +120,6 @@
       $(sliderPositionSelector).removeClass("input-error");
     } else {
       $(sliderPositionSelector).addClass("input-error");
-      console.log(`You can not put a node on (${y}, ${x})`);
     }
   }
   function changeGroup(arr) {
@@ -252,7 +251,6 @@
         $("#node-input-step").val() > Math.abs($("#node-input-max").val() - $("#node-input-min").val())
           ? 1
           : $("#node-input-step").val();
-      // console.log(this);
     },
     oneditresize: function () {
       changeGroup(getGroupGrid(this.id));
