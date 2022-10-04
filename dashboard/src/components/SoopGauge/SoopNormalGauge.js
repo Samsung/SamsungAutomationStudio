@@ -11,6 +11,8 @@ const SoopNormalGauge = ({ layout, node }) => {
     if (!node) return;
     if (Array.isArray(node?.states) && node?.states[0]) {
       setCurrentValue(node?.states[0].value);
+    } else {
+      setCurrentValue(node?.value);
     }
     setCurrentLabel(node?.label);
     setRange([parseInt(node?.min), parseInt(node?.max)]);

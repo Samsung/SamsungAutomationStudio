@@ -29,6 +29,8 @@ const SoopLiquidGauge = ({ radius, node }) => {
     if (!node) return;
     if (Array.isArray(node?.states) && node?.states[0]) {
       setCurrentValue(node?.states[0].value);
+    } else {
+      setCurrentValue(node?.value);
     }
     setCurrentLabel(node?.label);
   }, [node]);
