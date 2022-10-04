@@ -33,21 +33,24 @@ This node offers fewer features, but there are many areas that developers can ad
 
 ## Pre-requisites
 
-The Motion-Pose-Node requires [Node-RED](https://nodered.org/) to be installed.
+- The Mediapipe-Node requires [Node-RED](https://nodered.org/) to be installed.
+- Python must be installed. [Download](https://www.python.org/downloads)
 
 <br>
 
 ## Install
 
-run the following command in you Node-RED user directory - typically `~/.node-red` :
+- run the following command in you Node-RED user directory - typically `~/.node-red` :
+```
+npm i node-red-contrib-mediapipe
+```
 
-    npm i node-red-contrib-mediapipe
-
-<br>
-
-## Usage
-
-
+- Install the Python packages below.
+```
+pip install opencv-python==4.6.0.66
+pip install mediapipe==0.8.11
+pip install numpy==1.21.6
+```
 <br>
 
 ## Authors
