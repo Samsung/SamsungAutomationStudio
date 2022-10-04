@@ -47,7 +47,7 @@ module.exports = function (RED) {
                 const MNID = this.credentials.smartthingsMnid;
                 const PAT = this.credentials.smartthingsPat;
                 const rtspURL = msg.rtspURL || config.rtspURL;
-                const saveURL = config.saveURL;
+                const saveURL = msg.saveURL || config.saveURL;
                 const totalFrame = config.totalFrame;
                 const fps = config.timer
                     ? totalFrame / (config.timer * 0.7)
