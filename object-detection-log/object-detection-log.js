@@ -24,7 +24,7 @@ module.exports = function (RED) {
                 if (err) throw err
             })
 
-            return msg.payload
+            node.send(msg)
         })
     }
 

@@ -1,4 +1,3 @@
-
 const ws = require('ws')
 const http = require('http')
 const cors = require('cors')
@@ -69,8 +68,9 @@ module.exports = function (RED) {
                     this.wsServer = new ws.Server({
                         server: httpServer
                     })
-                    this.wsServer.on('connection', (socker, requset) => {
-                        return this.onSocketConnect(socker, requset)
+                    this.wsServer.on('connection', (socket, requset) => {
+                        return this.onSocketConnect(socket, requset)
+
                     })
                     this.wsServer.broadcast = function (data, opts) {
                         var results = []
