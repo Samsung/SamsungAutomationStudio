@@ -1,0 +1,2437 @@
+<!--
+    Copyright 2020 Samsung Automation Studio Team
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<style>
+    .md_pat{
+        display:flex;
+        align-items:center;
+    }
+    .md_pat__input{
+        width:65%;
+    }
+    .md_header{
+        text-align:right;
+        padding:10px 15px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        background:#ebebeb;
+    }
+    .md_list{
+        min-height:30vh;
+        max-height:60vh;
+        overflow-y:scroll;
+        border: 1px solid #ddd;
+        /*border-radius: 5px;*/
+        padding: 5px;
+    }
+    .md_list__item{
+        padding:5px 5px 5px 10px;
+        cursor:pointer;
+        margin:5px 0px;
+        border-radius:10px;
+        display:none;
+    }
+    .md_list__location{
+        background:#ebebeb;
+        font-size:1rem;
+    }
+    .md_list__room{
+        background:#f7f7f7;
+        font-size:.9rem;
+    }
+    .md_list__device{
+        background:#ffffff;
+        font-size:.9rem;
+        font-weight:bold;
+        border:1px solid #aaaaaa;
+    }
+    .md_list__device__cmp{
+        padding-left:10px;
+        max-height:100px;
+        overflow-y:auto;
+        font-weight:bold;
+    }
+    .md_List__device__cps{
+        padding-left:20px;
+        font-weight:normal;
+    }
+
+    .md_list__item > input[type="checkbox"]{
+        margin:0px;
+        vertical-align:middle;
+    }
+    .md_list__item--close i{
+        transform: rotate(-90deg);
+    }
+    .md_list__item--close > div{
+        display:none;
+    }
+    .md_list__device.md_list__item--selected{
+        border:1px solid #3695dd;
+    }
+    .md_list__item--show{
+        display:block;
+    }
+
+    span.cp_type__option{
+        cursor:pointer;
+        margin-right:10px;
+        vertical-align: middle;
+    }
+    .node-input-label{
+        display:inline-block;
+        width:100px;
+    }
+    .dp_cp{
+        display:inline-block;
+        width:70%;
+    }
+    .dp_cp input,select{
+        width:100%;
+    }
+    .dp_cp :is(input,select){
+        width:90%;
+    }
+    .my_device__loation--close div{
+        display:none;
+    }
+    .my_Device__room--close div{
+        display:none;
+    }
+    .cp_type--standard .dp_cp__custom{
+        display:none;
+    }
+    .cp_type--custom .dp_cp__standard{
+        display:none;
+    }
+    .cp_type input[type="radio"]{
+        width:30px;
+        margin:0px;
+    }
+
+    .dp_cp_spec{
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height:50vh;
+        overflow:auto;
+    }
+    .st_state{
+        cursor:pointer;
+        display:inline-block;
+        margin:5px;
+        vertical-align:middle;
+        width:19px;
+    }
+    .st_state i{
+        vertical-align:middle;
+    }
+    .st_state svg{
+        width:26px;
+        height:26px;
+        transform:rotate(-90deg);
+        vertical-align:middle;
+    }
+    .st_state:not(.st_state--loading) svg,.st_state.st_state--loading i{
+        display:none;
+    }
+    .st_state.st_state--loading svg,.st_state:not(.st_state--loading) i{
+        display:inline-block;
+        font-size:1.3rem;
+    }
+
+    .st_state i{color:red;}
+    .st_state--valid i{color:green;}
+
+    circle.st_state__back{
+        stroke-width:3;
+        stroke:lightgray;
+        fill:none;
+    }
+    circle.st_state__front{
+        stroke-width:4;
+        stroke-dasharray:56;
+        stroke-dashoffset:0;
+        stroke-linecap:round;
+        fill:none;
+        stroke:lightgray;
+    }
+    .st_state--loading circle.st_state__front{
+        stroke: #3695dd;
+        animation: st_loading 2.5s infinite;
+    }
+    .st_state--valid circle.st_state__front{
+        stroke:green;
+        animation:none;
+    }
+    @keyframes st_loading{
+        0%,100% {stroke-dashoffset:0;}
+        50% {stroke-dashoffset:-56;}
+        50.01% {stroke-dashoffset:56;}
+    }
+    .optgroup--hide{
+        display:none;
+    }
+    .auto__copyurl{
+        display: inline-block;
+        position: relative;
+        width: 70%;
+        height: 20.0114px;
+    }
+    .auto__copyurl__url{
+        position: absolute;
+        left: 0px;
+        right: 40px;
+    }
+    .auto__copyurl__btn{
+        position: absolute;
+        right: 0px;
+        top: 0px;
+    }
+    .logging-options div{
+        cursor:pointer;
+    }
+    .logging-options label{
+        vertical-align:top;
+    }
+    .logging-options input{
+        width:auto;
+        margin:auto;
+        margin:0px 3px 0px 0px !important;
+    }
+    .cmd_arg_row{
+        height:auto;
+        margin:15px 5px 5px auto;
+        width:100%;
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+    }
+    .device-item-capability{
+        color:#000;
+    }
+    .device-item-capability[spec='false']{
+        color:#999;
+    }
+</style>
+<script type="text/x-red" data-template-name="device-profile">
+    <div class="form-row">
+        <label for="node-input-name">Name</label>
+        <input type="text" id="node-input-name" placeholder="default, '{capabilty ID}'">
+    </div>
+
+    <div class="form-row" style="display:flex;align-items:center">
+        <span for="node-input-capabilityId" class="node-input-label" style="width:100px;">Capability</span>
+        <span class="dp_cp">
+            <div class="cp_type">
+                <span class="cp_type__option">
+                    <input type="radio" name="cpType" value="standard" checked>Standard
+                </span>
+                <span class="cp_type__option">
+                    <input type="radio" name="cpType" value="custom" >Custom
+                </span>
+            </div>
+            <span class="dp_cp__custom">
+                <input type="text" list="stAccessToken_datalist" id="node-input-stAccessToken" placeholder="SmartThings AccessToken">
+                <span class="st_state" title="refresh">
+                    <svg>
+                        <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                        <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+                    </svg>
+                    <i class="fa fa-check" aria-hidden="true" id="node-input-stAccessToken-valid"></i>
+                </span>
+                <select id="node-input-capabilityId_custom" data-cptype="custom">
+                </select>
+            </span>
+            <span class="dp_cp__standard">
+                <select id="node-input-capabilityId_standard" data-cptype="standard"></select>
+            </span>
+        </span>
+    </div>
+    <datalist id="stAccessToken_datalist"></datalist>
+    <div id="cp_spec__result" >
+        <span id="capabilities_refresh_result" style="padding:10px;"></span>
+    </div>
+    <pre class="dp_cp_spec"><code id="dp_cp_spec__code">select capability</code></pre>
+</script>
+<script type="text/x-red" data-help-name="device-profile">
+    <p>This node represents an installed device. In this flow, You need to choose a device for automation.</p>
+    <p>Event, Status and Command nodes need to know which devices will subscribe to the SmartThings Cloud or commands.</p>
+    <p>This node has a capability that represents device feature. You can find more information about <a href="https://smartthings.developer.samsung.com/docs/api-ref/capabilities.html" target="_blank">the Capabilities of SmartThings</a>.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name</dt>
+        <dd>The label of the Name assigned by the user. It's unique name in flow.</dd>
+        <dt>Capability<span class="property-type">required</span></dt>
+        <dd>
+            <ul>
+                <li><b>'Standard'</b> Capability : Standard Capabilities are created and maintained by the SmartThings development team.</li>
+                <li><b>'Custom'</b> Capability : Custom capabilities are defined by the developer. A custom capability consists of a namespace and a capability name to uniquely identify it. 'device-profile' node get custom capability that is defined in your device using your SmartThings Personal AccessToken</li>
+                <li>The List of Capabilities provided by this Device.</li>
+                <li>Determine if this Device supports the specified capability name.</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+<script type="text/x-red" data-template-name="installed-device">
+    <div class="form-tips" style="margin-bottom:10px;"><b>Note:</b> create token on the SmartThings <b><a href="https://account.smartthings.com/tokens" target="_blank">personal access token page</a></b></div>
+
+    <div class="form-row">
+        <label for="node-input-name">Node Name</label>
+        <input type="text" id="node-input-name" placeholder="default, 'token:xxxxxxxx'">
+    </div>
+    <div class="form-row md_pat">
+        <label for="node-input-stAccessToken">Personal<br> Access Token</label>
+        <input type="text" class="md_pat__input" id="node-input-stAccessToken" list="stAccessToken_datalist" placeholder="SmartThings PAT">
+        <span class="st_state" title="refresh">
+            <svg>
+                <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+            </svg>
+            <i class="fa fa-check" aria-hidden="true" id="node-input-stAccessToken-valid"></i>
+        </span>
+    </div>
+    <div class="form-row"style="text-align:right">
+        <span id="my_device__result" style="padding:10px;"></span>
+    </div>
+
+    <div class="md_container">
+        <div class="md_header">
+            <span class="md_header__cnt">0 devices, 0 selected</span>
+            <input id="md_header__search" class="md_header__search" type="search" placeholder="Device Search">
+        </div>
+
+        <div id="md_list" class="md_list">
+            <!-- <div class="my_device__loation my_device__loation--close"></div>
+            <div class="my_device__room my_device__room--close"></div>
+            <div class="my_device__device my_device__device--close"></div> -->
+        </div>
+    </div>
+    <!-- <div class="my_device_list" class="form-row my_device_list">
+    </div> -->
+    <div id="my-device-list-div" class="form-row sensor-container-row">
+        <ol id="my-device-list-container"></ol>
+    </div>
+    <datalist id="stAccessToken_datalist"></datalist>
+</script>
+<script type="text/x-red" data-help-name="installed-device">
+    <p>This node represents an your SmartThings device. You can control your SmartThings devices directly without even registering the Automation.</p>
+    <p>To do this, you should set your PAT on this node and select one on your device list. Then, you can get a condition or put a command to your installed devices by using 'Status', 'Command' nodes.</p>
+    <p>After setting your PAT, get your device list and select device that you want to control.</p>
+    <h3>Getting a SmartThings PAT</h3>
+        <ul>
+            <li>SmartThings Authentication : <a href="https://smartthings.developer.samsung.com/docs/api-ref/st-api.html#section/Authentication">API Reference, Authentication</a></li>
+            <li>PATs can be created and managed on the <a href="https://account.smartthings.com/tokens">personal access token page</a>.</li>
+        </ul>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Device Name<span class="property-type">read-only</span></dt>
+        <dd>The label of the Name assigned by the user. It's unique name in flow.</dd>
+        <dt>Device Label<span class="property-type">read-only</span></dt>
+        <dd> </dd>
+        <dt>Personal Access Token<span class="property-type">required</span></dt>
+        <dd></dd>
+        <dt>Device List</dt>
+        <dd>
+            <ul>
+                <li>The List of your device that .</li>
+                <li>Select device that you want to control, subscribe</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+<script type="text/x-red" data-template-name="automation">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input id="node-input-name" type="text" placeholder="Name"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-url"><i class="fa fa-cog"></i> Endpoint</label>
+        <input id="node-input-url" type="text"  placeholder="/url"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-copyurl"></label>
+        <div class="auto__copyurl">
+            <div class="auto__copyurl__url">
+                <input type="text" id="node-input-copyurl" readonly="true" style="width:100%"/>
+            </div>
+            <a id="export-clipboard" class="editor-button auto__copyurl__btn">
+                <i class="fa fa-copy"></i>
+            </a>
+        </div>
+    </div>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
+        <div>
+            <input id="node-input-loggingEditor" type="checkbox" value="true" >
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
+        </div>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="automation">
+    <p>This node represents the WebHook Endpoint of SmartApp. the Automation node handles lifecycle of SmartApp.</p>
+    <p>A WebHook endpoint in this context is a web services application which can receive incoming HTTP POST requests.</p>
+    <p></p>
+    <p><a href="https://smartthings.developer.samsung.com/docs/guides/smartapps/webhook-apps.html" target="_blank">more...</a></p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name</dt>
+        <dd>A Name for the WebHook endpoint.</dd>
+        <dt>Endpoint <span class="property-type">required</span></dt>
+        <dd>A Endpoint that should be invoked during execution.</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>[lifecyle] Event</dt>
+        <dd>Next node is the Event node only.</dd>
+    </dl>
+</script>
+
+<script type="text/x-red" data-template-name="event-device">
+    <div class="form-row" style="width:600px;">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="default, '{deviceName}'" style="width:50%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
+        <select type="text" id="node-input-deviceId" style="width:50%"></select>
+        <span class="st_state" title="refresh">
+            <svg>
+                <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+            </svg>
+        </span>
+    </div>
+    <hr align="middle"/>
+    <div class="form-row">
+        <label for="node-input-capabilityId"><i class="fa fa-asterisk"></i> Capability</label>
+        <select id="node-input-capabilityId" style="width:50%;"></select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-attributeId"><i class="fa fa-sun-o"></i> Attribute</label>
+        <select style="width:50%" id="node-input-attributeId"></select>
+    </div>
+    <div class="form-row sensor-container-row">
+        <ol id="attr-list-container"></ol>
+    </div>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
+        <div>
+            <input id="node-input-logging" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
+            <input id="node-input-loggingEditor" type="checkbox" value="true">
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
+        </div>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="event-device">
+    <p>This node represents a change of device.</p>
+    <p>When a user installs a SmartApp, they typically will select the devices to be used by the SmartApp.</p>
+    <p>This event-device node interacts with installed SmartThings device. When the device changes and an event occurs, the event node can receive the event as a subscriber.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name</dt>
+        <dd>The label of the Device assigned by the user.</dd>
+        <dt>Device </dt>
+        <dd>The unique system identifier for this Device.</dd>
+        <dt>Capability <span class="property-type">required</span></dt>
+        <dd>
+            <ul>
+                <li>The List of Capabilities provided by this Device.</li>
+                <li>Determine if this Device supports the specified capability name.</li>
+            </ul>
+        </dd>
+        <dt>Attribute</dt>
+        <dd>
+            <ul>
+                <li>The list of Attribute s for this Device.</li>
+                <li>Determine if this Device has the specified attribute.</li>
+            </ul>
+        </dd>
+     </dl>
+</script>
+
+<script type="text/x-red" data-template-name="status-device">
+    <div class="form-row" style="width:600px;">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="default, '{deviceName}'" style="width:50%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
+        <select type="text" id="node-input-deviceId" style="width:50%"></select>
+        <span class="st_state" title="refresh">
+            <svg>
+                <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+            </svg>
+        </span>
+    </div>
+    <hr align="middle" />
+    <div class="form-row">
+        <label for="node-input-capabilityId" style="font-weight:bold"> Filter</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-capabilityId"><i class="fa fa-asterisk"></i> Capability</label>
+        <select id="node-input-capabilityId" style="width:50%;"></select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-attributeId"> <i class="fa fa-sun-o"></i> Attribute</label>
+        <select style="width:50%" id="node-input-attributeId"></select>
+    </div>
+    <div class="form-row sensor-container-row">
+        <ol id="attr-list-container"></ol>
+    </div>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
+        <div>
+            <input id="node-input-logging" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
+            <input id="node-input-loggingEditor" type="checkbox" value="true">
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
+        </div>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="status-device">
+    <p>This node checks the state of the device.</p>
+    <p>When a user installs a SmartApp, A user will select the devices to be used by the SmartApp.</p>
+    <p>This status-device node interact with the installed SmartThings device. This node allows you to branch flows based on the state of the device.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name</dt>
+        <dd>The label of the Device assigned by the user.</dd>
+        <dt>Device </dt>
+        <dd>The unique system identifier for this Device.</dd>
+        <dt>Capability <span class="property-type">required</span></dt>
+        <dd>
+            <ul>
+                <li>The List of Capabilities provided by this Device.</li>
+                <li>Determine if this Device supports the specified capability name.</li>
+            </ul>
+        </dd>
+        <dt>Attribute</dt>
+        <dd>
+            <ul>
+                <li>The list of Attribute s for this Device.</li>
+                <li>Determine if this Device has the specified attribute.</li>
+            </ul>
+        </dd>
+     </dl>
+</script>
+
+<script type="text/x-red" data-template-name="command-device">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="default, '{attributeID}:{argValue}'" style="width:50%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-cog"></i> Device</label>
+        <select type="text" id="node-input-deviceId" style="width:50%"></select>
+        <span class="st_state" title="refresh">
+            <svg>
+                <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
+                <circle class="st_state__front" cx="13" cy="13" r="9"></circle>
+            </svg>
+        </span>
+    </div>
+    <hr align="middle" />
+    <div class="form-row">
+        <label for="node-input-capabilityId"><i class="fa fa-asterisk"></i> Capability</label>
+        <select id="node-input-capabilityId" style="width:50%;"></select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-attributeId"> <i class="fa fa-sun-o"></i> Command</label>
+        <select style="width:50%" id="node-input-attributeId"></select>
+    </div>
+    <div class="form-row actuator-container-row">
+        <ol id="cmd-list-container"></ol>
+    </div>
+    <div class="logging-options">
+        <label><i class="fa fa-align-right"></i> Log</label>
+        <div>
+            <input id="node-input-logging" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-logging">Log device response</span><br>
+            <input id="node-input-loggingEditor" type="checkbox" value="true">
+            <span class="logging-options__label" label_for="node-input-loggingEditor">Log to editor debug panel</span><br>
+            <input id="node-input-loggingConsole" type="checkbox" value="false">
+            <span class="logging-options__label" label_for="node-input-loggingConsole">Log to system console</span>
+        </div>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="command-device">
+    <p>This node can command to the device.</p>
+    <p>When a user installs a SmartApp, A user will select the devices to be used by the SmartApp.</p>
+    <p>This command-device node interact with the installed SmartThings device. As commands you set, this node changes the state of the device.</p>
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Name</dt>
+        <dd>The label of the Device assigned by the user.</dd>
+        <dt>Device </dt>
+        <dd>The unique system identifier for this Device.</dd>
+        <dt>Capability <span class="property-type">required</span></dt>
+        <dd>
+            <ul>
+                <li>The List of Capabilities provided by this Device.</li>
+                <li>Determine if this Device supports the specified capability name.</li>
+            </ul>
+        </dd>
+        <dt>Command</dt>
+        <dd>
+            <ul>
+                <li>The list of Commands for this Device.</li>
+                <li>Determine if this Device has the specified command name.</li>
+            </ul>
+        </dd>
+     </dl>
+</script>
+
+<script type="text/javascript">
+
+    function _SmartThingsProfile() {
+        var _capabilities = {}
+
+        const SmartThingsApi = {
+          getLocations: function(token){
+            return new Promise((resolve,reject)=>{
+              $.ajax({
+                url: "https://api.smartthings.com/v1/locations",
+                headers: {
+                  Authorization: 'Bearer ' + token
+                }
+              }).then(resolve,reject)
+            });
+          },
+          getLocationsRooms: function(token,locationId){
+            return new Promise((resolve,reject)=> {
+              $.ajax({
+                url: "https://api.smartthings.com/v1/locations/" + locationId + "/rooms", headers: {
+                  Authorization: 'Bearer ' + token
+                }
+              }).then(resolve,reject)
+            });
+          },
+          getDevices: function (token) {
+            return new Promise((resolve,reject)=> {
+              $.ajax({
+                url: "https://api.smartthings.com/v1/devices", headers: {
+                  Authorization: 'Bearer ' + token
+                }
+              }).then(resolve,reject)
+            })
+          },
+          getDeviceList: function (token, done, fail) {
+            return $.ajax({
+              url: "https://api.smartthings.com/v1/devices",
+              headers: {
+                Authorization: 'Bearer ' + token
+              }
+            }).done(function (result, textStatus, xhr) {
+              if(result.hasOwnProperty('items') && Array.isArray(result.items)){
+                result.items.forEach(device=>{
+                  device.capabilities = []
+                  device.components.forEach(function (component) {
+                    component.capabilities.forEach(function (cp) {
+                      cp['vid'] = cp.id+'_v'+cp.version;
+                      cp['vname']=cp.version===1?cp.name:cp.name+' v'+cp.version;
+                      device.capabilities.push(cp)
+
+                      if(SmartThingsProfile.hasCapability(cp.vid)===false){
+                        var pr = SmartThingsApi.getCapability(token,cp.id,cp.version)
+                          .then(spec=>{
+                            // cp['spec']=true
+
+                            /*NPM SOURCE*/
+                            Object.assign(cp,spec)
+                            $('#my-device-list-container span.device-item-capability').attr('spec','true')
+                          }).fail(err=>{
+                            console.error(err)
+                            $('#my-device-list-container span.device-item-capability').attr('spec','false')
+                          })
+                      }
+                    })
+                  })
+
+                  delete device['components']
+                  delete device['dth']
+                  delete device['deviceNetworkType']
+                  delete device['locationsId']
+                })
+              }
+              done(result.items);
+            }).fail(function (e) {
+              fail(e);
+            });
+          },
+          getCapability: function(token,capabilityId,capabilityVersion, done, fail){
+            return new Promise((resolve,reject)=>{
+              $.ajax({
+                url: 'https://api.smartthings.com/v1/capabilities/'+capabilityId+'/'+capabilityVersion,
+                headers: {
+                  Authorization: 'Bearer '+token
+                }
+              }).then(resolve,reject)
+            }).then((cp)=>{
+              cp['vid']=cp.id+'_v'+cp.version //vid : id + version
+              cp['vname']=(cp.version===1?cp.name:cp.name+' v'+cp.version)// vname : name + version
+              cp['_spec']=true
+              SmartThingsProfile.addCapability(cp)
+              return cp;
+            })
+          }
+        }
+        const runtimeAPI={
+          getPat : function(nodeType, nodeID){
+            const dashedType = nodeType.replace(/\s+/g, '-');
+            const credentialUrl = 'credentials/' + dashedType + "/" + nodeID;
+            return new Promise((resolve,reject)=>{
+              $.getJSON(getCredentialsURL(nodeType, nodeID)).then((data)=>{
+                const pat = (data&&data.stAccessToken)?data.stAccessToken:null;
+                resolve(pat);
+              },reject)
+            })
+          }
+        }
+
+        this.getAttributeSchema = function (capabilityId, attributeId) {
+            if (_capabilities[capabilityId] && _capabilities[capabilityId].attributes && _capabilities[capabilityId].attributes[attributeId]) {
+                return _capabilities[capabilityId].attributes[attributeId].schema || {};
+            } else {
+                return {};
+            }
+        }
+        this.getCommandArguments = function (capabilityId, commandId) {
+            if (_capabilities[capabilityId] && _capabilities[capabilityId].commands && _capabilities[capabilityId].commands[commandId]) {
+                return _capabilities[capabilityId].commands[commandId].arguments || []
+            } else {
+                return []
+            }
+        }
+
+        this.getCapability = function (vid,version) {
+            if(version){
+                vid = vid+'_v'+version;
+            }
+            if(vid&&vid.indexOf('_v')===-1){
+                vid+='_v1';
+            }
+            return _capabilities[vid] || null;
+        }
+        this.hasCapability = function (vid){
+            if(vid&&vid.indexOf('_v')===-1){
+                vid+='_v1'
+            }
+            return !!_capabilities[vid]
+        }
+        this.getAllCapabilities = function () {
+            return _capabilities;
+        }
+        this.setCapabilities=function(capabilities){
+            _capabilities = capabilities;
+        }
+        this.addCapabilities=function(cparr){
+            cparr.forEach(cp=>{
+                if(!cp.hasOwnProperty('vid')){
+                    cp.vid = `${cp.id}_v${cp.version}`;
+                }
+                this.addCapability(cp);
+            })
+        }
+        this.addCapability = function(cp){
+            if(!cp.hasOwnProperty('id') || !cp.hasOwnProperty('version')){
+                return;
+            }
+            _capabilities[cp.vid]=cp;
+        }
+
+        function callMyDeviceApi(path){
+            return new Promise((resolve,reject)=>{
+                let root = RED.settings.httpNodeRoot||'';
+                root = root.trim().replace(/^\/*/,'');
+                if(/[^\/]$/.test(root)){root+='/';}
+                $.ajax({url:root+path,type:"GET",dataType:'json'}).then(resolve,reject);
+            })
+        }
+        this.loadRuntimeCapabilities=()=>callMyDeviceApi('_smartthings/capabilities');
+        this.loadMydeviceInfo=()=>callMyDeviceApi('_smartthings/mydevices');
+
+        let _mydevices={};
+        this.validatePat=function(pat){
+            return SmartThingsApi.getCapability(pat,'switch',1);
+        }
+		this.addPersonalToken = function(nodeId,pat,isRefresh){
+            if(!pat){
+            	_mydevices[nodeId]=Promise.resolve(null);
+                return Promise.resolve(null);
+            }
+            if(!_mydevices[nodeId]||isRefresh){
+                return this.validatePat(pat).then(()=>{
+                    const PAT = {};
+                    const getLocationsPR = SmartThingsApi.getLocations(pat)
+                        .then(locationsResult=>{
+                            return Promise.allSettled(locationsResult.items
+                                .sort((l1,l2) => l1.name.localeCompare(l2.name))
+                                .map(location=>{
+                                    return SmartThingsApi.getLocationsRooms(pat, location.locationId)
+                                        .then(roomsResult => {
+                                            location.rooms=roomsResult.items;
+                                            location.rooms.sort((r1,r2)=> r1.name.localeCompare(r2.name))
+                                            location.rooms.push({locationId:location.locationId,roomId:'undefined',name:"'undefined'"});
+                                        })
+                                }))
+                                .then(()=>locationsResult.items)
+                        })
+                        .then(locations=>{
+                            PAT.locations=locations;
+                            return locations;
+                        })
+
+                    const getDevicesPR = SmartThingsApi.getDevices(pat)
+                        .then(devicesResult=>{
+                            return devicesResult.items
+                                .map(d=>{
+                                    return {
+                                        deviceId:d.deviceId,
+                                        name:d.label||d.name,
+                                        locationId:d.locationId,
+                                        roomId:d.roomId,
+                                        components:d.components
+                                    }
+                                })
+                        }).then(devices=>{
+							PAT.devices=devices;
+							PAT.customCps = PAT.devices.map(d=>d.components).flat()
+								.map(cmp=>cmp.capabilities).flat()
+								.map(cp=> cp.id+'_v'+cp.version)
+								.filter(cpId=>/\./.test(cpId))//only custom capabilities
+								.filter((cpId,idx,arr)=>arr.indexOf(cpId)==idx)//remove duplicate items
+								.sort();
+							return devices;
+						});
+
+                    const getUnknownCapabilities = getDevicesPR
+                        .then(devices=>{
+                            var prs = devices.map(d=>d.components).flat()
+                                .map(cmp=>cmp.capabilities).flat()
+                                .filter(cp=>!SmartThingsProfile.getCapability(cp.id+'_v'+cp.version))
+                                .map(cp=>SmartThingsApi.getCapability(pat,cp.id,cp.version))
+                            return Promise.allSettled(prs);
+                        });
+
+                    const addPATPromise=Promise.allSettled([getLocationsPR,getDevicesPR,getUnknownCapabilities])
+                        .then(result=>{
+                            if(PAT.devices){
+                                _mydevices[nodeId]=Promise.resolve(PAT);
+                            }else{
+								_mydevices[nodeId]=Promise.resolve(null);
+                            }
+							return _mydevices[nodeId];
+                        });
+					_mydevices[nodeId]=addPATPromise;
+                    return addPATPromise;
+                }).catch(e=>{
+                    console.log('validate SmartThings AccessToken fail : '+e.statusText);
+					_mydevices[nodeId]=Promise.resolve(null);
+                    return Promise.reject(null);
+                })
+            }else if(_mydevices[nodeId]){
+                return _mydevices[nodeId];
+            }
+        }
+        this.getMyDevices=(nodeId)=>{
+            if(_mydevices[nodeId]){
+            	return _mydevices[nodeId];
+			}else{
+            	return Promise.resolve(null);
+			}
+        }
+		this.setMyDeviceInfos=(mydevices)=>{
+			Object.keys(mydevices).forEach(mydeviceId=>{
+				_mydevices[mydeviceId]=Promise.resolve(mydevices[mydeviceId]);
+			})
+		}
+    }
+
+    const SmartThingsProfile = new _SmartThingsProfile();
+    SmartThingsProfile.loadMydeviceInfo()
+        .then(SmartThingsProfile.setMyDeviceInfos)
+        .catch(e=>{console.warn('load mydevice info fail : ',e.message||e)})
+        .then(SmartThingsProfile.loadRuntimeCapabilities)
+        .then(SmartThingsProfile.setCapabilities)
+        .catch(e=>{console.warn('load capabilities fail : ',e.message||e)})
+
+</script>
+<script type="text/javascript">
+    const ST_NODES_CATEGORY = "Samsung AutomationStudio"
+    const ST_EVENT_DEVICE = "event-device";
+    const ST_STATUS_DEVICE = "status-device";
+    const ST_COMMAND_DEVICE = "command-device";
+    const ST_DEVICE_PROFILE = 'device-profile';
+    const ST_MY_DEVICE = 'installed-device';
+    const ST_AUTOMATION = 'automation';
+    const ST_DEVICE_NODES=[ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE]
+    const ST_NODES=[ST_AUTOMATION,ST_DEVICE_PROFILE,ST_MY_DEVICE,ST_EVENT_DEVICE,ST_STATUS_DEVICE,ST_COMMAND_DEVICE];
+
+    function STRefCheck() {
+
+        //import, broken reference fix
+        const workspaceId = RED.workspaces.active();
+        var hasBrokenRef = RED.nodes.filterNodes({z: workspaceId})
+            .filter(n => ST_NODES.includes(n.type) && n._def?.defaults?.hasOwnProperty('profileId'))
+            .some(n => n.id != n.profileId);
+        if (hasBrokenRef) {
+            var map = {}
+            RED.nodes.filterNodes({z: workspaceId})
+                .filter(n => ST_NODES.includes(n.type) && n._def?.defaults?.hasOwnProperty('profileId'))
+                .forEach(n => {
+                    if (!n.profileId) {
+                        n.profileId = n.id;
+                    }
+
+                    if (map.hasOwnProperty(n.profileId)) {
+                        n.profileId = n.id;
+                    } else {
+                        map[n.profileId] = n;
+                    }
+                })
+
+            RED.nodes.filterNodes({z: workspaceId})
+                .filter(n => ST_DEVICE_NODES.includes(n.type) && map.hasOwnProperty(n.deviceNodeId))
+                .forEach(function (n) {
+                    n.deviceNodeId = map[n.deviceNodeId].id;
+                    RED.editor.validateNode(n);
+                })
+
+            for (var profId in map) {
+                map[profId].profileId = map[profId].id;
+            }
+            RED.view.redraw();
+        }
+
+        RED.nodes.filterNodes({z:RED.workspaces.active(),type:ST_MY_DEVICE})
+            .filter(n=> n.device && !n.devices)
+            .forEach(n=> n.devices=[n.device.deviceId]);
+
+        RED.nodes.filterNodes({z: workspaceId})
+            .filter(n=>ST_DEVICE_NODES.includes(n.type))
+            .filter(n=>n.deviceNodeId && !n.deviceId && RED.nodes.node(n.deviceNodeId))
+            .forEach(n=>{
+                const deviceNode = RED.nodes.node(n.deviceNodeId);
+                if(deviceNode.type===ST_DEVICE_PROFILE){
+                    n.deviceId=n.deviceNodeId;
+                }else if(deviceNode.type===ST_MY_DEVICE){
+                    n.deviceId=deviceNode.device?.deviceId||(deviceNode.devices?.lenght==1?deviceNode.devices[0]:'');
+                }
+            });
+    }
+    function patChangeEventDP(mydevice,initValue){
+        const cpCustomEl = document.querySelector('#node-input-capabilityId_custom');
+        const stStateEL = document.querySelector('.st_state');
+        stStateEL.classList.remove('st_state--loading');
+
+        if(mydevice){
+            stStateEL.classList.add('st_state--valid');
+            cpCustomEl.disabled=false;
+            cpCustomEl.innerHTML='';
+
+			mydevice.customCps
+                .map(cpId=>cpId.slice(0,cpId.indexOf('.')))
+                .filter((namespace,idx,arr)=>arr.indexOf(namespace)===idx)
+                .sort()
+                .forEach(namespace=>{
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = namespace;
+                    cpCustomEl.append(optgroup);
+                })
+			mydevice.customCps
+                .forEach(cpId=>{
+                    const option = document.createElement('option');
+                    option.value = cpId;
+                    const tempId = cpId.split('_v')[0];
+                    const tempVersion = cpId.split('_v')[1];
+                    option.innerText = (tempVersion==1)?tempId:cpId;
+                    const namespace = cpId.slice(0,cpId.indexOf('.'));
+                    const optgroup = cpCustomEl.querySelector(`optgroup[label="${namespace}"]`);
+                    optgroup.append(option);
+                })
+
+            if(initValue){
+                cpCustomEl.value = initValue;
+                cpCustomEl.dispatchEvent(new Event('change'));
+            }
+        }else{
+            stStateEL.classList.remove('st_state--valid');
+            cpCustomEl.disabled=true;
+            cpCustomEl.innerHTML = '';
+        }
+    }
+    RED.nodes.registerType('device-profile', {
+        category: ST_NODES_CATEGORY,
+        paletteLabel: "Device Profile",
+        color: "rgb(168,168,168)",
+        defaults: {
+            name: {value: ""},
+            alias:{value:""},//'name' is null, set automatically with properties;
+            capabilityId: {value: "", required: true},
+            profileId: {value:""},
+            cpType:{value:'standard'},
+            capabilityId_standard:{value:''},
+            capabilityId_custom:{value:''}
+        },
+        credentials: {
+            stAccessToken: {type: 'text'}
+        },
+        inputs: 0,
+        outputs: 0,
+        icon: "deviceprofile.png",
+        label: function () {
+            return this.name|| this.alias || "Device Profile";
+        },
+        oneditsave: function(){
+            this.cpType = document.querySelector('input[name="cpType"]:checked').value||"standard";
+            this.capabilityId = document.querySelector('#node-input-capabilityId_'+this.cpType).value;
+            if(this.capabilityId){
+                this.alias=this.capabilityId;
+            }
+        },
+        oneditprepare: function () {
+            STRefCheck();
+
+            var NODE = this
+            NODE.cpType=NODE.cpType||'standard';
+
+            //capabilityId_standard
+            const cpStandardEl = document.querySelector('#node-input-capabilityId_standard');
+            const liveGroupEl = document.createElement('optgroup');
+            liveGroupEl.label = 'live/proposed';
+            cpStandardEl.append(liveGroupEl);
+            Object.values(SmartThingsProfile.getAllCapabilities())
+                .filter( cp => !!cp._custom === false)
+                .sort((c1,c2)=>c1.vid.localeCompare(c2.vid))
+                .forEach((cp) => {
+                    const option = document.createElement('option');
+                    option.value = cp.vid;
+                    option.innerText = cp.vname||cp.name;
+
+                    if (cp.status === 'live' || cp.status === 'proposed') {
+                        liveGroupEl.append(option);
+                    } else {
+                        option.title = cp.status
+                        let groupEl = document.querySelector(`optgroup[label="${cp.status}"]`);
+                        if(!groupEl){
+                            groupEl = document.createElement('optgroup');
+                            groupEl.label = cp.status;
+                            groupEl.disabled = true;
+                            cpStandardEl.append(groupEl);
+                        }
+                        groupEl.append(option);
+                    }
+                })
+
+            document.querySelector('.dp_cp').addEventListener('click',e=>{
+                if(e.target.matches('.cp_type__option')||e.target.matches('input[name="cpType"]')){
+                    var target = e.target;
+                    if(e.target.matches('.cp_type__option')){
+                        target = e.target.querySelector('input[name="cpType"]');
+                        target.checked=true;
+                    }
+                    e.currentTarget.className = 'dp_cp cp_type--'+target.value;
+                    document.querySelector(`#node-input-capabilityId_${target.value}`).dispatchEvent(new Event('change'));
+                }
+            })
+
+            function changePat(e,isRefresh){
+                const pat = document.querySelector('#node-input-stAccessToken').value
+                document.querySelector('.st_state').className = 'st_state st_state--loading';
+                SmartThingsProfile.addPersonalToken(NODE.id,pat,isRefresh).then(patChangeEventDP,patChangeEventDP);
+            }
+            document.querySelector('#node-input-stAccessToken').addEventListener('change',changePat);
+            document.querySelector('.st_state').addEventListener('click',(e)=>{changePat(e,true)});
+
+
+            function changeCapabilitySelect(e){
+                const cp = SmartThingsProfile.getCapability(e.target.value);
+                const cpType = document.querySelector('input[name="cpType"]:checked').value;
+                if(cpType==e.target.dataset.cptype){
+                    if(cp){
+                        document.querySelector('#dp_cp_spec__code').innerText = JSON.stringify(cp,function(k,v){return ['vid','vname'].includes(k)?undefined:v},2);
+                    }else{
+                        document.querySelector('#dp_cp_spec__code').innerText = 'select capability';
+                    }
+                }
+            }
+            document.querySelector('#node-input-capabilityId_custom').addEventListener('change',changeCapabilitySelect)
+            document.querySelector("#node-input-capabilityId_standard").addEventListener('change',changeCapabilitySelect)
+
+            //cp_type optino radio button
+            document.querySelector('.dp_cp').className = 'dp_cp cp_type--'+NODE.cpType;
+            document.querySelector('.cp_type input[type="radio"][value="'+NODE.cpType+'"]').checked=true;
+
+            SmartThingsProfile.getMyDevices(NODE.id).then(mydevice=>patChangeEventDP(mydevice, NODE.capabilityId_custom || NODE.capabilityId));
+            cpStandardEl.value = NODE.capabilityId_standard||NODE.capabilityId;
+            cpStandardEl.dispatchEvent(new Event('change'));
+        }
+    });
+
+    RED.nodes.registerType('installed-device', {
+        category: ST_NODES_CATEGORY,
+        paletteLabel: "My Device",
+        color: "rgb(231,147,173)",
+        defaults: {
+            name: {value: ''},
+            alias: {value: ''},
+            device: {value:''},
+            devices: {value: null},
+            profileId: {value:''}
+        },
+        credentials: {
+            stAccessToken: {type: 'text', required: true}
+        },
+        inputs: 0,
+        outputs: 0,
+        icon: "mydevice.png",
+        label: function () {
+            return this.name|| this.alias || "My Device";
+        },
+        onpaletteadd: function(){
+
+        },
+        oneditsave: function () {
+            if(document.querySelectorAll('#md_list .md_list__device.md_list__item--selected').length>0){
+                this.devices = Array.from(document.querySelectorAll('#md_list .md_list__device.md_list__item--selected')).map(el=>el.dataset.deviceId);
+            }
+            if(document.querySelector('#node-input-stAccessToken').value){
+                this.alias=`token:${document.querySelector('#node-input-stAccessToken').value.slice(0,8)}`;
+            }
+        },
+        oneditprepare: function () {
+            const NODE = this;
+
+            //profileId: DeviceNode 참조 backup ID
+            STRefCheck();
+
+            if(NODE.credentials?.stAccessToken){
+                const stateEl = document.querySelector('.st_state');
+                stateEl.classList.add('st_state--loading');
+                SmartThingsProfile.getMyDevices(NODE.id)
+                    .then(mydevice=>createMyDeviceList(mydevice, NODE.devices))
+                    .then(()=>{stateEl.classList.add('st_state--valid')})
+                    .catch(()=>{stateEl.classList.remove('st_state--valid')})
+                    .finally(()=>{stateEl.classList.remove('st_state--loading')})
+            }
+
+            function patChangeEventMD(e,isRefresh){
+                const pat = document.querySelector('#node-input-stAccessToken').value;
+                const stateEl = document.querySelector('.st_state');
+                stateEl.classList.add('st_state--loading');
+                document.querySelector('#md_list').innerHTML='';
+                SmartThingsProfile.addPersonalToken(NODE.id,pat,isRefresh)
+                    .then(createMyDeviceList,createMyDeviceList)
+                    .then(()=>{stateEl.classList.add('st_state--valid')})
+                    .catch(()=>{stateEl.classList.remove('st_state--valid')})
+                    .finally(()=>{stateEl.classList.remove('st_state--loading')})
+            }
+            document.querySelector('#node-input-stAccessToken').addEventListener('change',patChangeEventMD);
+            document.querySelector('.st_state').addEventListener('click',(e)=>{patChangeEventMD(e,true)});
+            document.querySelector('#md_list').addEventListener('click',e=>{
+                if(e.target.matches('.md_list__item')){
+                    e.target.classList.toggle('md_list__item--close');
+                }else if(e.target.matches('input[type="checkbox"]') || e.target.matches('.md_list__device__cmp') || e.target.matches('.md_List__device__cps')){
+                    const itemEl = e.target.parentElement;
+                    const isSelected = itemEl.classList.toggle('md_list__item--selected');
+                    itemEl.querySelector('input[type="checkbox"]').checked = isSelected;
+                    itemEl.querySelectorAll('.md_list__item--show')
+                        .forEach(el=>{
+                            el.classList.toggle('md_list__item--selected',isSelected)
+                            el.querySelector('input[type="checkbox"]').checked=isSelected;
+                        });
+                    refreshMdListStatus();
+                }
+            })
+
+            function createLocationEl(location){
+                const locationEl = document.querySelector('.md_list__location[data-location-id="'+location.locationId+'"]')||document.createElement('div');
+                Object.assign(locationEl.dataset, {locationId:location.locationId,name:location.name});
+                locationEl.className = `md_list__item md_list__location ${location.name==undefined?'md_list__item--unknown':''}`;
+                locationEl.innerHTML=`<input type="checkbox"> ${location.name} <i class="fa fa-angle-down"></i>`;
+                return locationEl;
+            }
+            function createRoomEl(room){
+                const roomEl = document.querySelector(`.md_list__room[data-location-id="${location.locationId}"][data-room-id="${room.roomId}"]`)|| document.createElement('div');
+                Object.assign(roomEl.dataset,{locationId:room.locationId,roomId:room.roomId,name:room.name});
+                roomEl.className = `md_list__item md_list__room ${room.name==undefined?'md_list__item--unknown':''}`;
+                roomEl.innerHTML=`<input type="checkbox"> ${room.name} <i class="fa fa-angle-down"></i>`;
+                return roomEl;
+            }
+            function createDeviceEl(device){
+                const deviceEl = document.createElement('div');
+                Object.assign(deviceEl.dataset,{locationId:device.locationId,roomId:device.roomId,deviceId:device.deviceId,name:device.name});
+                deviceEl.className= 'md_list__item md_list__device md_list__item--close md_list__item--show';
+                deviceEl.innerHTML=`<input type="checkbox" class="md_list__device__check" data-device-id="${device.deviceId}"> ${device.name} <i class="fa fa-angle-down"></i>`;
+
+                device.components.forEach(cmp=>{
+                    const cmpEl = document.createElement('div');
+                    cmpEl.className = 'md_list__device__cmp';
+                    cmpEl.innerText = cmp.id;
+                    deviceEl.append(cmpEl);
+
+                    if(cmp.capabilities){
+                        const cpEl = document.createElement('div');
+                        cpEl.className = 'md_List__device__cps';
+                        cpEl.innerText = cmp.capabilities.map(cp=> cp.version===1?cp.id:cp.vid).join(', ');
+                        deviceEl.append(cpEl);
+                    }
+                })
+                return deviceEl;
+            }
+            function createMyDeviceList(mydevice,selectedDevices){
+                if(!mydevice){return Promise.reject(null);}
+
+                document.querySelector('.st_state').classList.add('st_state--loading');
+
+                const mdContainerEl = document.querySelector('#md_list');
+                document.querySelector('.st_state').classList.remove('st_state--loading');
+                if(mydevice.devices){
+                    if(mydevice.locations){
+                        mydevice.locations.map(location=>{
+                            const locationEl = createLocationEl(location);
+                            mdContainerEl.append(locationEl);
+                            location.rooms.forEach(function(room,roomIdx){
+                                locationEl.append(createRoomEl(room));
+                            })
+                        })
+                    }
+
+                    mydevice.devices.forEach(function(device){
+                        let locationEl = document.querySelector(`.md_list__location[data-location-id="${device.locationId}"]`);
+                        let roomEl = document.querySelector(`.md_list__room[data-location-id="${device.locationId}"][data-room-id="${device.roomId}"]`);
+
+                        if(!locationEl){
+                            locationEl = createLocationEl({locationId:device.locationId});
+                            mdContainerEl.append(locationEl);
+                        }
+                        if(!roomEl){
+                            roomEl = createRoomEl({locationID:device.locationId, roomId:device.roomId});
+                            locationEl.append(roomEl);
+                        }
+                        roomEl.append(createDeviceEl(device));
+                    })
+
+                    if(selectedDevices){
+                        selectedDevices.forEach(deviceId=>{
+                            document.querySelectorAll(`.md_list div.md_list__device[data-device-id="${deviceId}"]`).forEach(el=>{
+                                el.classList.add('md_list__item--selected');
+                                el.querySelector('input[type="checkbox"]').checked=true;
+                            });
+                        })
+                    }else{
+                        document.querySelectorAll('.md_list div.md_list__device')
+                            .forEach(el=>{
+                                el.classList.add('md_list__item--selected');
+                                el.querySelector('input[type="checkbox"]').checked=true;
+                            });
+                    }
+                    refreshMdListStatus();
+                    return Promise.resolve();
+                }else{
+                    const emptyEl = document.createElement('div');
+                    emptyEl.className = 'md_list__empty';
+                    emptyEl.innerText = 'Cannot get Devices with Access Token';
+                    mdContainerEl.append(emptyEl);
+                    refreshMdListStatus();
+                    return Promise.reject('Cannot get Devices with Access Token');
+                }
+            }
+            function refreshMdListStatus(){
+                const listShowCnt = document.querySelectorAll('.md_list__device.md_list__item--show').length;
+                const listShowSelectedCnt = document.querySelectorAll('.md_list__device.md_list__item--show.md_list__item--selected').length;
+                document.querySelector('.md_header__cnt').innerText = `${listShowCnt} devices, ${listShowSelectedCnt} selected`;
+                document.querySelectorAll('#md_list .md_list__location,#md_list .md_list__room')
+                    .forEach(el=>{
+                        const showCnt = el.querySelectorAll('.md_list__device.md_list__item--show').length;
+                        const showSelectedCnt = el.querySelectorAll('.md_list__device.md_list__item--show.md_list__item--selected').length;
+
+                        el.classList.toggle('md_list__item--show',showCnt>0);
+                        if(showCnt == showSelectedCnt){
+                            el.querySelector('input[type="checkbox"]').checked=true;
+                            el.classList.add('md_list__item--selected');
+                        }else{
+                            el.querySelector('input[type="checkbox"]').checked=false;
+                            el.classList.remove('md_list__item--selected');
+                        }
+                    })
+            }
+
+            var mdListSearch=function (e){
+                if(e.target.value){
+                    document.querySelectorAll('#md_list div.md_list__device').forEach(el=>{
+                    	const mdName = (el.dataset.name||'').toLowerCase();
+                    	const mdInnerText = (el.querySelector('.md_List__device__cps').innerText||'').toLowerCase();
+                        var matched = mdName.includes(e.target.value)||mdInnerText.includes(e.target.value);
+                        el.classList.toggle('md_list__item--show',matched);
+                    })
+                }else{
+                    document.querySelectorAll('#md_list div.md_list__device').forEach(el=>el.classList.toggle('md_list__item--show',true));
+                }
+                refreshMdListStatus();
+            }
+            document.querySelector('#md_header__search').addEventListener('change',mdListSearch);
+            document.querySelector('#md_header__search').addEventListener('keydown',(e) => {
+                if (e.keyCode === 13) {
+                    mdListSearch(e);
+                    e.preventDefault();
+                }
+            })
+        }
+    });
+
+    RED.nodes.registerType('automation', {
+        category: ST_NODES_CATEGORY,
+        color: "rgb(80, 196, 253)",
+        defaults: {
+            name: {value: ""},
+            alias: {value: ""},
+            method: {value: 'post'},
+            url: {
+                value: "",
+                required: true
+            },
+            urlDate: {value: ""},
+			eqtype: {
+				value: "", validate: function (v) {
+					const after = RED.nodes.filterLinks({"source": {"id": this.id}});
+					return after.every(link=>link.target && link.target.type===ST_EVENT_DEVICE);
+				}
+			},
+            loggingEditor:{value:false},
+            loggingConsole:{value:false}
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "smartapp.png",
+        label: function () {
+            return this.name|| this.alias || "Automation";
+        },
+        paletteLabel: "Automation",
+        oneditprepare: function () {
+            var NODE = this;
+            var $inputUrl = $('#node-input-url')
+
+            RED.popover.create({
+                target: $('#export-clipboard'),
+                content: 'copied',
+                trigger: 'click',
+                autoClose: 2000,
+                direction: 'right',
+                delay: {show: 750, hide: 2000}
+            });
+            var copyurl = window.location.origin + $inputUrl.val()
+            if (copyurl == undefined || copyurl == "") {
+                $("#node-input-copyurl").val(window.location.origin);
+            } else {
+                $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
+            }
+
+            var validateUrl = function(){
+                var url = $inputUrl.val()||""
+                url=url.replace(/[^a-zA-Z0-9\-\_\/]/gi,'')
+                url=url.replace(/[\/]{2,}/gi,'/')
+                if(url.charAt(0)!='/'){
+                    url='/'+url
+                }
+                $inputUrl.val(url)
+                $("#node-input-copyurl").val(window.location.origin + $inputUrl.val());
+            }
+            $inputUrl.on("keyup", validateUrl);
+            $inputUrl.on("focusin", validateUrl);
+
+            //if safari, hide clipboard button
+            if (!document.queryCommandSupported("copy")) {
+                $("#node-input-copyurl").parent().closest('div').css('right', '0px');
+                $("#export-clipboard").hide();
+            } else {
+                $("#node-input-copyurl").parent().closest('div').css('right', '40px');
+                $("#export-clipboard").show();
+                $("#export-clipboard").on("click", function () {
+                    RED.clipboard.copyText($("#node-input-copyurl").val());
+                });
+            }
+
+            document.querySelector('.logging-options').addEventListener('click',function(e){
+                if(e.target.matches('span.logging-options__label')){
+                    const checkbox = document.querySelector('#'+e.target.getAttribute('label_for'));
+                    checkbox.checked = !checkbox.checked;
+                }
+            })
+        },
+        oneditsave: function () {
+            var NODE = this;
+            NODE.method = 'post'
+            NODE.name = $("#node-input-name").val().trim();
+            if (NODE.url != $("#node-input-url").val().trim()) {
+                NODE.urlDate = new Date().getTime()
+                NODE.url = $("#node-input-url").val().trim()
+            }
+            if(NODE.url){
+                NODE.alias='[post]'+NODE.url;
+            }
+        }
+    });
+
+    var operator = {
+        string: [
+            {v: "eq", t: "=="},
+            {v: "neq", t: "!="}
+        ],
+        array: [
+            {v: "in", t: "contains"},
+            {v: "nin", t: "not contains"}
+        ],
+        integer: [
+            {v: "eq", t: "=="},
+            {v: "neq", t: "!="},
+            {v: "lt", t: "<"},
+            {v: "lte", t: "<="},
+            {v: "gt", t: ">"},
+            {v: "gte", t: ">="}
+        ],
+        number: [
+            {v: "eq", t: "=="},
+            {v: "neq", t: "!="},
+            {v: "lt", t: "<"},
+            {v: "lte", t: "<="},
+            {v: "gt", t: ">"},
+            {v: "gte", t: ">="}
+        ],
+        object: [
+            {v: "o_eq", t: "all values equal"},
+            {v: "o_neq", t: "all values not equal"}
+        ],
+        boolean: [
+            {v: "eq", t: "=="},
+            {v: "neq", t: "!="}
+        ],
+        Iso8601Date: [
+            {v: "eq", t: "=="},
+            {v: "neq", t: "!="},
+            {v: "lt", t: "<"},
+            {v: "lte", t: "<="},
+            {v: "gt", t: ">"},
+            {v: "gte", t: ">="}
+        ],
+        json: [
+            {v: "o_eq", t: "all values equal "},
+            {v: "o_neq", t: "all values not equal"}
+            // {v: "o_include", t: "include"}
+        ]
+    }
+
+    function DeviceNodeEventHandler(formObj, NODE) {
+        // console.log('init NODE Event Handler : ',JSON.stringify(NODE));
+        var THING = this;
+        THING.node = NODE;
+        THING.type = NODE.type;
+        THING.form = formObj;
+        THING.target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes"
+        THING.device={}
+
+        THING.initDeviceSelect = function (initDeviceNodeId,initDeviceId) {
+            const stateEl = document.querySelector('.st_state')
+            stateEl.classList.add('st_state--loading');
+
+            const deviceIdEl = document.querySelector('#node-input-deviceId');
+            deviceIdEl.innerHTML='';
+
+            const dpGroupEl = document.createElement('optgroup');
+            dpGroupEl.label='Device Profile';
+            deviceIdEl.append(dpGroupEl);
+
+            const mdGroupEl = document.createElement('optgroup');
+            mdGroupEl.label='My-Device';
+            deviceIdEl.append(mdGroupEl);
+
+            const disGroupEl = document.createElement('optgroup');
+            disGroupEl.label='Disabled';
+            disGroupEl.disabled=true;
+            deviceIdEl.append(disGroupEl);
+
+            const target = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes";
+            const addOptionEl = function(node){
+                if(document.querySelector(`#node-input-deviceId option[value="${node.device.deviceId}"]`)){
+                    return;
+                }
+                const opEl = document.createElement('option');
+                opEl.value = node.device.deviceId||node.id;
+                opEl.dataset.device=JSON.stringify(node.device);
+                opEl.dataset.deviceNodeId=node.id;
+                opEl.dataset.deviceType=node.type;
+                opEl.innerText = node.device.name||node.name||node.alias;
+
+                const isValidType = (NODE.type===ST_EVENT_DEVICE)?node.type==ST_DEVICE_PROFILE:true;
+                const hasTarget = node.device.components.map(cmp=>cmp.capabilities).flat().some( _cp => {
+                    const vid = _cp.vid||`${_cp.id}_v${_cp.version}`;
+                    const cp = SmartThingsProfile.getCapability(vid);
+                    return cp && cp.hasOwnProperty(target) && Object.keys(cp[target]).length>0
+                })
+                if(isValidType && hasTarget && node.type==ST_DEVICE_PROFILE){
+                    dpGroupEl.append(opEl);
+                }else if(isValidType && hasTarget && node.type==ST_MY_DEVICE){
+                    mdGroupEl.append(opEl);
+                }else{
+                	opEl.disabled=true;
+                    let title = [];
+                    if(!isValidType){
+                        title.push('Event Node cannot use My-Device Node');
+                    }
+                    if(!hasTarget){
+                        title.push('no '+target)
+                    }
+                    disGroupEl.title = title.join('\n');
+                    disGroupEl.append(opEl);
+                }
+            }
+            RED.nodes.filterNodes({z: this.node.z, type: ST_DEVICE_PROFILE})
+                .map(function(node){
+                    var id = node.capabilityId.split('_v')[0]
+                    var version = node.capabilityId.split('_v')[1]||1
+                    var vid = id+'_v'+version
+                    node.device={components:[{id:"main",capabilities:[{id:id,version:version,vid:vid}]}]}
+                    return node;
+                })
+                .forEach(addOptionEl);
+
+			const mydevicePrs = RED.nodes.filterNodes({z: this.node.z, type: ST_MY_DEVICE})
+				.filter(mdNode=>SmartThingsProfile.getMyDevices(mdNode.id))
+				.map(mdNode=>
+					SmartThingsProfile.getMyDevices(mdNode.id)
+						.then(mydevice => mydevice.devices.filter(dvc=>mdNode.devices===null||mdNode.devices?.includes(dvc.deviceId))
+							.sort((d1,d2)=>d1.name.localeCompare(d2.name))
+							.map(dvc=>{return {id:mdNode.id,type:mdNode.type,device:dvc}})
+							.forEach(addOptionEl)
+						)
+				);
+            Promise.allSettled(mydevicePrs)
+                .finally(()=>{
+                    if(initDeviceId){
+                        deviceIdEl.value = initDeviceId;
+                        const selectedOption = deviceIdEl.selectedOptions[0];
+                        if(selectedOption){
+                            NODE.device = (selectedOption.dataset?.device)?JSON.parse(selectedOption.dataset.device):null;
+                            NODE.deviceType = selectedOption.dataset?.deviceType;
+                        }
+                    }
+
+                    Array.from(document.querySelectorAll('#node-input-deviceId optgroup'))
+                        .filter(el=>el.querySelectorAll('option').length==0)
+                        .forEach(el=>el.classList.add('optgroup--hide'));
+
+                    stateEl.classList.remove('st_state--loading');
+
+                    THING.initCapabilitySelect(THING.node.componentId, THING.node.capabilityId);
+                    THING.initAttributeSelect(THING.node.attributeId);
+                    THING.initAttributeContainer(THING.node.rules);
+                });
+            deviceIdEl.addEventListener('change',e=>{
+                const selectedOption = e.target.selectedOptions[0];
+                if(selectedOption){
+                    NODE.device = JSON.parse(selectedOption.dataset?.device);
+                    NODE.deviceType = selectedOption.dataset?.deviceType;
+                }
+                THING.initCapabilitySelect();
+                THING.initAttributeSelect();
+                THING.initAttributeContainer();
+            })
+        }
+        //deviceid 선택시 해당 section 정보를 셋팅한다.
+        THING.initCapabilitySelect = function (initComponentId, initCapabilityId) {
+            initComponentId=initComponentId||'main';
+
+            var capabilityIdSelect = this.form.capabilityId;
+            capabilityIdSelect.html('');
+            const devicestr = document.querySelector('#node-input-deviceId')?.selectedOptions[0]?.dataset?.device;
+            const device = devicestr?JSON.parse(devicestr):devicestr;
+            if(device && device.isLoading){
+                capabilityIdSelect.attr('disabled', true)
+                return
+            }
+            if (device && device.components && device.components.some(cmp=>cmp.capabilities)) {
+                var target = this.node.target;
+                device.components.forEach(cmp=>{
+                    const groupEl = document.createElement('optgroup');
+                    groupEl.label = cmp.id;
+                    capabilityIdSelect.append(groupEl);
+                    cmp.capabilities.sort(function(c1,c2){
+                        return c1.id.localeCompare(c2.id)
+                    }).filter(function (_cp) {
+                        _cp.vid=_cp.vid||`${_cp.id}_v${_cp.version}`;
+                        var cp = SmartThingsProfile.getCapability(_cp.vid)
+                        if (cp && cp.hasOwnProperty(target) && Object.keys(cp[target]).length>0) {
+                            const optionEl = document.createElement('option');
+                            optionEl.value=cp.vid;
+                            optionEl.innerText = cp.id;
+                            optionEl.dataset.componentId=cmp.id;
+                            groupEl.append(optionEl);
+                        }
+                        // locate disable options at the end;
+                        return !(cp && cp.hasOwnProperty(target) && Object.keys(cp[target]).length>0);
+                    })
+                        .forEach(_cp=>{
+                            var cp = SmartThingsProfile.getCapability(_cp.vid);
+                            var disableMsg='';
+                            if(!cp){
+                                disableMsg = 'undefined capability, '+_cp.vid;
+                            }else{
+                                disableMsg = 'no '+target;
+                            }
+
+                            const optionEl = document.createElement('option');
+                            optionEl.title=disableMsg;
+                            optionEl.innerText=cp.id;
+                            optionEl.disabled=true;
+                            groupEl.append(optionEl);
+                        });
+                });
+
+                capabilityIdSelect.removeClass("input-error");
+                if (capabilityIdSelect.find('option').length <= 1) {
+                    capabilityIdSelect.attr('disabled', true);
+                } else {
+                    capabilityIdSelect.attr('disabled', false);
+                }
+
+                capabilityIdSelect.find('option:first').attr("selected", true);
+            } else {
+                this.form.deviceId.addClass("input-error");
+            }
+            capabilityIdSelect.change((e)=>{
+                THING.initAttributeSelect();
+                THING.initAttributeContainer();
+            })
+            if (initCapabilityId && document.querySelector(`#node-input-capabilityId option[data-component-id="${initComponentId}"][value="${initCapabilityId}"]`)) {
+                document.querySelector(`#node-input-capabilityId option[data-component-id="${initComponentId}"][value="${initCapabilityId}"]`).selected=true;
+            }
+        }
+        //capability attr 셀렉트박스구성
+        THING.initAttributeSelect = function (initAttributeId) {
+            var attributeIdSelect = this.form.attributeId
+            attributeIdSelect.html('');
+
+            var selectedCapabilityId = this.form.capabilityId.find("option:selected").val();
+
+            //capability의 attributes 및 commands 정보 조회
+            var capability = SmartThingsProfile.getCapability(selectedCapabilityId);
+            if (capability && capability.hasOwnProperty(this.target) ) {
+                Object.keys(capability[this.target]).forEach(function (attributeId) {
+                    attributeIdSelect.append($("<option></option>").val(attributeId).text(attributeId));
+                })
+            }
+
+            if (attributeIdSelect.find('option').length <= 1) {
+                attributeIdSelect.attr('disabled', true)
+                attributeIdSelect.attr('readonly', true)
+            } else {
+                attributeIdSelect.attr('readonly', false)
+                attributeIdSelect.attr('disabled', false)
+            }
+            if (initAttributeId && attributeIdSelect.find('option[value="'+initAttributeId+'"]').length>0) {
+                attributeIdSelect.val(initAttributeId)
+            }
+        }
+        THING.initContainer = function(){
+            $("#cmd-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
+                addButton: false,
+                addItem: function (container, idx, data) {
+                    var capabilityId = $("#node-input-capabilityId option:selected").val()
+                    var commandId = $("#node-input-attributeId option:selected").val()
+                    var cpArguments = SmartThingsProfile.getCommandArguments(capabilityId, commandId)
+
+                    var row = $('<div/>', {style: "margin-left:10px;height: auto;"}).appendTo(container);
+                    $('<span>', {class: "capaId"}).appendTo(row).text(capabilityId)
+                    $('<span style="font-size: 20px; font-weight: bold;">.</span>').appendTo(row)
+                    $('<span>', {class: "attrId"}).appendTo(row).text(commandId)
+                    var argNames = cpArguments.map(function (arg) {
+                        return arg.name
+                    }).join(', ')
+                    $('<span>').appendTo(row).text(' ( ' + argNames + ' )');
+
+                    if (cpArguments.length > 0) {
+                        cpArguments.forEach(function (arg) {
+                            var row2 = $('<div/>', {class:"cmd_arg_row"}).appendTo(row);
+                            createValueField(arg.schema,row2,{valueName:arg.name,rowName:arg.name,width:'50%'});
+                        })
+                    }
+
+                    if (data && data.args) {
+                        data.args.forEach(function (arg) {
+                            var valueField
+                            if(arg.hasOwnProperty('propId')){
+                                valueField = container.find('.argValue[argName='+arg.name+'][propId='+arg.propId+']')
+                            }else{
+                                valueField = container.find('.argValue[argName=' + arg.name + ']')
+                            }
+                            if (valueField.hasClass('red-ui-typedInput')) {
+                                valueField.typedInput('value', arg.value)
+                            } else {
+                                valueField.val(arg.value)
+                            }
+                            if(arg.argType){
+                                valueField.typedInput('type',arg.argType);
+                            }
+                            if(arg.argType=='color'){
+                            	container.find('.colorField').val(arg.value);
+                            }
+                        })
+                    }
+
+                    if ($("#cmd-list-container").editableList('items').length > 1) {
+                        $("#cmd-list-container").find(".outputSpan").remove();
+                    }
+
+                },
+                resizeItem: function (container) {
+                },
+                removeItem: function (opt) {
+                },
+                sortItems: function (rules) {
+                },
+                sortable: false,
+                removable: false
+            });
+
+            var emptymsg =null
+            if(THING.node.type===ST_STATUS_DEVICE){
+                emptymsg = "There is no filter, whole device status response will be sent"
+            }
+
+            $("#attr-list-container").css('min-height', '150px').css('min-width', '150px').editableList({
+                addButton: "Add Filter",
+                emptyMessage: emptymsg,
+                // header: $("<div>").append($('<span style="position:absolute;right:2em;""><i class="fa fa-info-circle" aria-hidden="true"></i>  No Filter : msg.payload = whole device status response</span>')),
+                addItem: function (itemRow, idx, data) {
+                    if(data.type === 'empty'){
+                        $(itemRow).parent().html('').append(data.msg)
+                        // $(container).append(data.msg)
+                        return;
+                    }
+                    var capabilityId = $("#node-input-capabilityId option:selected").val()
+                    var attributeId = $("#node-input-attributeId option:selected").val()
+                    var attribute = SmartThingsProfile.getAttributeSchema(capabilityId, attributeId)
+
+                    var row = $('<div/>', {style: "height: auto;margin:5px 0 5px 0;"}).appendTo(itemRow);
+
+                    var attributeIdField = $('<input/>', {
+                        class: "attrId ruleField",
+                        capaId: capabilityId,
+                        style: "width:auto; margin-right:5px;max-width:30%",
+                        type: "text",
+                        readonly: "true"
+                    }).appendTo(row).val(attributeId)
+
+                    var valueProperty = attribute.properties.value
+                    var unitProperty = attribute.properties.unit
+
+                    itemRow.data('data',{capaId:capabilityId,attrId:attributeId,valueType:valueProperty.type})
+                    var ruleSpan = $('<span></span>').appendTo(row)
+                    createRuleFields(valueProperty,unitProperty,ruleSpan,data)
+
+                    if(itemRow.find('.ruleField').length>3){
+                        itemRow.find('.attrId').css('width','20%')
+                    }
+                },
+                resizeItem: function (container) {
+                },
+                removeItem: function (opt) {
+                },
+                sortItems: function (rules) {
+                },
+                sortable: true,
+                removable: true
+            });
+            function createRuleFields(valueProperty,unitProperty,row,data){
+                //oepratorField
+                var operatorField = createOperatorField(valueProperty.type).appendTo(row)
+
+                //attribute properties.value
+                //typedInput 사용하려면 row에 html 추가된 상태여야함
+                var valueField = createValueField(valueProperty,row)
+
+                //'unit' always has string enum
+                var unitField =null
+                if (unitProperty && unitProperty.enum) {
+                    unitField = createUnitField(unitProperty).appendTo(row);
+                }
+
+                if (data) {
+                    data.operator && operatorField.val(data.operator)
+                    if(data.value){
+                        if(data.valueType === 'object' && typeof data.value === 'object'){
+                            Object.keys(data.value).forEach(function(propId){
+                                var valueField = row.find('.valueField[propId='+propId+']')
+                                valueField.typedInput('value',data.value[propId].value);
+                                valueField.typedInput('type',data.value[propId].type);
+                            })
+                        }else{
+                            if (valueField[0].prop('tagName') == 'INPUT') {
+                                valueField[0].typedInput('value', data.value)
+                            } else {
+                                valueField[0].val(data.value)
+                            }
+                            if(data.argType){
+                                valueField[0].typedInput('type',data.argType);
+                            }
+                        }
+                    }
+
+                    // data.value && valueField.find('.attrValue').val(data.value)
+                    data.unit && unitField && unitField.val(data.unit)
+                }
+            }
+            function createOperatorField(valueType){
+                var operatorField = $('<select/>', {class: "attrOperator ruleField", style: "width:auto; margin-right: 5px; text-align: center;max-width:25%"})
+                if (operator[valueType]) {
+                    operator[valueType].forEach(function (op) {
+                        operatorField.append($("<option></option>").val(op.v).text(op.t))
+                    })
+                }
+                return operatorField
+            }
+            function createValueField(valueProp,row,option){
+                option=option || {}
+                if(option.rowName){
+                    row.text(option.rowName + ' : ')
+                }
+
+                const fieldConfig = {
+                    default:'msg',
+                    types: []
+                }
+
+                const placeholders = {msg:'payload'};
+                if (valueProp.enum || (valueProp.type == 'array' && valueProp.items && valueProp.items.enum)) {
+                    fieldConfig.types.push({
+                            value:"enum",
+                            label:"enum",
+                            // icon:"red/images/typedInput/AZ.png",
+                            options:valueProp.enum || valueProp.items.enum
+                    });
+                    fieldConfig.default = 'enum';
+                }else if (valueProp.type == 'string' ) {
+					if(valueProp.title=='Iso8601Date'){
+						valueProp.type='Iso8601Date';
+						placeholders['Iso8601Date']=new Date().toISOString().substr(0,19)+'Z';
+						fieldConfig.types.push({
+							value:'Iso8601Date',
+							label:'Date',
+							validate:/^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$/
+						});
+						fieldConfig.default = 'Iso8601Date';
+
+					}else{
+						let placeholder = valueProp.type||'';
+						if(valueProp.hasOwnProperty('maxLength')){
+							placeholder += ', maxLength:'+valueProp.maxLength;
+						}
+						placeholders['str']=placeholder;
+						fieldConfig.types.push('str');
+						fieldConfig.default = 'str';
+                    }
+
+                }else if(valueProp.type == 'number' || valueProp.type == 'integer'){
+                    let placeholder = valueProp.title||valueProp.type||'';
+                    if (valueProp.hasOwnProperty('minimum') || valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('min')||valueProp.hasOwnProperty('max')) {
+                        placeholder += '('
+                        placeholder += (valueProp.hasOwnProperty('minimum')||valueProp.hasOwnProperty('min')) ? (valueProp.minimum||valueProp.min) :' ';
+                        placeholder += '~'
+                        placeholder += (valueProp.hasOwnProperty('maximum')||valueProp.hasOwnProperty('max')) ? (valueProp.maximum||valueProp.max) :' ';
+                        placeholder += ')'
+                    }
+                    placeholders['num']=placeholder;
+                    fieldConfig.types.push('num');
+                    fieldConfig.default='num';
+                }else if (valueProp.type == 'boolean') {
+                    if(valueProp.default){
+                        fieldConfig.defaultValue=valueProp.default;
+                    }
+                    fieldConfig.types.push('bool');
+                    fieldConfig.default = 'bool';
+                }else if (valueProp.type == 'array') {
+                    if(valueProp.items){
+                        return createValueField(valueProp.items,row)
+                    }else{
+                        throw new Error('unknown data schema '+valueProp.type)
+                    }
+                } else if (valueProp.type == 'object') {
+					if(valueProp.title ==='COLOR_MAP'){
+						option=option||{};
+						option.width = '20%';
+                        fieldConfig.additionalField = $("<input/>", {
+							argName: "color",
+							argType: "object",
+							propId: 'hex',
+							propType: 'string',
+							class: 'colorField',
+							type: 'color',
+							value: "#3366ff",
+							style: "width:50%;margin-right:5px;"
+						});
+
+                        Object.assign(option,{valueName: "color",valueType: "object",propId: 'hex',propType: 'string'});
+
+                        fieldConfig.types.push({
+                            value:"color",
+                            label:"color",
+                            // icon:"red/images/typedInput/target.png",
+                            hasValue:false
+                        });
+                        fieldConfig.default = 'color';
+
+                    }else if (valueProp.hasOwnProperty('properties')){
+                        var fields=[];
+                        Object.keys(valueProp.properties).forEach(function(key){
+                            var row2 = $('<div style="display:flex;align-items:center;justify-content:flex-end;"></div>').appendTo(row);
+                            Object.assign(option,{valueType:valueProp.type,propId:key,propType:valueProp.properties[key].type,rowName:key});
+                            fields = fields.concat(createValueField(valueProp.properties[key],row2,option));
+                        })
+                        return fields;
+                    }else {
+                        let placeholder = valueProp.title || valueProp.type || '';
+                        placeholders['json']=placeholder;
+						fieldConfig.types.push('json');
+						fieldConfig.default = 'json';
+                    }
+                } else {
+                    throw new Error('unknown data schema')
+                }
+
+                const valueField = $("<input/>").appendTo(row);
+				valueProp.title !='COLOR_MAP' && fieldConfig.types.push('msg','flow','global');
+                valueField.typedInput({
+                    default: fieldConfig.default,
+                    types: fieldConfig.types
+                })
+                valueField.typedInput('width',option.width||'40%');
+                valueField.addClass('argValue valueField');
+                valueField.css('margin-right','5px');
+                if(option.hasOwnProperty('propId')){
+                    valueField.attr('propId',option.propId);
+                }
+                valueField.data('data',Object.assign({valueType:valueProp.type},option))
+                valueField.attr('argName',option.valueName)
+
+                valueField.on('change',function(e,type){
+                    type = type||valueField.typedInput('type');
+
+                    if(placeholders[type]){
+                        this.parentElement.querySelector('input.red-ui-typedInput-input').placeholder = placeholders[type];
+                    }else{
+                        this.parentElement.querySelector('input.red-ui-typedInput-input').placeholder = '';
+                    }
+                })
+
+                if(fieldConfig.additionalField){
+                	fieldConfig.additionalField.appendTo(row);
+                }
+
+                valueField.get(0).dispatchEvent(new Event('change'));
+
+                if(Array.isArray(valueField)){
+                    return valueField
+                }else{
+                    return [valueField]
+                }
+            }
+
+            function createUnitField(unitProp){
+                var unitField = null
+                if (unitProp && unitProp.hasOwnProperty('enum')) {
+                    unitField = $("<select/>", {class: 'attrUnit ruleField', style: "width:auto;margin-right:5px;"})
+                    unitProp.enum.forEach(function (value) {
+                        unitField.append($('<option>').val(value).text(value))
+                    })
+                    if (unitProp.default) {
+                        unitField.val(unitProp.default)
+                    }
+                }
+                return unitField;
+            }
+            if(THING.node.type===ST_STATUS_DEVICE && $("#attr-list-container").length>0){
+                var msg1 = $('<span style="position:absolute;right:2em;""><i class="fa fa-info-circle" aria-hidden="true"></i>  No Filter : msg.payload = whole device status response</span>')
+                $('#dialog-form > div.form-row.sensor-container-row > div > a').after(msg1)
+            }
+        }
+        //type값에 따른 페이지 초기화 함수
+        THING.initAttributeContainer = function (rules) {
+            this.form.container.editableList('empty')
+
+            if (rules && rules.length) {
+                for (var i = 0; i < this.node.rules.length; i++) {
+                    var data = this.node.rules[i];
+                    if (data.isInit) break;
+                    if(!data.capaId.includes('_v')){
+                        data.capaId+='_v1';
+                    }
+                    if(data.capaId == this.form.capabilityId.val() && data.attrId == this.form.attributeId.val()){
+                        this.form.container.editableList('addItem', data);
+                    }
+                }
+            }
+
+            if (this.form.attributeId.val() && this.form.container.editableList('items').length == 0) {
+                if(THING.node.type!=ST_STATUS_DEVICE){//test_code
+                    this.form.container.editableList('addItem')
+                }
+                // this.form.container.editableList('addItem',{type:'empty',msg:'no condition, send whole device status response'})
+            }
+        }
+
+        THING.initContainer()
+
+        THING.initDeviceSelect(NODE.deviceNodeId,NODE.deviceId);
+        THING.form.attributeId.on("mouseover", function () {
+            THING.form.attributeId.off("change")
+            THING.form.attributeId.on("change", function () {
+                THING.initAttributeContainer()
+            })
+        })
+    };
+
+    //convert RGB value to HSL value
+    function rgbToHsl(hex) {
+        if (/^#[0-9a-f]{6}$/g.test(hex) == false) {
+            return {hue: 0, saturation: 0, lightness: 0}
+        }
+        var r = parseInt(hex.substring(1, 3), 16) / 255
+        var g = parseInt(hex.substring(3, 5), 16) / 255
+        var b = parseInt(hex.substring(5, 7), 16) / 255
+        var max = Math.max(r, g, b)
+        var min = Math.min(r, g, b)
+        var hue
+        if (max == min) {
+            hue = 0
+        } else if (r == max) {
+            hue = 0 + (g - b) / (max - min)
+        } else if (g == max) {
+            hue = 2 + (b - r) / (max - min)
+        } else {
+            hue = 4 + (r - g) / (max - min)
+        }
+        hue *= 60
+
+        var lightness = (max + min) / 2
+
+        var saturation
+        if (lightness == 0 || lightness == 1) {
+            saturation = 0
+        } else {
+            a1 = 2 * (max - lightness)
+            a2 = 1 - Math.abs(2 * lightness - 1)
+            saturation = a1 / a2
+        }
+
+        hue = Math.round(hue / 360 * 100)
+        saturation = Math.round(saturation * 100)
+        lightness = Math.round(lightness * 100)
+        return {hex: hex, hue: hue, saturation: saturation, lightness: lightness}
+    }
+
+    RED.nodes.registerType('event-device',{
+        paletteLabel : "Event",
+        color : "rgb(113,179,145)",
+        icon : "st-event.png",
+        category: ST_NODES_CATEGORY,
+        defaults : {
+            name: {value:""},
+            alias: {value:""},
+            deviceNodeId: {
+                value: "", required: true,
+                validate: function (deviceNodeId){return RED.nodes.node(deviceNodeId)}
+            },
+            deviceType:{value:""},
+            deviceId: {value: ""},
+            componentId: {value: ""},
+            capabilityId: {value: "", required: true},
+            attributeId: {value: "", required: true},
+            rules: {value: [{isInit: true}]},
+            logging: {value:false},
+            loggingEditor:{value:false},
+            loggingConsole:{value:false},
+            outputs: {value: 1}
+        },
+        inputs: 1,
+        outputs: 1,
+        label: function () {
+            return this.name|| this.alias || this.type;
+        },
+        oneditsave: function () {
+            this.rules = []
+            saveCommandRules(this);
+            saveAttributesRules(this);
+
+            this.outputs = this.rules.length || 1;
+            if(this.type==ST_COMMAND_DEVICE){
+                const attributeId = document.querySelector('#node-input-attributeId').value;
+                if(attributeId){
+                    const value = document.querySelector(':is(#attr-list-container,#cmd-list-container) .argValue')?.value||'';
+                    this.alias=`${attributeId}${value?':'+value:''}`;
+                }
+            }else{
+                const deviceName = document.querySelector('#node-input-deviceId')?.selectedOptions[0]?.innerText;
+                if(deviceName){
+                    this.alias=deviceName;
+                }
+            }
+            const selectedDeviceOption = document.querySelector('#node-input-deviceId').selectedOptions[0];
+            if(selectedDeviceOption && selectedDeviceOption.dataset.deviceNodeId){
+                this.deviceNodeId = selectedDeviceOption.dataset?.deviceNodeId;
+            }
+            const selectedCapabilityOption = document.querySelector('#node-input-capabilityId').selectedOptions[0];
+            if(selectedDeviceOption && selectedDeviceOption.dataset.deviceNodeId){
+                this.componentId = selectedCapabilityOption.dataset?.componentId;
+            }
+        },
+        oneditprepare: function () {
+            STRefCheck();
+            var NODE = this;
+            // console.log('deviceNODE init value : ',JSON.stringify(NODE));
+            var targetProperty = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes";
+            NODE.target = targetProperty;
+
+            var formObj = {
+                deviceId: $("#node-input-deviceId"),
+                capabilityId: $("#node-input-capabilityId"),
+                attributeId: $("#node-input-attributeId"),
+                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container"))
+            }
+
+            DeviceNodeEventHandler(formObj, NODE);
+
+            document.querySelector('.logging-options').addEventListener('click',function(e){
+                if(e.target.matches('span.logging-options__label')){
+                    const checkbox = document.querySelector('#'+e.target.getAttribute('label_for'));
+                    checkbox.checked = !checkbox.checked;
+                }
+            })
+        },
+        oneditresize: function (size) {
+            var rows;
+            var resizeContainer;
+            var editorRow;
+
+            if (this.type == ST_COMMAND_DEVICE) {
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.actuator-container-row");
+                resizeContainer = $("#cmd-list-container");
+            } else {
+                //event, sensor
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.sensor-container-row");
+                resizeContainer = $("#attr-list-container");
+            }
+
+            var height = size.height;
+            for (var i = 0; i < rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")))
+            resizeContainer.editableList('height', height - 100)
+        }
+    });
+
+    RED.nodes.registerType('status-device',{
+        paletteLabel : "Status",
+        color : "rgb(119,197,191)",
+        icon : "st-status.png",
+        category: ST_NODES_CATEGORY,
+        defaults : {
+            name: {value:""},
+            alias: {value:""},
+            deviceNodeId: {
+                value: "", required: true,
+                validate: function (deviceNodeId){return RED.nodes.node(deviceNodeId)}
+            },
+            deviceType:{value:""},
+            deviceId: {value: ""},
+            componentId: {value: ""},
+            capabilityId: {value: "", required: true},
+            attributeId: {value: "", required: true},
+            rules: {value: [{isInit: true}]},
+            logging: {value:false},
+            loggingEditor:{value:false},
+            loggingConsole:{value:false},
+            outputs: {value: 1}
+        },
+        inputs: 1,
+        outputs: 1,
+        label: function () {
+            return this.name|| this.alias || this.type;
+        },
+        oneditsave: function () {
+            this.rules = []
+            saveCommandRules(this);
+            saveAttributesRules(this);
+
+            this.outputs = this.rules.length || 1;
+            if(this.type==ST_COMMAND_DEVICE){
+                const attributeId = document.querySelector('#node-input-attributeId').value;
+                if(attributeId){
+                    const value = document.querySelector(':is(#attr-list-container,#cmd-list-container) .argValue')?.value||'';
+                    this.alias=`${attributeId}${value?':'+value:''}`;
+                }
+            }else{
+                const deviceName = document.querySelector('#node-input-deviceId')?.selectedOptions[0]?.innerText;
+                if(deviceName){
+                    this.alias=deviceName;
+                }
+            }
+            const selectedOption = document.querySelector('#node-input-deviceId').selectedOptions[0];
+            if(selectedOption&&selectedOption.dataset.deviceNodeId){
+                this.deviceNodeId = selectedOption.dataset?.deviceNodeId;
+            }
+            if(selectedOption&&selectedOption.dataset.componentId){
+                this.componentId = selectedOption.dataset?.componentId;
+            }
+        },
+        oneditprepare: function () {
+            STRefCheck();
+            var NODE = this;
+            // console.log('deviceNODE init value : ',JSON.stringify(NODE));
+            var targetProperty = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes";
+            NODE.target = targetProperty;
+
+            var formObj = {
+                deviceId: $("#node-input-deviceId"),
+                capabilityId: $("#node-input-capabilityId"),
+                attributeId: $("#node-input-attributeId"),
+                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container"))
+            }
+
+            DeviceNodeEventHandler(formObj, NODE);
+
+            document.querySelector('.logging-options').addEventListener('click',function(e){
+                if(e.target.matches('span.logging-options__label')){
+                    const checkbox = document.querySelector('#'+e.target.getAttribute('label_for'));
+                    checkbox.checked = !checkbox.checked;
+                }
+            })
+        },
+        oneditresize: function (size) {
+            var rows;
+            var resizeContainer;
+            var editorRow;
+
+            if (this.type == ST_COMMAND_DEVICE) {
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.actuator-container-row");
+                resizeContainer = $("#cmd-list-container");
+            } else {
+                //event, sensor
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.sensor-container-row");
+                resizeContainer = $("#attr-list-container");
+            }
+
+            var height = size.height;
+            for (var i = 0; i < rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")))
+            resizeContainer.editableList('height', height - 100)
+        }
+    });
+
+    function saveCommandRules(NODE) {
+        $("#cmd-list-container").editableList('items').each(function (idx, item) {
+            var rule = {};
+            rule.capaId = item.find('.capaId').text()
+            rule.attrId = item.find(".attrId").text()
+            rule.args = [];
+            item.find(".argValue").each(function (idx, _arg) {
+                var data = $(_arg).data('data')
+                var arg = {}
+
+                arg.name = data.valueName
+                arg.type = data.valueType
+                arg.value = $(_arg).val()
+                arg.argType = $(_arg).typedInput('type')
+                if (data.hasOwnProperty('propId')) {
+                    arg.propId = data.propId
+                }
+                if (data.hasOwnProperty('propType')) {
+                    arg.propType = data.propType
+                }
+                rule.args.push(arg)
+
+                if (arg.argType == 'color') {
+                    const colorValue = document.querySelector('.colorField').value;
+                    rule.args[0].value = colorValue;
+
+                    const hsl = rgbToHsl(colorValue);
+                    rule.args.push({name: 'color', type: 'object', propId: 'hue', propType: 'number', value: hsl.hue})
+                    rule.args.push({name: 'color', type: 'object', propId: 'saturation', propType: 'number', value: hsl.saturation})
+                }
+            })
+            NODE.rules.push(rule)
+        })
+    }
+
+    function saveAttributesRules(NODE) {
+        $("#attr-list-container").editableList('items').each(function (idx, item) {
+            var itemData = item.data('data');
+            var valueData = item.find('.argValue').data('data');
+            var rule = {};
+            rule.capaId = itemData.capaId;
+            rule.attrId = itemData.attrId;
+            rule.operator = item.find(".attrOperator").val();
+            rule.valueType = valueData.valueType||itemData.valueType;
+            rule.argType = item.find(".valueField").typedInput('type');
+            if(valueData.valueType != 'object'){
+                rule.value = item.find(".valueField").val();
+
+                if (rule.valueType.toLowerCase().indexOf('integer') > -1 || rule.valueType.toLowerCase().indexOf('number') > -1) {
+                    try{
+                        rule.value = Number(rule.value);
+                    }catch(e){}
+                }
+            }else{
+                var valueObj = {};
+                item.find(".valueField").each((i,valueField)=> {
+                    const propData = $(valueField).data('data');
+                    let propValue = $(valueField).val();
+
+                    if (propData.propType.toLowerCase().indexOf('integer') > -1 || propData.propType.toLowerCase().indexOf('number') > -1) {
+                        try {
+                            if($(valueField).val().length>0){
+								propValue = Number($(valueField).val());
+                            }
+                        }catch (e) {}
+                    }
+					valueObj[propData.propId] = {name:propData.propId,type:$(valueField).typedInput('type'),value:propValue};
+                })
+                rule.value = valueObj;
+            }
+            rule.unit = item.find(".attrUnit").val();
+
+            NODE.rules.push(rule);
+        })
+    }
+
+    RED.nodes.registerType('command-device', {
+        paletteLabel: "Command",
+        color: "rgb(255,198,109)",
+        icon: "st-command.png",
+        category: ST_NODES_CATEGORY,
+        defaults : {//노드 의 편집 가능한 속성과 deploy시 json 형태로 저장될 데이터구조명시
+            name: {value:""},
+            alias: {value:""},
+            deviceNodeId: {
+                value: "", required: true,
+                validate: function (deviceNodeId){return RED.nodes.node(deviceNodeId)}
+            },
+            deviceType:{value:""},
+            deviceId: {value: ""},
+            componentId: {value: ""},
+            capabilityId: {value: "", required: true},
+            attributeId: {value: "", required: true},
+            rules: {value: [{isInit: true}]},
+            logging: {value:false},
+            loggingEditor:{value:false},
+            loggingConsole:{value:false},
+            outputs: {value: 1}
+        },
+        inputs: 1,
+        outputs: 1,
+        label: function () {
+            return this.name|| this.alias || this.type;
+        },
+        oneditsave: function () {
+            this.rules = []
+            saveCommandRules(this);
+            saveAttributesRules(this);
+
+            this.outputs = this.rules.length || 1;
+            if(this.type==ST_COMMAND_DEVICE){
+                const attributeId = document.querySelector('#node-input-attributeId').value;
+                if(attributeId){
+                    const value = document.querySelector(':is(#attr-list-container,#cmd-list-container) .argValue')?.value||'';
+                    this.alias=`${attributeId}${value?':'+value:''}`;
+                }
+            }else{
+                const deviceName = document.querySelector('#node-input-deviceId')?.selectedOptions[0]?.innerText;
+                if(deviceName){
+                    this.alias=deviceName;
+                }
+            }
+            const selectedOption = document.querySelector('#node-input-deviceId').selectedOptions[0];
+            if(selectedOption&&selectedOption.dataset.deviceNodeId){
+                this.deviceNodeId = selectedOption.dataset?.deviceNodeId;
+            }
+            if(selectedOption&&selectedOption.dataset.componentId){
+                this.componentId = selectedOption.dataset?.componentId;
+            }
+        },
+        oneditprepare: function () {
+            STRefCheck();
+            var NODE = this;
+            // console.log('deviceNODE init value : ',JSON.stringify(NODE));
+            var targetProperty = (NODE.type == ST_COMMAND_DEVICE) ? "commands" : "attributes";
+            NODE.target = targetProperty;
+
+            var formObj = {
+                deviceId: $("#node-input-deviceId"),
+                capabilityId: $("#node-input-capabilityId"),
+                attributeId: $("#node-input-attributeId"),
+                container: ((NODE.type == ST_COMMAND_DEVICE) ? $("#cmd-list-container") : $("#attr-list-container"))
+            }
+
+            DeviceNodeEventHandler(formObj, NODE);
+            document.querySelector('.logging-options').addEventListener('click',function(e){
+                if(e.target.matches('span.logging-options__label')){
+                    const checkbox = document.querySelector('#'+e.target.getAttribute('label_for'));
+                    checkbox.checked = !checkbox.checked;
+                }
+            })
+        },
+        oneditresize: function (size) {
+            var rows;
+            var resizeContainer;
+            var editorRow;
+
+            if (this.type == ST_COMMAND_DEVICE) {
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.actuator-container-row");
+                resizeContainer = $("#cmd-list-container");
+            } else {
+                //event, sensor
+                rows = $("#dialog-form>div:not('[class$=container-row]')");
+                editorRow = $("#dialog-form>div.sensor-container-row");
+                resizeContainer = $("#attr-list-container");
+            }
+
+            var height = size.height;
+            for (var i = 0; i < rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")))
+            resizeContainer.editableList('height', height - 100)
+        }
+    });
+</script>
