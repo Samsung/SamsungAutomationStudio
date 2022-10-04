@@ -119,6 +119,7 @@
       widgetX: { value: 0, validate: RED.validators.number(), required: true },
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
       name: { value: "" },
+      label: { value: "switch" },
     },
     inputs: 1,
     outputs: 1,
@@ -184,6 +185,10 @@
   <div class="form-row">
     <label for="node-input-name"> <i class="fa fa-tag"></i>Name </label>
     <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+    <input type="text" id="node-input-label" />
   </div>
 </script>
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { mainColor, groupColor, fontColor, fontSize } from "../assets/DesignOption";
 import { sendMessage } from "../utils/socket";
@@ -72,6 +72,7 @@ const SwitchHandle = styled.span`
 
 const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const [switchState, setSwitchState] = useState(false);
+  const [label, setLabel] = useState("");
 
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
@@ -84,13 +85,18 @@ const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nam
     sendMessage(node?.id, { switchState });
   }, [switchState]);
 
+  useEffect(() => {
+    if (node && Array.isArray(node.states) && node.states[0]) setLabel(node.states[0].label);
+    else setLabel(node?.label);
+  }, [node]);
+
   function onSwitchChange(e) {
     setSwitchState(!switchState);
   }
 
   return (
     <SwitchContainer layout={layout}>
-      <SwitchLabel>{node?.label}</SwitchLabel>
+      <SwitchLabel>{label}</SwitchLabel>
       <SwitchWrapper>
         <SwitchInput
           type="checkbox"
