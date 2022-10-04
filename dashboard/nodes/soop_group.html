@@ -85,11 +85,8 @@
             RED.events.on("nodes:change", function(node) {
                 if (node.type == "soop_group") {
                     tmpTabNode = RED.nodes.node(node.tab);
-                    console.log(tmpTabNode);
+
                     tmpTabNode = tmpTabNode._def.groupLocationDefaultSetting(node.tab);
-                    //console.log("---");
-                    //console.log(tmpTabNode);
-                    //console.log("---");
                     for (var i = 0; i < tmpTabNode.includedGroups.length; i++) {
                         var compareGroupNode = RED.nodes.node(tmpTabNode.includedGroups[i].id)
                         if (tmpTabNode.includedGroups[i].groupX != compareGroupNode.groupX || tmpTabNode.includedGroups[i].groupY != compareGroupNode.groupY) {
@@ -99,20 +96,6 @@
                     }
                 }
             });
-            //RED.events.on("deploy", function(node) {
-            //    if (node.type == "soop_group") {
-            //        tmpTabNode = RED.nodes.node(node.tab);
-            //        console.log(tmpTabNode);
-            //        tmpTabNode = tmpTabNode._def.groupLocationDefaultSetting(node.tab);
-            //        for (var i = 0; i < tmpTabNode.includedGroups.length; i++) {
-            //            var compareGroupNode = RED.nodes.node(tmpTabNode.includedGroups[i].id)
-            //            if (tmpTabNode.includedGroups[i].groupX != compareGroupNode.groupX || tmpTabNode.includedGroups[i].groupY != compareGroupNode.groupY) {
-            //                compareGroupNode.groupX = tmpTabNode.includedGroups[i].groupX;
-            //                compareGroupNode.groupY = tmpTabNode.includedGroups[i].groupY;
-            //            }
-            //        }
-            //    }
-            //});
         },
     });
 </script>
