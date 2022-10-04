@@ -36,15 +36,15 @@ const BoardTextValue = styled.div`
   font-family: "Pretendard-Bold";
 `;
 
-const SoopText = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+const SoopText = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const [currentLabel, setCurrentLabel] = useState("");
   const [currentValue, setCurrentValue] = useState("");
 
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY)),
+    calculateTop(parseInt(node?.widgetY), nameVisible),
     calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH),
+    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
   ];
 
   useEffect(() => {

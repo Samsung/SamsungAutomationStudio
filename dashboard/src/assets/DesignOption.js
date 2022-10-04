@@ -50,8 +50,8 @@ const calculateLeft = (x, currentGroupWidth, currentGroupW) => {
   return unitWidth * x;
 };
 
-const calculateHeight = (h, currentGroupH, isNameVisible = "true") => {
-  if (isNameVisible === "true") {
+const calculateHeight = (h, currentGroupH, isNameVisible = true) => {
+  if (isNameVisible) {
     const unitHeight = Math.round((currentGroupH * 75 + (currentGroupH - 1) * 10 - 30) / currentGroupH);
     return unitHeight * h;
   } else {
@@ -59,9 +59,9 @@ const calculateHeight = (h, currentGroupH, isNameVisible = "true") => {
   }
 };
 
-const calculateTop = (y, isNameVisible = "true") => {
-  if (isNameVisible === "true") return 30 + y * 70;
-  else return y * 75;
+const calculateTop = (y, isNameVisible = true) => {
+  if (isNameVisible) return 30 + y * 70;
+  else return 5 + y * 75;
 };
 
 export {

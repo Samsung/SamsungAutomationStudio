@@ -15,12 +15,12 @@ const Image = styled.img`
   border-radius: ${({ isFull }) => isFull && `10px;`}
 `;
 
-const SoopImage = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+const SoopImage = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY)),
+    calculateTop(parseInt(node?.widgetY), nameVisible),
     calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH),
+    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
   ];
   const isFull = parseInt(node?.width) === currentGroupW && parseInt(node?.height) === currentGroupH ? true : false;
 

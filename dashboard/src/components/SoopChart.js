@@ -18,12 +18,12 @@ const ChartContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const SoopChart = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+const SoopChart = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY)),
+    calculateTop(parseInt(node?.widgetY), nameVisible),
     calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH),
+    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
   ];
 
   switch (node?.chartType) {

@@ -91,12 +91,12 @@ const ButtonCircle = styled.button`
   }
 `;
 
-const SoopButton = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+const SoopButton = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY)),
+    calculateTop(parseInt(node?.widgetY), nameVisible),
     calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH),
+    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
   ];
 
   return (
