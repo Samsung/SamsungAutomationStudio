@@ -6,8 +6,8 @@ Based on node-red's **exec** node.
 
 ## Pre-requisites
 
-- node-red
-- ffmpeg
+-   node-red
+-   ffmpeg
 
 <br>
 
@@ -21,13 +21,13 @@ Based on node-red's **exec** node.
 
 ### Input
 
-- `SmartThings MNID`: Samsung smartthings developer MNID
-- `SmartThings PAT`: Samsung SmartThings developer Personal Access Token
-- `RTSP Stream URL`: Video Stream URL. If input msg has propertie `msg.rtspURL` this will be replaced that value
-- `Image save URL`: Location where image to be stored
-- `Total Frame`: Number of frames to save
-- `Timer`: How many seconds to capture
-- `Name`: Node's name
+-   `SmartThings MNID`: Samsung smartthings developer MNID
+-   `SmartThings PAT`: Samsung SmartThings developer Personal Access Token
+-   `RTSP Stream URL`: Video Stream URL. If input msg has propertie `msg.rtspURL` this will be replaced that value
+-   `Image save URL`: Location where image to be stored.
+-   `Total Frame`: Number of frames to save
+-   `Timer`: How many seconds to capture
+-   `Name`: Node's name
 
 [How to use Bixby Nodes](https://sasm.developer.samsung.com/tutorials/article_2_4)  
 [How to use SmartThings Nodes](https://sasm.developer.samsung.com/tutorials/article_2_3)
@@ -48,6 +48,6 @@ Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://
 
 ## Reference
 
-- [Node-RED Creating Nodes](https://nodered.org/docs/creating-nodes/)
-- [SamsungAutomationStudio Github Repository](https://github.com/Samsung/SamsungAutomationStudio)
-- [ffmpeg](https://www.ffmpeg.org/)
+-   [Node-RED Creating Nodes](https://nodered.org/docs/creating-nodes/)
+-   [SamsungAutomationStudio Github Repository](https://github.com/Samsung/SamsungAutomationStudio)
+-   [ffmpeg](https://www.ffmpeg.org/)
