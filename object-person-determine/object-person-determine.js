@@ -30,9 +30,12 @@ module.exports = function (RED) {
             });
 
 
-            if (person === undefined) return;
-            let determine = objects[0]; 
-            if (determine === undefined) return;
+            if (person === undefined || objects.length === 0) {
+                msg.payload = { object: 'default', isLog , date};
+                node.send(msg)
+                return
+            }
+            let determine = objects[0];
             objects.forEach(object => {
                 let distance = Math.sqrt(Math.pow(Math.abs(object.centerX - person.centerX), 2) + Math.pow(Math.abs(object.centerY - person.centerY), 2));
                 if (distance <= object.diameter) {
