@@ -86,7 +86,6 @@ const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nam
   }, [switchState]);
 
   useEffect(() => {
-    console.log(node);
     if (node && Array.isArray(node.states) && node.states[0]) setLabel(node.states[0].label);
     else setLabel(node?.label);
   }, [node]);
