@@ -16,9 +16,9 @@
   },
   "node-red": {
     "nodes": {
-      "Open": "Open.js",
-      "Close": "Close.js",
-      "Holistic": "Holistic.js"
+      "Open": "requestOpen.js",
+      "Close": "requestClose.js",
+      "Holistic": "requestHolistic.js"
     }
   },
 
