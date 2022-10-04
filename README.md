@@ -1,5 +1,7 @@
 # node-red-contrib-ffmpeg-iotcam
 
+[node-red](https://flows.nodered.org/node/node-red-contrib-ffmpeg-iotcam)
+
 Capture and save to image from iotcam using ffmpeg.
 Based on node-red's **exec** node.
 <br>
@@ -33,6 +35,11 @@ Based on node-red's **exec** node.
 [How to use SmartThings Nodes](https://sasm.developer.samsung.com/tutorials/article_2_3)
 
 <br>
+
+## Example flow
+
+-   [Basic flow](https://flows.nodered.org/flow/79184eba802a9d2cf44885f0b5a94a66)
+-   [Trained model with Smartthings and mediapipe](https://flows.nodered.org/flow/b44ca6dede78702d287c393bb922a8cb)
 
 ## Authors
 
