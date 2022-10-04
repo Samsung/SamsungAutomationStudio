@@ -39,6 +39,8 @@ def predict(data):
     try :
         image, results = mediapipe_detection(img, holistic)
         keypoints = extract_keypoints(results)
-        return repr(keypoints)[6:-1]
+        keypoints = [(int(i) if i == 0.0 else i) for i in keypoints]
+        # test = repr(keypoints)[6:-1]
+        return repr(keypoints)
     except Exception as e :
         return str(e) + "mediaPipe Error"

@@ -42,7 +42,7 @@ function onListen(data){
             mediapipeGlobalConfig.mediapipeEnable = true;
             mediapipeGlobalConfig.openNode.send(msg);
             break;
-
+            
         case "close":
             removeEventHandler();
             mediapipeGlobalConfig.mediapipeEnable = false;
@@ -50,9 +50,10 @@ function onListen(data){
             mediapipeGlobalConfig.client = new net.Socket();
             mediapipeGlobalConfig.closeNode.send(msg);
             break;
-
+            
         case "holistic":
             // => send to holistic node.
+            msg.payload = JSON.parse(msg.payload);
             mediapipeGlobalConfig.holisticNode.send(msg);
             send();
             break;
