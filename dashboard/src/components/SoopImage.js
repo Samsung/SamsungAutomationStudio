@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
 
-// FIXME: x, y, w, h 계산하기
 const Image = styled.img`
   position: absolute;
   left: ${({ layout }) => `${layout[0]}px;`}
@@ -15,12 +14,12 @@ const Image = styled.img`
   border-radius: ${({ isFull }) => isFull && `10px;`}
 `;
 
-const SoopImage = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+const SoopImage = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY)),
+    calculateTop(parseInt(node?.widgetY), currentGroupH, nameVisible),
     calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH),
+    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
   ];
   const isFull = parseInt(node?.width) === currentGroupW && parseInt(node?.height) === currentGroupH ? true : false;
 

@@ -20,16 +20,16 @@ const DropdownContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const SoopDropdown = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+const SoopDropdown = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [currentOptions, setCurrentOptions] = useState([]);
   const [currentLabel, setCurrentLabel] = useState("");
 
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY)),
+    calculateTop(parseInt(node?.widgetY), currentGroupH, nameVisible),
     calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH),
+    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
   ];
 
   const onChange = e => {

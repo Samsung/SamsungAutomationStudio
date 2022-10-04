@@ -70,14 +70,14 @@ const SwitchHandle = styled.span`
   transition: 0.2s;
 `;
 
-const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const [switchState, setSwitchState] = useState(false);
 
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY)),
+    calculateTop(parseInt(node?.widgetY), currentGroupH, nameVisible),
     calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH),
+    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
   ];
 
   useUpdateHook(() => {

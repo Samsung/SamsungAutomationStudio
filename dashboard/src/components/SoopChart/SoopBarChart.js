@@ -59,7 +59,6 @@ const SoopBarChart = ({ node }) => {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          // 제목 변경
           title: {
             display: true,
             text: node?.title,
@@ -69,7 +68,6 @@ const SoopBarChart = ({ node }) => {
               size: fontSize.lg,
             },
           },
-          // 범례 변경
           legend: {
             display: node?.legend === "true" ? true : false,
             labels: {
@@ -81,7 +79,6 @@ const SoopBarChart = ({ node }) => {
             },
           },
         },
-        // 축 변경
         scales: {
           y: {
             min: node?.yMin,
@@ -129,7 +126,6 @@ const SoopBarChart = ({ node }) => {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          // 제목 변경
           title: {
             display: true,
             text: node?.title,
@@ -139,7 +135,6 @@ const SoopBarChart = ({ node }) => {
               size: fontSize.md,
             },
           },
-          // 범례 변경
           legend: {
             display: node?.legend === "true" ? true : false,
             labels: {
@@ -151,7 +146,6 @@ const SoopBarChart = ({ node }) => {
             },
           },
         },
-        // 축 변경
         scales: {
           y: {
             min: node?.yMin,

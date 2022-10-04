@@ -33,15 +33,15 @@ const ListLabel = styled.span`
   }};
 `;
 
-const SoopList = ({ currentGroupW, currentGroupWidth, currentGroupH, node }) => {
+const SoopList = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const oC = Array.from({ length: node?.options.length }, () => false);
   const [optionChecked, setOptionChecked] = useState(oC);
 
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY)),
+    calculateTop(parseInt(node?.widgetY), currentGroupH, nameVisible),
     calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH),
+    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
   ];
 
   const onClickCheck = idx => {

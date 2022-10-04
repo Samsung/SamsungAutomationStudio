@@ -40,7 +40,6 @@ const SoopPieChart = ({ node }) => {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        // 제목 변경
         title: {
           display: true,
           text: node?.title,
@@ -50,7 +49,6 @@ const SoopPieChart = ({ node }) => {
             size: fontSize.md,
           },
         },
-        //범례 변경
         legend: {
           display: node?.legend === "true" ? true : false,
           labels: {

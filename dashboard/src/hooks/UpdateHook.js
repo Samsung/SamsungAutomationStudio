@@ -1,4 +1,3 @@
-// https://stackoverflow.com/questions/55075604/react-hooks-useeffect-only-on-update
 import { useRef, useEffect } from "react";
 
 function useIsMounted() {

@@ -1,7 +1,6 @@
 <script src="socket.io/socket.io.js"></script>
 
 <script>
-  // TODO : import from common.js
   const EDITOR_SOCKET_TYPE = {
     FLOW_DEPLOYED: "flow-deployed",
   };
@@ -34,6 +33,7 @@
               groupY: group.groupY,
               width: group.width,
               height: group.height,
+              nameVisible: group.displayVisible,
               nodes: [],
             };
 

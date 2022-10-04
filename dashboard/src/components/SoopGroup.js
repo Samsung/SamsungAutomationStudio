@@ -52,6 +52,7 @@ const SoopGroup = ({ group }) => {
             currentGroupWidth={currentGroupWidth}
             currentGroupW={parseInt(group.width)}
             currentGroupH={parseInt(group.height)}
+            nameVisible={group.nameVisible}
           />
         );
       case SOOP_NODE_TYPE.CHART:
@@ -63,6 +64,7 @@ const SoopGroup = ({ group }) => {
             currentGroupWidth={currentGroupWidth}
             currentGroupW={parseInt(group.width)}
             currentGroupH={parseInt(group.height)}
+            nameVisible={group.nameVisible}
           />
         );
       case SOOP_NODE_TYPE.DROPDOWN:
@@ -74,6 +76,7 @@ const SoopGroup = ({ group }) => {
             currentGroupWidth={currentGroupWidth}
             currentGroupW={parseInt(group.width)}
             currentGroupH={parseInt(group.height)}
+            nameVisible={group.nameVisible}
           />
         );
       case SOOP_NODE_TYPE.GAUGE:
@@ -85,6 +88,7 @@ const SoopGroup = ({ group }) => {
             currentGroupWidth={currentGroupWidth}
             currentGroupW={parseInt(group.width)}
             currentGroupH={parseInt(group.height)}
+            nameVisible={group.nameVisible}
           />
         );
       case SOOP_NODE_TYPE.IMAGE:
@@ -96,6 +100,7 @@ const SoopGroup = ({ group }) => {
             currentGroupWidth={currentGroupWidth}
             currentGroupW={parseInt(group.width)}
             currentGroupH={parseInt(group.height)}
+            nameVisible={group.nameVisible}
           />
         );
       case SOOP_NODE_TYPE.LIST:
@@ -107,6 +112,7 @@ const SoopGroup = ({ group }) => {
             currentGroupWidth={currentGroupWidth}
             currentGroupW={parseInt(group.width)}
             currentGroupH={parseInt(group.height)}
+            nameVisible={group.nameVisible}
           />
         );
       case SOOP_NODE_TYPE.SLIDER:
@@ -118,6 +124,7 @@ const SoopGroup = ({ group }) => {
             currentGroupWidth={currentGroupWidth}
             currentGroupW={parseInt(group.width)}
             currentGroupH={parseInt(group.height)}
+            nameVisible={group.nameVisible}
           />
         );
       case SOOP_NODE_TYPE.SWITCH:
@@ -129,6 +136,7 @@ const SoopGroup = ({ group }) => {
             currentGroupWidth={currentGroupWidth}
             currentGroupW={parseInt(group.width)}
             currentGroupH={parseInt(group.height)}
+            nameVisible={group.nameVisible}
           />
         );
       case SOOP_NODE_TYPE.TEXT:
@@ -140,11 +148,11 @@ const SoopGroup = ({ group }) => {
             currentGroupWidth={currentGroupWidth}
             currentGroupW={parseInt(group.width)}
             currentGroupH={parseInt(group.height)}
+            nameVisible={group.nameVisible}
           />
         );
     }
   };
-  const nameHidden = false;
 
   useEffect(() => {
     setCurrentGroupWidth(ref.current.offsetWidth);
@@ -152,7 +160,7 @@ const SoopGroup = ({ group }) => {
 
   return (
     <Group ref={ref}>
-      {!nameHidden && <GroupName>{group.groupName}</GroupName>}
+      {group.nameVisible && <GroupName>{group.groupName}</GroupName>}
       {group && Array.isArray(group.nodes) && group.nodes.map(node => drawNode(node))}
     </Group>
   );
