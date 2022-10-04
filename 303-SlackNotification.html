@@ -1,0 +1,53 @@
+<script type="text/x-red" data-template-name="slack-notification">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row typed-data-area">
+        <label for="node-input-typed-data"><i class="fa fa-list"></i> Data</label>
+        <input id="node-input-typed-data" type="text" placeholder="data" style="width: 70%">
+    </div>
+    <div class="form-row base-help base-help-slack">Notification need a json object.<br/> <pre>{<br/>"hooks":"https://hooks.slack.com/services/*/*",<br/>"text":"Slack message text!"<br/>}</pre><br/><a href="https://api.slack.com/messaging/webhooks" target="_blank">For more information on Incoming Webhooks.</a></div>
+</script>
+<script type="text/x-red" data-help-name="slack-notification">
+    <p>Send a notification message to a slack.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>Target</dt>
+        <dd>The target to receive notifications.</dd>
+        <dt>Data</dt>
+        <dd>The notification content sent to slack.</dd>
+    </dl>
+</script>
+<script type="text/javascript">
+    RED.nodes.registerType('slack-notification', {
+        category: 'Samsung AutomationStudio',
+        icon: "notification.png",
+        color: "rgba(230,70,20,0.8)",
+        defaults: {
+            name: {value: ""},
+            notificationtype: { value:"slack", required:true},
+            datatype: { value:"msg", required:true },
+            datavalue: { value:"data", required:true }
+        },
+        inputs: 1,
+        outputs: 0,
+        align: "center",
+        paletteLabel: "Slack Noti.",
+        label: function() {
+            return this.name||'Slack Noti.';
+        },
+        oneditprepare: function () {
+            var node = this;
+            $("#node-input-typed-data").typedInput({types:['msg','flow','json']});
+            $("#node-input-typed-data").typedInput('type', node.datatype || 'msg');
+            $("#node-input-typed-data").typedInput('value', node.datavalue);
+        },
+        oneditsave: function () {
+            this.datatype = $("#node-input-typed-data").typedInput('type');
+            this.datavalue = $("#node-input-typed-data").typedInput('value');
+        },
+        oneditresize: function (size) {
+        }
+    });
+</script>
