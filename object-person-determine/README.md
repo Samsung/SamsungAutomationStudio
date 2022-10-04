@@ -1,4 +1,4 @@
-# Object-Person-Determine
+# object-person-determine
 
 A node that determines which of the detected objects most interacts with the user.
 
