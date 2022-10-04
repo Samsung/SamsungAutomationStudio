@@ -19,6 +19,16 @@ Based on node-red's **exec** node.
 
 ## Usage
 
+### Input
+
+- `SmartThings MNID`: Samsung smartthings developer MNID
+- `SmartThings PAT`: Samsung SmartThings developer Personal Access Token
+- `RTSP Stream URL`: Video Stream URL. If input msg has propertie `msg.rtspURL` this will be replaced that value
+- `Image save URL`: Location where image to be stored
+- `Total Frame`: Number of frames to save
+- `Timer`: How many seconds to capture
+- `Name`: Node's name
+
 [How to use Bixby Nodes](https://sasm.developer.samsung.com/tutorials/article_2_4)  
 [How to use SmartThings Nodes](https://sasm.developer.samsung.com/tutorials/article_2_3)
 
