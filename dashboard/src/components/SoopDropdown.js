@@ -54,7 +54,7 @@ const SoopDropdown = ({ currentGroupW, currentGroupWidth, currentGroupH, node })
         <FormControl fullWidth>
           <InputLabel id="soop-dashboard-select-label">{currentLabel}</InputLabel>
           <Select labelId="soop-dashboard-select-label" label={currentLabel} value={selectedOption} onChange={onChange}>
-            {Arrau.isArray(currentOptions) &&
+            {Array.isArray(currentOptions) &&
               currentOptions.map((cOption, idx) => {
                 return (
                   <MenuItem key={idx} value={idx}>
