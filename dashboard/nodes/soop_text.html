@@ -207,6 +207,7 @@
       format: { value: "{{msg.payload}}" },
       layout: { value: "0" },
       fontSize: { value: "16", required: true, validate: RED.validators.number() },
+      value: { value: "defalut text" },
     },
     inputs: 1,
     icon: "font-awesome/fa-font",
@@ -287,6 +288,10 @@
   <div class="form-row">
     <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
     <input type="text" id="node-input-label" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-value"><i class="fa fa-i-cursor"></i> Value</label>
+    <input type="text" id="node-input-value" />
   </div>
   <div class="form-row">
     <label for="node-input-format"><i class="fa fa-i-cursor"></i> Value Format</label>
