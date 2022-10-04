@@ -59,12 +59,14 @@ module.exports = function (RED) {
     }
     if (stdType === "str") {
       return data.toString() === stdValue;
-    } else if (stdType === "num") {
+    }
+    if (stdType === "num") {
       if (isNaN(data) || isNaN(stdValue)) {
         return false;
       }
       return data.toString() === stdValue;
-    } else if (stdType === "bool") {
+    }
+    if (stdType === "bool") {
       return data.toString().toLowerCase() === stdValue;
     }
     return false;
@@ -113,27 +115,31 @@ module.exports = function (RED) {
   function makeResult(ret, target, path) {
     if (path.legnth < 1) {
       return;
-    } else if (path.length == 1) {
-      ret[path[0]] = target[path[0]];
-    } else {
-      let key = path.shift();
-      if (target[key] instanceof Array) {
-        if (ret[key] === undefined) {
-          ret[key] = [];
-        }
-        for (let i = 0; i < target[key].length; i++) {
-          if (ret[key][i] === undefined) {
-            ret[key].push({});
-          }
-          makeResult(ret[key][i], target[key][i], [...path]);
-        }
-      } else {
-        if (ret[key] === undefined) {
-          ret[key] = {};
-        }
-        makeResult(ret[key], target[key], [...path]);
-      }
     }
+
+    if (path.length == 1) {
+      ret[path[0]] = target[path[0]];
+      return;
+    }
+
+    let key = path.shift();
+    if (target[key] instanceof Array) {
+      if (ret[key] === undefined) {
+        ret[key] = [];
+      }
+      for (let i = 0; i < target[key].length; i++) {
+        if (ret[key][i] === undefined) {
+          ret[key].push({});
+        }
+        makeResult(ret[key][i], target[key][i], [...path]);
+      }
+      return;
+    }
+
+    if (ret[key] === undefined) {
+      ret[key] = {};
+    }
+    makeResult(ret[key], target[key], [...path]);
   }
 
   RED.nodes.registerType("data-filter", DataFilter);

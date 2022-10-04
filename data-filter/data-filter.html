@@ -148,7 +148,6 @@
             outputTree = [];
             let children = item.parent ? item.parent.children : stdTree;
             makeOutputTree(outputTree, children);
-            //makeOutputTree(item);
             outputTreeList.treeList("data", outputTree);
           }
         });
@@ -217,11 +216,12 @@
       stdTree.forEach((child) => {
         if (child.children === undefined) {
           outputTree.push(makeStdTreeItem(child.label, "outputPath", true));
-        } else {
-          outputTree.push(makeStdTreeItem(child.label, "outputPath", false));
-          outputTree[outputTree.length - 1].children = [];
-          makeOutputTree(outputTree[outputTree.length - 1].children, child.children);
+          return;
         }
+
+        outputTree.push(makeStdTreeItem(child.label, "outputPath", false));
+        outputTree[outputTree.length - 1].children = [];
+        makeOutputTree(outputTree[outputTree.length - 1].children, child.children);
       });
     }
 
@@ -240,9 +240,10 @@
           subtree.push(makeStdTreeItem(key, "stdPath", false));
           subtree[subtree.length - 1]["children"] = [];
           makeStdTree(json[key], subtree[subtree.length - 1]["children"]);
-        } else {
-          subtree.push(makeStdTreeItem(key, "stdPath", true));
+          continue;
         }
+
+        subtree.push(makeStdTreeItem(key, "stdPath", true));
       }
     }
 
