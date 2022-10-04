@@ -70,6 +70,7 @@ module.exports = function (RED) {
                     })
                     this.wsServer.on('connection', (socket, requset) => {
                         return this.onSocketConnect(socket, requset)
+
                     })
                     this.wsServer.broadcast = function (data, opts) {
                         var results = []

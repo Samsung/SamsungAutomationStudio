@@ -372,7 +372,7 @@ module.exports.code = (config) => {
            
            var curr = new Date();
            const utc = curr.getTime() + (curr.getTimezoneOffset() * 60 * 1000);
-           dataWebSocket.send(JSON.stringify({log : {data : objects, date : new Date(utc + (KR_TIME_DIFF))}}))}, 60000);
+           dataWebSocket.send(JSON.stringify({log : {data : objects, date : new Date(utc + (KR_TIME_DIFF))}}))}, 1000);
     
             registerBtn.addEventListener("click", function(){
             
