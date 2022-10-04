@@ -25,6 +25,7 @@ const GridItem = styled.div`
 `;
 
 const SoopGrid = ({ size: { width }, isEditing, tab }) => {
+  console.log(width);
   const { groups } = tab;
   const dispatch = useDispatch();
   const tabsGrid = useSelector(state => state.tabsGrid);

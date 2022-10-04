@@ -55,13 +55,19 @@ const calculateHeight = (h, currentGroupH, isNameVisible = true) => {
     const unitHeight = Math.round((currentGroupH * 75 + (currentGroupH - 1) * 10 - 30) / currentGroupH);
     return unitHeight * h;
   } else {
-    return h * 75;
+    const unitHeight = Math.round((currentGroupH * 75 + (currentGroupH - 1) * 10) / currentGroupH);
+    return unitHeight * h;
   }
 };
 
-const calculateTop = (y, isNameVisible = true) => {
-  if (isNameVisible) return 30 + y * 70;
-  else return 5 + y * 75;
+const calculateTop = (y, currentGroupH, isNameVisible = true) => {
+  if (isNameVisible) {
+    const unitHeight = Math.round((currentGroupH * 75 + (currentGroupH - 1) * 10 - 30) / currentGroupH);
+    return 30 + y * unitHeight;
+  } else {
+    const unitHeight = Math.round((currentGroupH * 75 + (currentGroupH - 1) * 10) / currentGroupH);
+    return unitHeight * y;
+  }
 };
 
 export {
