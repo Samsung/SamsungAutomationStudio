@@ -23,6 +23,36 @@
 </script>
 
 <script type="text/html" data-template-name="iotcam2img">
+    <div class="form-tips" style="margin-bottom:10px;">
+        <dl class="message-properties">
+            <dt class="optional">
+                smartthings credentials
+                <span class="property-type">string</span>
+            </dt>
+            <dd>
+                <b>Note:</b> You can check your SmartThings MNID on
+                <b
+                    ><a
+                        href="https://smartthings.developer.samsung.com/partner/dashboard"
+                        target="_blank"
+                        >this page</a
+                    >.</b
+                >
+            </dd>
+            <dd>
+                And you can also generate your SmartThings Personal Access
+                Token(PAT) on
+                <b
+                    ><a
+                        href="https://account.smartthings.com/tokens"
+                        target="_blank"
+                        >this page</a
+                    >.</b
+                >
+            </dd>
+        </dl>
+    </div>
+
     <div class="form-row">
         <label for="node-input-smartthingsMnid"
             ><i class="fa fa-tag"></i> SmartThings MNID</label
@@ -42,6 +72,23 @@
         <input type="text" id="node-input-rtspURL" />
     </div>
     <div class="form-row">
+        <div class="form-tips" style="margin-bottom:10px;">
+            <dl class="message-properties">
+                <dt class="optional">
+                    saveURL <span class="property-type">string</span>
+                </dt>
+                <dd>
+                    <b>Note:</b> On Windows you must use double back-slashes \\
+                    in any directory names.
+                </dd>
+                <dd>
+                    The name of the file to be updated can be provided in the
+                    node configuration, or as a message property. By default it
+                    will use <code>msg.saveURL</code> but this can be customised
+                    in the node.
+                </dd>
+            </dl>
+        </div>
         <label for="node-input-saveURL"
             ><i class="fa fa-tag"></i>Image save URL</label
         >
