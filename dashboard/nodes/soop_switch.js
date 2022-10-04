@@ -13,6 +13,12 @@ module.exports = function (RED) {
         });
       },
     });
+    node.on("input", function (msg) {
+      dashboard.emitState({
+        nodeId: node.id,
+        label: msg.payload,
+      });
+    });
   }
 
   RED.nodes.registerType("soop_switch", SwitchNode);

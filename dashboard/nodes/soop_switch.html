@@ -119,6 +119,8 @@
       widgetX: { value: 0, validate: RED.validators.number(), required: true },
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
       name: { value: "" },
+      label: { value: "switch" },
+      background: { value: "blue", required: true },
     },
     inputs: 1,
     outputs: 1,
@@ -154,6 +156,18 @@
       $("#node-input-group").on("change", () => {
         changeGroup(getGroupGrid(this.id));
       });
+
+      if (this.background === undefined) {
+        this.background = "blue";
+        $("input[type=radio][name=background]")[0].checked = true;
+      }
+      let backgrounds = $("input[type=radio][name=background]");
+      for (var i = 0; i < backgrounds.length; i++) {
+        if (backgrounds[i].value == this.background) backgrounds[i].checked = true;
+      }
+    },
+    oneditsave: function () {
+      this.background = $("input[type=radio][name=background]:checked")[0].value;
     },
     oneditresize: function () {
       changeGroup(getGroupGrid(this.id));
@@ -162,6 +176,10 @@
 </script>
 
 <script type="text/html" data-template-name="soop_switch">
+  <div class="form-row">
+    <label for="node-input-name"> <i class="fa fa-tag"></i>Name </label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
   <div class="form-row">
     <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
     <input type="text" id="node-input-group" />
@@ -182,8 +200,21 @@
     </div>
   </div>
   <div class="form-row">
-    <label for="node-input-name"> <i class="fa fa-tag"></i>Name </label>
-    <input type="text" id="node-input-name" placeholder="Name" />
+    <label for="node-input-background"><i class="fa fa-tint"></i> Color</label>
+    <input type="radio" name="background" id="blue" style="width: 0px;" value="blue" />
+    <label class="btn-styled1" for="blue" style="width: 55px; text-align: center;">blue</label>
+    <input type="radio" name="background" id="orange" style="width: 0px;" value="orange" />
+    <label class="btn-styled2" for="orange" style="width: 55px; text-align: center;">orange</label>
+    <input type="radio" name="background" id="pink" style="width: 0px;" value="pink" />
+    <label class="btn-styled3" for="pink" style="width: 55px; text-align: center;">pink</label>
+    <input type="radio" name="background" id="purple" style="width: 0px;" value="purple" />
+    <label class="btn-styled4" for="purple" style="width: 55px; text-align: center;">purple</label>
+    <input type="radio" name="background" id="green" style="width: 0px;" value="green" />
+    <label class="btn-styled5" for="green" style="width: 55px; text-align: center;">green</label>
+  </div>
+  <div class="form-row">
+    <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+    <input type="text" id="node-input-label" />
   </div>
 </script>
 
