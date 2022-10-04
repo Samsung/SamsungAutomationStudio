@@ -103,6 +103,7 @@ def dataCommunication(client_socket, addr):
             elif request['command'] == 'close':
                 response['result'] = 'MediaPipe is closed successfully'
             elif request['command'] == 'holistic':
+                print(request['path'])
                 response['result'] = predict(request['path'])
             else : 
                 response['result'] = 'invalid request.'
