@@ -112,7 +112,7 @@
   }
   RED.nodes.registerType("soop_switch", {
     category: "soop-dashboard",
-    color: "#3092f0",
+    color: "#1153FC",
     defaults: {
       group: { type: "soop_group", required: true },
       width: { value: 1, validate: RED.validators.number(), required: true },
@@ -121,10 +121,15 @@
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
       name: { value: "" },
     },
+    inputs: 1,
     outputs: 1,
-    icon: "file.svg",
+    icon: "font-awesome/fa-toggle-on",
+    paletteLabel: "soop_switch",
     label: function () {
-      return this.name || "Switch";
+      return this.name || "soop_switch";
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
     },
     oneditprepare: function () {
       $.fn.groupTable = function (arr) {

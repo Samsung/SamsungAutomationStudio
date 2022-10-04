@@ -126,7 +126,14 @@
       options: { value: [{ value: "" }] },
     },
     inputs: 1,
-    icon: "ui_dropdown.png",
+    icon: "font-awesome/fa-list",
+    paletteLabel: "soop_list",
+    label: function () {
+      return this.name || "soop_list";
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
+    },
     oneditprepare: function () {
       $.fn.groupTable = function (arr) {
         $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');

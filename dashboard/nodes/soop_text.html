@@ -209,7 +209,14 @@
       fontSize: { value: "16", required: true, validate: RED.validators.number() },
     },
     inputs: 1,
-    icon: "text.png",
+    icon: "font-awesome/fa-font",
+    paletteLabel: "soop_text",
+    label: function () {
+      return this.name || "soop_text";
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
+    },
     oneditprepare: function () {
       $.fn.groupTable = function (arr) {
         $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
