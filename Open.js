@@ -1,4 +1,6 @@
-const { time } = require('console');
+const util = require('util');
+
+const exec = util.promisify(require('child_process').exec);
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -7,11 +9,9 @@ function sleep(ms) {
 }
 
 module.exports = function (RED) {
-
     function MediapipeOpen(config){
         const mediapipeGlobalConfig = require('./MediapipeConfig.js');
-        const util = require('util');
-        const exec = util.promisify(require('child_process').exec);
+        const mediapipeFunction = require('./MediapipeFunction.js');
 
         const node = this;
         
@@ -19,50 +19,34 @@ module.exports = function (RED) {
         mediapipeGlobalConfig.openNode = this;
         node.on("input", async function (msg) {
             try {
+                if(mediapipeGlobalConfig.mediapipeEnable) 
+                    return;
+
                 exec(`python ${__dirname}/mediapipe/main.py`);
                 await sleep(4000);
-                
-                mediapipeGlobalConfig.client.on('data', function(data) {
-                    
-                    // receive data
-                    msg.payload = data.toString();
 
-                    // MediaPipe is already open. result is holistic data
-                    // => send to holistic node.
-                    if(mediapipeGlobalConfig.mediapipeEnable){
-                        mediapipeGlobalConfig.holisticNode.send(msg);
-                        mediapipeGlobalConfig.send();
-                    }else{
-                        // Mediapipe Server connection is estblished.
-                        // send to Open node.
-                        mediapipeGlobalConfig.mediapipeEnable = true;
-                        mediapipeGlobalConfig.openNode.send(msg);
-                    }
+                mediapipeFunction.setEventHandler();
 
-                });
-
-                mediapipeGlobalConfig.client.on('disconnect', function(data) {
-                    try {
-                        mediapipeGlobalConfig.client.off('data');
-                        mediapipeGlobalConfig.client.off('disconnect');
-                    } catch (error) {
-                        console.log(error);
-                    }
-                    mediapipeGlobalConfig.mediapipeEnable = false;
-                });
-
+                // connect to mediapipe server
                 mediapipeGlobalConfig.client.connect(1881, '127.0.0.1', function() {
-                    mediapipeGlobalConfig.client.write('sendTest');
+                    const requestData = {
+                        _msgid : msg._msgid,
+                        command : "open"
+                    }
+                    // request open server
+                    mediapipeGlobalConfig.client.write(JSON.stringify(requestData));
                 });
+
+                // Sending result is handled together by MediapipeFunction.js/setEventHandler
+                // node.send(msg.payload);
+
             } catch (error) {
                 console.log(error);
                 msg.payload = 'fail';
+                node.send(msg);
             }
-
-            node.send(msg);
         });
 
-        
     }
 
     RED.nodes.registerType("open", MediapipeOpen, {});

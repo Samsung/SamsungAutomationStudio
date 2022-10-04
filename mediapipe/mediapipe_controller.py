@@ -31,22 +31,16 @@ def predict(data):
     img = ""
 
     try:
-        img = np.fromstring(data, dtype = np.uint8)
+        img = cv2.imread(data, cv2.IMREAD_COLOR)
+        
     except Exception as e:
-        raise Exception(e + "np.fromstring Error")
+        return str(e) + ", open cv image read Error"
 
-    try:
-        img = cv2.imdecode(img, cv2.IMREAD_COLOR)
-    except Exception as e:
-        raise Exception(e + "cv2.imdecode Error")
-
-    #img = cv2.imread(f'./mediapipe/{name}.jpg')
     try :
         image, results = mediapipe_detection(img, holistic)
         keypoints = extract_keypoints(results)
-        return repr(keypoints)[6:-1]
+        keypoints = [(int(i) if i == 0.0 else i) for i in keypoints]
+        # test = repr(keypoints)[6:-1]
+        return repr(keypoints)
     except Exception as e :
-        cv2.imshow('image',img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        raise Exception(str(e) + "mediaPipe Error")
+        return str(e) + "mediaPipe Error"

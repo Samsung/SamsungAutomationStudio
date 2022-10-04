@@ -1,19 +1,39 @@
 module.exports = function (RED) {
     function Holistic(config){
+        const mediapipeGlobalConfig = require('./MediapipeConfig.js');
+        const mediapipeFunction = require('./MediapipeFunction.js');
+
         const node = this;
         RED.nodes.createNode(node, config);
-        const mediapipeGlobalConfig = require('./MediapipeConfig.js');
-        mediapipeGlobalConfig.holisticNode = this;
+        mediapipeGlobalConfig.holisticNode = node;
+        node.path = config.path;
         node.on("input", function (msg) {
-            mediapipeGlobalConfig.queue.push(msg.payload);
-
-            // if send function is Not working, Start send;
-            if(!mediapipeGlobalConfig.running){
-                mediapipeGlobalConfig.send();
+            try {
+                if(!mediapipeGlobalConfig.mediapipeEnable){
+                    console.log("Mediapipe is not set.");
+                    return;
+                }
+    
+                const requestData = {
+                    _msgid : msg._msgid,
+                    command : "holistic",
+                    path : ((!node.path || node.path === "") ? msg.payload : node.path),
+                    result : "array"
+                }
+    
+                mediapipeGlobalConfig.queue.push(JSON.stringify(requestData));
+    
+                // if send function is Not working, Start send;
+                if(!mediapipeGlobalConfig.running) mediapipeFunction.send();
+                
+                // Sending result is handled together by MediapipeFunction.js/setEventHandler
+                // node.send(msg.payload);
+            } catch (error) {
+                console.log(error);
+                msg.payload = 'fail : ' + String(error);
+                node.send(msg);
             }
-
-            // Sending result is handled together by Open.js.
-            // node.send(msg.payload);
+            
         });
     }
 
