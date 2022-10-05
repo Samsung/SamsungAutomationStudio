@@ -72,7 +72,6 @@ const SwitchHandle = styled.span`
 
 const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
   const [switchState, setSwitchState] = useState(false);
-  const [label, setLabel] = useState("");
 
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
@@ -86,8 +85,8 @@ const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nam
   }, [switchState]);
 
   useEffect(() => {
-    if (node && Array.isArray(node.states) && node.states[0]) setLabel(node.states[0].label);
-    else setLabel(node?.label);
+    if (node && Array.isArray(node?.states) && node.states[0]) setSwitchState(node.states[0].switchState);
+    else setSwitchState(node?.switchState);
   }, [node]);
 
   function onSwitchChange(e) {
@@ -96,7 +95,7 @@ const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nam
 
   return (
     <SwitchContainer layout={layout}>
-      <SwitchLabel>{label}</SwitchLabel>
+      <SwitchLabel>{node?.label}</SwitchLabel>
       <SwitchWrapper>
         <SwitchInput
           type="checkbox"

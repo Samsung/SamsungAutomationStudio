@@ -17,7 +17,7 @@ module.exports = function (RED) {
     node.on("input", function (msg) {
       dashboard.emitState({
         nodeId: node.id,
-        label: msg.payload,
+        switchState: msg.payload,
       });
     });
   }
