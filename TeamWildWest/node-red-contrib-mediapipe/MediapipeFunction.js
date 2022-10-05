@@ -1,37 +1,35 @@
-const net = require('net');
-const mediapipeGlobalConfig = require('./MediapipeConfig.js');
+const net = require("net");
+const mediapipeGlobalConfig = require("./MediapipeConfig.js");
 
-function removeEventHandler(){
-    mediapipeGlobalConfig.client.off('data', onListen);
-    mediapipeGlobalConfig.client.off('disconnect', onDisconnect);
+function removeEventHandler() {
+    mediapipeGlobalConfig.client.off("data", onListen);
+    mediapipeGlobalConfig.client.off("disconnect", onDisconnect);
 }
 
 function send() {
-    if(!mediapipeGlobalConfig.mediapipeEnable){
+    if (!mediapipeGlobalConfig.mediapipeEnable) {
         console.log("Mediapipe is not set.");
         mediapipeGlobalConfig.running = false;
         return;
     }
 
-    if(mediapipeGlobalConfig.queue.length == 0){
+    if (mediapipeGlobalConfig.queue.length == 0) {
         mediapipeGlobalConfig.running = false;
         return;
-    }else{
+    } else {
         mediapipeGlobalConfig.running = true;
         mediapipeGlobalConfig.client.write(mediapipeGlobalConfig.queue.shift());
     }
 }
 
-
-function onListen(data){
- 
+function onListen(data) {
     // receive data
     data = data.toString();
     data = JSON.parse(data);
     let msg = {
-        _msgid : data._msgid,
-        payload : "",
-        topic : ""
+        _msgid: data._msgid,
+        payload: "",
+        topic: "",
     };
     msg.payload = data.result;
 
@@ -42,7 +40,7 @@ function onListen(data){
             mediapipeGlobalConfig.mediapipeEnable = true;
             mediapipeGlobalConfig.openNode.send(msg);
             break;
-            
+
         case "close":
             removeEventHandler();
             mediapipeGlobalConfig.mediapipeEnable = false;
@@ -50,7 +48,7 @@ function onListen(data){
             mediapipeGlobalConfig.client = new net.Socket();
             mediapipeGlobalConfig.closeNode.send(msg);
             break;
-            
+
         case "holistic":
             // => send to holistic node.
             try {
@@ -61,26 +59,28 @@ function onListen(data){
             }
             send();
             break;
+        default:
+            console.log("Invalid command.");
+            break;
     }
 }
 
-function onDisconnect(){
+function onDisconnect() {
     try {
-        mediapipeGlobalConfig.client.off('data', onListen);
-        mediapipeGlobalConfig.client.off('disconnect', onDisconnect);
+        mediapipeGlobalConfig.client.off("data", onListen);
+        mediapipeGlobalConfig.client.off("disconnect", onDisconnect);
     } catch (error) {
         console.log(error);
     }
     mediapipeGlobalConfig.mediapipeEnable = false;
 }
 
-
-function setEventHandler(){
+function setEventHandler() {
     // Set Event Listener
-    mediapipeGlobalConfig.client.on('data', onListen);
+    mediapipeGlobalConfig.client.on("data", onListen);
 
     // set disconnect event handler
-    mediapipeGlobalConfig.client.on('disconnect', onDisconnect);
+    mediapipeGlobalConfig.client.on("disconnect", onDisconnect);
 }
 
 exports.removeEventHandler = removeEventHandler;
