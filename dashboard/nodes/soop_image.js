@@ -11,6 +11,14 @@ module.exports = function (RED) {
     dashboard.addNode({
       node: node,
     });
+
+    // Receive msg from upstream node in a flow
+    node.on("input", function (msg) {
+      dashboard.emitState({
+        nodeId: node.id,
+        value: msg.payload
+      })      
+    }); 
   }
   RED.nodes.registerType("soop_image", SoopImageNode);
 };

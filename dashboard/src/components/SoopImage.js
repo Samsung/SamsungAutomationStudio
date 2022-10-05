@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "../assets/DesignOption";
 
@@ -15,6 +15,8 @@ const Image = styled.img`
 `;
 
 const SoopImage = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
+  const [currentOption, setCurrentOption] = useState("");
+  const [currentLink, setCurrentLink] = useState("");
   const layout = [
     calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
     calculateTop(parseInt(node?.widgetY), currentGroupH, nameVisible),
@@ -23,13 +25,23 @@ const SoopImage = ({ currentGroupW, currentGroupWidth, currentGroupH, node, name
   ];
   const isFull = parseInt(node?.width) === currentGroupW && parseInt(node?.height) === currentGroupH ? true : false;
 
-  switch (node?.option) {
+  useEffect(() => {
+    if (Array.isArray(node?.states) && node?.states[0]) {
+      setCurrentLink(node?.states[0]?.value);
+      setCurrentOption("link");
+    } else {
+      setCurrentOption(node?.option);
+      setCurrentLink(node?.link);
+    }
+  }, [node]);
+
+  switch (currentOption) {
     case "upload":
       return (
-        <Image isFull={isFull} layout={layout} src={`data:image/jpg;base64,${node?.uploads}`} objectFit={node?.fit} />
+        <Image id={node?.id} isFull={isFull} layout={layout} src={`data:image/jpg;base64,${node?.uploads}`} objectFit={node?.fit} />
       );
     case "link":
-      return <Image isFull={isFull} layout={layout} src={node?.link} objectFit={node?.fit} />;
+      return <Image id={node?.id} isFull={isFull} layout={layout} src={currentLink} objectFit={node?.fit} />;
   }
 };
 

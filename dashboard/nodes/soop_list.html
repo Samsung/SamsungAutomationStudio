@@ -82,6 +82,7 @@
   }
   // Add new node on group grid
   function addNewNode(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
     // Remove 'new-node' class in every row-col
     const { x, y, w, h } = getXYWH();
     removeColor(arr[0].length, arr.length);
@@ -94,6 +95,7 @@
     }
   }
   function changeGroup(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
     if ($("#node-input-group-table > table").length) {
       const row = arr.length;
       const col = arr[0].length;
@@ -137,6 +139,11 @@
       $.fn.groupTable = function (arr) {
         $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
         newTable(arr);
+        if (!Array.isArray(arr) || !arr[0]) {
+          $("#input-xywh").hide();
+        } else {
+          $("#input-xywh").show();
+        }
         $(listPositionSelector).on("change", () => addNewNode(arr));
       };
       $("#node-input-group-table").groupTable(getGroupGrid(this.id));
@@ -219,7 +226,13 @@
       });
     },
     oneditresize: function () {
-      changeGroup(getGroupGrid(this.id));
+      const arr = getGroupGrid(this.id);
+      changeGroup(arr);
+      if (!Array.isArray(arr) || !arr[0]) {
+        $("#input-xywh").hide();
+      } else {
+        $("#input-xywh").show();
+      }
     },
   });
 </script>
@@ -229,7 +242,7 @@
     <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
     <input type="text" id="node-input-group" />
   </div>
-  <div class="form-row">
+  <div class="form-row" id="input-xywh">
     <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
     <div id="node-input-group-table" style="width:70%; display: inline-block;">
       <div style="margin-bottom:10px">

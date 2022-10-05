@@ -4,8 +4,12 @@
   function getGroupGrid(nodeId) {
     const groupId = $("#node-input-group").val();
     const groupNode = RED.nodes.node(groupId);
-    groupNode._def.reflectEdit(groupId, nodeId);
-    return groupNode.groupState;
+    if (groupNode) {
+      groupNode._def.reflectEdit(groupId, nodeId);
+      return groupNode.groupState;
+    } else {
+      return [];
+    }
   }
   function getXYWH() {
     const x = parseInt($("#node-input-widgetX").val());
@@ -33,6 +37,8 @@
   }
   // Create a table with array
   function newTable(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
+
     const row = arr.length;
     const col = arr[0].length;
     // Append a row for column header(1,2,....)
@@ -83,6 +89,7 @@
   }
   // Add new node on group grid
   function addNewNode(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
     // Remove 'new-node' class in every row-col
     const { x, y, w, h } = getXYWH();
     removeColor(arr[0].length, arr.length);
@@ -95,6 +102,7 @@
     }
   }
   function changeGroup(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
     if ($("#node-input-group-table > table").length) {
       const row = arr.length;
       const col = arr[0].length;
@@ -111,16 +119,12 @@
     }
   }
 
-  // Temporally save recent file in base64 format
-  var strImage;
-  var nameImage = "No file chosen";
   // When user uploads image, change image file into base64 string and save it.
   function uploadFile(info) {
     const reader = new FileReader();
     reader.onload = function () {
       const base64 = this.result.replace(/.*base64,/, "");
-
-      strImage = base64;
+      $("#node-input-uploads").val(base64);
     };
     reader.readAsDataURL(info.files[0]);
     $("#node-input-filename").val(info.files[0].name);
@@ -128,19 +132,7 @@
 
   // Register Image Node
   RED.nodes.registerType("soop_image", {
-    /* Node definitions
-     *  category: palette category
-     *  color: background color
-     *  defaults: node property
-     *  inputs: # of input
-     *  outputs: # of output
-     *  icon: icon image
-     *  paletteLabel: node name in palette
-     *  label: function that returns value for the label name
-     *  labelstyle: function that returns css-style for the label
-     *  oneditprepare: function called when edit window is opened
-     *  oneditsave: function called when edit window is okayed
-     */
+    /* Node definitions */
     category: "soop-dashboard",
     color: "#5F86FE",
     defaults: {
@@ -149,6 +141,7 @@
        *  tooltip: tooltip of the image
        *  group: group information of the node
        *  width, height: size of node
+       *  widgteX, wdigetY: position of node
        *  option: image upload option
        *  uploads: base64 string of uploaded local image file
        *  link: URL of the image file
@@ -164,10 +157,11 @@
       tooltip: { value: "" },
       option: { value: "upload" },
       uploads: { value: "" },
+      filename: { value: "No file chosen" },
       link: { value: "" },
       fit: { value: "fill" },
     },
-    inputs: 0,
+    inputs: 1,
     outputs: 0,
     icon: "font-awesome/fa-picture-o",
     paletteLabel: "soop_image",
@@ -182,6 +176,11 @@
       $.fn.groupTable = function (arr) {
         $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
         newTable(arr);
+        if (!Array.isArray(arr) || !arr[0]) {
+          $("#input-xywh").hide();
+        } else {
+          $("#input-xywh").show();
+        }
         $(imagePositionSelector).on("change", () => addNewNode(arr));
       };
       $("#node-input-group-table").groupTable(getGroupGrid(this.id));
@@ -198,8 +197,6 @@
       if (!$("#node-input-height").val()) {
         $("#node-input-height").val(1);
       }
-
-      $("#node-input-filename").val(nameImage);
 
       // On change event, change dom element
       $("#node-input-option").on("change", function () {
@@ -224,19 +221,24 @@
       $("#node-input-group").on("change", () => {
         changeGroup(getGroupGrid(this.id));
       });
+      console.log("value", $("#node-input-option").val());
     },
     oneditsave: function () {
       if ($("#node-input-option").val() === "upload") {
-        this.uploads = strImage;
         this.link = "";
-        nameImage = $("#node-input-filename").val();
       } else {
-        this.uploads = "";
-        nameImage = "No file chosen";
+        $("#node-input-uploads").val("");
+        $("#node-input-filename").val("No file chosen");
       }
     },
     oneditresize: function () {
-      changeGroup(getGroupGrid(this.id));
+      const arr = getGroupGrid(this.id);
+      changeGroup(arr);
+      if (!Array.isArray(arr) || !arr[0]) {
+        $("#input-xywh").hide();
+      } else {
+        $("#input-xywh").show();
+      }
     },
   });
 </script>
@@ -248,7 +250,7 @@
     <input type="text" id="node-input-group" />
   </div>
   <!-- Size -->
-  <div class="form-row">
+  <div class="form-row" id="input-xywh">
     <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
     <div id="node-input-group-table" style="width:70%; display: inline-block;">
       <div style="margin-bottom:10px">
@@ -275,6 +277,7 @@
   <div class="form-row form-row-upload">
     <label for="node-input-upload" style="text-align:right;"><i class="fa fa-upload"></i> File</label>
     <input type="file" id="node-input-upload" accept="image/*" onchange="uploadFile(this)" style="display: none;" />
+    <input type="text" id="node-input-uploads" style="display: none;" />
     <input
       type="button"
       value="Choose File"
@@ -312,6 +315,11 @@
 
 <script type="text/html" data-help-name="soop_image">
   <p>Shows an image on the dashboard</p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">string</span></dt>
+    <dd>the payload of the message</dd>
+  </dl>
   <h3>Details</h3>
   <ol class="node-ports">
     <li>
