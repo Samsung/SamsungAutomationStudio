@@ -7,8 +7,6 @@
 
 # Data Modeling
 
----
-
 ### ObjectDetection Result storage format (saved every second)
 
 ```json
@@ -57,10 +55,10 @@
 
 # Alarm Flow 
 
----
+
 # Chart Flow
 
----
+
 
 ### Enter start date and end date
 
