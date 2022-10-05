@@ -207,6 +207,10 @@ module.exports.code = (config) => {
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     
         <script>
+            const FONT_24PX_ARIAL = "24px Arial";
+            const COLOR_LIME = "#2fff00";
+            const DEFAULT_LINE_WIDTH = 1;
+
             let detected = [], objects = [], savedObjects = [];
             let data = "", preset = "";
             let registered = "${config.registered}".split(',');
@@ -295,12 +299,12 @@ module.exports.code = (config) => {
     
                         for (let i = 0; i < predictions.length; i++) {
                             context.beginPath(); // 새로운 경로를 만듭니다. 경로가 생성됬다면, 이후 그리기 명령들은 경로를 구성하고 만드는데 사용하게 됩니다.
-                            context.lineWidth = 1;
-                            context.strokeStyle = "#2fff00"
+                            context.lineWidth = DEFAULT_LINE_WIDTH;
+                            context.strokeStyle = COLOR_LIME;
                             context.rect(...predictions[i].bbox); // rect(x, y, width, height) 좌측상단이 (x, y)이고 폭과 높이가 width와 height인 직사각형을 그립니다.
                             context.stroke(); // 윤곽선을 이용하여 도형을 그리는 것!
-                            context.font = '24px Arial';
-                            context.fillStyle = '#2fff00';
+                            context.font = FONT_24PX_ARIAL;
+                            context.fillStyle = COLOR_LIME;
                             context.fillText(predictions[i].class + ' ' + parseInt(predictions[i].score * 100) + '%', predictions[i].bbox[0], predictions[i].bbox[1]);
                             context.fillRect(predictions[i].bbox[0] + predictions[i].bbox[2] / 2 - 1, predictions[i].bbox[1] + predictions[i].bbox[3] / 2 - 1, 2, 2);
                         }
