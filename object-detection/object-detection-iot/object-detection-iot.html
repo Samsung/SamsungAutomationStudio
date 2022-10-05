@@ -1,11 +1,11 @@
 <script type="text/javascript">
-  RED.nodes.registerType("object-detection", {
+  RED.nodes.registerType("object-detection-iot", {
     category: "D5MI",
     color: "#03bafc",
     defaults: {
       dataSocketUrl: { value: "ws://localhost:1880/ws/data" },
       registerSocketUrl: { value: "ws://localhost:1880/ws/register" },
-
+      rtspPort: { value: 1886 },
       objField: {
         value: "payload",
         label: "payload",
@@ -20,32 +20,17 @@
       },
       poseFieldType: { value: "msg" },
     },
-
+    credentials: {
+      smartthingsMnid: { value: "" },
+      smartthingsPat: { value: "" },
+    },
     inputs: 3,
     outputs: 1,
     icon: "font-awesome/fa-object-ungroup",
     label: function () {
-      return this.name || "object-detection";
+      return this.name || "object-detection-iot";
     },
     oneditprepare: function () {
-      const inputVideo = document.getElementById("input-video");
-      const constraints = {
-        audio: false, // if you want test audio, give the value 'true'.
-        video: { width: 1280, height: 720 },
-      };
-
-      navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then((stream) => {
-          inputVideo.srcObject = stream;
-          inputVideo.onloadedmetadata = function (e) {
-            inputVideo.play();
-          };
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
       const that = this;
       const stateId = RED.editor.generateViewStateId("node", this, "");
       if (!this.objField) {
@@ -77,17 +62,19 @@
   });
 </script>
 
-<script type="text/html" data-template-name="object-detection">
+<script type="text/html" data-template-name="object-detection-iot">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" />
   </div>
-
+  <div class="form-row">
+    <label for="node-input-rtspPort"><i class="fa fa-tag"></i> RTSP PORT</label>
+    <input type="text" id="node-input-rtspPort" placeholder="1886" />
+  </div>
   <div class="form-row">
     <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
     <input type="text" id="node-input-dataSocketUrl" placeholder="ws://localhost:1880/ws/data" />
   </div>
-
   <div class="form-row">
     <label for="node-input-registerSocketUrl"><i class="fa fa-tag"></i> Register Socket Url</label>
     <input
@@ -116,9 +103,18 @@
   <div class="form-row" id="node-canvas" style="text-align: center;">
     <video id="input-video" style="height:360px; width:640px;"></video>
   </div>
+  <div class="form-row">
+    <label for="node-input-smartthingsMnid"><i class="fa fa-tag"></i> SmartThings MNID</label>
+    <input type="text" id="node-input-smartthingsMnid" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-smartthingsPat"><i class="fa fa-tag"></i> SmartThings PAT</label>
+    <input type="text" id="node-input-smartthingsPat" />
+  </div>
 </script>
 
-<script type="text/html" data-help-name="object-detection">
+<script type="text/html" data-help-name="object-detection-iot">
   <p>
     A node that recognizes and visualizes some objects and analyzes which one is interacting with
     user using a webcam.
