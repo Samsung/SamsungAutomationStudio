@@ -24,44 +24,48 @@ function send() {
 
 function onListen(data) {
     // receive data
-    data = data.toString();
-    data = JSON.parse(data);
-    let msg = {
-        _msgid: data._msgid,
-        payload: "",
-        topic: "",
-    };
-    msg.payload = data.result;
+    try {
+        data = data.toString();
+        data = JSON.parse(data);
+        let msg = {
+            _msgid: data._msgid,
+            payload: "",
+            topic: "",
+        };
+        msg.payload = data.result;
 
-    switch (data.command) {
-        case "open":
-            // Mediapipe Server connection is estblished.
-            // send to Open node.
-            mediapipeGlobalConfig.mediapipeEnable = true;
-            mediapipeGlobalConfig.openNode.send(msg);
-            break;
+        switch (data.command) {
+            case "open":
+                // Mediapipe Server connection is estblished.
+                // send to Open node.
+                mediapipeGlobalConfig.mediapipeEnable = true;
+                mediapipeGlobalConfig.openNode.send(msg);
+                break;
 
-        case "close":
-            removeEventHandler();
-            mediapipeGlobalConfig.mediapipeEnable = false;
-            mediapipeGlobalConfig.running = false;
-            mediapipeGlobalConfig.client = new net.Socket();
-            mediapipeGlobalConfig.closeNode.send(msg);
-            break;
+            case "close":
+                removeEventHandler();
+                mediapipeGlobalConfig.mediapipeEnable = false;
+                mediapipeGlobalConfig.running = false;
+                mediapipeGlobalConfig.client = new net.Socket();
+                mediapipeGlobalConfig.closeNode.send(msg);
+                break;
 
-        case "holistic":
-            // => send to holistic node.
-            try {
-                msg.payload = JSON.parse(msg.payload);
-                mediapipeGlobalConfig.holisticNode.send(msg);
-            } catch (error) {
-                console.log("Parse Error : " + msg.payload);
-            }
-            send();
-            break;
-        default:
-            console.log("Invalid command.");
-            break;
+            case "holistic":
+                // => send to holistic node.
+                try {
+                    msg.payload = JSON.parse(msg.payload);
+                    mediapipeGlobalConfig.holisticNode.send(msg);
+                } catch (error) {
+                    console.log("Parse Error : " + msg.payload);
+                }
+                send();
+                break;
+            default:
+                console.log("Invalid command.");
+                break;
+        }
+    } catch (error) {
+        console.log(String(error) + "Error : onListen in MediapipeFunction.js");
     }
 }
 
