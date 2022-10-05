@@ -17,7 +17,7 @@ module.exports = function (RED) {
     node.on("input", function (msg) {
       let value = valueMap.get(msg.payload);
       if (!value) value = 0;
-      dashboard.emitState({
+      dashboard.emitAndUpdateState({
         nodeId: node.id,
         value: value,
       });
@@ -28,6 +28,11 @@ module.exports = function (RED) {
       onMessage: message => {
         let value = reverseValueMap.get(message.value);
         if (!value) reverseValueMap.get(0);
+
+        dashboard.emitAndUpdateState({
+          nodeId: node.id,
+          value: valueMap.get(value),
+        });
         node.send({
           payload: value,
         });

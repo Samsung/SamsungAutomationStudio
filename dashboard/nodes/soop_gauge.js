@@ -21,7 +21,7 @@ module.exports = function (RED) {
       } else {
         value = config.min;
       }
-      dashboard.emitState({
+      dashboard.emitAndUpdateState({
         nodeId: node.id,
         value: value,
       });

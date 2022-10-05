@@ -12,6 +12,10 @@ module.exports = function (RED) {
     dashboard.addNode({
       node: node,
       onMessage: message => {
+        dashboard.emitAndUpdateState({
+          nodeId: node.id,
+          value: message.value,
+        });
         node.send({
           payload: message.value,
         });
@@ -21,7 +25,7 @@ module.exports = function (RED) {
     // Receive msg from upstream node in a flow
     node.on("input", function (msg) {
       if (config.pass && !isNaN(parseInt(msg.payload))) {
-        dashboard.emitState({
+        dashboard.emitAndUpdateState({
           nodeId: node.id,
           value: Math.max(config.min, Math.min(config.max, parseInt(msg.payload))),
         });
