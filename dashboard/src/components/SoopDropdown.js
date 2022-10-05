@@ -42,7 +42,7 @@ const SoopDropdown = ({ currentGroupW, currentGroupWidth, currentGroupH, node, n
       return opt.label;
     });
     if (Array.isArray(node?.states) && node?.states[0]) {
-      setSelectedOption(node?.states[0].key);
+      setSelectedOption(node?.states[0].value);
     }
     setCurrentOptions(optionsArray);
     setCurrentLabel(node?.label);
