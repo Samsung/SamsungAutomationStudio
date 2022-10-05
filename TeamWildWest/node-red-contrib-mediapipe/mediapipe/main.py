@@ -5,8 +5,17 @@ import socket
 import json
 from _thread import *
 from mediapipe_controller import *
+from typing import Final
+from enum import Enum
 
 client_sockets = [] # 서버에 접속한 클라이언트 목록
+
+
+class Command(Enum):
+    open = 'open'
+    holistic = 'holistic'
+    close = 'close'
+
 
 def openServer():
     global client_sockets
@@ -61,6 +70,12 @@ def closeServer():
 # When Connection is estblished.
 def dataCommunication(client_socket, addr):
     global client_sockets
+    
+    COMMAND : Final = 'command'
+    RESULT : Final = 'result'
+    PATH : Final = 'path'
+    OPEN_MESSAGE : Final = 'MediaPipe Server(v0.1) is started successfully'
+    CLOSE_MESSAGE : Final = 'MediaPipe is closed successfully'
 
     if len(client_sockets) > 1:
         client_socket.send('{"result" : "Only one connection is allowed."}'.encode('ascii'))
@@ -98,19 +113,19 @@ def dataCommunication(client_socket, addr):
                 'result' : ''
             }
 
-            if request['command'] == 'open' :
-                response['result'] = 'MediaPipe Server(v0.1) is started successfully'
-            elif request['command'] == 'close':
-                response['result'] = 'MediaPipe is closed successfully'
-            elif request['command'] == 'holistic':
-                print(request['path'])
-                response['result'] = predict(request['path'])
+            if request[COMMAND] == Command.open.value :
+                response[RESULT] = OPEN_MESSAGE
+            elif request[COMMAND] == Command.close.value :
+                response[RESULT] = CLOSE_MESSAGE
+            elif request[COMMAND] == Command.holistic.value :
+                print(request[PATH])
+                response[RESULT] = predict(request[PATH])
             else : 
-                response['result'] = 'invalid request.'
+                response[RESULT] = 'invalid request.'
 
             client_socket.send(json.dumps(response).encode('ascii'))
             
-            if request['command'] == 'close':
+            if request[COMMAND] == Command.close.value:
                 closeServer()
                 break
 
