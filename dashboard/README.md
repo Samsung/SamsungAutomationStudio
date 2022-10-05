@@ -1,4 +1,4 @@
-# @Soop/node-red-soop-dashboard
+# @soop-sasm/node-red-soop-dashboard
 [![platform](https://img.shields.io/badge/platform-Node--RED-red)](https://nodered.org)
 
 This module provides a set of nodes in Node-RED to configure dashboard.
@@ -22,7 +22,7 @@ The Node-RED-Soop-Dashboard requires [Node-RED](https://nodered.org) to be insta
 
 ## Install
 ```
-npm install @Soop/node-red-soop-dashboard
+npm install @soop-sasm/node-red-soop-dashboard
 ```
 Restart your Node-RED instance and you should have dashboard nodes available in the palette.
 
