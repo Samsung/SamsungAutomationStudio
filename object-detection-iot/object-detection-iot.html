@@ -7,7 +7,6 @@
         dataSocketUrl: {value: 'ws://localhost:1880/ws/data'},
         registerSocketUrl : {value : 'ws://localhost:1880/ws/register'},
         rtspPort: {value: 1886},
-        serverUrl: {value: 'localhost'},
         objField: {value:"payload",
                 label:"payload",
                 validate:RED.validators.typedInput("objFieldType", false)},
@@ -85,16 +84,12 @@
     <input type="text" id="node-input-name" placeholder="Name">
   </div>
   <div class="form-row">
-    <label for="node-input-rstpPort"><i class="fa fa-tag"></i> RSTP PORT</label>
-    <input type="text" id="node-input-rstpPort" placeholder="1886">
+    <label for="node-input-rtspPort"><i class="fa fa-tag"></i> RTSP PORT</label>
+    <input type="text" id="node-input-rtspPort" placeholder="1886">
   </div>
   <div class="form-row">
     <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
     <input type="text" id="node-input-dataSocketUrl" placeholder="ws://localhost:1880/ws/data">
-  </div>
-  <div class="form-row">
-    <label for="node-input-serverUrl"><i class="fa fa-tag"></i> Server Url</label>
-    <input type="text" id="node-input-serverUrl" placeholder="(default) localhost">
   </div>
   <div class="form-row">
     <label for="node-input-registerSocketUrl"><i class="fa fa-tag"></i> Register Socket Url</label>

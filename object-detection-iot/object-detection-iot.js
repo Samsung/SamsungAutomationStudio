@@ -10,8 +10,6 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config)
         var node = this;
 
-
-
         function HTML() {
             return require('./object-detection-iot-html.js').code(config)
         }
@@ -34,7 +32,6 @@ module.exports = function (RED) {
             else {
                 config.registered = this.context().node.get(String(savedObjName));
             }
-
 
             if (config.poseFieldType === "flow") {
                 config.registeredPose = this.context().flow.get(String(savedPoseName));

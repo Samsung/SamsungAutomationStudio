@@ -19,7 +19,6 @@ module.exports = function (RED) {
             let objects = [];
             let person = {};
 
-        
             inputList.forEach(object => {
                 let centerX = object.bbox[0] + object.bbox[2] / 2;
                 let centerY = object.bbox[1] + object.bbox[3] / 2;
@@ -28,7 +27,6 @@ module.exports = function (RED) {
                 if (object.class === 'person') person = { centerX, centerY, diameter };
                 else objects.push({ centerX, centerY, diameter, 'class': _class, distance: -1 });
             });
-
 
             if (person === undefined || objects.length === 0) {
                 msg.payload = { object: 'default', isLog , date};
@@ -46,8 +44,11 @@ module.exports = function (RED) {
                 }
             });
 
-
-            if (determine.distance == -1) return;
+            if (determine.distance == -1) {
+                msg.payload = { object: 'default', isLog , date};
+                node.send(msg)
+                return;
+            }
 
             msg.payload = { object: determine['class'], isLog , date};
 

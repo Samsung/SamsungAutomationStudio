@@ -2,10 +2,7 @@ module.exports = function(RED){
 
     function ObjectDetectionNode(config){
         RED.nodes.createNode(this, config)
-            var node = this;
-
-    
-            
+        var node = this;
         function HTML() {
             return require('./object-detection-html.js').code(config)
         }
@@ -29,7 +26,6 @@ module.exports = function(RED){
                     config.registered = this.context().node.get(String(savedObjName));
                 }
 
-                
                 if(config.poseFieldType === "flow"){
                     config.registeredPose = this.context().flow.get(String(savedPoseName));
                 }
@@ -39,8 +35,6 @@ module.exports = function(RED){
                 else{
                     config.registeredPose = this.context().node.get(String(savedPoseName));
                 }
-
-
 
                 msg.payload = HTML()
                 send = send || function(){this.send.apply(this, arguments)}
