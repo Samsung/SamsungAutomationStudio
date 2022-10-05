@@ -1,5 +1,6 @@
 module.exports = function (RED) {
   const dashboard = require("../dashboard")(RED);
+  const { SOOP_NODE_TYPE } = require("../common/common");
 
   function SoopButtonNode(config) {
     const node = this;
@@ -57,5 +58,5 @@ module.exports = function (RED) {
       done();
     });
   }
-  RED.nodes.registerType("soop_button", SoopButtonNode);
+  RED.nodes.registerType(SOOP_NODE_TYPE.BUTTON, SoopButtonNode);
 };

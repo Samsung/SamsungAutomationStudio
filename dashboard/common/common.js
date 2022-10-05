@@ -11,16 +11,18 @@ const EDITOR_SOCKET_TYPE = {
 const DASHBOARD_PATH = "/dashboard";
 
 const SOOP_NODE_TYPE = {
-  CONFIG: "soop_dashboard_config",
   BUTTON: "soop_button",
   CHART: "soop_chart",
+  CONFIG: "soop_dashboard_config",
+  FORMAT: "soop_data_format",
   DROPDOWN: "soop_dropdown",
   GAUGE: "soop_gauge",
+  GROUP: "soop_group",
   IMAGE: "soop_image",
   LIST: "soop_list",
-  DROPDOWN: "soop_dropdown",
   SLIDER: "soop_slider",
   SWITCH: "soop_switch",
+  TAB: "soop_tab",
   TEXT: "soop_text",
 };
 

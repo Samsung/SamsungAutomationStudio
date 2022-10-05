@@ -1,4 +1,6 @@
 module.exports = function (RED) {
+  const { SOOP_NODE_TYPE } = require("../common/common");
+
   function GroupNode(config) {
     const node = this;
     RED.nodes.createNode(this, config);
@@ -25,5 +27,5 @@ module.exports = function (RED) {
     }
   }
 
-  RED.nodes.registerType("soop_group", GroupNode);
+  RED.nodes.registerType(SOOP_NODE_TYPE.GROUP, GroupNode);
 };

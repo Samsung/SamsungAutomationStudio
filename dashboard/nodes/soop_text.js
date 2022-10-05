@@ -1,5 +1,6 @@
 module.exports = function (RED) {
   const dashboard = require("../dashboard")(RED);
+  const { SOOP_NODE_TYPE } = require("../common/common");
 
   function SoopTextNode(config) {
     RED.nodes.createNode(this, config);
@@ -40,5 +41,5 @@ module.exports = function (RED) {
       node: node,
     });
   }
-  RED.nodes.registerType("soop_text", SoopTextNode);
+  RED.nodes.registerType(SOOP_NODE_TYPE.TEXT, SoopTextNode);
 };

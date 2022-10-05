@@ -1,5 +1,6 @@
 module.exports = function (RED) {
   var dashboard = require("../dashboard")(RED);
+  const { SOOP_NODE_TYPE } = require("../common/common");
 
   function DropdownNode(config) {
     RED.nodes.createNode(this, config);
@@ -33,5 +34,5 @@ module.exports = function (RED) {
       },
     });
   }
-  RED.nodes.registerType("soop_dropdown", DropdownNode);
+  RED.nodes.registerType(SOOP_NODE_TYPE.DROPDOWN, DropdownNode);
 };

@@ -1,5 +1,6 @@
 module.exports = function (RED) {
   const dashboard = require("../dashboard")(RED);
+  const { SOOP_NODE_TYPE } = require("../common/common");
 
   function SoopSliderNode(config) {
     // Node-specific code
@@ -19,13 +20,13 @@ module.exports = function (RED) {
 
     // Receive msg from upstream node in a flow
     node.on("input", function (msg) {
-      if(config.pass && parseInt(msg.payload) != NaN){
+      if (config.pass && !isNaN(parseInt(msg.payload))) {
         dashboard.emitState({
           nodeId: node.id,
-          value: Math.max(config.min, Math.min(config.max, parseInt(msg.payload)))
-        })
+          value: Math.max(config.min, Math.min(config.max, parseInt(msg.payload))),
+        });
       }
     });
   }
-  RED.nodes.registerType("soop_slider", SoopSliderNode);
+  RED.nodes.registerType(SOOP_NODE_TYPE.SLIDER, SoopSliderNode);
 };

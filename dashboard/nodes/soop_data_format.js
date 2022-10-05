@@ -1,4 +1,6 @@
 module.exports = function (RED) {
+  const { SOOP_NODE_TYPE } = require("../common/common");
+
   function SoopDataFormatNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
@@ -12,5 +14,5 @@ module.exports = function (RED) {
       node.send(msg);
     });
   }
-  RED.nodes.registerType("soop_data_format", SoopDataFormatNode);
+  RED.nodes.registerType(SOOP_NODE_TYPE.FORMAT, SoopDataFormatNode);
 };
