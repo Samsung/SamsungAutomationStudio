@@ -1,32 +1,35 @@
-
-
 module.exports = function (RED) {
+  function ObjectDetectionNode(config) {
+    RED.nodes.createNode(this, config);
+    var node = this;
+    const fs = require("fs");
 
-    function ObjectDetectionNode(config) {
-        RED.nodes.createNode(this, config)
-        var node = this;
-        const fs = require('fs')
+    node.on("input", function (msg, send) {
+      let today = new Date();
 
-        node.on('input', function (msg, send) {
+      msg.payload.Date = today;
+      let directory = `${config.logDirectory}`;
+      const isExists = fs.existsSync(directory);
+      if (!isExists) {
+        fs.mkdirSync(directory, { recursive: true });
+      }
 
-            let today = new Date();
+      let fullPath =
+        `${config.logDirectory}` +
+        "/log-" +
+        today.getFullYear() +
+        "-" +
+        (today.getMonth() + 1) +
+        "-" +
+        today.getDate();
 
-            msg.payload.Date = today
-            let directory = `${config.logDirectory}`
-            const isExists = fs.existsSync(directory)
-            if (!isExists) {
-                fs.mkdirSync(directory, { recursive: true })
-            }
-            
-            let fullPath = `${config.logDirectory}` + "/log-" + today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()
+      fs.appendFile(fullPath, JSON.stringify(msg.payload) + "\r\n", function (err) {
+        if (err) throw err;
+      });
 
-            fs.appendFile(fullPath, JSON.stringify(msg.payload) + "\r\n", function (err) {
-                if (err) throw err
-            })
+      node.send(msg);
+    });
+  }
 
-            node.send(msg)
-        })
-    }
-
-    RED.nodes.registerType("object-detection-log", ObjectDetectionNode);
-}
+  RED.nodes.registerType("object-detection-log", ObjectDetectionNode);
+};

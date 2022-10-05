@@ -207,14 +207,11 @@ module.exports.code = (config) => {
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     
         <script>
-            let detected = []
-            let objects = []
-            let data = ""
-            let preset = ""
-            let savedObjects = []
+            let detected = [], objects = [], savedObjects = [];
+            let data = "", preset = "";
             let registered = "${config.registered}".split(',');
             let registeredPose = "${config.registeredPose}".split(',');
-            let = detectedCnt = 1;
+            let detectedCnt = 1;
             let database;
     
             const video = document.getElementById('video');
