@@ -1,60 +1,48 @@
-## object-detection-node
+# object-detection-node
 
-a node that detect various objects, determine the interactions between a user and objects, and record logs
+A node that detect various objects, determine the interactions between a user and objects, and record logs.
 
-detectable objects are about 80 that are easy to see around us like table, cup, etc
+Detectable objects are about 80 that are easy to see around us like table, cup, etc.
 
 ![캡처](https://user-images.githubusercontent.com/57743143/192708101-bda33886-d665-46de-9e0b-d73efa1ec0d1.PNG)
 
+<br>
 
-
-### Properties
+## Properties
 
 ![image](https://user-images.githubusercontent.com/57743143/192708281-79f7f7a6-eea6-4e1e-93c5-43bc24d9f659.png)
 
-- **Data Socket Url**
+### Data Socket Url
+Specify the URI including the endpoint when communicating data using the WebSocket. (default: 'ws://localhost:1880/ws/data')
 
-  Specify the URI including the endpoint when communicating data using the WebSocket. (default: 'ws://localhost:1880/ws/data')
+### Register Socket Url
+Specify the URI including the endpoint when registering recognizable objectsusing the WebSocket. (default: 'ws://localhost:1880/ws/register')
 
-  ​
+### Property
+a name of the variable that saved regitstered object from database for object-node input
 
-- **Register Socket Url**
+### Camera Test
+You can check the webcam screen in advance in the node attribute.
 
-  Specify the URI including the endpoint when registering recognizable objectsusing the WebSocket. (default: 'ws://localhost:1880/ws/register')
+<br>
 
-  ​
-
-- **Property**
-
-  a name of the variable that saved regitstered object from database for object-node input
-
-  ​
-
-- **Camera Test**
-
-  You can check the webcam screen in advance in the node attribute.
-
-
-
-### Example
+## Example
 
 This is an example of a JSON string of data from a browser through a websocket.
 
+There are four outputs.
 
+- **Detected object** :  output from coco-ssd object detection model,
 
-##### four outputs 
+- **Detected  objects (for registration)** : object name array for detectable object registration  
 
-**Detected object** :  output from coco-ssd object detection model,
+- **Detected  command (for registration)** : array composed of pose and object and command for registration 
 
-**Detected  objects (for registration)** : object name array for detectable object registration  
+- **Log information** : informations of detected objects per 1 min
 
-**Detected  command (for registration)** : array composed of pose and object and command for registration 
+<br>
 
-**Log information** : informations of detected objects per 1 min
-
-
-
-#### detected object information
+### Detected object information
 
 ```javascript
 { dataType : "object",
@@ -66,7 +54,7 @@ This is an example of a JSON string of data from a browser through a websocket.
 }
 ```
 
-#### detected objects information for registration
+### Detected objects information for registration
 
 ```javascript
 { dataType : "object",
@@ -74,7 +62,7 @@ This is an example of a JSON string of data from a browser through a websocket.
 }
 ```
 
-#### detected command information for registration
+### Detected command information for registration
 
 ```javascript
 { dataType : "command",
@@ -82,7 +70,7 @@ This is an example of a JSON string of data from a browser through a websocket.
 }
 ```
 
-#### log information
+### Log information
 
 ```javascript
 { log : {
