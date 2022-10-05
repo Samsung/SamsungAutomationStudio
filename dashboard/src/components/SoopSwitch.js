@@ -85,8 +85,8 @@ const SoopSwitch = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nam
   }, [switchState]);
 
   useEffect(() => {
-    if (node && Array.isArray(node?.states) && node.states[0]) setSwitchState(node.states[0].switchState);
-    else setSwitchState(node?.switchState);
+    const newState = node?.states[0]?.switchState ? node.states[0].switchState : switchState;
+    setSwitchState(newState);
   }, [node]);
 
   function onSwitchChange(e) {
