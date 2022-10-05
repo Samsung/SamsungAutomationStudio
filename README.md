@@ -1,109 +1,60 @@
-[1. Data Modeling](#Data-Modeling)  
-[2. Alarm Flow](#Alarm-Flow)  
-[3. Chart Flow](#Chart-Flow) 
+# @d5mi/node-red-contrib-object-detection
 
+This module provides nodes of Node-RED for recognizing objects with a camera, determining and recording interactions between users and objects.
 
-# Object Detection Nodes
+Use TensoFlow's COCO-SSD model to detect objects defined in the COCO dataset, which is a large-scale object detection, segmentation, and captioning dataset.
 
-# Data Modeling
+In this module, there is an object detection node that uses the camera to determine what the object in the video is.
 
-### ObjectDetection Result storage format (saved every second)
+And, object person determine node determined which objects the user was interacting with through logic to determine which of the recognized objects was closest to the user.
 
-```json
-{
-  "_id": {
-    "$oid": "63328e72995d727ec2d5171e"
-  },
-  "location": "Bed", 
-  "pose": "Stand",
-  "timestamp": {
-    "$date": {
-      "$numberLong": "1665100800000"
-    }
-  }
-}
+These nodes work reliably Node.js version 16.17.0 and Node-RED 3.0.2.
+
+<br>
+
+## Node
+
+- [object-detection](https://github.com/D5MI/node-red-contrib-object-detection/tree/master/object_detection): A node that detect various objects, determine the interactions between a user and objects, and record logs.
+- [object-person-determine](https://github.com/D5MI/node-red-contrib-object-detection/tree/master/object-person-determine): A node that determines which of the detected objects most interacts with the user.
+- [object-detection-log](https://github.com/D5MI/node-red-contrib-object-detection/tree/master/object-detection-log): This node records the detected motion poses and objects and saves them to a file. The files are saved in the entered storage location by date named log-yyyy-MM-dd.
+- [object-detection-iot](https://github.com/D5MI/node-red-contrib-object-detection/tree/master/object-detection-iot): 
+
+<br>
+
+## Pre-requisites
+
+This module requires [Node-RED](https://nodered.org/) to be installed.
+
+<br>
+
+## Install
+
+To install the stable version use the `Menu - Manage palette` option and search for `@d5mi/node-red-contrib-object-detection`, or run the following command in your Node-RED user directory - typically `~/.node-red`:
+
+```bash
+npm i @d5mi/node-red-contrib-object-detection
 ```
 
-- location: User's location detected by ObjectDetection
-- pose: User's pose detected by ObjectDetectio
-- timestamp: The time at which the detection result was saved in the log
+<br>
 
-### Alarm Options Save Format
+## Additional flow
 
-```json
-{
-  "_id": {
-    "$oid": "6332fd24995d727ec2d5485b"
-  },
-  "location": "Bed",
-  "setTime": 180,
-  "poseData": [
-    "Lie"
-  ],
-  "timestamp": {
-    "$date": {
-      "$numberLong": "1664285988780"
-    }
-  }
-}
-```
+- [Alerts and Chart flow](https://github.com/D5MI/node-red-contrib-object-detection/blob/master/ADDITIONAL_FLOW.md): 
 
-- location: Alarm condition (location)
-- setTime: alarm set time(sec)
-- poseData: Alarm condition (pose)
-- timestamp: alarm start time
+<br>
 
-# Alarm Flow 
+## Authors
 
+[D5MI in SSAFY(Samsung Software Academy for Youth)](https://github.com/D5MI)
 
-# Chart Flow
+<br>
 
+## Copyright and License
 
+Copyright Samsung Automation Studio Team under [the Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
 
-### Enter start date and end date
+<br>
 
-![Untitled (1)](https://user-images.githubusercontent.com/67916174/192566343-fbb107a9-e972-4eba-b273-0e202868238c.png)
+## Feedback
 
-### input data format
-
-```json
-{ "label" : "label"
-, "payload" : "data value"}
-```
-
-![Untitled (2)](https://user-images.githubusercontent.com/67916174/192566492-be507666-b4e0-44b8-a075-e89350244056.png)
-
-### Sum Chart
-
-The values staying at the location within the period are displayed in the form of a bar chart.
-
-### Pie Chart
-
-The values staying at the location within the period are displayed in the form of a pie chart.
-
-### Avg Chart
-
-By averaging the values staying at the location within the period, the time spent at the location per day is displayed in the form of a bar chart.
-
-![Untitled (3)](https://user-images.githubusercontent.com/67916174/192566609-9c445d51-f01e-4209-80e0-ab6544a6be7e.png)
-
-### Day Chart
-
-The values staying at the location within the period are divided by date and displayed in the form of a bar chart.
-
-### Timeline Chart(Day)
-
-The log value stored on the specified day is displayed as a timeline graph.
-
-```json
-{"labels":["Bed","Couch"],"datasets":[{"label":"Bed","timestamp":"2022-09-27T14:29:26.395Z","data":[["2022-11-06T18:02:00.000Z","2022-11-06T18:22:00.000Z","#FF6633"],["2022-11-06T18:42:00.000Z","2022-11-06T19:01:00.000Z","#FF6633"]]},{"label":"Couch","timestamp":"2022-09-27T14:29:26.395Z","data":[["2022-11-06T18:22:00.000Z","2022-11-06T18:42:00.000Z","#5DA5DA"]]}]}
-```
-
-![Untitled (4)](https://user-images.githubusercontent.com/67916174/192567130-0d7f5690-f19c-45ce-af07-4933758e4c8c.png)
-
-### Timeline Chart(Live)
-
-Real-time saved log values are displayed in a timeline chart.
-
-
-![Untitled (5)](https://user-images.githubusercontent.com/67916174/192567188-f7c809f1-8183-4d47-a195-412fde022725.png)
+Please send bug reports, feedbacks, and questions to [GitHub Issues](https://github.com/D5MI/node-red-contrib-object-detection/issues).
