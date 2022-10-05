@@ -106,7 +106,7 @@ const SoopBarChart = ({ node }) => {
       setChartOptions(currentChartOptions);
     } else {
       const currentDatasetsLabel = Object.keys(node?.states);
-      const currentLabels = node?.states[currentDatasetsLabel[0]].map(data =>
+      const currentLabels = node?.states[currentDatasetsLabel[0]]?.map(data =>
         moment(data.time).format(node?.xAxisFormat),
       );
       const currentDatasets = Object.keys(node?.states)?.map((key, idx) => {
