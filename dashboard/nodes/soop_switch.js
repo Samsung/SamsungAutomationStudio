@@ -9,13 +9,17 @@ module.exports = function (RED) {
     dashboard.addNode({
       node: node,
       onMessage: message => {
+        dashboard.emitAndUpdateState({
+          nodeId: node.id,
+          switchState: message.switchState,
+        });
         node.send({
           payload: message.switchState,
         });
       },
     });
     node.on("input", function (msg) {
-      dashboard.emitState({
+      dashboard.emitAndUpdateState({
         nodeId: node.id,
         switchState: msg.payload,
       });

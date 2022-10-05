@@ -15,7 +15,7 @@ module.exports = function (RED) {
 
     // Receive msg from upstream node in a flow
     node.on("input", function (msg) {
-      dashboard.emitState({
+      dashboard.emitAndUpdateState({
         nodeId: node.id,
         value: msg.payload,
       });

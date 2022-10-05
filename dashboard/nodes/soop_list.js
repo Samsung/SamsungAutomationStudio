@@ -15,7 +15,7 @@ module.exports = function (RED) {
       } else {
         options = config.options;
       }
-      dashboard.emitState({
+      dashboard.emitAndUpdateState({
         nodeId: node.id,
         options: options,
       });

@@ -7,7 +7,7 @@ module.exports = function (RED) {
   }
 
   return {
-    emitState,
+    emitAndUpdateState,
     addNode,
   };
 };
@@ -50,12 +50,12 @@ function initSocket(io) {
   });
 }
 
-function emitState(data, isTimeSeries = false, isLabeled = false) {
+function emitAndUpdateState(data, isTimeSeries = false, isLabeled = false) {
   const nodeId = data.nodeId;
   if (globalNodes && !globalNodes.hasOwnProperty(nodeId)) return;
 
   const state = createState(data, isTimeSeries);
-  pushToGlobalNode(state, isLabeled);
+  pushToGlobalNode(state, isTimeSeries, isLabeled);
 
   emit(nodeId, state, isTimeSeries, isLabeled);
 }
@@ -131,7 +131,7 @@ function createState(data, isTimeSeries) {
   return newState;
 }
 
-function pushToGlobalNode(state, isLabeled = false) {
+function pushToGlobalNode(state, isTimeSeries = false, isLabeled = false) {
   const nodeId = state.nodeId;
   const label = state.label;
 
@@ -140,7 +140,13 @@ function pushToGlobalNode(state, isLabeled = false) {
   if (isLabeled && globalNodes[nodeId].states && !globalNodes[nodeId].states[label])
     globalNodes[nodeId].states[label] = [];
 
+  if (!isTimeSeries) {
+    if (isLabeled) globalNodes[nodeId].states[label] = [];
+    else globalNodes[nodeId].states = [];
+  }
+
   delete state.nodeId;
+
   if (isLabeled) globalNodes[nodeId].states[label].push(state);
   else globalNodes[nodeId].states.push(state);
 }

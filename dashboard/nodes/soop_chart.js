@@ -14,7 +14,7 @@ module.exports = function (RED) {
         node.error("Payload is not a number.");
         return;
       }
-      dashboard.emitState(
+      dashboard.emitAndUpdateState(
         {
           nodeId: node.id,
           value: +msg.payload,

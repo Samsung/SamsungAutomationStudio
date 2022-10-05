@@ -30,7 +30,7 @@ module.exports = function (RED) {
         if (!value) value = config.value;
       }
 
-      dashboard.emitState({
+      dashboard.emitAndUpdateState({
         nodeId: node.id,
         label: label,
         value: value,
