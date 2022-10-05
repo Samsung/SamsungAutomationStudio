@@ -1,5 +1,5 @@
 module.exports.code = (config) => {
-    return String.raw`
+  return String.raw`
     <html>
 
     <head>
@@ -140,8 +140,7 @@ module.exports.code = (config) => {
                     <video id="video" width="640" height="480" autoplay muted playsinline></video>
                     <canvas id="canvas"></canvas>
                     
-                </section>
-        
+                </section>        
                 <section id="detected-result-section">
                     <article id="detected-objects">
                         <div class="sub-title">Detected Objects</div>
@@ -198,11 +197,8 @@ module.exports.code = (config) => {
                 <a href="https://github.com/steven9408">Donghyun Han</a> | <a href="https://github.com/steven9408">Yongwoong
                     Kim</a><br>
             </footer>
-        </div>
-        
-    
-    
-        
+        </div>    
+           
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -211,8 +207,6 @@ module.exports.code = (config) => {
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     
         <script>
-        
-    
             let detected = []
             let objects = []
             let data = ""
@@ -230,21 +224,10 @@ module.exports.code = (config) => {
             const result = document.getElementById("detected-result-section")
             const registerWebSocket = new WebSocket("${config.registerSocketUrl}")
             const dataWebSocket = new WebSocket("${config.dataSocketUrl}")
-            //const registerWebSocket = new WebSocket("ws://localhost:1880/ws/register")
-            //const dataWebSocket = new WebSocket("ws://localhost:1880/ws/data")
             const registerResultTable = document.getElementById("detected-objects-table");
-            
-            const testBtn = document.getElementById("test-btn");
-            testBtn.addEventListener("click", function(){
-                console.log(registeredPose);
-                console.log(registered);
-            })
-
-
 
             let savedPose = registeredPose
-            let savedObject = registered
-            
+            let savedObject = registered            
             let poseDropdown = document.getElementById('pose');
             let objectDropdown = document.getElementById('object');
             
@@ -278,10 +261,8 @@ module.exports.code = (config) => {
                     }
                     return res
                 }
-                console.log({ pose, object, value });
                 registerWebSocket.send(JSON.stringify({ dataType : "command", data : {pose, object, value} }));
             })
-    
     
             function validation(predictions) {
                 for (i = 0; i < predictions.length; i++) {
@@ -301,25 +282,19 @@ module.exports.code = (config) => {
                 predict();
                 function predict() {
                     context.drawImage(video, 0, 0);
-                    model.detect(canvas).then(predictions => {
-                        console.log(predictions)
-    
+                    model.detect(canvas).then(predictions => {    
                         objects = [...predictions]
     
                         if (validation(predictions)) {
-
-                                dataWebSocket.send(JSON.stringify({ dataType : "object", data : 
-                                
+                                dataWebSocket.send(JSON.stringify({ dataType : "object", data :                                 
                                 predictions.filter((element) => {
                                     return registered.includes(element.class)
-                                })
-                            
+                                })                            
                             }));
-                            }
+                        }
                         
                         canvas.width = video.width;
-                        canvas.height = video.height;
-    
+                        canvas.height = video.height;    
     
                         for (let i = 0; i < predictions.length; i++) {
                             context.beginPath(); // 새로운 경로를 만듭니다. 경로가 생성됬다면, 이후 그리기 명령들은 경로를 구성하고 만드는데 사용하게 됩니다.
@@ -374,27 +349,21 @@ module.exports.code = (config) => {
            const utc = curr.getTime() + (curr.getTimezoneOffset() * 60 * 1000);
            dataWebSocket.send(JSON.stringify({log : {data : objects, date : new Date(utc + (KR_TIME_DIFF))}}))}, 1000);
     
-            registerBtn.addEventListener("click", function(){
-            
+            registerBtn.addEventListener("click", function(){            
                 let output = detected.filter((element) => {
-                        return document.getElementById(element).checked})
-                    
+                        return document.getElementById(element).checked
+                    })                    
                     registered.forEach((element) => {
                         if (!output.includes(element)){
                             output.push(element);
                         }
-                    })
-                    
+                    })                    
                     registerWebSocket.send(JSON.stringify(
                         {dataType : "object", data : output}
-                    ))
-    
-            });
-    
-        </script>
-    
-    </body>
-    
+                    ))    
+            });    
+        </script>    
+    </body>    
     </html>
-    `
-}
+    `;
+};

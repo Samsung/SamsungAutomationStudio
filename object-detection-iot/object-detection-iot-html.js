@@ -1,5 +1,5 @@
 module.exports.code = (config) => {
-    return String.raw`
+  return String.raw`
     <html>
     <head>
         <style>
@@ -140,8 +140,7 @@ module.exports.code = (config) => {
             <div id="main">
                 <section id="frame">
                 <canvas id="video"></canvas>
-                    <canvas id="canvas" width="1920" height="1080"></canvas>
-                    
+                    <canvas id="canvas" width="1920" height="1080"></canvas>                    
                 </section>
         
                 <section id="detected-result-section">
@@ -181,8 +180,7 @@ module.exports.code = (config) => {
                                 </td>
                             </tr>
                         </table>
-                        <div class="sub-btn" id="pose-object-mapping-btn">REGISTER</div>
-                        
+                        <div class="sub-btn" id="pose-object-mapping-btn">REGISTER</div>                        
                     </article>
                 </section>
             </div>
@@ -200,8 +198,7 @@ module.exports.code = (config) => {
                 <a href="https://github.com/steven9408">Donghyun Han</a> | <a href="https://github.com/steven9408">Yongwoong
                     Kim</a><br>
             </footer>
-        </div>
-        
+        </div>        
     
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
@@ -211,9 +208,7 @@ module.exports.code = (config) => {
             crossorigin="anonymous"></script>
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     
-        <script>
-        
-    
+        <script>      
             let detected = []
             let objects = []
             let data = ""
@@ -231,15 +226,8 @@ module.exports.code = (config) => {
             const result = document.getElementById("detected-result-section")
             const registerWebSocket = new WebSocket("${config.registerSocketUrl}")
             const dataWebSocket = new WebSocket("${config.dataSocketUrl}")
-            //const registerWebSocket = new WebSocket("ws://localhost:1880/ws/register")
-            //const dataWebSocket = new WebSocket("ws://localhost:1880/ws/data")
             const registerResultTable = document.getElementById("detected-objects-table");
             
-            const testBtn = document.getElementById("test-btn");
-            testBtn.addEventListener("click", function(){
-                console.log(registeredPose);
-                console.log(registered);
-            })
             let savedPose = registeredPose
             let savedObject = registered
             
@@ -275,7 +263,6 @@ module.exports.code = (config) => {
                     }
                     return res
                 }
-                console.log({ pose, object, value });
                 registerWebSocket.send(JSON.stringify({ dataType : "command", data : {pose, object, value} }));
             })
     
@@ -313,14 +300,8 @@ module.exports.code = (config) => {
             cocoSsd.load().then(model => {
                 predict();
                 function predict() {
-                    // const image = new Image()
-                    // image.addEventListener("load", () => {
-                    //     ctx.drawImage(image, 0, 0, 1080, 1920);
-                    // })
                     context.putImageData(video.getContext('2d').getImageData(0,0,video.width, video.height), 0, 0);
                     model.detect(canvas).then(predictions => {
-                        console.log(predictions)
-    
                         objects = [...predictions]
     
                         if (validation(predictions)) {
@@ -334,8 +315,7 @@ module.exports.code = (config) => {
                             }
                         
                         canvas.width = video.width;
-                        canvas.height = video.height;
-    
+                        canvas.height = video.height;    
     
                         for (let i = 0; i < predictions.length; i++) {
                             context.beginPath(); // 새로운 경로를 만듭니다. 경로가 생성됬다면, 이후 그리기 명령들은 경로를 구성하고 만드는데 사용하게 됩니다.
@@ -389,27 +369,20 @@ module.exports.code = (config) => {
            const utc = curr.getTime() + (curr.getTimezoneOffset() * 60 * 1000);
            dataWebSocket.send(JSON.stringify({log : {data : objects, date : new Date(utc + (KR_TIME_DIFF))}}))}, 60000);
     
-            registerBtn.addEventListener("click", function(){
-            
+            registerBtn.addEventListener("click", function(){            
                 let output = detected.filter((element) => {
-                        return document.getElementById(element).checked})
-                    
+                        return document.getElementById(element).checked})                    
                     registered.forEach((element) => {
                         if (!output.includes(element)){
                             output.push(element);
                         }
-                    })
-                    
+                    })                    
                     registerWebSocket.send(JSON.stringify(
                         {dataType : "object", data : output}
-                    ))
-    
-            });
-    
-        </script>
-    
-    </body>
-    
+                    ))    
+            });    
+        </script>    
+    </body>    
     </html>
-    `
-}
+    `;
+};
