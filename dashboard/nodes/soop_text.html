@@ -198,14 +198,15 @@
     color: "#5F86FE",
     defaults: {
       name: { value: "" },
-      label: { value: "text_name" },
+      label: { value: "label_name" },
       group: { type: "soop_group", required: true },
       width: { value: 1, validate: RED.validators.number(), required: true },
       height: { value: 1, validate: RED.validators.number(), required: true },
       widgetX: { value: 0, validate: RED.validators.number(), required: true },
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
       tooltip: { value: "list_node" },
-      format: { value: "{{msg.payload}}" },
+      labelFormat: { value: "{{msg.payload.label}}" },
+      valueFormat: { value: "{{msg.payload.value}}" },
       layout: { value: "0" },
       fontSize: { value: "16", required: true, validate: RED.validators.number() },
       value: { value: "defalut text" },
@@ -302,12 +303,16 @@
     <input type="text" id="node-input-label" />
   </div>
   <div class="form-row">
+    <label for="node-input-labelFormat"><i class="fa fa-i-cursor"></i> Label Format</label>
+    <input type="text" id="node-input-labelFormat" placeholder="{{msg.payload.label}}" />
+  </div>
+  <div class="form-row">
     <label for="node-input-value"><i class="fa fa-i-cursor"></i> Value</label>
     <input type="text" id="node-input-value" />
   </div>
   <div class="form-row">
-    <label for="node-input-format"><i class="fa fa-i-cursor"></i> Value Format</label>
-    <input type="text" id="node-input-format" placeholder="{{msg.payload}}" />
+    <label for="node-input-valueFormat"><i class="fa fa-i-cursor"></i> Value Format</label>
+    <input type="text" id="node-input-valueFormat" placeholder="{{msg.payload.value}}" />
   </div>
   <div class="form-row">
     <label style="vertical-align: top"><i class="fa fa-th-large"></i> Layout</label>
