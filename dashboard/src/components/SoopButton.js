@@ -103,11 +103,11 @@ const SoopButton = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nam
     <>
       <ButtonContainer layout={layout}>
         {node?.shape === "circle" ? (
-          <ButtonCircle onClick={sendMessage(node?.id)} node={node} radius={Math.min(layout[2], layout[3])}>
+          <ButtonCircle onClick={() => sendMessage(node?.id)} node={node} radius={Math.min(layout[2], layout[3])}>
             {node?.label}
           </ButtonCircle>
         ) : (
-          <Button onClick={sendMessage(node?.id)} node={node} layout={layout}>
+          <Button onClick={() => sendMessage(node?.id)} node={node} layout={layout}>
             {node?.label}
           </Button>
         )}
