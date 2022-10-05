@@ -50,34 +50,18 @@ function initSocket(io) {
   });
 }
 
-function emitState(state, isTimeSeries = false, isLabeled = false) {
-  const nodeId = state.nodeId;
-  const label = state.label;
-
+function emitState(data, isTimeSeries = false, isLabeled = false) {
+  const nodeId = data.nodeId;
   if (globalNodes && !globalNodes.hasOwnProperty(nodeId)) return;
-  const sendState = { ...state };
-  delete sendState.nodeId;
 
-  if (isLabeled && Array.isArray(globalNodes[nodeId].states)) globalNodes[nodeId].states = {};
+  const state = createState(data, isTimeSeries);
+  pushToGlobalNode(state, isLabeled);
 
-  if (isLabeled && globalNodes[nodeId].states && !globalNodes[nodeId].states[label])
-    globalNodes[nodeId].states[label] = [];
-
-  if (isTimeSeries) {
-    sendState.time = Date.now();
-  } else {
-    if (isLabeled && globalNodes[nodeId].states[label]) globalNodes[nodeId].states[label] = [];
-    else globalNodes[nodeId].states = [];
-  }
-
-  if (isLabeled) globalNodes[nodeId].states[label].push(sendState);
-  else globalNodes[nodeId].states.push(sendState);
-
-  emit(nodeId, sendState, isTimeSeries, isLabeled);
+  emit(nodeId, state, isTimeSeries, isLabeled);
 }
 
 function emit(nodeId, state, isTimeSeries, isLabeled) {
-  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE_STATE, { nodeId, isTimeSeries, isLabeled, state });
+  io.emit(FRONT_SOCKET_TYPE.UPDATE_NODE_STATE, { nodeId, state, isTimeSeries, isLabeled });
 }
 
 function addNode(nodeObject) {
@@ -139,4 +123,24 @@ function syncGlobalNode() {
   for (const id in globalNodes) {
     if (!exists[id]) delete globalNodes[id];
   }
+}
+
+function createState(data, isTimeSeries) {
+  const newState = { ...data };
+  if (isTimeSeries) newState.time = Date.now();
+  return newState;
+}
+
+function pushToGlobalNode(state, isLabeled = false) {
+  const nodeId = state.nodeId;
+  const label = state.label;
+
+  if (isLabeled && Array.isArray(globalNodes[nodeId].states)) globalNodes[nodeId].states = {};
+
+  if (isLabeled && globalNodes[nodeId].states && !globalNodes[nodeId].states[label])
+    globalNodes[nodeId].states[label] = [];
+
+  delete state.nodeId;
+  if (isLabeled) globalNodes[nodeId].states[label].push(state);
+  else globalNodes[nodeId].states.push(state);
 }
