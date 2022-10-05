@@ -49,11 +49,15 @@ const SoopText = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameV
 
   useEffect(() => {
     if (Array.isArray(node?.states) && node?.states[0]) {
-      setCurrentValue(node?.states[0]?.value);
+      const state = node.states[0];
+      if (state.label) setCurrentLabel(state.label);
+      else setCurrentLabel(node.label);
+      if (state.value) setCurrentValue(state.value);
+      else setCurrentValue(node.value);
     } else {
       setCurrentValue(node?.value);
+      setCurrentLabel(node?.label);
     }
-    setCurrentLabel(node?.label);
   }, [node]);
 
   return (
