@@ -1,5 +1,7 @@
 # @soop-sasm/node-red-soop-dashboard
 [![platform](https://img.shields.io/badge/platform-Node--RED-red)](https://nodered.org)
+[![npm version](https://badge.fury.io/js/@soop-sasm%2Fnode-red-soop-dashboard.svg)](https://badge.fury.io/js/@soop-sasm%2Fnode-red-soop-dashboard)
+[![GitHub license](https://img.shields.io/github/license/SoopSASM/node-red-soop-dashboard)](https://github.com/SoopSASM/node-red-soop-dashboard/blob/master/LICENSE)
 
 This module provides a set of nodes in Node-RED to configure dashboard.
 
@@ -22,6 +24,7 @@ The Node-RED-Soop-Dashboard requires [Node-RED](https://nodered.org) to be insta
 
 ## Install
 ```
+cd ~/.node-red/
 npm install @soop-sasm/node-red-soop-dashboard
 ```
 Restart your Node-RED instance and you should have dashboard nodes available in the palette.
@@ -79,9 +82,11 @@ If you want a more detailed description of nodes, check out our [Wiki](https://g
 <hr>
 
 ## Examples
-플로우 예시 들어가면 좋을 것 같습니다.  
-플로우 작성이 완료되면 사진을 추가해주세요.  
-editor 사진 + dashboard 사진
+Here are some example flows configured with our dashboard nodes.
+![image](https://user-images.githubusercontent.com/69517473/194187358-e0b248eb-c3f9-44b5-8eeb-64eac1113bd8.png)
+![image](https://user-images.githubusercontent.com/69517473/194187374-4a6432f2-2a22-4cdf-88f7-5eb86283b322.png)
+![image](https://user-images.githubusercontent.com/69517473/194187422-6559735e-4a28-44a4-8ced-823b1f387d54.png)
+
 <hr>
 
 ## Discussions and suggestions
