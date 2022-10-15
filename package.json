@@ -21,7 +21,13 @@
       "Auth": "201-basicauth.js",
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
-      "SlackNotification": "303-SlackNotification.js"
+      "SlackNotification": "303-SlackNotification.js",
+      "object-detection" : "object_detection/object_detection/object-detection.js",
+      "object-person-determine" : "object_detection/object-person-determine/object-person-determine.js",
+      "object-detection-iot" : "object_detection/object-detection-iot/object-detection-iot.js",
+      "object-detection-log" : "object_detection/object-detection-log/object-detection-log.js",
+      "data-extractor": "data-extraction/data-extractor.js",
+      "data-filter": "data-extraction/data-filter.js"
     }
   },
   "dependencies": {
@@ -40,6 +46,11 @@
     "proxy-agent": "^5.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
-    "when": "3.7.8"
+    "when": "3.7.8",
+    "mongodb": "1.4.9",
+    "fast-xml-parser": "^4.0.10",
+    "node-rtsp-stream" :"^0.0.9",
+    "ws": "^8.9.0",
+    "express" : "^4.18.1"
   }
 }
