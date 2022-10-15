@@ -1,0 +1,214 @@
+<script type="text/javascript">
+    RED.nodes.registerType("iotcam2img", {
+        category: "Camera",
+        color: "#FFAAAA",
+        defaults: {
+            rtspURL: { value: "" },
+            saveURL: { value: "" },
+            totalFrame: { value: "" },
+            timer: { value: "" },
+            name: { value: "" },
+        },
+        credentials: {
+            smartthingsMnid: { value: "" },
+            smartthingsPat: { value: "" },
+        },
+        inputs: 1,
+        outputs: 3,
+        icon: "font-awesome/fa-camera",
+        label: function () {
+            return this.name || "iotcam2img";
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="iotcam2img">
+    <div class="form-tips" style="margin-bottom:10px;">
+        <dl class="message-properties">
+            <dt class="optional">
+                smartthings credentials
+                <span class="property-type">string</span>
+            </dt>
+            <dd>
+                <b>Note:</b> You can check your SmartThings MNID on
+                <b
+                    ><a
+                        href="https://smartthings.developer.samsung.com/partner/dashboard"
+                        target="_blank"
+                        >this page</a
+                    >.</b
+                >
+            </dd>
+            <dd>
+                And you can also generate your SmartThings Personal Access
+                Token(PAT) on
+                <b
+                    ><a
+                        href="https://account.smartthings.com/tokens"
+                        target="_blank"
+                        >this page</a
+                    >.</b
+                >
+            </dd>
+        </dl>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-smartthingsMnid"
+            ><i class="fa fa-tag"></i> SmartThings MNID</label
+        >
+        <input type="text" id="node-input-smartthingsMnid" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-smartthingsPat"
+            ><i class="fa fa-tag"></i> SmartThings PAT</label
+        >
+        <input type="text" id="node-input-smartthingsPat" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-rtspURL"
+            ><i class="fa fa-tag"></i>RTSP Stream URL</label
+        >
+        <input type="text" id="node-input-rtspURL" />
+    </div>
+    <div class="form-row">
+        <div class="form-tips" style="margin-bottom:10px;">
+            <dl class="message-properties">
+                <dt class="optional">
+                    saveURL <span class="property-type">string</span>
+                </dt>
+                <dd>
+                    <b>Note:</b> On Windows you must use double back-slashes \\
+                    in any directory names.
+                </dd>
+                <dd>
+                    The name of the file to be updated can be provided in the
+                    node configuration, or as a message property. By default it
+                    will use <code>msg.saveURL</code> but this can be customised
+                    in the node.
+                </dd>
+            </dl>
+        </div>
+        <label for="node-input-saveURL"
+            ><i class="fa fa-tag"></i>Image save URL</label
+        >
+        <input type="text" id="node-input-saveURL" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-totalFrame"
+            ><i class="fa fa-tag"></i>Total Frame</label
+        >
+        <input type="number" id="node-input-totalFrame" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-timer"><i class="fa fa-tag"></i>Timer</label>
+        <input type="number" id="node-input-timer" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" />
+    </div>
+</script>
+
+<script type="text/html" data-help-name=""></script>
+
+<script type="text/html" data-help-name="iotcam2img">
+    <p>Node that capture iotcamera's frame</p>
+    <p>
+        The Stream URL that is run can be configured in the node or provided by
+        the received message(rtspURL).
+    </p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">
+            rtspURL <span class="property-type">string</span>
+        </dt>
+        <dd>if configured to do so, will be replace input form's rtspURL.</dd>
+        <dt class="optional">kill <span class="property-type">string</span></dt>
+        <dd>the type of kill signal to send an existing exec node process.</dd>
+        <dt class="optional">
+            pid <span class="property-type">number|string</span>
+        </dt>
+        <dd>the process ID of an existing exec node process to kill.</dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>
+            Standard output
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">string</span></dt>
+                <dd>the standard output of the command.</dd>
+            </dl>
+        </li>
+        <li>
+            Standard error
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">string</span></dt>
+                <dd>the standard error of the command.</dd>
+            </dl>
+        </li>
+        <li>
+            Return code
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">object</span></dt>
+                <dd>
+                    an object containing the return code, and possibly
+                    <code>message</code>, <code>signal</code> properties.
+                </dd>
+            </dl>
+        </li>
+    </ol>
+    <h3>Details</h3>
+    <p>
+        By default uses the <code>spawn</code> system call which returns the
+        output from stdout and stderr as the command runs, usually one line at a
+        time. On completion it then returns an object on the 3rd port. For
+        example, a successful command should return <code>{ code: 0 }</code>.
+    </p>
+    <p>
+        Errors may return extra information on the 3rd port
+        <code>msg.payload</code>, such as a <code>message</code> string,
+        <code>signal</code> string.
+    </p>
+    <p>
+        The command that is run is defined within the node, with an option to
+        append
+        <code>msg.payload</code> and a further set of parameters.
+    </p>
+    <p>
+        Commands or parameters with spaces should be enclosed in quotes -
+        <code>"This is a single parameter"</code>
+    </p>
+    <p>
+        The returned <code>payload</code> is usually a <i>string</i>, unless
+        non-UTF8 characters are detected, in which case it is a <i>buffer</i>.
+    </p>
+    <p>
+        The node&apos;s status icon and PID will be visible while the node is
+        active. Changes to this can be read by the <code>Status</code> node.
+    </p>
+    <p>
+        The <code>Hide console</code> option will hide the process console
+        normally shown on Windows systems.
+    </p>
+    <h4>Killing processes</h4>
+    <p>
+        Sending <code>msg.kill</code> will kill a single active process.
+        <code>msg.kill</code> should be a string containing the type of signal
+        to be sent, for example, <code>SIGINT</code>, <code>SIGQUIT</code> or
+        <code>SIGHUP</code>. Defaults to <code>SIGTERM</code> if set to an empty
+        string.
+    </p>
+    <p>
+        If the node has more than one process running then
+        <code>msg.pid</code> must also be set with the value of the PID to be
+        killed.
+    </p>
+    <p>
+        If a value is provided in the <code>Timer</code> field then, if the
+        process has not completed when the specified number of seconds has
+        elapsed, the process will be killed automatically
+    </p>
+</script>

@@ -1,0 +1,33 @@
+{
+  "name": "node-red-contrib-mediapipe",
+  "version": "0.0.2",
+  "description": "Mediapipe hands and pose detection in real-time in Node-RED",
+  "keywords": [
+    "node-red",
+    "Mediapipe"
+  ],
+  "license": "Apache 2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TeamWildWest/node-red-contrib-mediapipe"
+  },
+  "homepage": "https://github.com/TeamWildWest/node-red-contrib-mediapipe",
+  "bugs": {
+    "url": "https://github.com/TeamWildWest/node-red-contrib-mediapipe/issues"
+  },
+  "author": {
+    "name": "TeamWildWest",
+    "url": "https://github.com/TeamWildWest"
+  },
+  "node-red": {
+    "nodes": {
+      "Open": "requestOpen.js",
+      "Close": "requestClose.js",
+      "Holistic": "requestHolistic.js"
+    }
+  },
+  "dependencies": {
+    "util": "^0.12.4",
+    "child_process": "^1.0.2"
+  }
+}

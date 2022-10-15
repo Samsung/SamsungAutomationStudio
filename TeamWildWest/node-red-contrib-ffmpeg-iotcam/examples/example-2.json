@@ -1,0 +1,504 @@
+[
+    {
+        "id": "11d78d2f.d6c8e3",
+        "type": "tab",
+        "label": "empty flow",
+        "disabled": true,
+        "info": ""
+    },
+    {
+        "id": "2ed165ee.67ec8a",
+        "type": "installed-device",
+        "z": "11d78d2f.d6c8e3",
+        "name": "",
+        "alias": "token:194798e1",
+        "device": "",
+        "devices": [
+            "1b17f114-acff-4c25-a4cf-2459af69f369",
+            "51d084c2-a8d2-4966-9624-18b8adaab221",
+            "236ab083-eecf-101c-e230-286ed126ef06",
+            "ecc14b61-c49d-9e25-7087-fd0dc9ecbc3b",
+            "7ea0eda7-101d-2896-d7f8-57997ee022f0",
+            "91205853-dab4-3e5f-c009-e621b9824b1c",
+            "4e083c8b-4a4f-4518-2eeb-887c5a7131c6",
+            "7182a570-8e4f-2112-2c20-a10916f9bd56",
+            "158cf65e-dc2d-c58b-6506-f02595f6d98c",
+            "7e5f6017-2a28-6b82-1ab3-7b16e8ee7727",
+            "6b429d72-b358-1c5f-9fea-745ea3780439",
+            "cc5f82f5-f6d5-16a3-ccdb-1baf7a345629",
+            "1e2418e2-6009-f156-6c99-bc5964af63a6",
+            "c20b8fa0-ba57-41be-963e-e5669788afb3",
+            "e0161013-412b-4a33-a3b6-c6a42ec0f95e"
+        ],
+        "profileId": "2ed165ee.67ec8a",
+        "credentials": {
+            "stAccessToken": ""
+        },
+        "x": 240,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "d0be07df.a12318",
+        "type": "status-device",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Get camera status",
+        "alias": "홈카메라 360 집",
+        "deviceNodeId": "2ed165ee.67ec8a",
+        "deviceType": "installed-device",
+        "deviceId": "51d084c2-a8d2-4966-9624-18b8adaab221",
+        "componentId": "",
+        "capabilityId": "audioStream_v1",
+        "attributeId": "uri",
+        "rules": [],
+        "logging": false,
+        "loggingEditor": false,
+        "loggingConsole": false,
+        "outputs": 1,
+        "x": 650,
+        "y": 300,
+        "wires": [
+            [
+                "6e03412c.0cb24"
+            ]
+        ]
+    },
+    {
+        "id": "5f53ff8.2e504",
+        "type": "command-device",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Start Stream",
+        "alias": "startStream",
+        "deviceNodeId": "2ed165ee.67ec8a",
+        "deviceType": "installed-device",
+        "deviceId": "51d084c2-a8d2-4966-9624-18b8adaab221",
+        "componentId": "",
+        "capabilityId": "videoStream_v1",
+        "attributeId": "startStream",
+        "rules": [],
+        "logging": false,
+        "loggingEditor": false,
+        "loggingConsole": false,
+        "outputs": 1,
+        "x": 450,
+        "y": 300,
+        "wires": [
+            [
+                "d0be07df.a12318"
+            ]
+        ]
+    },
+    {
+        "id": "d71c4404.d710c8",
+        "type": "open",
+        "z": "11d78d2f.d6c8e3",
+        "x": 1170,
+        "y": 420,
+        "wires": [
+            [
+                "9fc13c2147688f80"
+            ]
+        ]
+    },
+    {
+        "id": "b66b02c9.4db5f",
+        "type": "inject",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Start server",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "0.5",
+        "topic": "",
+        "x": 1030,
+        "y": 420,
+        "wires": [
+            [
+                "d71c4404.d710c8"
+            ]
+        ]
+    },
+    {
+        "id": "68a90614.543788",
+        "type": "inject",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Close server",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 1030,
+        "y": 460,
+        "wires": [
+            [
+                "4233833a.a19dac"
+            ]
+        ]
+    },
+    {
+        "id": "4233833a.a19dac",
+        "type": "close",
+        "z": "11d78d2f.d6c8e3",
+        "x": 1170,
+        "y": 460,
+        "wires": [
+            [
+                "697f6c5fe867b5f5"
+            ]
+        ]
+    },
+    {
+        "id": "b98de526.755cb8",
+        "type": "iotcam2img",
+        "z": "11d78d2f.d6c8e3",
+        "rtspURL": "",
+        "saveURL": "",
+        "totalFrame": "",
+        "timer": "",
+        "name": "Iotcam2img Node",
+        "x": 1110,
+        "y": 300,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "6e03412c.0cb24",
+        "type": "function",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Parse rtspURL",
+        "func": "msg.rtspURL = msg.payload.components.main.videoStream.stream.value.OutHomeURL;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 840,
+        "y": 300,
+        "wires": [
+            [
+                "b98de526.755cb8"
+            ]
+        ]
+    },
+    {
+        "id": "d1ba3c0c.982d7",
+        "type": "inject",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Polling button status",
+        "props": [],
+        "repeat": "0.2",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 260,
+        "y": 220,
+        "wires": [
+            [
+                "d494e4d8.8f6178"
+            ]
+        ]
+    },
+    {
+        "id": "691f7fad.e39b4",
+        "type": "function",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Check button pushed",
+        "func": "const value = msg.payload.components.main.button.button.value;\nconst timestamp = msg.payload.components.main.button.button.timestamp;\nconst gTimestamp = flow.get(\"buttonTime\");\n\nif(gTimestamp && value === 'pushed' && timestamp != gTimestamp){\n    flow.set(\"buttonTime\", timestamp);\n    return {payload: null};\n} \n\nflow.set(\"buttonTime\", timestamp);",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 660,
+        "y": 220,
+        "wires": [
+            [
+                "5f53ff8.2e504"
+            ]
+        ]
+    },
+    {
+        "id": "d494e4d8.8f6178",
+        "type": "status-device",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Button status",
+        "alias": "Button 2",
+        "deviceNodeId": "2ed165ee.67ec8a",
+        "deviceType": "installed-device",
+        "deviceId": "53d6a638-9733-484d-9e56-ccdf4bf9228b",
+        "componentId": "",
+        "capabilityId": "battery_v1",
+        "attributeId": "battery",
+        "rules": [],
+        "logging": false,
+        "loggingEditor": false,
+        "loggingConsole": false,
+        "outputs": 1,
+        "x": 470,
+        "y": 220,
+        "wires": [
+            [
+                "691f7fad.e39b4"
+            ]
+        ]
+    },
+    {
+        "id": "a6781e38.413f4",
+        "type": "function",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Accumulate keypoints",
+        "func": "let landmarks = flow.get(\"landmarks\");\n\nlandmarks.push(msg.payload);\n\nflow.set(\"landmarks\", landmarks);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 500,
+        "wires": [
+            [
+                "71c4cec.da0263"
+            ]
+        ]
+    },
+    {
+        "id": "71c4cec.da0263",
+        "type": "function",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Check ready to predict",
+        "func": "if(flow.get(\"landmarks\").length == flow.get(\"totalFrame\")){\n    msg.payload = [flow.get('landmarks')];\n    \n    return msg;    \n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 500,
+        "wires": [
+            [
+                "ff32ba59.a00468"
+            ]
+        ]
+    },
+    {
+        "id": "d4e104eb.352bf8",
+        "type": "watch",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Capturing watcher",
+        "files": "",
+        "recursive": "",
+        "x": 250,
+        "y": 440,
+        "wires": [
+            [
+                "52684c5d.0efa24"
+            ]
+        ]
+    },
+    {
+        "id": "ff32ba59.a00468",
+        "type": "function",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Convert landmarks to tensor",
+        "func": "const tf = global.get('tfnModule')\n\nreturn {payload : tf.tensor3d(msg.payload)};\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 760,
+        "y": 500,
+        "wires": [
+            [
+                "978952e7.a0414"
+            ]
+        ]
+    },
+    {
+        "id": "2683b81b.79a338",
+        "type": "function",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Parse predict result",
+        "func": "const tf = global.get('tfnModule')\n\nconst data = msg.payload.dataSync();\nconsole.log(data);\nmsg.payload = data.indexOf(Math.max(...data));\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 560,
+        "wires": [
+            [
+                "2261b5f8.7f550a",
+                "aa6972ccf8c2eefa"
+            ]
+        ]
+    },
+    {
+        "id": "2261b5f8.7f550a",
+        "type": "function",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Trans index to sentence",
+        "func": "const actions = [\"CallThePolice\",\"CanMyFamilyGetIt\",\"CanTheAgentPickItUp\",\"CanYouSpeakSlowly\",\"GoOutNow\",\"HaveToDoSign\",\"HoldOnASecondPlz\",\"INeverOrderedIt\",\"NeverOrderedAPackage\",\"No\",\"NotAtHomeNow\",\"OpenTheDoorForYou\",\"PlzComeBackNextTime\",\"PlzLeaveItInFrontOfTheDeliveryHouse\",\"PlzLeaveYourContactNumber\",\"PlzUnderstandIfTheAnswerIsSlow\",\"PressTheButtonAgain\",\"ThxPlzLeaveItAtTheDoor\",\"ThxUDeliveryMan\",\"WhatsTheContentsOfThePackage\",\"WhatsTheMatter\",\"WhereIsThisRegisteredMailFrom\",\"WhoRU\",\"WillBeCareful\",\"Yes\",\"YouCameToWrongPlace\"];\n\n\nmsg.payload = actions[msg.payload];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 560,
+        "wires": [
+            [
+                "ebd1918c.fafbe"
+            ]
+        ]
+    },
+    {
+        "id": "fc35417.32f3ac",
+        "type": "http request",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Send to speaker",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://api.smartthings.com/v1/devices/{devide_id}/commands",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "bearer",
+        "senderr": false,
+        "headers": [],
+        "x": 1200,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ebd1918c.fafbe",
+        "type": "change",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Make result format",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t   \"commands\":[\t       {\t           \"component\":\"main\",\t           \"capability\":\"samsungim.announcement\",\t           \"command\":\"announce\",\t           \"arguments\":[\t               \"text\",\t               \"text/plain\",\t               \"\",\t               \"none\",\t               $.payload\t           ]\t       }\t   ]\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 990,
+        "y": 560,
+        "wires": [
+            [
+                "fc35417.32f3ac"
+            ]
+        ]
+    },
+    {
+        "id": "978952e7.a0414",
+        "type": "tf-model",
+        "z": "11d78d2f.d6c8e3",
+        "modelURL": "file://",
+        "outputNode": "",
+        "name": "",
+        "x": 250,
+        "y": 560,
+        "wires": [
+            [
+                "2683b81b.79a338"
+            ]
+        ]
+    },
+    {
+        "id": "52684c5d.0efa24",
+        "type": "holistic",
+        "z": "11d78d2f.d6c8e3",
+        "x": 460,
+        "y": 440,
+        "wires": [
+            [
+                "a6781e38.413f4"
+            ]
+        ]
+    },
+    {
+        "id": "9fc13c2147688f80",
+        "type": "debug",
+        "z": "11d78d2f.d6c8e3",
+        "name": "debug 17",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1300,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "697f6c5fe867b5f5",
+        "type": "debug",
+        "z": "11d78d2f.d6c8e3",
+        "name": "debug 18",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1300,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "ddcd381ed91b4e89",
+        "type": "inject",
+        "z": "11d78d2f.d6c8e3",
+        "name": "Start capturing",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "0.5",
+        "topic": "",
+        "x": 260,
+        "y": 300,
+        "wires": [
+            [
+                "5f53ff8.2e504"
+            ]
+        ]
+    },
+    {
+        "id": "aa6972ccf8c2eefa",
+        "type": "debug",
+        "z": "11d78d2f.d6c8e3",
+        "name": "result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 620,
+        "wires": []
+    }
+]
