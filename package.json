@@ -27,6 +27,12 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
+      "object-detection": "object_detection/object_detection/object-detection.js",
+      "object-person-determine": "object_detection/object-person-determine/object-person-determine.js",
+      "object-detection-iot": "object_detection/object-detection-iot/object-detection-iot.js",
+      "object-detection-log": "object_detection/object-detection-log/object-detection-log.js",
+      "data-extractor": "data-extraction/data-extractor.js",
+      "data-filter": "data-extraction/data-filter.js",
       "soop_dashboard_config": "dashboard/nodes/soop_dashboard_config.js",
       "soop_tab": "dashboard/nodes/soop_tab.js",
       "soop_group": "dashboard/nodes/soop_group.js",
@@ -39,13 +45,7 @@
       "soop_button": "dashboard/nodes/soop_button.js",
       "soop_slider": "dashboard/nodes/soop_slider.js",
       "soop_dropdown": "dashboard/nodes/soop_dropdown.js",
-      "soop_data_format": "dashboard/nodes/soop_data_format.js",
-      "object-detection": "object_detection/object_detection/object-detection.js",
-      "object-person-determine": "object_detection/object-person-determine/object-person-determine.js",
-      "object-detection-iot": "object_detection/object-detection-iot/object-detection-iot.js",
-      "object-detection-log": "object_detection/object-detection-log/object-detection-log.js",
-      "data-extractor": "data-extraction/data-extractor.js",
-      "data-filter": "data-extraction/data-filter.js"
+      "soop_data_format": "dashboard/nodes/soop_data_format.js"
     }
   },
   "dependencies": {
@@ -82,11 +82,16 @@
     "redux": "^4.2.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
+    "when": "3.7.8",
+    "mongodb": "1.4.9",
+    "fast-xml-parser": "^4.0.10",
+    "node-rtsp-stream": "^0.0.9",
+    "ws": "^8.9.0",
+    "express": "^4.18.1",
     "serve-static": "^1.15.0",
     "socket.io": "^4.5.2",
     "socket.io-client": "^4.5.2",
-    "styled-components": "^5.3.5",
-    "when": "3.7.8"
+    "styled-components": "^5.3.5"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
