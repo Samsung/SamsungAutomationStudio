@@ -1,0 +1,151 @@
+<script type="text/javascript">
+  RED.nodes.registerType("object-detection-iot", {
+    category: "D5MI",
+    color: "#03bafc",
+    defaults: {
+      dataSocketUrl: { value: "ws://localhost:1880/ws/data" },
+      registerSocketUrl: { value: "ws://localhost:1880/ws/register" },
+      rtspPort: { value: 1886 },
+      objField: {
+        value: "payload",
+        label: "payload",
+        validate: RED.validators.typedInput("objFieldType", false),
+      },
+      objFieldType: { value: "msg" },
+
+      poseField: {
+        value: "payload",
+        label: "payload",
+        validate: RED.validators.typedInput("poseFieldType", false),
+      },
+      poseFieldType: { value: "msg" },
+    },
+    credentials: {
+      smartthingsMnid: { value: "" },
+      smartthingsPat: { value: "" },
+    },
+    inputs: 3,
+    outputs: 1,
+    icon: "font-awesome/fa-object-ungroup",
+    label: function () {
+      return this.name || "object-detection-iot";
+    },
+    oneditprepare: function () {
+      const that = this;
+      const stateId = RED.editor.generateViewStateId("node", this, "");
+      if (!this.objField) {
+        this.objField = "payload";
+        $("#node-input-objField").val("payload");
+      }
+      if (!this.objFieldType) {
+        this.objFieldType = "msg";
+      }
+      $("#node-input-objField").typedInput({
+        default: "msg",
+        types: ["msg", "flow", "global"],
+        typeField: $("#node-input-objFieldType"),
+      });
+
+      if (!this.poseField) {
+        this.poseField = "payload";
+        $("#node-input-poseField").val("payload");
+      }
+      if (!this.poseFieldType) {
+        this.poseFieldType = "msg";
+      }
+      $("#node-input-poseField").typedInput({
+        default: "msg",
+        types: ["msg", "flow", "global"],
+        typeField: $("#node-input-poseFieldType"),
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="object-detection-iot">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-rtspPort"><i class="fa fa-tag"></i> RTSP PORT</label>
+    <input type="text" id="node-input-rtspPort" placeholder="1886" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-dataSocketUrl"><i class="fa fa-tag"></i> Data Socket Url</label>
+    <input type="text" id="node-input-dataSocketUrl" placeholder="ws://localhost:1880/ws/data" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-registerSocketUrl"><i class="fa fa-tag"></i> Register Socket Url</label>
+    <input
+      type="text"
+      id="node-input-registerSocketUrl"
+      placeholder="ws://localhost:1880/ws/register"
+    />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-objField"><i class="fa fa-ellipsis-h"></i> Objects </label>
+    <input type="text" id="node-input-objField" placeholder="payload" style="width:250px;" />
+    <input type="hidden" id="node-input-objFieldType" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-poseField"><i class="fa fa-ellipsis-h"></i> Poses </label>
+    <input type="text" id="node-input-poseField" placeholder="payload" style="width:250px;" />
+    <input type="hidden" id="node-input-poseFieldType" />
+  </div>
+
+  <div class="form-row" style="text-align: left;">
+    <label for="node-canvas" style="padding: 5p;"> Camera Test</label>
+    <hr />
+  </div>
+  <div class="form-row" id="node-canvas" style="text-align: center;">
+    <video id="input-video" style="height:360px; width:640px;"></video>
+  </div>
+  <div class="form-row">
+    <label for="node-input-smartthingsMnid"><i class="fa fa-tag"></i> SmartThings MNID</label>
+    <input type="text" id="node-input-smartthingsMnid" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-smartthingsPat"><i class="fa fa-tag"></i> SmartThings PAT</label>
+    <input type="text" id="node-input-smartthingsPat" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="object-detection-iot">
+  <p>
+    A node that recognizes and visualizes some objects and analyzes which one is interacting with
+    user using a webcam.
+  </p>
+
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>Name</dt>
+    <dd>The label of the Node assigned by the user.</dd>
+    <dt>Data Socket Url</dt>
+    <dd>Socket URI to send and receive data. (default: 'ws://localhost:1880/ws/data')</dd>
+    <dt>Register Socket Url</dt>
+    <dd>
+      Socket URI to send and receive data for object registration for detecting. (default:
+      'ws://localhost:1880/ws/register')
+    </dd>
+    <dt>Property : objects and poses</dt>
+    <dd>call saved data about object and poses regitstaion from database</dd>
+    <dt>Camera Test</dt>
+    <dd>Preview webcam camera.</dd>
+  </dl>
+
+  <h3>Input</h3>
+  <dl class="message-properties">
+    <dt>HTTP In</dt>
+    <dd>Information about HTTP endpoints and methods.</dd>
+  </dl>
+
+  <h3>Output</h3>
+  <dl class="message-properties">
+    <dt>HTTP Response Payload</dt>
+    <dd>HTML payload for forwarding to http response node.</dd>
+  </dl>
+</script>

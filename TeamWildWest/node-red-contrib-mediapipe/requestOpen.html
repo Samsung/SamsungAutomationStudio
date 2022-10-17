@@ -1,0 +1,37 @@
+<script type="text/x-red" data-template-name="open">
+    <h3>Media Pipe Server Open Request</h3>
+    <h4>You must invoke Mediapipe before using it.<h4>
+</script>
+
+
+<script type="text/x-red" data-help-name="open">
+    <h3>Media Pipe Server Open Request</h3>
+
+    <dl class="message-properties">
+        <dt>Input</dt>
+        <dd>Input does not exist.</dd>
+    </dl>
+    <dl class="message-properties">
+        <dt>Output</dt>
+        <dd>Returns 'Media Pipe Server (v0.1) is started successfully' if it is operated normally.</dd>
+    </dl>
+
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType("open", {
+        category: "MediaPipe",
+        inputs: 1,
+        outputs: 1,
+        defaults: { },
+        label: function() {
+            return "Open";
+        },
+        labelStyle: function () {
+            return "";
+        },
+        paletteLabel: "Open",
+        color: "#0097A7",
+        icon: "MediaPipe.png"
+    });
+</script>

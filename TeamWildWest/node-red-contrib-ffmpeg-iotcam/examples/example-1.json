@@ -1,0 +1,114 @@
+[
+    {
+        "id": "f785b96f.ce4538",
+        "type": "tab",
+        "label": "2iotcam example",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "cef06ff1.64cdf",
+        "type": "inject",
+        "z": "f785b96f.ce4538",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 450,
+        "y": 340,
+        "wires": [
+            [
+                "28d864bd.a09f7c"
+            ]
+        ]
+    },
+    {
+        "id": "d8df7951.d0f9a8",
+        "type": "iotcam2img",
+        "z": "f785b96f.ce4538",
+        "rtspURL": "",
+        "saveURL": "E:\\\\SSAFY_Files\\\\SSDC\\\\workspace\\\\output\\\\",
+        "totalFrame": "40",
+        "timer": "10",
+        "name": "",
+        "x": 950,
+        "y": 340,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "209dbd9b.811412",
+        "type": "installed-device",
+        "z": "f785b96f.ce4538",
+        "name": "",
+        "alias": "token:194798e1",
+        "device": "",
+        "devices": null,
+        "profileId": "209dbd9b.811412",
+        "x": 460,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "9f27c8bd.3223c8",
+        "type": "status-device",
+        "z": "f785b96f.ce4538",
+        "name": "Camera status",
+        "alias": "홈카메라 360 집",
+        "deviceNodeId": "209dbd9b.811412",
+        "deviceType": "installed-device",
+        "deviceId": "51d084c2-a8d2-4966-9624-18b8adaab221",
+        "componentId": "",
+        "capabilityId": "audioStream_v1",
+        "attributeId": "uri",
+        "rules": [],
+        "logging": false,
+        "loggingEditor": false,
+        "loggingConsole": false,
+        "outputs": 1,
+        "x": 760,
+        "y": 340,
+        "wires": [
+            [
+                "d8df7951.d0f9a8"
+            ]
+        ]
+    },
+    {
+        "id": "28d864bd.a09f7c",
+        "type": "command-device",
+        "z": "f785b96f.ce4538",
+        "name": "Start Stream",
+        "alias": "startStream",
+        "deviceNodeId": "209dbd9b.811412",
+        "deviceType": "installed-device",
+        "deviceId": "51d084c2-a8d2-4966-9624-18b8adaab221",
+        "componentId": "",
+        "capabilityId": "videoStream_v1",
+        "attributeId": "startStream",
+        "rules": [
+            {
+                "capaId": "videoStream_v1",
+                "attrId": "startStream",
+                "args": []
+            }
+        ],
+        "logging": false,
+        "loggingEditor": false,
+        "loggingConsole": false,
+        "outputs": 1,
+        "x": 590,
+        "y": 340,
+        "wires": [
+            [
+                "9f27c8bd.3223c8"
+            ]
+        ]
+    }
+]

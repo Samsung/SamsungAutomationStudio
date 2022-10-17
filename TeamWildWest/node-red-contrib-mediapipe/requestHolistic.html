@@ -1,0 +1,50 @@
+<script type="text/x-red" data-template-name="holistic">
+    <h3>Properties</h3>
+    <div class="form-row">
+        <label for="node-input-path"><i class="fa fa-globe"></i> Path </label>
+        <input type="text" id="node-input-path">
+    </div>
+    <div class="form-tips">
+        <span>
+            If path is not set, msg.payload value automatically enters path.
+        </span>
+    </div>
+    <br>
+    <div class="form-tips">
+        <span>
+            Note: If you do not set the full path to 'path', it will be the relative path in the Node-RED process execution directory.
+            <br>
+            An absolute path is recommended.
+        </span>
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="holistic">
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>Path</dt>
+        <dd>Absolute path of image to be detected.</dd>
+    </dl>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType("holistic", {
+        category: "MediaPipe",
+        inputs: 1,
+        outputs: 1,
+        defaults: {
+            path : {value: ""}
+        },
+        label: function() {
+            return "Holistic";
+        },
+        labelStyle: function () {
+            return "";
+        },
+        paletteLabel: "Holistic",
+        color: "#0097A7",
+        icon: "MediaPipe.png"
+    });
+
+</script>
