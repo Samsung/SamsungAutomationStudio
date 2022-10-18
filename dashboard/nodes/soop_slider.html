@@ -7,7 +7,7 @@
     color: white;
     border-radius: 5px;
   }
-  input[name="colorPicking"]:checked + label {
+  input[name="color"]:checked + label {
     width: 70px !important;
     border: none !important;
     height: 30px !important;
@@ -54,7 +54,7 @@
        *  group: group information of the node
        *  width, height: size of node
        *  min, max, step: property of slider
-       *  colorPicking: color of node in dashboard
+       *  color: color of node in dashboard
        *  pass: boolean option for whether pass input or not
        *  when: option for when to send msg through flow
        */
@@ -63,7 +63,7 @@
       height: { value: 1, validate: RED.validators.number(), required: true },
       widgetX: { value: 0, validate: RED.validators.number(), required: true },
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
-      colorPicking: {
+      color: {
         value: "blue",
       },
       name: { value: "" },
@@ -118,10 +118,10 @@
       }
 
       // Check input radio form according to picked color
-      var colors = $("input[type=radio][name=colorPicking]");
+      var colors = $("input[type=radio][name=color]");
 
       for (const item of colors) {
-        if (item.value === this.colorPicking) {
+        if (item.value === this.color) {
           item.checked = true;
           break;
         }
@@ -139,7 +139,7 @@
       });
     },
     oneditsave: function () {
-      this.colorPicking = $("input[type=radio][name=colorPicking]:checked")[0].value;
+      this.color = $("input[type=radio][name=color]:checked")[0].value;
       this.step =
         $("#node-input-step").val() > Math.abs($("#node-input-max").val() - $("#node-input-min").val())
           ? 1
@@ -182,16 +182,16 @@
   <!-- Color -->
   <div class="form-row">
     <label for="node-input-color"><i class="fa fa fa-tint"></i> Color</label>
-    <input type="radio" name="colorPicking" id="colorPicking1" style="width: 0px;" value="blue" />
-    <label class="styled1" for="colorPicking1" style="width: 55px;text-align: center;">blue</label>
-    <input type="radio" name="colorPicking" id="colorPicking2" style="width: 0px;" value="orange" />
-    <label class="styled2" for="colorPicking2" style="width: 55px;text-align: center;">orange</label>
-    <input type="radio" name="colorPicking" id="colorPicking3" style="width: 0px;" value="pink" />
-    <label class="styled3" for="colorPicking3" style="width: 55px;text-align: center;">pink</label>
-    <input type="radio" name="colorPicking" id="colorPicking4" style="width: 0px;" value="purple" />
-    <label class="styled4" for="colorPicking4" style="width: 55px;text-align: center;">purple</label>
-    <input type="radio" name="colorPicking" id="colorPicking5" style="width: 0px;" value="green" />
-    <label class="styled5" for="colorPicking5" style="width: 55px;text-align: center;">green</label>
+    <input type="radio" name="color" id="color1" style="width: 0px;" value="blue" />
+    <label class="styled1" for="color1" style="width: 55px;text-align: center;">blue</label>
+    <input type="radio" name="color" id="color2" style="width: 0px;" value="orange" />
+    <label class="styled2" for="color2" style="width: 55px;text-align: center;">orange</label>
+    <input type="radio" name="color" id="color3" style="width: 0px;" value="pink" />
+    <label class="styled3" for="color3" style="width: 55px;text-align: center;">pink</label>
+    <input type="radio" name="color" id="color4" style="width: 0px;" value="purple" />
+    <label class="styled4" for="color4" style="width: 55px;text-align: center;">purple</label>
+    <input type="radio" name="color" id="color5" style="width: 0px;" value="green" />
+    <label class="styled5" for="color5" style="width: 55px;text-align: center;">green</label>
   </div>
   <!-- Label -->
   <div class="form-row">

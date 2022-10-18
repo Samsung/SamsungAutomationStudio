@@ -52,7 +52,7 @@ const SoopSlider = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nam
   const muiTheme = createTheme({
     palette: {
       primary: {
-        main: mainColor[node?.colorPicking],
+        main: mainColor[node?.color],
       },
     },
   });
