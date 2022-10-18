@@ -1,0 +1,101 @@
+<script src="socket.io/socket.io.js"></script>
+
+<script>
+  const EDITOR_SOCKET_TYPE = {
+    FLOW_DEPLOYED: "flow-deployed",
+  };
+  const DASHBOARD_CONFIG = "soop_dashboard_config";
+</script>
+
+<script type="text/javascript">
+  var socket = io();
+  let dashboardConfigNode;
+
+  function initializeDashboardConfig() {
+    RED.events.on("deploy", function () {
+      const dashboardState = {
+        tabs: [],
+      };
+
+      // update tab state
+      RED.nodes.eachConfig(node => {
+        if (node.type == "soop_tab") {
+          const tabObject = {
+            tabId: node.id,
+            tabName: node.name,
+            groups: [],
+          };
+
+          for (const group of node.users) {
+            const groupObject = {
+              groupId: group.id,
+              groupName: group.name,
+              groupX: group.groupX,
+              groupY: group.groupY,
+              width: group.width,
+              height: group.height,
+              nameVisible: group.displayVisible,
+              nodes: [],
+            };
+
+            for (const node of group.users) {
+              groupObject.nodes.push(node);
+            }
+
+            tabObject.groups.push(groupObject);
+          }
+
+          dashboardState.tabs.push(tabObject);
+        }
+      });
+
+      dashboardConfigNode = createDashboardConfigNode();
+      socket.emit(EDITOR_SOCKET_TYPE.FLOW_DEPLOYED, dashboardState);
+    });
+  }
+
+  function createDashboardConfigNode() {
+    const configNodes = [];
+    RED.nodes.eachConfig(node => {
+      if (node.type === DASHBOARD_CONFIG) {
+        configNodes.push(node);
+      }
+    });
+
+    for (let i = 1; i < configNodes.length; ++i) {
+      RED.nodes.remove(configNodes[i].id);
+    }
+    RED.nodes.dirty(true);
+
+    let dashboardConfgNode = configNodes[0];
+    if (!dashboardConfgNode) {
+      dashboardConfgNode = {
+        id: RED.nodes.id(),
+        _def: RED.nodes.getType(DASHBOARD_CONFIG),
+        type: DASHBOARD_CONFIG,
+        users: [],
+      };
+    }
+    RED.nodes.add(dashboardConfgNode);
+
+    return dashboardConfgNode;
+  }
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType(DASHBOARD_CONFIG, {
+    category: "config",
+    defaults: {
+      name: {},
+    },
+    hasUsers: false,
+    label: function () {
+      return this.name || "Soop Dashboard Config";
+    },
+    onpaletteadd: initializeDashboardConfig,
+  });
+</script>
+
+<script type="text/html" data-template-name="DASHBOARD_CONFIG">
+  <div>This is configuration node for soop dashboard.</div>
+</script>

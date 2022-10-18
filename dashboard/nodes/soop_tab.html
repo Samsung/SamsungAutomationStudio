@@ -1,0 +1,143 @@
+<script type="text/javascript">
+    var tabCount = new Array();
+
+    function isConflict(x, y, w, h, mh, tbl) {
+        if (x + w <= 12 && y + h <= mh) {
+            for (var i = x; i < x + w; i++) {
+                for (var j = y; j < y + h; j++) {
+                    if (tbl[j][i] !== 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    };
+
+    function fillTable(x, y, w, h, mh, tbl) {
+        if (x + w <= 12 && y + h <= mh) {
+            for (var i = x; i < x + w; i++) {
+                for (var j = y; j < y + h; j++) {
+                    if (tbl[j][i] == 0) {
+                        tbl[j][i] = 1;
+                    }
+                }
+            }
+        }
+        return tbl;
+    };
+
+    RED.nodes.registerType('soop_tab', {
+        category: 'config',
+        defaults: {
+            name: {
+                value: "Tab"
+            },
+            includedGroups: {
+                value: []
+            },
+            includedGroupsName: {
+                value: []
+            },
+        },
+        paletteLabel: 'SOOPSASM Tab',
+        label: function() {
+            return this.name || "Tab";
+        },
+        groupLocationDefaultSetting: function(tNode) {
+            var tabNode = RED.nodes.node(tNode);
+            var maxHeight = 0;
+            tabNode.includedGroups = [];
+            tabNode.includedGroupsName = [];
+            RED.nodes.eachConfig(function(node) {
+                if (node.type == 'soop_group') {
+                    if (node.tab == tabNode.id && tabNode.includedGroupsName.indexOf(node.id) < 0) {
+
+                        tabNode.includedGroups.push({
+                            id: node.id,
+                            width: node.width,
+                            height: node.height,
+                            groupX: node.groupX,
+                            groupY: node.groupY
+                        });
+                        tabNode.includedGroupsName.push(node.id);
+                    }
+                }
+            });
+            tabNode.includedGroups.sort(function(a, b) {
+                if (a.width > b.width) {
+                    return -1
+                } else {
+                    if (a.width == b.width && a.height > b.height) {
+                        return -1
+                    } else {
+                        return 1
+                    }
+                }
+            });
+            for (var i = 0; i < tabNode.includedGroups.length; i++) {
+                maxHeight += parseInt(tabNode.includedGroups[i].height);
+
+            }
+            tabGrid = new Array(maxHeight);
+            for (var i = 0; i < tabGrid.length; i++) {
+                tabGrid[i] = Array.from({
+                        length: 12,
+                    },
+                    () => 0,
+                );
+            }
+
+            var dataCheck = true;
+            for (var i = 0; i < tabGrid.length; i++) {
+                for (var j = 0; j < 12; j++) {
+                    tabGrid[i][j] = 0;
+                }
+            }
+
+            for (var i = 0; i < tabNode.includedGroups.length; i++) {
+                dataCheck = true;
+                for (var tmpY = 0; tmpY < maxHeight; tmpY++) {
+                    if (dataCheck) {
+                        for (var tmpX = 0; tmpX < 12; tmpX++) {
+                            if (dataCheck) {
+                                if (isConflict(tmpX, tmpY, parseInt(tabNode.includedGroups[i].width), parseInt(tabNode.includedGroups[i].height), maxHeight, tabGrid)) {
+                                    tabGrid = fillTable(tmpX, tmpY, parseInt(tabNode.includedGroups[i].width), parseInt(tabNode.includedGroups[i].height), maxHeight, tabGrid);
+                                    tabNode.includedGroups[i].groupX = tmpX;
+                                    tabNode.includedGroups[i].groupY = tmpY;
+                                    dataCheck = false;
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            return tabNode;
+        },
+        oneditprepare: function() {
+            RED.nodes.eachConfig(function(node) {
+                if (node.type == "soop_tab" && (tabCount.indexOf(node.id) < 0)) {
+                    tabCount.push(node.id);
+                }
+            })
+            if (!(this.name.includes('Tab #'))) {
+                document.getElementById("node-config-input-name").value = 'Tab #' + String(tabCount.length);
+            }
+
+        }
+
+    })
+</script>
+
+<script type="text/html" data-template-name="soop_tab">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
+        <input type="text" id="node-config-input-name">
+    </div>
+</script>

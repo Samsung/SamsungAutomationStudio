@@ -1,0 +1,340 @@
+<style>
+  input[type="radio"] {
+    opacity: 0;
+  }
+  input[type="radio"] + label {
+    border: none;
+    color: white;
+    border-radius: 5px;
+  }
+  input[name="color"]:checked + label {
+    width: 70px !important;
+    border: none !important;
+    height: 30px !important;
+    line-height: 30px;
+    font-size: 16px;
+  }
+  input[name="shape"]:checked + label {
+    border: 3px solid #666 !important;
+  }
+  .btn-styled1 {
+    background: linear-gradient(91.29deg, #1153fc 0%, #5f86fe 100%);
+  }
+  .btn-styled2 {
+    background: linear-gradient(91.29deg, #ff7e42 0%, #febf7d 100%);
+  }
+  .btn-styled3 {
+    background: linear-gradient(91.29deg, #fd5988 0%, #f8a899 100%);
+  }
+  .btn-styled4 {
+    background: linear-gradient(91.29deg, #8443f6 0%, #7793fe 100%);
+  }
+  .btn-styled5 {
+    background: linear-gradient(91.29deg, #08c792 0%, #2afeb7 100%);
+  }
+  .button {
+    text-align: center;
+    border: solid 2px #d9d9d9;
+    color: white;
+    background-color: #d9d9d9;
+    font-size: 10px;
+    padding: 5px;
+  }
+</style>
+<script type="text/javascript">
+  const gaugePositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
+  function getGroupGrid(nodeId) {
+    const groupId = $("#node-input-group").val();
+    const groupNode = RED.nodes.node(groupId);
+    groupNode._def.reflectEdit(groupId, nodeId);
+    return groupNode.groupState;
+  }
+  function getXYWH() {
+    const x = parseInt($("#node-input-widgetX").val());
+    const y = parseInt($("#node-input-widgetY").val());
+    const w = parseInt($("#node-input-width").val());
+    const h = parseInt($("#node-input-height").val());
+    return { x, y, w, h };
+  }
+  // Validate the widget to place on (x, y, w, h).
+  function validateXYWH(arr) {
+    const { x, y, w, h } = getXYWH();
+    // If x, y, w, h is under or over idx of arr -> return false
+    if (x < 0 || y < 0 || w <= 0 || h <= 0 || w > 12 || x + w > arr[0].length || y + h > arr.length) {
+      return false;
+    }
+    // If the space is alredy filled, return false
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        if (arr[j][i]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  // Create a table with array
+  function newTable(arr) {
+    const row = arr.length;
+    const col = arr[0].length;
+    // Append a row for column header(1,2,....)
+    $("#group-table>tbody").append('<tr id="col-header"></tr>');
+    $("#col-header").append("<th></th>");
+    for (let j = 0; j < col; j++) {
+      $("#col-header").append(`<th scope="col">${j}</th>`);
+    }
+    // Append group row and col
+    for (let i = 0; i < row; i++) {
+      // append row
+      $("#group-table>tbody").append(`<tr id="row${i}"></tr>`);
+      // Append a col for row header(1,2,...)
+      $(`#row${i}`).append(`<th scope="row" class="row-header">${i}</th>`);
+      // Append col
+      for (let j = 0; j < col; j++) {
+        const tag = `<td id="col${j}" class="col ${arr[i][j] ? "filled" : "empty"}" ></td>`;
+        $(`#row${i}`).append(tag);
+      }
+    }
+    // Table Design
+    $(".col").css("border", "dotted black 1px");
+    $(".col").css("width", "20px");
+    $(".col").css("height", "20px");
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+    $("th").css("border", "none");
+  }
+  // Remove color for new node and return the original color for filled or empty space
+  function removeColor(w, h) {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        $(`#row${j}>#col${i}`).removeClass("new-node");
+      }
+    }
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+  }
+  // Add color for new node
+  function addColor() {
+    const { x, y, w, h } = getXYWH();
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        $(`#row${j}>#col${i}`).addClass("new-node");
+      }
+    }
+    $(".new-node").css("background-color", "#D9E5FF");
+  }
+  // Add new node on group grid
+  function addNewNode(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
+    // Remove 'new-node' class in every row-col
+    const { x, y, w, h } = getXYWH();
+    removeColor(arr[0].length, arr.length);
+    // if (x, y, w, h) is ok, then put. or error.
+    if (validateXYWH(arr)) {
+      addColor();
+      $(gaugePositionSelector).removeClass("input-error");
+    } else {
+      $(gaugePositionSelector).addClass("input-error");
+    }
+  }
+  function changeGroup(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
+    if ($("#node-input-group-table > table").length) {
+      const row = arr.length;
+      const col = arr[0].length;
+      const currow = $("#group-table>tbody>tr").length - 1;
+      const curcol = $("#group-table>tbody>#row1>td").length;
+      if (currow !== row || curcol !== col) {
+        $("#node-input-group-table").children("table").remove();
+        $("#node-input-group-table").append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        addNewNode(arr);
+        $(gaugePositionSelector).off();
+        $(gaugePositionSelector).on("change", () => addNewNode(arr));
+      }
+    }
+  }
+  RED.nodes.registerType("soop_gauge", {
+    category: "soop-dashboard",
+    color: "rgb(207, 221, 254)",
+    defaults: {
+      name: { value: "" },
+      label: { value: "gauge_name" },
+      group: { type: "soop_group", required: true },
+      width: { value: 1, validate: RED.validators.number(), required: true },
+      height: { value: 1, validate: RED.validators.number(), required: true },
+      widgetX: { value: 0, validate: RED.validators.number(), required: true },
+      widgetY: { value: 0, validate: RED.validators.number(), required: true },
+      gType: { value: "gauge" },
+      format: { value: "{{msg.payload}}" },
+      units: { value: "%" },
+      color: { value: "blue" },
+      min: { value: 0, required: true, validate: RED.validators.number() },
+      max: { value: 100, required: true, validate: RED.validators.number() },
+      value: { value: "" },
+    },
+    inputs: 1,
+    icon: "font-awesome/fa-tachometer",
+    paletteLabel: "soop_gauge",
+    label: function () {
+      return this.name || "soop_gauge";
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
+    },
+    oneditprepare: function () {
+      $.fn.groupTable = function (arr) {
+        $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        if (!Array.isArray(arr) || !arr[0]) {
+          $("#input-xywh").hide();
+        } else {
+          $("#input-xywh").show();
+        }
+        $(gaugePositionSelector).on("change", () => addNewNode(arr));
+      };
+      $("#node-input-group-table").groupTable(getGroupGrid(this.id));
+
+      $("#node-input-gType").on("change", function () {
+        if ($(this).val() === "liquid") {
+          $("#node-input-min").val(0);
+          $("#node-input-max").val(100);
+          $("#node-input-units").val("%");
+          $("#node-input-min").attr("readonly", true);
+          $("#node-input-max").attr("readonly", true);
+          $("#node-input-units").attr("readonly", true);
+        } else {
+          $("#node-input-min").attr("readonly", false);
+          $("#node-input-max").attr("readonly", false);
+          $("#node-input-units").attr("readonly", false);
+        }
+      });
+
+      if (this.color === undefined) {
+        $("input[type=radio][name=color]")[0].checked = true;
+      }
+
+      let pickers = $("input[type=radio][name=color]");
+      for (var i = 0; i < pickers.length; i++) {
+        if (pickers[i].value == this.color) pickers[i].checked = true;
+      }
+      $("#node-input-group").on("change", () => {
+        changeGroup(getGroupGrid(this.id));
+      });
+    },
+    oneditsave: function () {
+      this.color = $("input[type=radio][name=color]:checked")[0].value;
+      $("#node-input-value").val($("#node-input-min").val());
+    },
+    oneditresize: function () {
+      const arr = getGroupGrid(this.id);
+      changeGroup(arr);
+      if (!Array.isArray(arr) || !arr[0]) {
+        $("#input-xywh").hide();
+      } else {
+        $("#input-xywh").show();
+      }
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="soop_gauge">
+  <div class="form-row">
+    <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+    <input type="text" id="node-input-group" />
+  </div>
+  <div class="form-row" id="input-xywh">
+    <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
+    <div id="node-input-group-table" style="width:70%; display: inline-block;">
+      <div style="margin-bottom:10px">
+        <label for="node-input-widgetX" style="width:auto;">x</label>
+        <input type="text" id="node-input-widgetX" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-widgetY" style="width:auto;">y </label>
+        <input type="text" id="node-input-widgetY" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-width" style="width:auto;">w</label>
+        <input type="text" id="node-input-width" value="1" style="width:30px; margin-right:10px;" />
+        <label for="node-input-height" style="width:auto;">h</label>
+        <input type="text" id="node-input-height" value="1" style="width:30px; margin-right:10px;" />
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="node-input-gType"><i class="fa fa-list"></i> Type</label>
+    <select id="node-input-gType">
+      <option value="gauge">Gauge</option>
+      <option value="donut">Donut</option>
+      <option value="liquid">Liquid</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+    <input type="text" id="node-input-label" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-format"><i class="fa fa-i-cursor"></i> Value Format</label>
+    <input type="text" id="node-input-format" placeholder="{{value}}" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-units"><i class="fa fa-i-cursor"></i> Units</label>
+    <input type="text" id="node-input-units" placeholder="%" />
+  </div>
+  <div class="form-row">
+    <input type="hidden" id="node-input-value" />
+    <label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
+    <span for="node-input-min">min</span>
+    <input type="text" id="node-input-min" style="width:60px" />
+    <span for="not-input-max" style="margin-left:22px;">max</span>
+    <input type="text" id="node-input-max" style="width:60px" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-color"><i class="fa fa fa-tint"></i> Color</label>
+    <input type="radio" name="color" id="color1" style="width: 0px;" value="blue" />
+    <label class="styled1" for="color1" style="width: 60px;text-align: center;">blue</label>
+    <input type="radio" name="color" id="color2" style="width: 0px;" value="orange" />
+    <label class="styled2" for="color2" style="width: 60px;text-align: center;">orange</label>
+    <input type="radio" name="color" id="color3" style="width: 0px;" value="pink" />
+    <label class="styled3" for="color3" style="width: 60px;text-align: center;">pink</label>
+    <input type="radio" name="color" id="color4" style="width: 0px;" value="purple" />
+    <label class="styled4" for="color4" style="width: 60px;text-align: center;">purple</label>
+    <input type="radio" name="color" id="color5" style="width: 0px;" value="green" />
+    <label class="styled5" for="color5" style="width: 60px;text-align: center;">green</label>
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="soop_gauge">
+  <p>Adds a gauge on the dashboard</p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">Number</span></dt>
+    <dd>the payload of the message</dd>
+  </dl>
+
+  <h3>Details</h3>
+  <ol class="node-ports">
+    <li>
+      Type
+      <dl class="message-properties">
+        <dt>Guage, Donut, Liquid <span class="property-type">String</span></dt>
+        <dd>The gauge has several modes. Regular guage, donut, liquid.</dd>
+      </dl>
+    </li>
+    <li>
+      Value Format
+      <dl class="message-properties">
+        <dt>msg.payload <span class="property-type">String</span></dt>
+        <dd>msg.payload as the value of the gauge.</dd>
+      </dl>
+    </li>
+    <li>
+      Range
+      <dl class="message-properties">
+        <dt>min, max <span class="property-type">Number</span></dt>
+        <dd>Minimum, maximum value of the gauge.</dd>
+      </dl>
+    </li>
+  </ol>
+</script>

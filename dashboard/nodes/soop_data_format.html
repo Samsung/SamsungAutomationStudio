@@ -1,0 +1,60 @@
+<script type="text/javascript">
+  RED.nodes.registerType("soop_data_format", {
+    category: "soop-dashboard",
+    color: "rgb(160, 186, 254)",
+    defaults: {
+      label: { value: "dataset1", validate: RED.validators.typedInput("labelType") },
+      labelType: { value: "str" },
+      name: { value: "" },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-bookmark",
+    paletteLabel: "soop_data_format",
+    label: function () {
+      return this.name || "soop_data_format";
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
+    },
+    oneditprepare: function () {
+      $("#node-input-label").typedInput({
+        default: "str",
+        typeField: $("#node-input-labelType"),
+        types: ["str", "msg", "flow", "global"],
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="soop_data_format">
+  <div class="form-row">
+    <label for="node-input-label"><i class="fa fa-bookmark"></i> Label </label>
+    <input type="text" id="node-input-label" style="width:70%" />
+    <input type="hidden" id="node-input-labelType" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="soop_data_format">
+    <p>Label on data for chart node</p>
+    <h3>Inputs</h3>
+    <dt>payload <span class="property-type">number</span></dt>
+    <dd>a data of dataset</dd>
+  </dl>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dl class="message-properties">
+      <dt>label <span class="property-type">string</span></dt>
+      <dd>the name of dataset</dd>
+      <dt>payload <span class="property-type">number</span></dt>
+      <dd>a data of dataset</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>
+      Write label field to name on a dataset for chart node.
+    </p>
+</script>

@@ -1,0 +1,393 @@
+<script type="text/javascript">
+  const chartPositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
+
+  function getGroupGrid(nodeId) {
+    const groupId = $("#node-input-group").val();
+    const groupNode = RED.nodes.node(groupId);
+    groupNode._def.reflectEdit(groupId, nodeId);
+    return groupNode.groupState;
+  }
+
+  function getXYWH() {
+    const x = parseInt($("#node-input-widgetX").val());
+    const y = parseInt($("#node-input-widgetY").val());
+    const w = parseInt($("#node-input-width").val());
+    const h = parseInt($("#node-input-height").val());
+    return {
+      x,
+      y,
+      w,
+      h,
+    };
+  }
+  // Validate the widget to place on (x, y, w, h).
+  function validateXYWH(arr) {
+    const { x, y, w, h } = getXYWH();
+    // If x, y, w, h is under or over idx of arr -> return false
+    if (x < 0 || y < 0 || w <= 0 || h <= 0 || w > 12 || x + w > arr[0].length || y + h > arr.length) {
+      return false;
+    }
+    // If the space is alredy filled, return false
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        if (arr[j][i]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  // Create a table with array
+  function newTable(arr) {
+    const row = arr.length;
+    const col = arr[0].length;
+    // Append a row for column header(1,2,....)
+    $("#group-table>tbody").append('<tr id="col-header"></tr>');
+    $("#col-header").append("<th></th>");
+    for (let j = 0; j < col; j++) {
+      $("#col-header").append(`<th scope="col">${j}</th>`);
+    }
+    // Append group row and col
+    for (let i = 0; i < row; i++) {
+      // append row
+      $("#group-table>tbody").append(`<tr id="row${i}"></tr>`);
+      // Append a col for row header(1,2,...)
+      $(`#row${i}`).append(`<th scope="row" class="row-header">${i}</th>`);
+      // Append col
+      for (let j = 0; j < col; j++) {
+        const tag = `<td id="col${j}" class="col ${arr[i][j] ? "filled" : "empty"}" ></td>`;
+        $(`#row${i}`).append(tag);
+      }
+    }
+    // Table Design
+    $(".col").css("border", "dotted black 1px");
+    $(".col").css("width", "20px");
+    $(".col").css("height", "20px");
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+    $("th").css("border", "none");
+  }
+  // Remove color for new node and return the original color for filled or empty space
+  function removeColor(w, h) {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        $(`#row${j}>#col${i}`).removeClass("new-node");
+      }
+    }
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+  }
+  // Add color for new node
+  function addColor() {
+    const { x, y, w, h } = getXYWH();
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        $(`#row${j}>#col${i}`).addClass("new-node");
+      }
+    }
+    $(".new-node").css("background-color", "#D9E5FF");
+  }
+  // Add new node on group grid
+  function addNewNode(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
+    // Remove 'new-node' class in every row-col
+    const { x, y, w, h } = getXYWH();
+    removeColor(arr[0].length, arr.length);
+    // if (x, y, w, h) is ok, then put. or error.
+    if (validateXYWH(arr)) {
+      addColor();
+      $(chartPositionSelector).removeClass("input-error");
+    } else {
+      $(chartPositionSelector).addClass("input-error");
+    }
+  }
+
+  function changeGroup(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
+    if ($("#node-input-group-table > table").length) {
+      const row = arr.length;
+      const col = arr[0].length;
+      const currow = $("#group-table>tbody>tr").length - 1;
+      const curcol = $("#group-table>tbody>#row1>td").length;
+      if (currow !== row || curcol !== col) {
+        $("#node-input-group-table").children("table").remove();
+        $("#node-input-group-table").append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        addNewNode(arr);
+        $(chartPositionSelector).off();
+        $(chartPositionSelector).on("change", () => addNewNode(arr));
+      }
+    }
+  }
+  RED.nodes.registerType("soop_chart", {
+    category: "soop-dashboard",
+    color: "rgb(207, 221, 254)",
+    defaults: {
+      group: {
+        type: "soop_group",
+        required: true,
+      },
+      width: {
+        value: 1,
+        validate: RED.validators.number(),
+        required: true,
+      },
+      height: {
+        value: 1,
+        validate: RED.validators.number(),
+        required: true,
+      },
+      widgetX: {
+        value: 0,
+        validate: RED.validators.number(),
+        required: true,
+      },
+      widgetY: {
+        value: 0,
+        validate: RED.validators.number(),
+        required: true,
+      },
+      title: {
+        value: "chart_name",
+      },
+      chartType: {
+        value: "line",
+      },
+      xAxisFormat: {
+        value: "HH:mm:ss",
+      },
+      customValue: {
+        value: "",
+      },
+      yMin: {
+        value: "",
+        validate: function (value) {
+          return value === "" || (RED.validators.number() && !(value > $("#node-input-yMax").val()));
+        },
+      },
+      yMax: {
+        value: "",
+        validate: function (value) {
+          return value === "" || (RED.validators.number() && !($("#node-input-yMin").val() > value));
+        },
+      },
+      isTimeSeries: {
+        value: false,
+      },
+      legend: {
+        value: "false",
+      },
+      blankLabel: {
+        value: "",
+      },
+      name: {
+        value: "",
+      },
+    },
+    inputs: 1,
+    outputs: 0,
+    align: "left",
+    icon: "font-awesome/fa-line-chart",
+    paletteLabel: "soop_chart",
+    inputLabels: function () {
+      return `${this.chartType} chart data`;
+    },
+    label: function () {
+      return this.name || "soop_chart";
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
+    },
+    oneditprepare: function () {
+      $.fn.groupTable = function (arr) {
+        $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        if (!Array.isArray(arr) || !arr[0]) {
+          $("#input-xywh").hide();
+        } else {
+          $("#input-xywh").show();
+        }
+        $(chartPositionSelector).on("change", () => addNewNode(arr));
+      };
+      $("#node-input-group-table").groupTable(getGroupGrid(this.id));
+
+      if (!$("#node-input-widgetX").val()) {
+        $("#node-input-widgetX").val(0);
+      }
+      if (!$("#node-input-widgetY").val()) {
+        $("#node-input-widgetY").val(0);
+      }
+      if (!$("#node-input-width").val()) {
+        $("#node-input-width").val(1);
+      }
+      if (!$("#node-input-height").val()) {
+        $("#node-input-height").val(1);
+      }
+      if (!$("#node-input-chartType").val()) {
+        $("#node-input-chartType").val("line");
+      }
+      if (!$("#node-input-xAxisFormat").val()) {
+        $("#node-input-xAxisFormat").val("HH:mm:ss");
+      }
+      if (!$("#node-input-legend").val()) {
+        $("#node-input-legend").val(false);
+      }
+      // If line chart, input must be time-series data.
+      if ($("#node-input-chartType").val() === "line") {
+        $("#node-input-isTimeSeries").prop("checked", true);
+        $("#node-input-isTimeSeries").attr("disabled", true);
+      } else if ($("#node-input-chartType").val() === "pie") {
+        $("#node-input-isTimeSeries").prop("checked", false);
+        $("#node-input-isTimeSeries").attr("disabled", true);
+      } else {
+        $("#node-input-isTimeSeries").attr("disabled", false);
+      }
+
+      $("#node-input-xAxisFormat").on("change", function () {
+        if ($(this).val() === "custom") {
+          $("#custom-value").show();
+        } else {
+          $("#custom-value").hide();
+        }
+      });
+
+      $("#node-input-chartType").on("change", function () {
+        $(".chart-property").hide();
+        $("#node-input-isTimeSeries").prop("checked", true);
+        $("#node-input-isTimeSeries").attr("disabled", true);
+        if ($(this).val() === "line") {
+          $(".line").show();
+        } else if ($(this).val() === "bar") {
+          $(".bar").show();
+          $("#node-input-isTimeSeries").attr("disabled", false);
+        } else {
+          $(".pie").show();
+          $("#node-input-isTimeSeries").prop("checked", false);
+        }
+      });
+      $("#node-input-group").on("change", () => {
+        changeGroup(getGroupGrid(this.id));
+      });
+    },
+    oneditresize: function () {
+      const arr = getGroupGrid(this.id);
+      changeGroup(arr);
+      if (!Array.isArray(arr) || !arr[0]) {
+        $("#input-xywh").hide();
+      } else {
+        $("#input-xywh").show();
+      }
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="soop_chart">
+  <div class="form-row">
+    <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+    <input type="text" id="node-input-group" />
+  </div>
+  <div class="form-row" id="input-xywh">
+    <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
+    <div id="node-input-group-table" style="width:70%; display: inline-block;">
+      <div style="margin-bottom:10px">
+        <label for="node-input-widgetX" style="width:auto;">x</label>
+        <input type="text" id="node-input-widgetX" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-widgetY" style="width:auto;">y </label>
+        <input type="text" id="node-input-widgetY" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-width" style="width:auto;">w</label>
+        <input type="text" id="node-input-width" value="1" style="width:30px; margin-right:10px;" />
+        <label for="node-input-height" style="width:auto;">h</label>
+        <input type="text" id="node-input-height" value="1" style="width:30px; margin-right:10px;" />
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="node-input-title"><i class="fa fa-i-cursor"></i> Label</label>
+    <input type="text" id="node-input-title" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-chartType"><i class="fa fa-line-chart"></i> Type</label>
+    <select
+      id="node-input-chartType"
+      style="width:190px; font-family:'FontAwesome','Helvetica Neue', Helvetica, Arial, sans-serif"
+    >
+      <option value="line">&#xf201; Line chart</option>
+      <option value="bar">&#xf080; Bar chart</option>
+      <option value="pie">&#xf200; Pie chart</option>
+    </select>
+    <input
+      type="checkbox"
+      id="node-input-isTimeSeries"
+      name="isTimeSeries"
+      style="width:auto; margin-top:0; margin-left: 10px;"
+    />
+    <label for="node-input-isTimeSeries"> Time-series</label>
+  </div>
+
+  <div class="form-row chart-property line bar" id="xAxisFormat">
+    <label for="node-input-xAxisFormat"><i class="fa fa-clock-o"></i> X-axis Format</label>
+    <select id="node-input-xAxisFormat" style="width:150px; margin-right:10px;">
+      <option value="HH:mm:ss">HH:mm:ss</option>
+      <option value="HH:mm">HH:mm</option>
+      <option value="dd HH:mm">Day HH:mm</option>
+      <option value="D/M">Date/Month</option>
+      <option value="Y-M-D">Year-Month-Date</option>
+      <option value="custom">custom</option>
+      <option value="auto">automatic</option>
+    </select>
+    <span id="custom-value" class="chart-property">
+      <input type="text" id="node-input-customValue" style="width:120px; margin:0px;" />
+    </span>
+  </div>
+  <div class="form-row chart-property line bar" id="yAxis">
+    <label for="node-input-yAxis"><i class="fa fa-arrows-v"></i> Y-axis</label>
+    <label for="node-input-yMin" style="width:auto">min</label>
+    <input type="text" id="node-input-yMin" style="width:90px; margin: 0 5px 0 0;" />
+    <label for="node-input-yMax" style="width:auto">max</label>
+    <input type="text" id="node-input-yMax" style="width:90px;" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-legend">Legend</label>
+    <select id="node-input-legend" style="width:120px; margin-right:10px;">
+      <option value="false">None</option>
+      <option value="true">Show</option>
+    </select>
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-blankLabel">Blank label</label>
+    <input type="text" id="node-input-blankLabel" placeholder="Display this text before valid data arrives" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="soop_chart">
+  <p>Plot a chart on the dashboard.</p>
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload<span class="property-type">number</span></dt>
+    <dd>the data value.</dd>
+    <dt class="optional">label <span class="property-type">string</span></dt>
+    <dd>the label for dataset.</dd>
+  </dl>
+
+  <h3>Details</h3>
+  <p>Choose the type of chart: Line, Bar, Pie.</p>
+  <p>
+    The value of X-axis defines the time when the input received or the name of data and that of Y-axis defines the
+    <code>msg.payload</code>.
+  </p>
+  <p>The max and min value of and Y-axis is optional.</p>
+  <p>Before any data is received, the Blank label will be displayed.</p>
+  <h3>References</h3>
+  <ul>
+    <li><a href="https://www.chartjs.org/">ChartJS</a> - the plot drawn by ChartJS</li>
+    <li><a href="https://momentjs.com/">MomentJS</a> - the X-axis formatted using MomentJS.</li>
+  </ul>
+</script>

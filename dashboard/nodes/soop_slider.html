@@ -1,0 +1,412 @@
+<style>
+  input[type="radio"] {
+    opacity: 0;
+  }
+  input[type="radio"] + label {
+    border: none;
+    color: white;
+    border-radius: 5px;
+  }
+  input[name="colorPicking"]:checked + label {
+    width: 70px !important;
+    border: none !important;
+    height: 30px !important;
+    line-height: 30px;
+    font-size: 16px;
+  }
+  .styled1 {
+    background: #1153fc;
+  }
+  .styled2 {
+    background: #ff7e42;
+  }
+  .styled3 {
+    background: #fd5988;
+  }
+  .styled4 {
+    background: #8443f6;
+  }
+  .styled5 {
+    background: #08c792;
+  }
+</style>
+<script type="text/javascript">
+  // group, tab
+  const sliderPositionSelector = "#node-input-widgetX, #node-input-widgetY, #node-input-width, #node-input-height";
+  function getGroupGrid(nodeId) {
+    const groupId = $("#node-input-group").val();
+    const groupNode = RED.nodes.node(groupId);
+    groupNode._def.reflectEdit(groupId, nodeId);
+    return groupNode.groupState;
+  }
+  function getXYWH() {
+    const x = parseInt($("#node-input-widgetX").val());
+    const y = parseInt($("#node-input-widgetY").val());
+    const w = parseInt($("#node-input-width").val());
+    const h = parseInt($("#node-input-height").val());
+    return { x, y, w, h };
+  }
+  // Validate the widget to place on (x, y, w, h).
+  function validateXYWH(arr) {
+    const { x, y, w, h } = getXYWH();
+    // If x, y, w, h is under or over idx of arr -> return false
+    if (x < 0 || y < 0 || w <= 0 || h <= 0 || w > 12 || x + w > arr[0].length || y + h > arr.length) {
+      return false;
+    }
+    // If the space is alredy filled, return false
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        if (arr[j][i]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  // Create a table with array
+  function newTable(arr) {
+    const row = arr.length;
+    const col = arr[0].length;
+    // Append a row for column header(1,2,....)
+    $("#group-table>tbody").append('<tr id="col-header"></tr>');
+    $("#col-header").append("<th></th>");
+    for (let j = 0; j < col; j++) {
+      $("#col-header").append(`<th scope="col">${j}</th>`);
+    }
+    // Append group row and col
+    for (let i = 0; i < row; i++) {
+      // append row
+      $("#group-table>tbody").append(`<tr id="row${i}"></tr>`);
+      // Append a col for row header(1,2,...)
+      $(`#row${i}`).append(`<th scope="row" class="row-header">${i}</th>`);
+      // Append col
+      for (let j = 0; j < col; j++) {
+        const tag = `<td id="col${j}" class="col ${arr[i][j] ? "filled" : "empty"}" ></td>`;
+        $(`#row${i}`).append(tag);
+      }
+    }
+    // Table Design
+    $(".col").css("border", "dotted black 1px");
+    $(".col").css("width", "20px");
+    $(".col").css("height", "20px");
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+    $("th").css("border", "none");
+  }
+  // Remove color for new node and return the original color for filled or empty space
+  function removeColor(w, h) {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        $(`#row${j}>#col${i}`).removeClass("new-node");
+      }
+    }
+    $(".filled").css("background-color", "#DEDEDE");
+    $(".empty").css("background-color", "#FFFFFF");
+  }
+  // Add color for new node
+  function addColor() {
+    const { x, y, w, h } = getXYWH();
+    for (let i = x; i < x + w; i++) {
+      for (let j = y; j < y + h; j++) {
+        $(`#row${j}>#col${i}`).addClass("new-node");
+      }
+    }
+    $(".new-node").css("background-color", "#D9E5FF");
+  }
+  // Add new node on group grid
+  function addNewNode(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
+    // Remove 'new-node' class in every row-col
+    const { x, y, w, h } = getXYWH();
+    removeColor(arr[0].length, arr.length);
+    // if (x, y, w, h) is ok, then put. or error.
+    if (validateXYWH(arr)) {
+      addColor();
+      $(sliderPositionSelector).removeClass("input-error");
+    } else {
+      $(sliderPositionSelector).addClass("input-error");
+    }
+  }
+  function changeGroup(arr) {
+    if (!Array.isArray(arr) || !arr[0]) return;
+    if ($("#node-input-group-table > table").length) {
+      const row = arr.length;
+      const col = arr[0].length;
+      const currow = $("#group-table>tbody>tr").length - 1;
+      const curcol = $("#group-table>tbody>#row1>td").length;
+      if (currow !== row || curcol !== col) {
+        $("#node-input-group-table").children("table").remove();
+        $("#node-input-group-table").append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        addNewNode(arr);
+        $(sliderPositionSelector).off();
+        $(sliderPositionSelector).on("change", () => addNewNode(arr));
+      }
+    }
+  }
+
+  RED.nodes.registerType("soop_slider", {
+    /* Node definitions
+     *  category: palette category
+     *  color: background color
+     *  defaults: node property
+     *  inputs: # of input
+     *  outputs: # of output
+     *  icon: icon image
+     *  paletteLabel: node name in palette
+     *  label: function that returns value for the label name
+     *  labelstyle: function that returns css-style for the label
+     *  oneditprepare: function called when edit window is opened
+     *  oneditsave: function called when edit window is okayed
+     */
+    category: "soop-dashboard",
+    color: "rgb(160, 186, 254)",
+    defaults: {
+      /* Node Properties (value, required, validate, type)
+       *  name: node name on palette
+       *  label: node label on dashboard
+       *  group: group information of the node
+       *  width, height: size of node
+       *  min, max, step: property of slider
+       *  colorPicking: color of node in dashboard
+       *  pass: boolean option for whether pass input or not
+       *  when: option for when to send msg through flow
+       */
+      group: { type: "soop_group", required: true },
+      width: { value: 1, validate: RED.validators.number(), required: true },
+      height: { value: 1, validate: RED.validators.number(), required: true },
+      widgetX: { value: 0, validate: RED.validators.number(), required: true },
+      widgetY: { value: 0, validate: RED.validators.number(), required: true },
+      colorPicking: {
+        value: "blue",
+      },
+      name: { value: "" },
+      label: { value: "" },
+      tooltip: { value: "" },
+      min: {
+        value: 0,
+        required: true,
+        validate: RED.validators.number(),
+      },
+      max: {
+        value: 100,
+        required: true,
+        validate: RED.validators.number(),
+      },
+      step: {
+        value: 1,
+        required: true,
+        validate: RED.validators.number(),
+      },
+      pass: { value: true },
+      when: { value: "always" },
+      invert: { value: parseFloat(this.min) > parseFloat(this.max) ? true : false },
+      value: { value: Math.min(this.min, this.max) },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-sliders",
+    paletteLabel: "soop_slider",
+    label: function () {
+      return this.name || "soop_slider";
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
+    },
+    oneditprepare: function () {
+      $.fn.groupTable = function (arr) {
+        $(this).append('<table border="1" id="group-table"><tbody></tbody></table>');
+        newTable(arr);
+        if (!Array.isArray(arr) || !arr[0]) {
+          $("#input-xywh").hide();
+        } else {
+          $("#input-xywh").show();
+        }
+        $(sliderPositionSelector).on("change", () => addNewNode(arr));
+      };
+      $("#node-input-group-table").groupTable(getGroupGrid(this.id));
+
+      if (!$("#node-input-widgetX").val()) {
+        $("#node-input-widgetX").val(0);
+      }
+      if (!$("#node-input-widgetY").val()) {
+        $("#node-input-widgetY").val(0);
+      }
+      if (!$("#node-input-width").val()) {
+        $("#node-input-width").val(1);
+      }
+      if (!$("#node-input-height").val()) {
+        $("#node-input-height").val(1);
+      }
+
+      if (!$("#node-input-when").val()) {
+        $("#node-input-when").val("always");
+      }
+
+      // Check input radio form according to picked color
+      var colors = $("input[type=radio][name=colorPicking]");
+
+      for (const item of colors) {
+        if (item.value === this.colorPicking) {
+          item.checked = true;
+          break;
+        }
+      }
+      $("#node-input-group").on("change", () => {
+        changeGroup(getGroupGrid(this.id));
+      });
+    },
+    oneditsave: function () {
+      this.colorPicking = $("input[type=radio][name=colorPicking]:checked")[0].value;
+      this.step =
+        $("#node-input-step").val() > Math.abs($("#node-input-max").val() - $("#node-input-min").val())
+          ? 1
+          : $("#node-input-step").val();
+    },
+    oneditresize: function () {
+      const arr = getGroupGrid(this.id);
+      changeGroup(arr);
+      if (!Array.isArray(arr) || !arr[0]) {
+        $("#input-xywh").hide();
+      } else {
+        $("#input-xywh").show();
+      }
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="soop_slider">
+  <!-- Group -->
+  <div class="form-row">
+    <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+    <input type="text" id="node-input-group" />
+  </div>
+  <!-- Size -->
+  <div class="form-row" id="input-xywh">
+    <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
+    <div id="node-input-group-table" style="width:70%; display: inline-block;">
+      <div style="margin-bottom:10px">
+        <label for="node-input-widgetX" style="width:auto;">x</label>
+        <input type="text" id="node-input-widgetX" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-widgetY" style="width:auto;">y </label>
+        <input type="text" id="node-input-widgetY" value="0" style="width:30px; margin-right:10px;" />
+        <label for="node-input-width" style="width:auto;">w</label>
+        <input type="text" id="node-input-width" value="1" style="width:30px; margin-right:10px;" />
+        <label for="node-input-height" style="width:auto;">h</label>
+        <input type="text" id="node-input-height" value="1" style="width:30px; margin-right:10px;" />
+      </div>
+    </div>
+  </div>
+  <!-- Color -->
+  <div class="form-row">
+    <label for="node-input-color"><i class="fa fa fa-tint"></i> Color</label>
+    <input type="radio" name="colorPicking" id="colorPicking1" style="width: 0px;" value="blue" />
+    <label class="styled1" for="colorPicking1" style="width: 55px;text-align: center;">blue</label>
+    <input type="radio" name="colorPicking" id="colorPicking2" style="width: 0px;" value="orange" />
+    <label class="styled2" for="colorPicking2" style="width: 55px;text-align: center;">orange</label>
+    <input type="radio" name="colorPicking" id="colorPicking3" style="width: 0px;" value="pink" />
+    <label class="styled3" for="colorPicking3" style="width: 55px;text-align: center;">pink</label>
+    <input type="radio" name="colorPicking" id="colorPicking4" style="width: 0px;" value="purple" />
+    <label class="styled4" for="colorPicking4" style="width: 55px;text-align: center;">purple</label>
+    <input type="radio" name="colorPicking" id="colorPicking5" style="width: 0px;" value="green" />
+    <label class="styled5" for="colorPicking5" style="width: 55px;text-align: center;">green</label>
+  </div>
+  <!-- Label -->
+  <div class="form-row">
+    <label for="node-input-label"><i class="fa fa-i-cursor"></i> Label</label>
+    <input type="text" id="node-input-label" />
+  </div>
+  <!-- Tooltip -->
+  <div class="form-row">
+    <label for="node-input-tooltip"><i class="fa fa-info-circle"></i> Tooltip</label>
+    <input type="text" id="node-input-tooltip" placeholder="optional tooltip" />
+  </div>
+  <!-- Range -->
+  <div class="form-row">
+    <label for="node-input-min"><i class="fa fa-arrows-h"></i> Range</label>
+    <span for="node-input-min">min</span>
+    <input type="text" id="node-input-min" style="width:60px" />
+    <span for="not-input-max" style="margin-left:22px;">max</span>
+    <input type="text" id="node-input-max" style="width:60px" />
+    <span for="not-input-step" style="margin-left:22px;">step</span>
+    <input type="text" id="node-input-step" style="width:60px" />
+  </div>
+  <!-- Pass -->
+  <div class="form-row">
+    <label style="width:auto" for="node-input-pass"
+      ><i class="fa fa-arrow-right"></i> If <code>msg</code> arrives on input, pass through to output:
+    </label>
+    <input type="checkbox" checked id="node-input-pass" style="display:inline-block; width:auto; vertical-align:top;" />
+  </div>
+  <!-- When -->
+  <div class="form-row">
+    <label style="width:auto" for="node-input-payload"><i class="fa fa-envelope-o"></i> Send <code>msg</code></label>
+  </div>
+  <div class="form-row">
+    <label style="padding-left:25px; margin-right:-25px" for="node-input-when">When</label>
+    <select id="node-input-when" style="width:204px">
+      <option value="always">always value changed</option>
+      <option value="release">only after slider released</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label style="padding-left:25px; margin-right:-25px">Payload</label>
+    <label style="width:auto">Current value</label>
+  </div>
+  <!-- Name -->
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="soop_slider">
+  <p>Adds a slider on the dashboard</p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">number</span></dt>
+    <dd>the payload of the message</dd>
+  </dl>
+
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">number</span></dt>
+    <dd>the payload of the message.</dd>
+  </dl>
+
+  <h3>Details</h3>
+  <ol class="node-ports">
+    <li>
+      Slider Range
+      <dl class="message-properties">
+        <dt>min, max, step <span class="property-type">number</span></dt>
+        <dd>Minimum, maximum, interval value of the slider.</dd>
+      </dl>
+    </li>
+    <li>
+      Forward Input
+      <dl class="message-properties">
+        <dt>pass <span class="property-type">boolean</span></dt>
+        <dd>Option for forwarding input msg or not, when input arrives.</dd>
+      </dl>
+    </li>
+    <li>
+      Send Payload
+      <dl class="message-properties">
+        <dt>when <span class="property-type">always | release</span></dt>
+        <dd>Option for receiving modified value from the dashboard.</dd>
+        <dd>Send received value whenever the slider value changed or when the user releases the slider.</dd>
+      </dl>
+    </li>
+  </ol>
+  <!--
+    <p>A vertical slider can be created by setting the size so that the height is greater than the width.</p>
+    <p>The slider can be reversed by setting the min value larger than the max value.</p>
+    <p>An input <code>msg.payload</code> will be converted to a number. The <b>min</b> value will be used if conversion fails.</p>
+  -->
+
+  <h3>References</h3>
+  <ul>
+    <li><a href="https://fontawesome.com/v4/icons/">FontAwesome</a> - the icon on a button</li>
+  </ul>
+</script>

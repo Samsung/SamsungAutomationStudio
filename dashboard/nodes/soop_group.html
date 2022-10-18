@@ -1,0 +1,126 @@
+<script type="text/javascript">
+    RED.nodes.registerType("soop_group", {
+        category: "config",
+        defaults: {
+            name: {
+                value: "Default",
+            },
+            tab: {
+                type: "soop_tab",
+                required: true,
+            },
+            order: {
+                value: 0,
+            },
+            displayVisible: {
+                value: true,
+            },
+            width: {
+                value: 3,
+            },
+            height: {
+                value: 2,
+            },
+            groupX: {
+                value: 0,
+            },
+            groupY: {
+                value: 0,
+            },
+            disabled: {
+                value: false,
+            },
+            hidden: {
+                value: false,
+            },
+            groupState: {
+                value: new Array(),
+            },
+            includedNodesId: {
+                value: new Array(),
+            },
+        },
+        paletteLabel: "SOOPSASM GROUP",
+        label: function() {
+            var tabNode = RED.nodes.node(this.tab);
+            if (tabNode) {
+                return "[" + (tabNode.name || "Tab") + "] " + (this.name || "Group");
+            }
+            return "[Unassigned] " + (this.name || "Group");
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        },
+        reflectEdit: function(gNode, nodeId) {
+            var groupNode = RED.nodes.node(gNode);
+            groupNode.includedNodesId = new Array();
+            RED.nodes.eachNode(function(node) {
+                if (groupNode.id == node.group && groupNode.includedNodesId.indexOf(node.id) < 0 && node.id !== nodeId) {
+                    groupNode.includedNodesId.push(node.id);
+                }
+            });
+            groupNode.groupState = new Array(groupNode.height);
+            for (var i = 0; i < groupNode.height; i++) {
+                groupNode.groupState[i] = Array.from({
+                        length: groupNode.width,
+                    },
+                    () => false,
+                );
+            }
+            for (var i = 0; i < groupNode.includedNodesId.length; i++) {
+                var tmpNode = RED.nodes.node(groupNode.includedNodesId[i]);
+                var tmpW = parseInt(tmpNode.width);
+                var tmpH = parseInt(tmpNode.height);
+                var tmpX = parseInt(tmpNode.widgetX);
+                var tmpY = parseInt(tmpNode.widgetY);
+                for (var j = tmpX; j < tmpX + tmpW; j++) {
+                    for (var k = tmpY; k < tmpY + tmpH; k++) {
+                        groupNode.groupState[k][j] = true;
+                    }
+                }
+            }
+            return groupNode;
+        },
+        oneditprepare: function() {
+            RED.events.on("nodes:change", function(node) {
+                if (node.type == "soop_group") {
+                    tmpTabNode = RED.nodes.node(node.tab);
+
+                    tmpTabNode = tmpTabNode._def.groupLocationDefaultSetting(node.tab);
+                    for (var i = 0; i < tmpTabNode.includedGroups.length; i++) {
+                        var compareGroupNode = RED.nodes.node(tmpTabNode.includedGroups[i].id)
+                        if (tmpTabNode.includedGroups[i].groupX != compareGroupNode.groupX || tmpTabNode.includedGroups[i].groupY != compareGroupNode.groupY) {
+                            compareGroupNode.groupX = tmpTabNode.includedGroups[i].groupX;
+                            compareGroupNode.groupY = tmpTabNode.includedGroups[i].groupY;
+                        }
+                    }
+                }
+            });
+        },
+    });
+</script>
+<script type="text/html" data-template-name="soop_group">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
+        <input type="text" id="node-config-input-name" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-tab"><i class="fa fa-table"></i> <span>Tab</span></label>
+        <input type="text" id="node-config-input-tab" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-group-table"><i class="fa fa-table"></i> Group table</label>
+        <div id="node-input-group-table" style="width:70%; display: inline-block;">
+            <div style="margin-bottom:10px">
+                <label for="node-config-input-width" style="width:auto;">w</label>
+                <input type="text" id="node-config-input-width" value="1" style="width:30px; margin-right:10px;" />
+                <label for="node-config-input-height" style="width:auto;">h</label>
+                <input type="text" id="node-config-input-height" value="1" style="width:30px; margin-right:10px;" />
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <input style="margin:10px 0px 10px 102px; width:20px;" type="checkbox" checked id="node-config-input-displayVisible" />
+        <label style="width:auto" for="node-config-input-displayVisible"><span>Display group name</span></label>
+    </div>
+</script>
