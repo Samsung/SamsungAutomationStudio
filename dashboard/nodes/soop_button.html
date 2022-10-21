@@ -52,7 +52,6 @@
       widgetX: { value: 0, validate: RED.validators.number(), required: true },
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
       label: { value: "button_name" },
-      tooltip: { value: "" },
       background: { value: "blue", required: true },
       shape: { value: "rounded-rectangle", required: true },
       payload: { value: "", validate: RED.validators.typedInput("payloadType") },
@@ -168,10 +167,6 @@
     <input type="text" id="node-input-label" />
   </div>
   <div class="form-row">
-    <label for="node-input-tooltip"><i class="fa fa-info-circle"></i> Tooltip</label>
-    <input type="text" id="node-input-tooltip" placeholder="tooltip" />
-  </div>
-  <div class="form-row">
     <label for="node-input-background"><i class="fa fa-tint"></i> Color</label>
     <input type="radio" name="background" id="blue" style="width: 0px;" value="blue" />
     <label class="btn-styled1" for="blue" style="width: 55px; text-align: center;">blue</label>
@@ -242,8 +237,5 @@
     <dd>written in the topic field</dd>
   </dl>
   <h3>Details</h3>
-  <p>
-    You can choose the color and shape of a button. If you want to send a payload or topic, write the field. Write the
-    tooltip to show optional explanation of the button.
-  </p>
+  <p>You can choose the color and shape of a button. If you want to send a payload or topic, write the field.</p>
 </script>

@@ -18,7 +18,6 @@
     defaults: {
       /* Node Properties (value, required, validate, type)
        *  name: node name on palette
-       *  tooltip: tooltip of the image
        *  group: group information of the node
        *  width, height: size of node
        *  widgteX, wdigetY: position of node
@@ -32,9 +31,7 @@
       height: { value: 1, validate: RED.validators.number(), required: true },
       widgetX: { value: 0, validate: RED.validators.number(), required: true },
       widgetY: { value: 0, validate: RED.validators.number(), required: true },
-
       name: { value: "" },
-      tooltip: { value: "" },
       option: { value: "upload" },
       uploads: { value: "" },
       filename: { value: "No file chosen" },
