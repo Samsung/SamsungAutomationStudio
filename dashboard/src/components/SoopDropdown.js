@@ -9,13 +9,13 @@ import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "..
 
 const DropdownContainer = styled.div`
   position: absolute;
-  left: ${({ layout }) => `${layout[0]}px;`}
-  top: ${({ layout }) => `${layout[1]}px;`}
+  left: ${({ layout }) => `${layout.LEFT}px;`}
+  top: ${({ layout }) => `${layout.TOP}px;`}
+  width: ${({ layout }) => `${layout.WIDTH}px;`}
+  height:${({ layout }) => `${layout.HEIGHT}px;`}
   display: flex;
   justify-content: center;
   align-items: center;
-  width: ${({ layout }) => `${layout[2]}px;`}
-  height:${({ layout }) => `${layout[3]}px;`}
   padding: 5px 10px;
   box-sizing: border-box;
 `;
@@ -25,12 +25,12 @@ const SoopDropdown = ({ currentGroupW, currentGroupWidth, currentGroupH, node, n
   const [currentOptions, setCurrentOptions] = useState([]);
   const [currentLabel, setCurrentLabel] = useState("");
 
-  const layout = [
-    calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY), currentGroupH, nameVisible),
-    calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
-  ];
+  const layout = {
+    LEFT: calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
+    TOP: calculateTop(parseInt(node?.widgetY), currentGroupH, nameVisible),
+    WIDTH: calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
+    HEIGHT: calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
+  };
 
   const onChange = e => {
     setSelectedOption(e.target.value);

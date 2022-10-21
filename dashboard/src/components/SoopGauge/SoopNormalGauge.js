@@ -22,8 +22,8 @@ const SoopNormalGauge = ({ layout, node }) => {
     <>
       <Gauge
         value={currentValue}
-        width={layout[2]}
-        height={layout[3]}
+        width={layout.WIDTH}
+        height={layout.HEIGHT}
         min={range[0]}
         max={range[1]}
         label={currentLabel}

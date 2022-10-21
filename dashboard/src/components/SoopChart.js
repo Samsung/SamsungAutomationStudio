@@ -7,10 +7,10 @@ import { calculateHeight, calculateWidth, calculateLeft, calculateTop } from "..
 
 const ChartContainer = styled.div`
   position: absolute;
-  left: ${({ layout }) => `${layout[0]}px;`}
-  top: ${({ layout }) => `${layout[1]}px;`}
-  width: ${({ layout }) => `${layout[2]}px;`}
-  height:${({ layout }) => `${layout[3]}px;`}
+  left: ${({ layout }) => `${layout.LEFT}px;`}
+  top: ${({ layout }) => `${layout.TOP}px;`}
+  width: ${({ layout }) => `${layout.WIDTH}px;`}
+  height:${({ layout }) => `${layout.HEIGHT}px;`}
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,12 +19,12 @@ const ChartContainer = styled.div`
 `;
 
 const SoopChart = ({ currentGroupW, currentGroupWidth, currentGroupH, node, nameVisible }) => {
-  const layout = [
-    calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
-    calculateTop(parseInt(node?.widgetY), currentGroupH, nameVisible),
-    calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
-    calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
-  ];
+  const layout = {
+    LEFT: calculateLeft(parseInt(node?.widgetX), currentGroupWidth, currentGroupW),
+    TOP: calculateTop(parseInt(node?.widgetY), currentGroupH, nameVisible),
+    WIDTH: calculateWidth(parseInt(node?.width), currentGroupWidth, currentGroupW),
+    HEIGHT: calculateHeight(parseInt(node?.height), currentGroupH, nameVisible),
+  };
 
   switch (node?.chartType) {
     case "line":
