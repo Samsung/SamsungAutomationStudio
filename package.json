@@ -34,6 +34,7 @@
       "data-extractor": "data-extraction/data-extractor.js",
       "data-filter": "data-extraction/data-filter.js",
       "soop_dashboard_config": "dashboard/nodes/soop_dashboard_config.js",
+      "soop_group_base": "dashboard/nodes/soop_group_base.js",
       "soop_tab": "dashboard/nodes/soop_tab.js",
       "soop_group": "dashboard/nodes/soop_group.js",
       "soop_text": "dashboard/nodes/soop_text.js",

@@ -16,22 +16,18 @@ module.exports = function (RED) {
       payload = Date.now();
     }
 
+    function setMessage(msg, type, value, valueType) {
+      if (value) {
+        RED.util.setMessageProperty(msg, type, RED.util.evaluateNodeProperty(value, valueType, node, msg), true);
+      } else {
+        type === "topic" ? delete msg.topic : delete msg.payload;
+      }
+      return msg;
+    }
+
     function sendMessage(msg) {
-      if (topic) {
-        RED.util.setMessageProperty(msg, "topic", RED.util.evaluateNodeProperty(topic, topicType, node, msg), true);
-      } else {
-        delete msg.topic;
-      }
-      if (payload) {
-        RED.util.setMessageProperty(
-          msg,
-          "payload",
-          RED.util.evaluateNodeProperty(payload, payloadType, node, msg),
-          true,
-        );
-      } else {
-        delete msg.payload;
-      }
+      msg = setMessage(msg, "topic", topic, topicType);
+      msg = setMessage(msg, "payload", payload, payloadType);
       node.send(msg);
     }
 
