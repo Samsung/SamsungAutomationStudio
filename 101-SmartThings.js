@@ -24,10 +24,18 @@ module.exports = function (RED) {
 
 	//process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
+	const _axios = require('axios');
+	const axiosConfig = {};
+	if (process.env.https_proxy || process.env.http_proxy) {
+		axiosConfig.httpsAgent = new HttpsProxyAgent(process.env.https_proxy || process.env.http_proxy);
+		axiosConfig.proxy = false;
+	}
+	const axios = _axios.create(axiosConfig);
+	const ST_API_BASE = 'https://api.smartthings.com/v1';
+
 	const bodyParser = require("body-parser");
 	const cors = require('cors');
 	const jsonParser = bodyParser.json();
-	const reqApi = require('./lib/oneapigateway');
 	const SmartThingsAPI = require('./lib/SmartThingsAPI');
 	const SmartThingsProfile = require('./lib/SmartThingsProfile');
 	const corsHandler = cors({
@@ -123,57 +131,24 @@ module.exports = function (RED) {
 	var actionDeviceNodes = [];
 
 	var OneApi = {
-		executeDeleteSubscription: function (keyParam, token) {
-			return new Promise(function (resolve, reject) {
-				reqApi.callOneApi("subscriptions", "executeDeleteSubscription", keyParam, undefined, undefined, token, function (body) {
-					try {
-						resolve(body);
-					} catch (e) {
-						reject(body);
-					}
-				});
-			}, true);
+		executeDeleteSubscription: function (installedAppId, token) {
+			const config = { headers: { Authorization: `Bearer ${token}` } };
+			return axios.delete(ST_API_BASE + `/installedapps/${installedAppId}/subscriptions`, config);
 		},
 
-		executeCreateSubscription: function (keyParam, bodyParam, token) {
-			return new Promise(function (resolve, reject) {
-				reqApi.callOneApi("subscriptions", "executeCreateSubscription", keyParam, undefined, bodyParam, token, function (body) {
-					try {
-						resolve(body);
-					} catch (e) {
-						reject(body);
-					}
-				});
-			}, true);
+		executeCreateSubscription: function (installedAppId, bodyParam, token) {
+			const config = { headers: { Authorization: `Bearer ${token}` } };
+			return axios.post(ST_API_BASE + `/installedapps/${installedAppId}/subscriptions`, bodyParam, config);
 		},
 
-		getDeviceStates: function (keyParam, token, isLogging) {
-			return new Promise(function (resolve, reject) {
-				reqApi.callOneApi("device", "getDeviceStates", keyParam, undefined, undefined, token, function (data) {
-					try {
-						resolve(data);
-					} catch (e) {
-						reject(data);
-					}
-				}, isLogging);
-			});
-
+		getDeviceStates: function (keyParam, token) {
+			const config = { headers: { Authorization: `Bearer ${token}` } };
+			return axios.get(ST_API_BASE + `/devices/${keyParam.deviceId}/status`, config);
 		},
 
-		executeDeviceCommands: function (keyParam, bodyParam, token, isLogging) {
-			return new Promise(function (resolve, reject) {
-				reqApi.callOneApi("device", "executeDeviceCommands", keyParam, undefined, bodyParam, token, function (data) {
-					if (typeof data === 'object') {
-						if (data.hasOwnProperty("errMsg")) {
-							reject(data);
-						} else {
-							resolve(data);
-						}
-					} else {
-						resolve(data);
-					}
-				}, isLogging);
-			});
+		executeDeviceCommands: function (keyParam, bodyParam, token) {
+			const config = { headers: { Authorization: `Bearer ${token}` } };
+			return axios.post(ST_API_BASE + `/devices/${keyParam.deviceId}/commands`, bodyParam, config);
 		}
 	};
 
@@ -300,19 +275,15 @@ module.exports = function (RED) {
 					}
 
 					SmartThingsAPI.confirmUrl(data.confirmationUrl)
-								  .then(response => {
-									  if ([200, 202].includes(response.statusCode)) {
-										  res.status(response.statusCode)
-											 .send({targetUrl: data.confirmationUrl});
-									  } else {
-										  res.status(response.statusCode)
-											 .send('confirm URL faile : ', response.statusMessage);
-									  }
-								  })
-								  .catch(error => {
-									  res.status(500)
-										 .send(error);
-								  })
+						.then(() => res.status(200).json({ targetUrl: confirmationData.confirmationUrl }))
+						.catch((e) => {
+							NODE.error(`[${req.body.lifecycle}] confirm URL fail : ${e.message}`);
+							if (e.response) {
+								res.status(e.response.status).send(e.response.statusText);
+							} else {
+								res.status(500).send(e.message);
+							}
+						});
 					break;
 				case "CONFIGURATION":
 					var reqBody = req.body;
@@ -383,9 +354,9 @@ module.exports = function (RED) {
 						}
 						NODE.loggingConsole && console.log('[ST_AUTOMATION] INSTALL_createSubscription:', JSON.stringify(subscriptionBody))
 
-						const keyParam = {installedAppId: installedAppId};
-						OneApi.executeCreateSubscription(keyParam, subscriptionBody, authToken)
-							  .then(function (data) {
+						OneApi.executeCreateSubscription(installedAppId, subscriptionBody, authToken)
+							  .then(function (response) {
+								  data = response.data
 								  NODE.loggingEditor && debugLog("Create Subscription : " + JSON.stringify(data))
 								  NODE.loggingConsole && console.log("Create Subscription : " + JSON.stringify(data))
 							  })
@@ -406,10 +377,9 @@ module.exports = function (RED) {
 					var installedAppId = reqBody.updateData.installedApp.installedAppId;
 					var authToken = reqBody.updateData.authToken;
 
-					const keyParam = {installedAppId: installedAppId};
-
-					OneApi.executeDeleteSubscription(keyParam, authToken)
-						  .then(function (data) {
+					OneApi.executeDeleteSubscription(installedAppId, authToken)
+						  .then(function (response) {
+							  data = response.data
 							  subscriptionDevices.forEach(function (subscription) {
 								  subscription.capabilityId = subscription.capabilityId.split('_v')[0]
 								  var installedConfig = reqBody.updateData.installedApp.config[subscription.sectionId][0]
@@ -427,9 +397,9 @@ module.exports = function (RED) {
 								  }
 								  NODE.loggingConsole && console.log('[ST_AUTOMATION] UPDATE_createSubscription:', JSON.stringify(subscriptionBody))
 
-								  const keyParam = {installedAppId: installedAppId};
-								  OneApi.executeCreateSubscription(keyParam, subscriptionBody, authToken)
-										.then(function (data) {
+								  OneApi.executeCreateSubscription(installedAppId, subscriptionBody, authToken)
+										.then(function (response) {
+											data = response.data
 											NODE.loggingEditor && debugLog("Update Subscription : " + JSON.stringify(data))
 											NODE.loggingConsole && console.log("Update Subscription : " + JSON.stringify(data))
 										})
@@ -499,20 +469,13 @@ module.exports = function (RED) {
 				next()
 			} else {
 				SmartThingsAPI.keyValidate(authHeader.keyId)
-							  .then(response => {
-								  if ([200, 202].includes(response.statusCode)) {
-									  next()
-								  } else {
-									  res.status(response.statusCode)
-										 .send(response.statusMessage);
-								  }
-							  })
-							  .catch(e => {
-								  var msg = "Invalid keyId, internal server error";
-								  NODE.loggingEditor && debugLog("[error] " + msg + e + e.msg);
-								  res.status(500)
-									 .send(msg);
-							  })
+					.then((response) => next())
+					.catch(e => {
+						var msg = "Invalid keyId, internal server error";
+						NODE.loggingEditor && debugLog("[error] " + msg + e + e.msg);
+						res.status(500)
+							.send(msg);
+					})
 			}
 		};
 
@@ -672,10 +635,10 @@ module.exports = function (RED) {
 					}
 					NODE.send(resultMsg);
 				} else if (NODE.type == ST_STATUS_DEVICE) {
-					OneApi.getDeviceStates(param, authToken, NODE.logging)
-						  .then(function (data) {
+					OneApi.getDeviceStates(param, authToken)
+						  .then(function (response) {
 							  NODE.loggingEditor && NODE.warn("[SmartThings] Status :" + NODE.name || NODE.alias || NODE.type);
-							  var deviceStatus = data;
+							  var deviceStatus = response.data;
 							  var opCheck = false;
 							  NODE.capabilityId = NODE.capabilityId.split('_v')[0]
 							  NODE.rules.forEach((rule, idx) => {
@@ -779,7 +742,7 @@ module.exports = function (RED) {
 						commandArr.push(cmd);
 					}
 					if (commandArr.length > 0) {
-						OneApi.executeDeviceCommands(param, {commands: commandArr}, authToken, NODE.logging)
+						OneApi.executeDeviceCommands(param, {commands: commandArr}, authToken)
 							  .then(function (data) {
 								  RED.util.setMessageProperty(msg, 'payload', commandArr);
 								  onward.push(msg);
