@@ -1,7 +1,12 @@
-const request = require('request-promise');
-const JWT = require('jsonwebtoken');
-const when = require('when');
+const _axios = require('axios');
+const HttpsProxyAgent = require('https-proxy-agent');
 
+const axiosConfig = {};
+if (process.env.https_proxy || process.env.http_proxy) {
+	axiosConfig.httpsAgent = new HttpsProxyAgent(process.env.https_proxy || process.env.http_proxy);
+	axiosConfig.proxy = false;
+}
+const axios = _axios.create(axiosConfig);
 function createRequestOption(_method, _url, _payload, _headers) {
     var req = this;
 
@@ -44,19 +49,17 @@ module.exports = function (RED) {
                 node.error("Invalid 'hooks'. 'hooks' is required.");
                 return;
             }
-            return when.promise((resolve, reject) => {
-                let requestOption = new createRequestOption('POST', payload.hooks, payload, null);
-                request(requestOption)
-                    .then(body => {
-                        node.warn(body);
-                        resolve(JSON.stringify(body));
-                    })
-                    .catch(err => {
-                        node.status({ fill: "red", shape: "dot", text: "error" });
-                        node.error("Slack webhooks failed: " + err.toString(), msg);
-                        reject(err);
-                    });
-            });
+
+            return axios
+                .post(payload.hooks, payload)
+                .then((response) => {
+                    node.warn(response.data);
+                    return response.data;
+                })
+                .catch((err) => {
+                    node.status({ fill: 'red', shape: 'dot', text: 'error', });
+                    node.error(`Slack webhooks failed: ${err.message} ${msg}`);
+                });
         });
     }
 
