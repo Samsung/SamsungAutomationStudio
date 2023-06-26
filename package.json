@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-samsung-automation-studio-nodes",
-  "version": "1.1.13",
+  "version": "1.1.14",
   "description": "Samsung Automation Studio Nodes for Node-RED",
   "keywords": [
     "SmartThings",
@@ -18,7 +18,7 @@
     "nodes": {
       "SmartThings": "101-SmartThings.js",
       "Bixby": "102-Bixby.js",
-      "Auth": "201-basicauth.js",
+      "Auth": "201-Basicauth.js",
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js"
