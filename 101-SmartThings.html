@@ -1173,7 +1173,7 @@
                 return locationEl;
             }
             function createRoomEl(room){
-                const roomEl = document.querySelector(`.md_list__room[data-location-id="${location.locationId}"][data-room-id="${room.roomId}"]`)|| document.createElement('div');
+                const roomEl = document.querySelector(`.md_list__room[data-location-id="${room.locationId}"][data-room-id="${room.roomId}"]`)|| document.createElement('div');
                 Object.assign(roomEl.dataset,{locationId:room.locationId,roomId:room.roomId,name:room.name});
                 roomEl.className = `md_list__item md_list__room ${room.name==undefined?'md_list__item--unknown':''}`;
                 roomEl.innerHTML=`<input type="checkbox"> ${room.name} <i class="fa fa-angle-down"></i>`;
@@ -1216,22 +1216,31 @@
                                 locationEl.append(createRoomEl(room));
                             })
                         })
-                    }
+                        mydevice.devices.forEach(function (device) {
+							let roomEl = document.querySelector(`.md_list__room[data-location-id="${device.locationId}"][data-room-id="${device.roomId}"]`);
+							roomEl.append(createDeviceEl(device));
+						});
+					} else {
+						let locationIds = [];
+						let roomIds = [];
+						mydevice.devices.forEach(function (device) {
+							let locationEl = document.querySelector(`.md_list__location[data-location-id="${device.locationId}"]`);
+							let roomEl = document.querySelector(`.md_list__room[data-location-id="${device.locationId}"][data-room-id="${device.roomId}"]`);
 
-                    mydevice.devices.forEach(function(device){
-                        let locationEl = document.querySelector(`.md_list__location[data-location-id="${device.locationId}"]`);
-                        let roomEl = document.querySelector(`.md_list__room[data-location-id="${device.locationId}"][data-room-id="${device.roomId}"]`);
+							if (!locationIds.includes(device.locationId)) {
+								locationIds.push(device.locationId)
+								locationEl = createLocationEl({ locationId: device.locationId, name: "undefined" });
+								mdContainerEl.append(locationEl);
+							}
+							if (!roomIds.includes(device.roomId)) {
+								roomIds.push(device.roomId)
+								roomEl = createRoomEl({ locationId: device.locationId, roomId: device.roomId, name: "undefined" });
+								locationEl.append(roomEl);
+							}
 
-                        if(!locationEl){
-                            locationEl = createLocationEl({locationId:device.locationId});
-                            mdContainerEl.append(locationEl);
-                        }
-                        if(!roomEl){
-                            roomEl = createRoomEl({locationID:device.locationId, roomId:device.roomId});
-                            locationEl.append(roomEl);
-                        }
-                        roomEl.append(createDeviceEl(device));
-                    })
+							roomEl.append(createDeviceEl(device));
+						});
+					}
 
                     if(selectedDevices){
                         selectedDevices.forEach(deviceId=>{
