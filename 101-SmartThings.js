@@ -636,59 +636,59 @@ module.exports = function (RED) {
 					NODE.send(resultMsg);
 				} else if (NODE.type == ST_STATUS_DEVICE) {
 					OneApi.getDeviceStates(param, authToken)
-						  .then(function (response) {
-							  NODE.loggingEditor && NODE.warn("[SmartThings] Status :" + NODE.name || NODE.alias || NODE.type);
-							  var deviceStatus = response.data;
-							  var opCheck = false;
-							  NODE.capabilityId = NODE.capabilityId.split('_v')[0]
-							  NODE.rules.forEach((rule, idx) => {
-								  var attributeValue = deviceStatus.components[deviceConfig.componentId || 'main'][NODE.capabilityId][NODE.attributeId].value;
+						.then(function (response) {
+							NODE.loggingEditor && NODE.warn("[SmartThings] Status :" + NODE.name || NODE.alias || NODE.type);
+							var data = response.data;
+							var opCheck = false;
+							NODE.capabilityId = NODE.capabilityId.split('_v')[0]
+							NODE.rules.forEach((rule, idx) => {
+								var attributeValue = data.components[deviceConfig.componentId || 'main'][NODE.capabilityId][NODE.attributeId].value;
 
-								  let ruleValue = rule.value;
+								let ruleValue = rule.value;
 
-								  if (rule.valueType == 'object') {
-									  ruleValue = {};
-									  for (let k in rule.value) {
-										  const data = rule.value[k];
-										  ruleValue[k] = RED.util.evaluateNodeProperty(data.value, rule.type, NODE, msg);
-									  }
-								  } else {
-									  if (rule.argType === 'jsonata') {
-										  ruleValue = RED.util.evaluateJSONataExpression(ruleValue, msg);
-									  } else {
-										  ruleValue = RED.util.evaluateNodeProperty(ruleValue, rule.argType, NODE, msg);
-									  }
-								  }
+								if (rule.valueType == 'object') {
+									ruleValue = {};
+									for (let k in rule.value) {
+										const data = rule.value[k];
+										ruleValue[k] = RED.util.evaluateNodeProperty(data.value, rule.type, NODE, msg);
+									}
+								} else {
+									if (rule.argType === 'jsonata') {
+										ruleValue = RED.util.evaluateJSONataExpression(ruleValue, msg);
+									} else {
+										ruleValue = RED.util.evaluateNodeProperty(ruleValue, rule.argType, NODE, msg);
+									}
+								}
 
-								  if (ruleValue == '' || ruleValue == undefined) {
-									  ruleValue = "\'\'";
-								  }
-								  if (rule.valueType == 'Iso8601Date') {
-									  opCheck = operators[rule.operator](new Date(ruleValue), new Date(attributeValue));
-								  } else {
-									  opCheck = operators[rule.operator](ruleValue, attributeValue);
-								  }
-								  if (opCheck) {
-									  // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port success")
-									  RED.util.setMessageProperty(msg, 'payload', attributeValue);
-									  onward.push(msg);
-								  } else {
-									  // sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port fail")
-									  onward.push(null);
-								  }
-							  })
+								if (ruleValue == '' || ruleValue == undefined) {
+									ruleValue = "\'\'";
+								}
+								if (rule.valueType == 'Iso8601Date') {
+									opCheck = operators[rule.operator](new Date(ruleValue), new Date(attributeValue));
+								} else {
+									opCheck = operators[rule.operator](ruleValue, attributeValue);
+								}
+								if (opCheck) {
+									// sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port success")
+									RED.util.setMessageProperty(msg, 'payload', attributeValue);
+									onward.push(msg);
+								} else {
+									// sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port fail")
+									onward.push(null);
+								}
+							})
 
-							  if (NODE.rules.length == 0) {
-								  RED.util.setMessageProperty(msg, 'payload', data);
-								  onward.push(msg);
-							  }
-							  NODE.send(onward);
+							if (NODE.rules.length == 0) {
+								RED.util.setMessageProperty(msg, 'payload', data);
+								onward.push(msg);
+							}
+							NODE.send(onward);
 
-						  })
-						  .catch(function (err) {
-							  NODE.loggingEditor && console.error(err);
-							  NODE.loggingConsole && NODE.error("[error] " + err.errCd + ", " + err.errMsg);
-						  });
+						})
+						.catch(function (err) {
+							NODE.loggingEditor && console.error(err);
+							NODE.loggingConsole && NODE.error("[error] " + err.errCd + ", " + err.errMsg);
+						});
 				} else {
 					NODE.loggingEditor && NODE.warn("[SmartThings] Action:" + NODE.name || NODE.alias || NODE.type);
 
