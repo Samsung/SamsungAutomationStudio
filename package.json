@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-samsung-automation-studio-nodes",
-  "version": "1.1.16",
+  "version": "1.1.17",
   "description": "Samsung Automation Studio Nodes for Node-RED",
   "keywords": [
     "SmartThings",
@@ -21,7 +21,8 @@
       "Auth": "201-Basicauth.js",
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
-      "SlackNotification": "303-SlackNotification.js"
+      "SlackNotification": "303-SlackNotification.js",
+      "DataExtractor": "401-DataExtractor.js"
     }
   },
   "dependencies": {
@@ -38,7 +39,8 @@
     "on-headers": "^1.0.2",
     "pg": "^8.3.0",
     "proxy-agent": "^5.0",
-    "when": "3.7.8"
+    "when": "3.7.8",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "grunt": "^1.6.1"
