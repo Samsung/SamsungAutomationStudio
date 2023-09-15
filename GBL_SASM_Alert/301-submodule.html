@@ -1,0 +1,69 @@
+<script type="text/javascript">
+  RED.nodes.registerType("submodule", {
+    category: "GBL-SASM-Alert",
+    color: "#E0C67E",
+    defaults: {
+      info: { value: "Describe your sub-module action here." },
+      name: { value: "submodule" }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: function () {
+      return "submodule_white.png";
+    },
+    label: function () {
+      return this.name || "module in";
+    },
+    //create description editor box
+    oneditprepare: function () {
+      this.editor = RED.editor.createEditor({
+        id: "node-description-editor",
+        mode: "ace/mode/markdown",
+        value: $("#node-input-info").val()
+      });
+    },
+    oneditsave: function () {
+      var node = this;
+      $("#node-input-info").val(this.editor.getValue());
+      this.editor.destroy();
+      delete node.editor;
+    },
+    oneditcancle: function () {
+      this.editor.destroy();
+      delete this.editor;
+    }
+  });
+</script>
+
+<script type="text/html" data-template-name="submodule">
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <!-- module in : module description -->
+  <!-- markdown options -->
+  <div class="form-row" style="margin-bottom: 0px;">
+    <label for="node-input-info">Description</label>
+    <a
+      href="https://guides.github.com/features/mastering-markdown/"
+      target="_blank"
+      style="font-size: 0.8em; float: right;"
+      >markdown</a
+    >
+    <input type="hidden" id="node-input-info" autofocus="autofocus" />
+  </div>
+  <!-- editor box -->
+  <div class="form-row node-text-editor-row">
+    <div
+      style="height: 250px; min-height:150px;"
+      class="node-text-editor"
+      id="node-description-editor"
+    ></div>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="submodule">
+  <div>
+    <p>submodule descrption text</p>
+  </div>
+</script>
