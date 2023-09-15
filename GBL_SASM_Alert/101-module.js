@@ -1,20 +1,21 @@
-// 주석 자체는 한글로 일단 작성,
-// 추후 영어로 주석 변경
-
 module.exports = function (RED) {
   let MappingNodes = {};
 
+  /**
+   * Initialize the mapping functionality.
+   *
+   * This function initializes a mapping feature in a Node-RED flow. It sets up a global MappingNodes object that allows for getting and setting properties within the mapping.
+   * If a store object is provided, it is used to initialize MappingNodes. Otherwise, a new MappingNodes object is created in the global context.
+   *
+   * @param {Object} store - Optional. An object containing initial mapping data.
+   */
   function initMapping(store) {
-    //최초 1회 시행을 위한 리턴
+    // If initMapping has already been run, do nothing.
     if (initMapping.isruned) return;
 
-    //인자가 있으면 해당값에 저장
-    //코드 내에서 노드레드 전역컨텍스트를 사용할 예정
     if (store) {
       MappingNodes = store;
-    }
-    // 전역컨텍스트에 이상이 있으면 해당 코드 내부에 저장소 생성
-    else {
+    } else {
       MappingNodes = {
         get(name) {
           return RED.util.getObjectProperty(MappingNodes, name);
@@ -25,38 +26,34 @@ module.exports = function (RED) {
       };
     }
 
-    // 플로우 시작 시 매핑을 하도록 이벤트 생성
     RED.events.on("flows:started", Mapping);
-    // RED.events.on("nodes:add", function (node) {
-    //   console.log("노드 추가됨!");
-    //   if (node.type != "module in") return;
-    //   Mapping();
-    // });
 
-    // 이후 호출 시 실행되지 않도록 ture설정
     initMapping.isruned = true;
   }
 
-  //실제 매핑을 하는 함수 플로우 시작할 때마다 실행
+  /**
+   * Perform mapping when the flow starts.
+   *
+   * This function is executed every time the Node-RED flow starts. It collects metadata and instances of various node types, such as moduleflows, module_in, and module_out nodes. It also identifies workspaces and subflows within the flow.
+   *
+   */
   function Mapping() {
-    // module, in, out 노드 메타데이터 저장할 객체
     const moduleflowNode = {};
     const moduleinNode = {};
     const moduleoutNode = {};
     const myNodeinFlow = {};
 
-    // 노드 인스턴스가 저장될 객체
     const moduleflowNodeInstance = {};
     const moduleinNodeInstance = {};
     const moduleoutNodeInstance = {};
     const myNodeInstanceinFlow = {};
     const myNodeInstanceInSubflow = {};
 
-    // 모든 노드와, 작업공간, 서브 플로우 저장될 객체
     const allNode = {};
     const workspaces = {};
     const subflows = {};
 
+    // Iterate through all nodes in the flow.
     RED.nodes.eachNode(node => {
       allNode[node.id] = Object.assign({}, node);
       if (node.type === "tab") {
@@ -83,9 +80,6 @@ module.exports = function (RED) {
           moduleoutNodeInstance[node.id] = nodeInstance;
         }
       } else if (node.type.startsWith("subflow:")) {
-        // 서브플로우는 다음에 처리
-        // const subflowInstance = RED.nodes.getNode(node.id);
-        // console.log(subflowInstance);
       }
     });
 
@@ -103,37 +97,35 @@ module.exports = function (RED) {
     });
 
     MappingNodes.set("myModuleflows", moduleinNode);
-    // console.log(moduleinNode);
-
-    // console.log(allNode);
   }
+
   RED.nodes.registerType("moduleflows", moduleflows);
   function moduleflows(config) {
-    //노드 생성 - node-red 기본사항
     RED.nodes.createNode(this, config);
     const node = this;
 
-    // module, module in, module out무슨 노드든 생성되면 매핑이벤트를 생성하고, 저장소 선택
     initMapping(node.context().global);
 
     var event = "GBLmodule:" + node.id;
     var event_fun = function (msg) {
-      // this.receive(msg);
       node.send(msg);
     };
     RED.events.on(event, event_fun);
 
     this.on("close", function () {
       RED.events.removeListener(event, event_fun);
+      node.status({});
     });
 
     this.on("input", function (msg) {
+      // To return to this node, stack is used.
       if (typeof msg.__GBLstack == "undefined") {
         msg.__GBLstack = [];
       }
 
       msg.__GBLstack.push(event);
-      // console.log(config.moduleId);
+
+      //start linked module in
       RED.events.emit("GBLmodule:" + config.moduleId, msg);
     });
   }
@@ -142,25 +134,42 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     const node = this;
 
-    // module, module in, module out무슨 노드든 생성되면 매핑이벤트를 생성하고, 저장소 선택
     initMapping(node.context().global);
 
-    //새로운 이벤트를 만듦
-    // module에서 해당 id로 이벤트를 발생시키며
     var event = "GBLmodule:" + node.id;
-    // 이벤트 발생시 msg를 받아와서 해당 노드를 실행
     var event_fun = function (msg) {
       node.receive(msg);
     };
+
     RED.events.on(event, event_fun);
-    //해당 노드가 삭제될때 이벤트를 없애버림
     this.on("close", function () {
       RED.events.removeListener(event, event_fun);
+      node.status({});
     });
-    //노드 시작시 다음 노드로 msg보냄
     this.on("input", function (msg) {
-      console.log(config.name);
-      node.send(msg);
+      let node_count = 0;
+      let submodule_count = 0;
+      config.wires[0].forEach(wiredID => {
+        node_count += 1;
+        if (RED.nodes.getNode(wiredID).type === "submodule")
+          submodule_count += 1;
+      });
+
+      if (submodule_count === 0) node.send(msg);
+      else {
+        if (submodule_count === node_count)
+          this.status({
+            fill: "red",
+            shape: "dot",
+            text: "this node cant start"
+          });
+        else
+          this.status({ fill: "red", shape: "dot", text: "wired node error" });
+        if (typeof msg.__GBLstack != "undefined") {
+          RED.events.emit(msg.__GBLstack.pop(), msg);
+        }
+        return;
+      }
     });
   }
 
@@ -169,12 +178,11 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     const node = this;
 
-    // module, module in, module out무슨 노드든 생성되면 매핑이벤트를 생성하고, 저장소 선택
     initMapping(node.context().global);
 
     this.on("input", function (msg) {
       if (typeof msg.__GBLstack != "undefined") {
-        RED.events.emit(msg.__GBLstack.pop(), msg); // return to the action orig. flow
+        RED.events.emit(msg.__GBLstack.pop(), msg);
       }
     });
   }
