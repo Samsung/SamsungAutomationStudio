@@ -1,3 +1,13 @@
+<style>
+  .description-box {
+    width: 70%;
+    margin: 20px auto;
+    padding: 30px;
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 2px #dedede;
+  }
+</style>
 <script type="text/javascript">
   RED.nodes.registerType("moduleflows", {
     category: "GBL-SASM-Alert",
@@ -21,6 +31,7 @@
       //###1. Dynamic module select
       //select element
       let moduleSelectElem = $("#module-select");
+      let descriptionMap = new Map(); //node-id : description
 
       //1.1 init module options
       let currentTab = RED.workspaces.active();
@@ -30,8 +41,12 @@
           option.text(node.name);
           option.val(node.id);
           moduleSelectElem.append(option);
+
+          //mapping description
+          descriptionMap.set(node.id, node.info);
         }
       });
+
       //1.2 default module option
       if (this.moduleId) {
         moduleSelectElem.val(this.moduleId).prop("selected", true);
@@ -39,6 +54,7 @@
         $("#module-select option:eq(0)").prop("selected", true);
         this.moduleId = $("#module-select").val();
       }
+      $("#module-description").text(descriptionMap.get(this.moduleId));
 
       //###2. init submodule select
       let submoduleSelectElem = $("#submodule-select");
@@ -50,6 +66,9 @@
             option.text(link.target.name);
             option.val(link.target.id);
             submoduleSelectElem.append(option);
+
+            //mapping description
+            descriptionMap.set(link.target.id, link.target.info);
           }
         });
       };
@@ -63,6 +82,7 @@
         } else {
           $("#submodule-select option:eq(0)").prop("selected", true);
         }
+        $("#submodule-description").text(descriptionMap.get(this.submoduleId));
       }
 
       //###3. Event
@@ -70,11 +90,27 @@
       $("#module-select").on("change", function () {
         let changedModuleId = $("#module-select").val();
 
-        //###3.1 Dynamic submodule select
+        //3.1 module description
+        $("#module-description").text(descriptionMap.get(changedModuleId));
+
+        //3.2 Dynamic submodule select
         //clear options
         $("select#submodule-select option").remove();
+        //get new link and init options
         let links = RED.nodes.getNodeLinks(changedModuleId);
         initSubmoduleOptions(links);
+        //default first element selected
+        $("#submodule-select option:eq(0)").prop("selected", true);
+        $("#submodule-description").text(
+          descriptionMap.get($("#submodule-select option:eq(0)").val())
+        );
+      });
+
+      $("#submodule-select").on("change", function () {
+        let changedSubmoduleId = $("#submodule-select").val();
+        $("#submodule-description").text(
+          descriptionMap.get(changedSubmoduleId)
+        );
       });
     },
     oneditsave: function () {
@@ -150,18 +186,24 @@
     <input type="text" id="node-input-name" placeholder="Name" />
   </div>
   <!--module-->
-  <div class="form-row">
-    <label for="node-input-scope"
-      ><i class="fa fa-random"></i> <span>Module</span></label
-    >
-    <select id="module-select"></select>
+  <div>
+    <div class="form-row">
+      <label for="node-input-scope"
+        ><i class="fa fa-random"></i> <span>Module</span></label
+      >
+      <select id="module-select"></select>
+    </div>
+    <div id="module-description" class="description-box"></div>
   </div>
   <!--submodule-->
-  <div class="form-row">
-    <label for="node-input-scope"
-      ><i class="fa fa-random"></i> <span>SubModule</span></label
-    >
-    <select id="submodule-select"></select>
+  <div>
+    <div class="form-row">
+      <label for="node-input-scope"
+        ><i class="fa fa-random"></i> <span>SubModule</span></label
+      >
+      <select id="submodule-select"></select>
+    </div>
+    <div id="submodule-description" class="description-box"></div>
   </div>
 </script>
 
