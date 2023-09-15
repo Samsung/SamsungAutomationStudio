@@ -7,6 +7,17 @@
     border-radius: 5px;
     box-shadow: 0 0 5px 2px #dedede;
   }
+  .error-box {
+    font-size: 8pt;
+    color: red;
+  }
+  #actionflows-name {
+    display: flex;
+  }
+  #node-name-input-box {
+    display: block;
+    width: 100%;
+  }
 </style>
 <script type="text/javascript">
   RED.nodes.registerType("moduleflows", {
@@ -28,6 +39,9 @@
     },
     //open editor box
     oneditprepare: function () {
+      //###0. init value
+      $("#moduleflows-node-name").val(this.name);
+
       //###1. Dynamic module select
       //select element
       let moduleSelectElem = $("#module-select");
@@ -115,6 +129,9 @@
     },
     oneditsave: function () {
       var node = this;
+      //name save
+      node.name = $("#moduleflows-node-name").val();
+
       //module save
       node.moduleId = $("#module-select").val();
 
@@ -131,7 +148,9 @@
     color: "#FA8072",
     defaults: {
       info: { value: "Describe your module action here." },
-      name: { value: "module in" }
+      name: { value: "module in" },
+      errorMsg: { value: "" },
+      duplicatedError: { value: false }
     },
     inputs: 0,
     outputs: 1,
@@ -143,14 +162,62 @@
     },
     //open editor box
     oneditprepare: function () {
+      //###0. init value
+      $("#module-in-node-name").val(this.name);
+      // $("#module-in-node-error-box").text(this.errorMsg);
+
       this.editor = RED.editor.createEditor({
         id: "node-description-editor",
         mode: "ace/mode/markdown",
         value: $("#node-input-info").val()
       });
+
+      //### 1. Duplicated module name
+      //1.1 all module in node in current tab except this node
+      let currentTab = RED.workspaces.active();
+      let allModuleNames = new Set();
+      RED.nodes.eachNode(node => {
+        if (
+          node.type === "module_in" &&
+          node.z == currentTab &&
+          node.id != this.id //except this node
+        ) {
+          allModuleNames.add(node.name);
+        }
+      });
+
+      //1.2 Event: change name
+      let displayMsg = (msg, color) => {
+        $("#module-in-node-error-box").text(msg);
+        $("#module-in-node-error-box").css("color", color);
+      };
+
+      let checkDuplicatedname = name => {
+        //check duplicated name
+        if (!allModuleNames.has(name)) {
+          //ok
+          this.duplicatedError = false;
+          displayMsg("Available name", "green");
+        } else {
+          //error msg
+          this.duplicatedError = true;
+          displayMsg("Duplicated name", "red");
+        }
+      };
+      checkDuplicatedname(this.name);
+
+      $("#module-in-node-name").on("focusout", event => {
+        let newName = event.target.value;
+        checkDuplicatedname(newName);
+      });
     },
     oneditsave: function () {
       var node = this;
+      //name save
+      node.name = $("#module-in-node-name").val();
+      //error msg save
+      // node.errorMsg = $("#module-in-node-error-box").text();
+
       $("#node-input-info").val(this.editor.getValue());
       this.editor.destroy();
       delete node.editor;
@@ -176,14 +243,31 @@
     },
     label: function () {
       return this.name || "module out";
+    },
+    //open editor box
+    oneditprepare: function () {
+      //###0. init value
+      $("#module-out-node-name").val(this.name);
+    },
+    oneditsave: function () {
+      var node = this;
+      //name save
+      node.name = $("#module-out-node-name").val();
+
+      this.editor.destroy();
+      delete node.editor;
+    },
+    oneditcancle: function () {
+      this.editor.destroy();
+      delete this.editor;
     }
   });
 </script>
 
 <script type="text/html" data-template-name="moduleflows">
   <div class="form-row">
-    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Name" />
+    <label for="moduleflows-node-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="moduleflows-node-name" placeholder="Name" />
   </div>
   <!--module-->
   <div>
@@ -209,8 +293,13 @@
 
 <script type="text/html" data-template-name="module_in">
   <div class="form-row" id="actionflows-name">
-    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Name" />
+    <label for="module-in-node-name" id="node-name-label"
+      ><i class="icon-tag"></i> Name</label
+    >
+    <div id="node-name-input-box">
+      <input type="text" id="module-in-node-name" placeholder="Name" />
+      <div id="module-in-node-error-box" class="error-box"></div>
+    </div>
   </div>
 
   <!-- module in : module description -->
@@ -237,8 +326,8 @@
 
 <script type="text/html" data-template-name="module_out">
   <div class="form-row" id="actionflows-name">
-    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Name" />
+    <label for="module-out-node-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="module-out-node-name" placeholder="Name" />
   </div>
 </script>
 
