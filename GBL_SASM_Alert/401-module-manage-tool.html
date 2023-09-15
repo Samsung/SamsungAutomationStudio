@@ -109,11 +109,6 @@
                         </div>
                         <div class="module-manage-tool__module-detail">${node.info}</div>`;
           $(".module-manage-tool__dialog").append(modules);
-
-          $(".module-manage-tool__jump-link").click(function (e) {
-            e.stopPropagation();
-            RED.view.reveal($(this).attr("id"));
-          });
         }
       }
 
@@ -127,6 +122,11 @@
       RED.events.on("groups:remove", updateModuleToolDialog);
       RED.events.on("groups:change", updateModuleToolDialog);
     })();
+
+    $(document).on("click", ".module-manage-tool__jump-link", function (e) {
+      e.stopPropagation();
+      RED.view.reveal($(this).attr("id"));
+    });
 
     $(document).on("click", ".module-manage-tool__module-title", function () {
       $(this).next(".module-manage-tool__module-detail").slideToggle();
