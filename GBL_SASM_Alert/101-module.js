@@ -126,7 +126,9 @@ module.exports = function (RED) {
       msg.__GBLstack.push(event);
 
       //start linked module in
-      RED.events.emit("GBLmodule:" + config.moduleId, msg);
+      if (config.submoduleId === null) {
+        RED.events.emit("GBLmodule:" + config.moduleId, msg);
+      } else RED.events.emit("GBLmodule:" + config.submoduleId, msg);
     });
   }
   RED.nodes.registerType("module_in", module_in);
