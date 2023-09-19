@@ -115,7 +115,7 @@ module.exports = function (RED) {
         const [class_id, prob] = [...Array(80).keys()] // 80개는 라벨링의 갯수 인듯
           .map((col) => [col, output[8400 * (col + 4) + index]])
           .reduce((accum, item) => (item[1] > accum[1] ? item : accum), [0, 0]);
-        if (prob < 0.5) {
+        if (prob < config.threshold) {
           // 확률이 0.5이하면 무시
           continue;
         }
