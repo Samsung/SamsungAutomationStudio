@@ -18,10 +18,10 @@ module.exports = function (RED) {
 
     node.on("input", async function (msg) {
       const buf = msg.payload;
-      let start = new Date();
+      // let start = new Date();
       const boxes = await detect_objects_on_image(msg, buf);
-      let end = new Date();
-      console.log(end - start, "ms");
+      // let end = new Date();
+      // console.log(end - start, "ms");
       // node.send(boxes);
       msg.payload = boxes;
       //   console.log(boxes);
@@ -72,7 +72,7 @@ module.exports = function (RED) {
     async function run_model(input) {
       // console.log(__filename);
       // console.log(__dirname);
-      console.log(process.cwd());
+      // console.log(process.cwd());
       //   const model = await ort.InferenceSession.create(
       //     "C:/Users/SSAFY/Desktop/ssdc/object/createNode/yolov8/src/nodes/yolov8m.onnx"
       //   );
