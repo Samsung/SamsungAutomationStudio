@@ -164,7 +164,6 @@
     oneditprepare: function () {
       //###0. init value
       $("#module-in-node-name").val(this.name);
-      // $("#module-in-node-error-box").text(this.errorMsg);
 
       this.editor = RED.editor.createEditor({
         id: "node-description-editor",
@@ -196,17 +195,23 @@
         //check duplicated name
         if (!allModuleNames.has(name)) {
           //ok
+          this.errorMsg = "Available name";
           this.duplicatedError = false;
-          displayMsg("Available name", "green");
+          displayMsg(this.errorMsg, "green");
         } else {
           //error msg
+          this.errorMsg = "Duplicated name";
           this.duplicatedError = true;
-          displayMsg("Duplicated name", "red");
+          displayMsg(this.errorMsg, "red");
         }
       };
       checkDuplicatedname(this.name);
 
-      $("#module-in-node-name").on("focusout", event => {
+      //test
+      console.log(this.duplicatedError);
+      console.log(this.errorMsg);
+
+      $("#module-in-node-name").on("input", event => {
         let newName = event.target.value;
         checkDuplicatedname(newName);
       });
@@ -215,10 +220,10 @@
       var node = this;
       //name save
       node.name = $("#module-in-node-name").val();
-      //error msg save
-      // node.errorMsg = $("#module-in-node-error-box").text();
 
+      //description save
       $("#node-input-info").val(this.editor.getValue());
+
       this.editor.destroy();
       delete node.editor;
     },
