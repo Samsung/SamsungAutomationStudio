@@ -4,21 +4,24 @@ module.exports = function (RED) {
 
         // function that calculates cosine similarity of Vector A and Vetor B
         function cosineSimilarity(vectorA, vectorB) {
+            if (vectorA.length !== vectorB.length || vectorA.length === 0 || vectorB.length === 0) {
+                throw new Error("These two vectors has different length or size 0.");
+            }
+
             // calculate DotProduct
-            const dotProduct = vectorA.reduce((accumulator, currentValue, index) => {
-                return accumulator + currentValue * vectorB[index];
-            }, 0);
-            // calculate norm of Vector A
-            const magnitudeA = Math.sqrt(vectorA.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue * currentValue;
-            }, 0));
-            // calculate norm of Vector B
-            const magnitudeB = Math.sqrt(vectorB.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue * currentValue;
-            }, 0));
-            // calculate cosine similarity
-            const similarity = dotProduct / (magnitudeA * magnitudeB);
-            return similarity;
+            let dotProduct = 0;
+            let magnitudeA = 0;
+            let magnitudeB = 0;
+            for (let i = 0; i < vectorA.length; i++) {
+                dotProduct += vectorA[i] * vectorB[i];
+                magnitudeA += vectorA[i] * vectorA[i];
+                magnitudeB += vectorB[i] * vectorB[i];
+            }
+            magnitudeA = Math.sqrt(magnitudeA);
+            magnitudeB = Math.sqrt(magnitudeB);
+            if (magnitudeA === 0 || magnitudeB === 0) {
+                throw new Error("Can't calculate cosine similarity of 0 Vector.");
+            }
         }
 
         async function getStoredVector() {
