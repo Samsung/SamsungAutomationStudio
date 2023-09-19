@@ -7,6 +7,7 @@ module.exports = function (RED) {
     const sharp = require("sharp");
 
     const node = this;
+    const modelName = config.model;
 
     // console.log("====================================");
     // console.log(RED);
@@ -17,7 +18,10 @@ module.exports = function (RED) {
 
     node.on("input", async function (msg) {
       const buf = msg.payload;
+      let start = new Date();
       const boxes = await detect_objects_on_image(msg, buf);
+      let end = new Date();
+      console.log(end - start, "ms");
       // node.send(boxes);
       msg.payload = boxes;
       //   console.log(boxes);
@@ -73,7 +77,7 @@ module.exports = function (RED) {
       //     "C:/Users/SSAFY/Desktop/ssdc/object/createNode/yolov8/src/nodes/yolov8m.onnx"
       //   );
       const model = await ort.InferenceSession.create(
-        "./node_modules/node-red-contrib-samsung-automation-studio-nodes/GOOD-I-DEER/nodes/object-detection-node/model/yolov8m.onnx"
+        `./node_modules/node-red-contrib-samsung-automation-studio-nodes/GOOD-I-DEER/nodes/object-detection-node/model/${modelName}.onnx`
         // "node_modules/node-red-contrib-samsung-automation-studio-nodes/GOOD-I-DEER/nodes/object-detection-node/model/yolov8m.onnx"
       );
       // print("model", model);
