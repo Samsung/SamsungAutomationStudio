@@ -223,6 +223,10 @@
           type: notifyObj["type"],
           timeout: notifyObj["timeout"]
         });
+
+        const workspaceId = RED.workspaces.active();
+        RED.workspaces.hide(workspaceId);
+        RED.workspaces.show(workspaceId);
       }
     );
 

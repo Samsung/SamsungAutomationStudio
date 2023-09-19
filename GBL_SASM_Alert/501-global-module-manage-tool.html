@@ -26,6 +26,15 @@
     padding: 0.5em 1em !important;
   }
 
+  .global-module-manager__search-box {
+    margin: 5px 0 10px 0;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+
   .global-module-manager__module-container {
     border: solid 1px #aaa;
     border-radius: 5px;
@@ -44,6 +53,22 @@
   .global-module-manager__module-detail {
     font-size: 12px;
     font-weight: 400;
+  }
+
+  .global-module-manage__delete-button {
+    margin-top: 15px;
+    display: flex;
+    justify-content: end;
+  }
+
+  .global-module-manage__delete-button > div {
+    background-color: rgb(237, 100, 100);
+    padding: 8px 0;
+    width: 60px;
+    font-size: 12px;
+    text-align: center;
+    color: #fff;
+    cursor: pointer;
   }
 </style>
 
@@ -83,7 +108,7 @@
           "title",
           "Modules in Your Local Directory"
         );
-        
+
         $(".global-module-manager__dialog")
           .siblings(".ui-dialog-titlebar")
           .children(".ui-dialog-title")
@@ -91,6 +116,9 @@
 
         const moduleFiles = await ajax({ url: "/localModules" });
         $(".global-module-manager__dialog").empty();
+
+        const moduleSearchContainer = `<input type="text" class="global-module-manager__search-box" id="moduleSearch" placeholder="Search modules by name and description.">`;
+        $(".global-module-manager__dialog").append(moduleSearchContainer);
 
         moduleFiles.forEach(file => {
           const moduleContainer = $("<div>")
@@ -111,11 +139,19 @@
             .addClass("global-module-manager__module-detail")
             .text(file.fileContent[0].info);
 
+          const moduleDeleteButton = $(
+            `<div class="global-module-manage__delete-button">
+              <div><i class="fa fa-trash"></i> Delete</div>
+            </div>`
+          );
+          $(moduleDetail).append(moduleDeleteButton);
+
           $(moduleContainer).append(moduleTitle, moduleDetail);
           $(".global-module-manager__dialog").append(moduleContainer);
         });
       }
       updateModuleToolDialog();
+      RED.events.on("workspace:change", updateModuleToolDialog);
     })();
 
     const moduleManageToolButton = document.querySelector(
@@ -123,6 +159,73 @@
     );
     const moduleManageToolDialog = document.querySelector(
       ".global-module-manager__dialog"
+    );
+
+    $(document).on("input", "#moduleSearch", function () {
+      const searchText = $(this).val().toLowerCase();
+
+      $(".global-module-manager__module-container").each(function () {
+        const moduleTitle = $(this)
+          .find(".global-module-manager__module-title")
+          .text()
+          .toLowerCase();
+        const moduleDetail = $(this)
+          .find(".global-module-manager__module-detail")
+          .text()
+          .toLowerCase();
+
+        if (
+          moduleTitle.includes(searchText) ||
+          moduleDetail.includes(searchText)
+        ) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    $(document).on(
+      "click",
+      ".global-module-manage__delete-button",
+      async function () {
+        const moduleContainer = $(this).closest(
+          ".global-module-manager__module-container"
+        );
+        RED.notify("Do you really want to delete this module?", {
+          type: "warning",
+          buttons: [
+            {
+              text: "cancel",
+              click: function (e) {
+                myNotification.close();
+              }
+            },
+            {
+              text: "delete",
+              class: "primary",
+              click: async function (e) {
+                const selectedModuleName = $(moduleContainer)
+                  .children(".global-module-manager__module-title")
+                  .text();
+
+                const notifyObj = await $.ajax({
+                  url: "/delete-selected-module",
+                  type: "POST",
+                  data: { selectedModuleName: selectedModuleName }
+                });
+
+                $(moduleContainer).remove();
+
+                RED.notify(notifyObj["msg"], {
+                  type: notifyObj["type"],
+                  timeout: notifyObj["timeout"]
+                });
+              }
+            }
+          ]
+        });
+      }
     );
 
     moduleManageToolButton.addEventListener("click", function (e) {
