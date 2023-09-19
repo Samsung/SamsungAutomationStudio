@@ -4,7 +4,9 @@
     color: "#E0C67E",
     defaults: {
       info: { value: "Describe your sub-module action here." },
-      name: { value: "submodule" }
+      name: { value: "submodule" },
+      errorMsg: { value: "" },
+      duplicatedError: { value: false }
     },
     inputs: 1,
     outputs: 1,
@@ -16,15 +18,65 @@
     },
     //create description editor box
     oneditprepare: function () {
+      //###0. init value
+      $("#submodule-node-name").val(this.name);
+
       this.editor = RED.editor.createEditor({
         id: "node-description-editor",
         mode: "ace/mode/markdown",
         value: $("#node-input-info").val()
       });
+
+      //### 1. Duplicated submodule name
+      //1.1 all 'submodule' node in current moduleflows except this node
+
+      let allSubModuleNames = new Set();
+      let upstreamNodes = RED.nodes.getAllUpstreamNodes(this);
+      console.log(upstreamNodes);
+      upstreamNodes.forEach(node => {
+        if (node.type === "submodule") {
+          allSubModuleNames.add(node.name);
+        }
+      });
+
+      //1.2 Event: change name
+      let displayMsg = (msg, color) => {
+        $("#submodule-node-error-box").text(msg);
+        $("#submodule-node-error-box").css("color", color);
+      };
+
+      let checkDuplicatedname = name => {
+        //check duplicated name
+        if (!allSubModuleNames.has(name)) {
+          //ok
+          this.errorMsg = "Available name";
+          this.duplicatedError = false;
+          displayMsg(this.errorMsg, "green");
+        } else {
+          //error msg
+          this.errorMsg = "Duplicated name";
+          this.duplicatedError = true;
+          displayMsg(this.errorMsg, "red");
+        }
+      };
+      checkDuplicatedname(this.name);
+
+      //test
+      console.log(this.errorMsg);
+      console.log(this.duplicatedError);
+
+      $("#submodule-node-name").on("input", event => {
+        let newName = event.target.value;
+        checkDuplicatedname(newName);
+      });
     },
     oneditsave: function () {
       var node = this;
+      //info save
       $("#node-input-info").val(this.editor.getValue());
+      //name save
+      node.name = $("#submodule-node-name").val();
+
       this.editor.destroy();
       delete node.editor;
     },
@@ -37,8 +89,11 @@
 
 <script type="text/html" data-template-name="submodule">
   <div class="form-row">
-    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-    <input type="text" id="node-input-name" placeholder="Name" />
+    <label for="submodule-node-name"><i class="icon-tag"></i> Name</label>
+    <div id="node-name-input-box">
+      <input type="text" id="submodule-node-name" placeholder="Name" />
+      <div id="submodule-node-error-box" class="error-box"></div>
+    </div>
   </div>
   <!-- module in : module description -->
   <!-- markdown options -->
