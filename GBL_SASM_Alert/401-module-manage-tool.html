@@ -40,24 +40,65 @@
 
   .module-manage-tool__module-detail {
     display: none;
-    height: 70px;
     border: solid 1px #aaa;
     padding: 10px;
     font-size: 14px;
     background-color: #e6eeff;
     z-index: 1;
   }
+
+  .module-manage-tool__submodule-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .module-manage-tool__submodule-list {
+    width: fit-content;
+    padding: 8px;
+    color: #565656;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .module-manage-tool__no-submodule {
+    padding: 8px;
+    color: #818181;
+    font-style: italic;
+  }
+
+  .module-manage-tool__save-button {
+    display: flex;
+    justify-content: end;
+  }
+
+  .module-manage-tool__save-button > div {
+    background-color: cornflowerblue;
+    padding: 8px 0;
+    width: 120px;
+    font-size: 12px;
+    text-align: center;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  /* tooltip style */
+  .ui-tooltip {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    box-shadow: none;
+  }
+
+  .ui-tooltip-content {
+    font-size: 12px;
+  }
 </style>
 
 <script type="text/javascript">
   $(document).ready(function () {
     (async () => {
-      function ajax(options) {
-        return new Promise(function (resolve, reject) {
-          $.ajax(options).done(resolve).fail(reject);
-        });
-      }
-
       const _nr1Header = $("ul.red-ui-header-toolbar");
       if (_nr1Header.length) {
         _nr1Header.prepend(`
@@ -103,12 +144,40 @@
 
         for (let n in moduleNodes) {
           let node = moduleNodes[n];
-          let modules = `<div class="module-manage-tool__module-title">
-                          <div>${node.name}</div>
-                          <div class="module-manage-tool__jump-link" id="${node.id}"><i class="fa fa-compass"></i></div>
-                        </div>
-                        <div class="module-manage-tool__module-detail">${node.info}</div>`;
+          let modules = `<div>
+                          <div class="module-manage-tool__module-title" title="${node.info}">
+                            <div>${node.name}</div>
+                            <div class="module-manage-tool__jump-link" id="${node.id}"><i class="fa fa-compass"></i></div>
+                          </div>
+                          <div class="module-manage-tool__module-detail" >
+                            <div class="module-manage-tool__submodule" id="submodule-${node.id}">
+                              <div class="module-manage-tool__submodule-title">Submodules</div>
+                            </div>
+                            <div class="module-manage-tool__save-button">
+                              <div><i class="fa fa-save"></i> Save in Local</div>
+                            </div>
+                          </div>
+                        </div>`;
           $(".module-manage-tool__dialog").append(modules);
+
+          const initSubmodulesList = links => {
+            links.forEach(link => {
+              if (link.target.type === "submodule") {
+                $(`#submodule-${node.id}`).append(
+                  `<div class="module-manage-tool__submodule-list" id="${link.target.id}" title="${link.target.info}">${link.target.name}</div>`
+                );
+              }
+            });
+          };
+
+          const links = RED.nodes.getNodeLinks(node.id);
+          initSubmodulesList(links);
+
+          if ($(`#submodule-${node.id}`).children().length === 1) {
+            $(`#submodule-${node.id}`).append(
+              `<div class="module-manage-tool__no-submodule">There are no submodules in this module.</div>`
+            );
+          }
         }
       }
 
@@ -118,19 +187,89 @@
       RED.events.on("nodes:remove", updateModuleToolDialog);
       RED.events.on("nodes:change", updateModuleToolDialog);
       RED.events.on("nodes:reorder", updateModuleToolDialog);
-      RED.events.on("groups:add", updateModuleToolDialog);
-      RED.events.on("groups:remove", updateModuleToolDialog);
-      RED.events.on("groups:change", updateModuleToolDialog);
     })();
+
+    $(document).on("click", ".module-manage-tool__module-title", function () {
+      $(this).next(".module-manage-tool__module-detail").slideToggle();
+    });
+
+    $(document).on(
+      "click",
+      ".module-manage-tool__save-button",
+      async function () {
+        const moduleId = $(this).parent().siblings().children()[1].id;
+        const moduleNodeList = RED.nodes.getAllFlowNodes(
+          RED.nodes.node(moduleId)
+        );
+        moduleNodeList.forEach(node => {
+          const nodeLinks = RED.nodes.getNodeLinks(node.id);
+          const wires = [nodeLinks.map(link => link.target.id)];
+          node.wires = wires;
+        });
+
+        function ajax(options) {
+          return new Promise(function (resolve, reject) {
+            $.ajax(options).done(resolve).fail(reject);
+          });
+        }
+
+        const notifyObj = await ajax({
+          url: "/save-selected-module",
+          type: "POST",
+          data: { moduleNodeList: JSON.stringify(moduleNodeList) }
+        });
+
+        RED.notify(notifyObj["msg"], {
+          type: notifyObj["type"],
+          timeout: notifyObj["timeout"]
+        });
+      }
+    );
+
+    $(document).on(
+      "mouseover",
+      ".module-manage-tool__module-title",
+      function () {
+        $(this).tooltip({
+          position: {
+            my: "right-5 bottom",
+            at: "left bottom",
+            using: function (position) {
+              $(this).css(position);
+            }
+          }
+        });
+      }
+    );
+
+    $(document).on(
+      "mouseover",
+      ".module-manage-tool__submodule-list",
+      function () {
+        $(this).tooltip({
+          position: {
+            my: "right bottom",
+            at: "left bottom",
+            using: function (position) {
+              $(this).css(position);
+            }
+          }
+        });
+      }
+    );
 
     $(document).on("click", ".module-manage-tool__jump-link", function (e) {
       e.stopPropagation();
       RED.view.reveal($(this).attr("id"));
     });
 
-    $(document).on("click", ".module-manage-tool__module-title", function () {
-      $(this).next(".module-manage-tool__module-detail").slideToggle();
-    });
+    $(document).on(
+      "click",
+      ".module-manage-tool__submodule-list",
+      function (e) {
+        RED.view.reveal($(this).attr("id"));
+      }
+    );
 
     const moduleManageToolButton = document.querySelector(
       ".module-manage-tool__button"
