@@ -21,7 +21,8 @@
       "Auth": "201-Basicauth.js",
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
-      "SlackNotification": "303-SlackNotification.js"
+      "SlackNotification": "303-SlackNotification.js",
+      "ObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js"
     }
   },
   "dependencies": {
@@ -38,7 +39,9 @@
     "on-headers": "^1.0.2",
     "pg": "^8.3.0",
     "proxy-agent": "^5.0",
-    "when": "3.7.8"
+    "when": "3.7.8",
+    "onnxruntime-node": "^1.14.0",
+    "sharp": "^0.32.1"
   },
   "devDependencies": {
     "grunt": "^1.6.1"
