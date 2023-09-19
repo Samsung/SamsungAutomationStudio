@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    RED.nodes.registerType("calculate_cosine", {
+        category: "Samsung Automation Studio",
+        color: '#FBFB04',
+        defaults: {
+            name: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.svg",
+        label: function () {
+            return this.name || "calculate_cosine";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="calculate_cosine">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="calculate_cosine">
+    <p>calculate cosine similarity of two vector values</p>
+</script>
