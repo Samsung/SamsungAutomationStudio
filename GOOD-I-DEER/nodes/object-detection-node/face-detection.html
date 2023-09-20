@@ -1,0 +1,41 @@
+<script type="text/javascript">
+  RED.nodes.registerType("face-detection", {
+    category: "Samsung AutomationStudio",
+    color: "#a6bbcf",
+    defaults: {
+      name: { value: "" },
+      threshold: {value: 0.5, validate: function(v){
+        let threshold = Number($("#node-input-threshold").val());
+        
+        if(threshold < 0 || threshold >= 1){
+          $("#threshold-warning").css('display', 'block'); 
+        }else{
+          $("#threshold-warning").css('display', 'none'); 
+        }
+        return threshold >= 0 && threshold < 1;
+      }}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-smile-o",
+    label: function () {
+      return this.name || "face-detection";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="face-detection">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-threshold"><i class="fa fa-sort"></i> Threshold</label>
+    <input type="number" id="node-input-threshold" step="0.1" />
+    <p id="threshold-warning" style="color: red; display: none; margin-left: 105px;" >0 ≤ threshold < 1</p>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="face-detection">
+  <p>face-detection node using yolov8</p>
+</script>
