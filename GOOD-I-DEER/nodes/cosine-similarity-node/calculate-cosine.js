@@ -55,7 +55,8 @@ module.exports = function (RED) {
                 result = cosineSimilarity(input_vector, stored_vector);
             }
             
-            this.send(result);
+            msg.payload = String(result);
+            this.send(msg);
         });
     }
     RED.nodes.registerType("calculate-cosine", CalculateCosine);
