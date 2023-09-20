@@ -28,7 +28,7 @@ module.exports = function (RED) {
             var stored = [0, 0, 0];
             
             const fs = require('fs');
-            const filePath = 'C:\\SSAFY\\NodeRED\\CustomNode\\custom_cosine\\stored.txt';
+            const filePath = './stored.txt';
 
             try {
                 const data = await fs.promises.readFile(filePath, 'utf8');
@@ -58,5 +58,5 @@ module.exports = function (RED) {
             this.send(result);
         });
     }
-    RED.nodes.registerType("calculate_cosine", CalculateCosine);
+    RED.nodes.registerType("calculate-cosine", CalculateCosine);
 }
