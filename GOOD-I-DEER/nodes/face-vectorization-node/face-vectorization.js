@@ -32,10 +32,7 @@ module.exports = function (RED) {
       const outputData = await model.run(feeds);
 
       // 결과를 출력 메시지에 설정
-      msg.topic = "벡터";
-      console.log(outputData);
-      console.log(outputData.output.data);
-      msg.payload = outputData.output.data;
+      msg.payload = Array.from(outputData.output.data);
       // 결과 메시지 전송
       node.send(msg);
     });

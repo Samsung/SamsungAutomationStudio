@@ -4,18 +4,18 @@ module.exports = function (RED) {
 
     // function that calculates cosine similarity of Vector A and Vetor B
     function cosineSimilarity(vectorA, vectorB) {
-      //   if (vectorA.length !== vectorB.length || vectorA.length === 0 || vectorB.length === 0) {
-      //     throw new Error("These two vectors has different length or size 0.");
-      //   }
+      if (vectorA.length !== vectorB.length || vectorA.length === 0 || vectorB.length === 0) {
+        throw new Error("These two vectors has different length or size 0.");
+      }
 
       // calculate DotProduct
       let dotProduct = 0;
       let magnitudeA = 0;
       let magnitudeB = 0;
       for (let i = 0; i < vectorA.length; i++) {
-        dotProduct += vectorA[i] * vectorB[String(i)];
+        dotProduct += vectorA[i] * vectorB[i];
         magnitudeA += vectorA[i] * vectorA[i];
-        magnitudeB += vectorB[String(i)] * vectorB[String(i)];
+        magnitudeB += vectorB[i] * vectorB[i];
       }
       magnitudeA = Math.sqrt(magnitudeA);
       magnitudeB = Math.sqrt(magnitudeB);

@@ -73,9 +73,7 @@ module.exports = function (RED) {
       // console.log(__filename);
       // console.log(__dirname);
       // console.log(process.cwd());
-      const model = await ort.InferenceSession.create(
-        `${__dirname}/model/${modelName}.onnx`
-      );
+      const model = await ort.InferenceSession.create(`${__dirname}/model/${modelName}.onnx`);
       // print("model", model);
       // print("input", input);
       // print("Float32Array", Float32Array.from(input));
