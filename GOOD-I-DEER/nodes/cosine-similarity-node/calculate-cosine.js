@@ -22,6 +22,10 @@ module.exports = function (RED) {
             if (magnitudeA === 0 || magnitudeB === 0) {
                 throw new Error("Can't calculate cosine similarity of 0 Vector.");
             }
+
+            // return cosine similarity
+            const similarity = dotProduct / (magnitudeA * magnitudeB);
+            return similarity;
         }
 
         async function getStoredVector() {
