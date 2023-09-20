@@ -65,9 +65,34 @@
       console.log(this.errorMsg);
       console.log(this.duplicatedError);
 
+      const thiz = this;
       $("#submodule-node-name").on("input", event => {
         let newName = event.target.value;
-        checkDuplicatedname(newName);
+
+        RED.nodes.getAllUpstreamNodes(thiz).forEach(node => {
+          if (node.type === "submodule") {
+            if (node.name === newName) {
+              node.errorMsg = "Duplicated name";
+              node.duplicatedError = true;
+              // console.log(node.errorMsg);
+              // console.log(node.duplicatedError);
+
+              thiz.errorMsg = "Duplicated name";
+              thiz.duplicatedError = true;
+              displayMsg(thiz.errorMsg, "red");
+            } else {
+              node.errorMsg = "Available name";
+              node.duplicatedError = false;
+              // console.log(node.errorMsg);
+              // console.log(node.duplicatedError);
+
+              //ok
+              thiz.errorMsg = "Available name";
+              thiz.duplicatedError = false;
+              displayMsg(thiz.errorMsg, "green");
+            }
+          }
+        });
       });
     },
     oneditsave: function () {

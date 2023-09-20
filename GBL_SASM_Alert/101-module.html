@@ -148,7 +148,10 @@
     color: "#FA8072",
     defaults: {
       info: { value: "Describe your module action here." },
-      name: { value: "module in" },
+      name: {
+        value: "module in",
+        required: true
+      },
       errorMsg: { value: "" },
       duplicatedError: { value: false }
     },
@@ -207,12 +210,42 @@
       };
       checkDuplicatedname(this.name);
 
-      //test
-      console.log(this.duplicatedError);
-      console.log(this.errorMsg);
-
+      let thiz = this;
       $("#module-in-node-name").on("input", event => {
         let newName = event.target.value;
+
+        //1.1 all module in node in current tab except this node
+        let currentTab = RED.workspaces.active();
+        RED.nodes.eachNode(node => {
+          if (
+            node.type === "module_in" &&
+            node.z == currentTab &&
+            node.id != thiz.id //except this node
+          ) {
+            if (node.name === newName) {
+              //same name => change node duplicatedError
+              node.errorMsg = "Duplicated name";
+              node.duplicatedError = true;
+              // console.log(node.errorMsg);
+              // console.log(node.duplicatedError);
+
+              thiz.errorMsg = "Duplicated name";
+              thiz.duplicatedError = true;
+              displayMsg(thiz.errorMsg, "red");
+            } else {
+              node.errorMsg = "Available name";
+              node.duplicatedError = false;
+              // console.log(node.errorMsg);
+              // console.log(node.duplicatedError);
+
+              //ok
+              thiz.errorMsg = "Available name";
+              thiz.duplicatedError = false;
+              displayMsg(thiz.errorMsg, "green");
+            }
+          }
+        });
+
         checkDuplicatedname(newName);
       });
     },
