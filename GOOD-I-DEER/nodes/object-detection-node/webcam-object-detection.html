@@ -1,0 +1,107 @@
+<script type="text/javascript">
+    RED.nodes.registerType("webcam-object-detection", {
+      category: "Samsung AutomationStudio",
+      color: "#2c6e3b",
+      defaults: {
+        name: { value: "" },
+        model: { value: "YoloV8n"},
+        threshold: {value: 0.5, validate: function(v){
+          let threshold = Number($("#node-input-threshold").val());
+          
+          if(threshold < 0 || threshold >= 1){
+            $("#threshold-warning").css('display', 'block'); 
+          }else{
+            $("#threshold-warning").css('display', 'none'); 
+          }
+          return threshold >= 0 && threshold < 1;
+        }},
+        socketUrl: {value: 'ws://localhost:1880/ws/socket'},
+      },
+      inputs: 1,
+      outputs: 1,
+      icon: "font-awesome/fa-camera-retro",
+      label: function () {
+        return this.name || "webcam-object-detection";
+      },
+      oneditprepare: function () {
+        // model 유형 선택
+          $("#node-input-model").typedInput({
+            types:[
+              {
+                value: "model",
+                options: [
+                  { value: "yolov8n", label: "YoloV8n"},
+                  { value: "yolov8s", label: "YoloV8s"},
+                  { value: "yolov8m", label: "YoloV8m"}
+                ]
+              }
+            ]
+          }
+        );
+
+        // webcam 미리 보기
+        const inputVideo = document.getElementById('input-video')
+        const constraints = {
+            audio: false, 
+            video: { width: 1280, height: 720 }
+        }
+
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(stream => {
+                inputVideo.srcObject = stream;
+            
+                inputVideo.onloadedmetadata = function(e) {
+                    inputVideo.play()
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            
+            // server url 기본 값 설정
+            $("#node-input-socketUrl").val() === '' && $("#node-input-socketUrl").val('ws://localhost:1880/ws/socket');
+            // $("#node-input-serverUrl").val('localhost');
+        }
+
+    });
+  </script>
+
+  <script type="text/html" data-template-name="webcam-object-detection">
+    <!-- Name -->
+    <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name" />
+    </div>
+
+    <!-- Model -->
+    <div class="form-row">
+      <label for="node-input-model"><i class="fa fa-wrench"></i> Model</label>
+      <input type="text" id="node-input-model">
+    </div>
+
+    <!-- Threshold -->
+    <div class="form-row">
+      <label for="node-input-threshold"><i class="fa fa-sort"></i> Threshold</label>
+      <input type="number" id="node-input-threshold" step="0.1" />
+      <p id="threshold-warning" style="color: red; display: none; margin-left: 105px;" >0 ≤ threshold < 1</p>
+    </div>
+
+    <!-- Socket Url -->
+    <div class="form-row">
+        <label for="node-input-socketUrl"><i class="fa fa-tag"></i> Socket Url</label>
+        <input type="text" id="node-input-socketUrl" placeholder="default value is 'ws://localhost:1880/ws/socket'">
+    </div>
+
+    <!-- Webcam Test -->
+    <div class="form-row" style="text-align: left;">
+        <label for="node-webcam-test" style="display: flex; width: 102px; justify-content: space-between; align-items: center;"><i class="fa fa-camera"></i> <p style="margin: 0">Webcam Test</p></label>
+    </div>
+    <div class="form-row" id="node-webcam-test" style="text-align: center;">
+        <video id="input-video" style="height:360px; width:640px; transform: scaleX(-1); -webkit-transform: scaleX(-1);"></video>
+    </div>
+  </script>
+  
+  <script type="text/html" data-help-name="webcam-object-detection">
+    <p>object-detection node with webcam</p>
+  </script>
+  
