@@ -22,7 +22,8 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
-      "ObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js"
+      "ObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js",
+      "FaceVectorization": "GOOD-I-DEER/nodes/face-vectorization-node/face-vectorization.js"
     }
   },
   "dependencies": {
