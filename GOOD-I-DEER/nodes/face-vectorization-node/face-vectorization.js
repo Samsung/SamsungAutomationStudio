@@ -46,13 +46,13 @@ module.exports = function (RED) {
       // 스트림 이미지 변환
       const img = sharp(inputData);
 
-      // 이미지 사이즈 재조정
+      // 이미지 사이즈 재조정 => 픽셀 구분 및 분리
       const pixels = await img
         .removeAlpha()
         .resize({ width: 224, height: 224, fit: "fill" })
         .raw()
         .toBuffer();
-        
+
       const red = [],
         green = [],
         blue = [];
