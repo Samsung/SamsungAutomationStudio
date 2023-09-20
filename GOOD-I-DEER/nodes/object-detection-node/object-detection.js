@@ -73,12 +73,8 @@ module.exports = function (RED) {
       // console.log(__filename);
       // console.log(__dirname);
       // console.log(process.cwd());
-      //   const model = await ort.InferenceSession.create(
-      //     "C:/Users/SSAFY/Desktop/ssdc/object/createNode/yolov8/src/nodes/yolov8m.onnx"
-      //   );
       const model = await ort.InferenceSession.create(
-        `./node_modules/node-red-contrib-samsung-automation-studio-nodes/GOOD-I-DEER/nodes/object-detection-node/model/${modelName}.onnx`
-        // "node_modules/node-red-contrib-samsung-automation-studio-nodes/GOOD-I-DEER/nodes/object-detection-node/model/yolov8m.onnx"
+        `${__dirname}/model/${modelName}.onnx`
       );
       // print("model", model);
       // print("input", input);
