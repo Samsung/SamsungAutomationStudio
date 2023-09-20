@@ -1,63 +1,70 @@
 module.exports = function (RED) {
-    function CalculateCosine(config) {
-        RED.nodes.createNode(this, config);
+  function CalculateCosine(config) {
+    RED.nodes.createNode(this, config);
 
-        // function that calculates cosine similarity of Vector A and Vetor B
-        function cosineSimilarity(vectorA, vectorB) {
-            if (vectorA.length !== vectorB.length || vectorA.length === 0 || vectorB.length === 0) {
-                throw new Error("These two vectors has different length or size 0.");
-            }
+    // function that calculates cosine similarity of Vector A and Vetor B
+    function cosineSimilarity(vectorA, vectorB) {
+      //   if (vectorA.length !== vectorB.length || vectorA.length === 0 || vectorB.length === 0) {
+      //     throw new Error("These two vectors has different length or size 0.");
+      //   }
 
-            // calculate DotProduct
-            let dotProduct = 0;
-            let magnitudeA = 0;
-            let magnitudeB = 0;
-            for (let i = 0; i < vectorA.length; i++) {
-                dotProduct += vectorA[i] * vectorB[i];
-                magnitudeA += vectorA[i] * vectorA[i];
-                magnitudeB += vectorB[i] * vectorB[i];
-            }
-            magnitudeA = Math.sqrt(magnitudeA);
-            magnitudeB = Math.sqrt(magnitudeB);
-            if (magnitudeA === 0 || magnitudeB === 0) {
-                throw new Error("Can't calculate cosine similarity of 0 Vector.");
-            }
-        }
-
-        async function getStoredVector() {
-            var stored = [0, 0, 0];
-            
-            const fs = require('fs');
-            const filePath = './stored.txt';
-
-            try {
-                const data = await fs.promises.readFile(filePath, 'utf8');
-                stored = JSON.parse(data);
-            } catch (err) {
-                console.error('Error occured while parsing file.', parseError);
-            }
-            return stored;
-        }
-
-        this.on('input', async function (msg) {
-            var input_vector = JSON.parse(msg.payload);
-            var stored_vector = await getStoredVector();
-
-            console.log("input vector: ", input_vector);
-            console.log("stored vector: ", stored_vector);
-
-            var result = 1;
-            if (typeof input_vector == "undefined" || input_vector == null || input_vector == "") {
-                console.error("Input vector is not valid.");
-            } else if (typeof stored_vector == "undefined" || stored_vector == null || stored_vector == "") {
-                console.error("Stored vector is not valid.");
-            } else {
-                result = cosineSimilarity(input_vector, stored_vector);
-            }
-            
-            msg.payload = String(result);
-            this.send(msg);
-        });
+      // calculate DotProduct
+      let dotProduct = 0;
+      let magnitudeA = 0;
+      let magnitudeB = 0;
+      for (let i = 0; i < vectorA.length; i++) {
+        dotProduct += vectorA[i] * vectorB[String(i)];
+        magnitudeA += vectorA[i] * vectorA[i];
+        magnitudeB += vectorB[String(i)] * vectorB[String(i)];
+      }
+      magnitudeA = Math.sqrt(magnitudeA);
+      magnitudeB = Math.sqrt(magnitudeB);
+      if (magnitudeA === 0 || magnitudeB === 0) {
+        throw new Error("Can't calculate cosine similarity of 0 Vector.");
+      }
+      const similarity = dotProduct / (magnitudeA * magnitudeB);
+      return similarity;
     }
-    RED.nodes.registerType("calculate-cosine", CalculateCosine);
-}
+
+    async function getStoredVector() {
+      var stored = [0, 0, 0];
+
+      const fs = require("fs");
+      const filePath = "C:/Users/SSAFY/Desktop/output.txt";
+
+      try {
+        const data = await fs.promises.readFile(filePath, "utf8");
+        stored = JSON.parse(data);
+      } catch (err) {
+        console.error("Error occured while parsing file.", err);
+      }
+      return stored;
+    }
+
+    this.on("input", async function (msg) {
+      var input_vector = msg.payload;
+      var stored_vector = await getStoredVector();
+
+      //   console.log("input vector: ", input_vector);
+      //   console.log("stored vector: ", stored_vector);
+      console.log(input_vector.length);
+      console.log(Object.keys(stored_vector).length);
+      var result = 1;
+      if (typeof input_vector == "undefined" || input_vector == null || input_vector == "") {
+        console.error("Input vector is not valid.");
+      } else if (
+        typeof stored_vector == "undefined" ||
+        stored_vector == null ||
+        stored_vector == ""
+      ) {
+        console.error("Stored vector is not valid.");
+      } else {
+        result = cosineSimilarity(input_vector, stored_vector);
+      }
+
+      msg.payload = String(result);
+      this.send(msg);
+    });
+  }
+  RED.nodes.registerType("calculate-cosine", CalculateCosine);
+};

@@ -22,7 +22,9 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
-      "ObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js"
+      "ObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js",
+      "FaceVectorization": "GOOD-I-DEER/nodes/face-vectorization-node/face-vectorization.js",
+      "CalculateCosine": "GOOD-I-DEER/nodes/cosine-similarity-node/calculate-cosine.js"
     }
   },
   "dependencies": {
@@ -37,11 +39,11 @@
     "mustache": "^4.0.0",
     "mysql": "~2.18.1",
     "on-headers": "^1.0.2",
+    "onnxruntime-node": "^1.14.0",
     "pg": "^8.3.0",
     "proxy-agent": "^5.0",
-    "when": "3.7.8",
-    "onnxruntime-node": "^1.14.0",
-    "sharp": "^0.32.1"
+    "sharp": "^0.32.6",
+    "when": "3.7.8"
   },
   "devDependencies": {
     "grunt": "^1.6.1"
