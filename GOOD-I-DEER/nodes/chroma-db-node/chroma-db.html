@@ -1,0 +1,74 @@
+<script type="text/javascript">
+  RED.nodes.registerType("chroma-db", {
+    category: "Samsung AutomationStudio",
+    color: "#1AE5BE",
+    defaults: {
+      name: { value: "" },
+      dbIp: { value: "", required: true },
+      dbPort: { value: "", required: true },
+      dbName: { value: "", required: true },
+      operation: { value: "insert", required: true },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "db.png",
+    label: function () {
+      return this.name || "chroma-db";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="chroma-db">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-dbName"
+      ><i class="fa fa-database"></i> DB Name</label
+    >
+    <input
+      type="text"
+      id="node-input-dbName"
+      placeholder="Database Name"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-dbIp"><i class="fa fa-wrench"></i> Host</label>
+    <input
+      type="text"
+      id="node-input-dbIp"
+      value="http://localhost"
+      placeholder="Database Ip Address"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-dbPort"><i class="fa fa-wrench"></i> Port</label>
+    <input
+      type="text"
+      id="node-input-dbPort"
+      value="8000"
+      placeholder="Database Port Number"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-operation"
+      ><i class="fa fa-wrench"></i> Operation</label
+    >
+    <select type="text" id="node-input-operation" style="width:70%!important;">
+      <option value="insert">insert</option>
+      <option value="query">query</option>
+    </select>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="chroma-db">
+  <p>A simple node that test chroma-db</p>
+</script>
