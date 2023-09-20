@@ -23,7 +23,8 @@
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
       "ObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js",
-      "FaceVectorization": "GOOD-I-DEER/nodes/face-vectorization-node/face-vectorization.js"
+      "FaceVectorization": "GOOD-I-DEER/nodes/face-vectorization-node/face-vectorization.js",
+      "CalculateCosine": "GOOD-I-DEER/nodes/cosine-similarity-node/calculate-cosine.js"
     }
   },
   "dependencies": {

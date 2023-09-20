@@ -32,8 +32,10 @@ module.exports = function (RED) {
       const outputData = await model.run(feeds);
 
       // 결과를 출력 메시지에 설정
-      msg.payload = outputData;
-
+      msg.topic = "벡터";
+      console.log(outputData);
+      console.log(outputData.output.data);
+      msg.payload = outputData.output.data;
       // 결과 메시지 전송
       node.send(msg);
     });
@@ -58,7 +60,7 @@ module.exports = function (RED) {
       const input = [...red, ...green, ...blue];
       // print("input", input);
       // console.log("input.length: " + input.length);
-      console.log(input);
+
       return input;
     }
   }
