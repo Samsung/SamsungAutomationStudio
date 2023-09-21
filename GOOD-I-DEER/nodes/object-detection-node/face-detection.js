@@ -7,6 +7,7 @@ module.exports = function (RED) {
 
     const node = this;
     const returnType = Number(config.returnType);
+    console.log(config.returnType);
     const saveDir = config.absolutePathDir;
     let bufferFromImage;
 

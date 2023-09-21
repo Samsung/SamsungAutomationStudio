@@ -4,7 +4,7 @@
     color: "#1AE5BE",
     defaults: {
       name: { value: "" },
-      returnType: { value: "information", validate: function(v) {
+      returnType: { value: 0, validate: function(v) {
         const returnType = Number(v);
 
         if(returnType <= 1) {
