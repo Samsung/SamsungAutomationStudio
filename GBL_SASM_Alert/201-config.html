@@ -1,13 +1,153 @@
+<style>
+  .property-container {
+    width: 90%;
+    margin: 15px 0;
+  }
+  .property-inner {
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+
 <script type="text/javascript">
   RED.nodes.registerType("config", {
     category: "GBL-SASM-Alert",
     color: "#E0C67E",
     defaults: {
-      info: { value: "testinfo" },
-      name: { value: "config" }
+      name: { value: "" },
+      properties: { value: [] }
     },
     inputs: 1,
-    outputs: 1
+    outputs: 1,
+    label: function () {
+      return this.name || "module config";
+    },
+    oneditprepare: function () {
+      $(document).ready(function () {
+        // initially, hide property list
+        $(".property-list").hide();
+
+        // click event handler for toggle-button
+        $("button.toggle-button").click(function () {
+          $(this.nextSibling).toggle();
+        });
+
+        // input window appear when click the checkbox
+        $(".property-checkbox").change(function () {
+          if ($(this).is(":checked")) {
+            $(this.parentNode.parentNode).append(
+              $("<textarea>")
+                .attr("class", "property-description")
+                .attr(
+                  "placeholder",
+                  "Please write a description for the property."
+                )
+                .css("width", "100%")
+                .css("height", "8rem")
+                .css("resize", "none")
+            );
+          } else {
+            $(this.parentNode.parentNode).children()[1].remove();
+          }
+        });
+      });
+
+      // get all downstream nodes after config node without module-out node
+      const moduleFlows = RED.nodes.getAllDownstreamNodes(this).slice(0, -1);
+
+      //
+      const moduleProperties = moduleFlows.map(node => {
+        return {
+          nodeId: node.id,
+          nodeName: node.name || node.type,
+          properties: Object.keys(node._config).filter(
+            config => config !== "x" && config !== "y"
+          )
+        };
+      });
+
+      const nodeCheckboxList = $("#node-checkbox-list");
+
+      moduleProperties.forEach(element => {
+        const $node = $("<div>").attr("class", "form-row");
+        const $nodeName = $("<label>").text(element.nodeName);
+        const $toggleButton = $("<button>")
+          .attr("class", "toggle-button")
+          .html("&#9662;");
+        const $propertyList = $("<div>").attr("class", "property-list");
+        $node.append($nodeName).append($toggleButton).append($propertyList);
+
+        nodeCheckboxList.append($node);
+
+        element.properties.forEach(property => {
+          const $propertyContainer = $("<div>").attr(
+            "class",
+            "property-container"
+          );
+          const $propertyInner = $("<div>").attr("class", "property-inner");
+          const $nodeId = $("<span>")
+            .attr("id", "node-id")
+            .text(element.nodeId)
+            .css("display", "none");
+          const $nodeProperty = $("<span>").text(
+            element.nodeName + "." + property
+          );
+          const $checkBox = $("<input>")
+            .attr("type", "checkbox")
+            .attr("class", "property-checkbox");
+
+          const targetProperty = this.properties.find(
+            propertyObject =>
+              propertyObject.nodeId === element.nodeId &&
+              propertyObject.property === property
+          );
+
+          $propertyInner
+            .append($nodeId)
+            .append($nodeProperty)
+            .append($checkBox);
+          $propertyContainer.append($propertyInner);
+          $propertyList.append($propertyContainer);
+
+          if (targetProperty) {
+            $checkBox.prop("checked", true);
+            const $textarea = $("<textarea>")
+              .attr("class", "property-description")
+              .attr(
+                "placeholder",
+                "Please write a description for the property."
+              )
+              .val(targetProperty.description)
+              .css("width", "100%")
+              .css("height", "8rem")
+              .css("resize", "none");
+            $propertyContainer.append($textarea);
+          }
+        });
+      });
+
+      this.properties = [];
+    },
+    oneditsave: function () {
+      const node = this;
+      $(".property-checkbox").each(function () {
+        if ($(this).is(":checked")) {
+          const nodeId = $(this).parent().children()[0].innerText;
+          const nodeProperty = $(this)
+            .parent()
+            .children()[1]
+            .innerText.split(".");
+          const description = $(this).parent().parent().children()[1].value;
+          node.properties.push({
+            nodeId: nodeId,
+            nodeName: nodeProperty[0],
+            property: nodeProperty[1],
+            description: description
+          });
+        }
+      });
+    },
+    oneditcancle: function () {}
   });
 </script>
 
@@ -15,6 +155,10 @@
   <div class="form-row">
     <label for="node-input-name"><i class="icon-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <!--nodes in module-->
+  <div>
+    <div id="node-checkbox-list"></div>
   </div>
 </script>
 
