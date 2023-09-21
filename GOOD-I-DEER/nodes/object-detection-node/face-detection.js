@@ -207,5 +207,5 @@ module.exports = function (RED) {
     }
   }
 
-  RED.nodes.registerType("face-detection", yolov8NodeFace);
+  RED.nodes.registerType("good-face-detection", yolov8NodeFace);
 };

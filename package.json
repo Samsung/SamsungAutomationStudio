@@ -22,8 +22,8 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
-      "ObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js",
-      "FaceDetection": "GOOD-I-DEER/nodes/object-detection-node/face-detection.js",
+      "GoodObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js",
+      "GoodFaceDetection": "GOOD-I-DEER/nodes/object-detection-node/face-detection.js",
       "FaceVectorization": "GOOD-I-DEER/nodes/face-vectorization-node/face-vectorization.js",
       "CalculateCosine": "GOOD-I-DEER/nodes/cosine-similarity-node/calculate-cosine.js"
     }

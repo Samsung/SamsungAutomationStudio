@@ -257,5 +257,5 @@ module.exports = function (RED) {
     ];
   }
 
-  RED.nodes.registerType("object-detection", yolov8Node);
+  RED.nodes.registerType("good-object-detection", yolov8Node);
 };
