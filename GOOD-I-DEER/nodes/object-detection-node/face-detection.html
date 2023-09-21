@@ -1,12 +1,13 @@
 <script type="text/javascript">
   RED.nodes.registerType("face-detection", {
-    category: "Samsung AutomationStudio",
-    color: "#a6bbcf",
+    category: "GOOD I DEER",
+    color: "#1AE5BE",
     defaults: {
       name: { value: "" },
       returnType: { value: "information" },
       threshold: {value: 0.5, validate: function(v) {
-        let threshold = Number($("#node-input-threshold").val());
+        console.log(v);
+        let threshold = Number(v);
         
         if(threshold < 0 || threshold >= 1){
           $("#threshold-warning").css('display', 'block'); 
@@ -28,9 +29,10 @@
     },
     inputs: 1,
     outputs: 1,
+    paletteLabel: "Good Face Detection",
     icon: "font-awesome/fa-smile-o",
     label: function () {
-      return this.name || "face-detection";
+      return this.name || "Good Face Detection";
     },
     inputLabels: ["Image Buffer"],
     outputLabels: undefined,

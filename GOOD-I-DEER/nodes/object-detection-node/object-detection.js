@@ -16,10 +16,10 @@ module.exports = function (RED) {
 
     node.on("input", async function (msg) {
       const buf = msg.payload;
-      let start = new Date();
+      // let start = new Date();
       const boxes = await detect_objects_on_image(buf);
-      let end = new Date();
-      console.log(end - start, "ms");
+      // let end = new Date();
+      // console.log(end - start, "ms");
       // node.send(boxes);
       msg.payload = boxes;
       //   console.log(boxes);
