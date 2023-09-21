@@ -9,33 +9,34 @@ module.exports = function (RED) {
     });
 
     async function execute(msg) {
-      if (config.operation == "insert") {
+      if (config.operation == "create") {
         const collection = await chroma.getOrCreateCollection({
           name: config.dbName,
           metadata: {
-            "hnsw:space": "cosine",
+            "hnsw:space": config.distance,
           },
+        });
+      } else if (config.operation == "insert") {
+        const collection = await chroma.getCollection({
+          name: config.dbName,
         });
 
         const count = (await collection.count()) + 1;
         await collection.add({
           ids: ["face-id-" + count],
-          embeddings: msg.payload,
+          embeddings: Array.from(msg.payload),
         });
-
-        msg.payload = "Insert success";
-      } else {
+      } else if (config.operation == "query") {
         const collection = await chroma.getCollection({
           name: config.dbName,
         });
 
         const queryData = await collection.query({
-          queryEmbeddings: msg.payload,
-          nResults: 1,
+          queryEmbeddings: Array.from(msg.payload),
+          nResults: config.nResults,
         });
 
-        console.log(queryData);
-        msg.payload = queryData.distances;
+        msg.payload = queryData.distances[0];
       }
     }
 
