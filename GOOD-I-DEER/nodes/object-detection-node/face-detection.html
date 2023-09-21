@@ -4,9 +4,25 @@
     color: "#1AE5BE",
     defaults: {
       name: { value: "" },
-      returnType: { value: "information" },
+      returnType: { value: "information", validate: function(v) {
+        const returnType = Number(v);
+
+        if(returnType <= 1) {
+          $("#absolutePathDir-form").css('display', 'none');
+          this.outputs = 1;
+          if(returnType == 0) {
+            this._def.outputLabels = ["Information"];
+          } else if(returnType == 1) {
+            this._def.outputLabels = ["Image Buffer"];
+          }
+        } else if (returnType == 2){
+          $("#absolutePathDir-form").css('display', 'block');
+          this.outputs = 0;
+          this._def.outputLabels = undefined;
+        }
+        return true;
+      } },
       threshold: {value: 0.5, validate: function(v) {
-        console.log(v);
         let threshold = Number(v);
         
         if(threshold < 0 || threshold >= 1){
@@ -17,14 +33,9 @@
         return threshold >= 0 && threshold < 1;
       }},
       absolutePathDir: { value: "", validate: function(v) {
-        if ($("#node-input-returnType").val() <= 1) {
-          $("#absolutePathDir-form").css('display', 'none');
-        } else {
-          $("#absolutePathDir-form").css('display', 'block');
-          if(!v)
-            return false;
-        }
-        return true;
+        if(v)
+          return true;
+        return false;
       } }
     },
     inputs: 1,
@@ -35,22 +46,7 @@
       return this.name || "Good Face Detection";
     },
     inputLabels: ["Image Buffer"],
-    outputLabels: undefined,
-    oneditsave: function () {
-      const returnType = $("#node-input-returnType").val();
-
-      if(returnType <= 1) {
-        this.outputs = 1;
-        if(returnType == 0) {
-          this._def.outputLabels = ["Information"];
-        } else if(returnType == 1) {
-          this._def.outputLabels = ["Image Buffer"];
-        }
-      } else if (returnType == 2){
-        this.outputs = 0;
-        this._def.outputLabels = undefined;
-      }
-    }
+    outputLabels: undefined
   });
 </script>
 
@@ -60,7 +56,7 @@
     <input type="text" id="node-input-name" placeholder="Name" />
   </div>
   <div class="form-row">
-    <label for="node-input-returnType"><i class="fa fa-file"></i> Model</label>
+    <label for="node-input-returnType"><i class="fa fa-file"></i> Return Type</label>
     <select type="text" id="node-input-returnType">
       <option value=0>Inforamation</option>
       <option value=1>Image Buffer</option>
