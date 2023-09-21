@@ -53,9 +53,12 @@
       });
 
       // get all downstream nodes after config node without module-out node
-      const moduleFlows = RED.nodes.getAllDownstreamNodes(this).slice(0, -1);
-
-      //
+      const moduleFlows = RED.nodes
+        .getAllDownstreamNodes(this)
+        .filter(
+          elem => elem.type !== "module_out" && elem.type !== "submodule"
+        );
+      // filter required info from all node's property
       const moduleProperties = moduleFlows.map(node => {
         return {
           nodeId: node.id,
@@ -69,6 +72,7 @@
       const nodeCheckboxList = $("#node-checkbox-list");
 
       moduleProperties.forEach(element => {
+        // add the node name to toggle properties.
         const $node = $("<div>").attr("class", "form-row");
         const $nodeName = $("<label>").text(element.nodeName);
         const $toggleButton = $("<button>")
@@ -80,6 +84,7 @@
         nodeCheckboxList.append($node);
 
         element.properties.forEach(property => {
+          // add checkbox of each node's properties
           const $propertyContainer = $("<div>").attr(
             "class",
             "property-container"
@@ -96,12 +101,6 @@
             .attr("type", "checkbox")
             .attr("class", "property-checkbox");
 
-          const targetProperty = this.properties.find(
-            propertyObject =>
-              propertyObject.nodeId === element.nodeId &&
-              propertyObject.property === property
-          );
-
           $propertyInner
             .append($nodeId)
             .append($nodeProperty)
@@ -109,6 +108,13 @@
           $propertyContainer.append($propertyInner);
           $propertyList.append($propertyContainer);
 
+          // If there are existing properties saved
+          // check the checkbox and fill in the description in the textarea.
+          const targetProperty = this.properties.find(
+            propertyObject =>
+              propertyObject.nodeId === element.nodeId &&
+              propertyObject.property === property
+          );
           if (targetProperty) {
             $checkBox.prop("checked", true);
             const $textarea = $("<textarea>")
@@ -126,10 +132,12 @@
         });
       });
 
+      // initialize properties
       this.properties = [];
     },
     oneditsave: function () {
       const node = this;
+      // save properties
       $(".property-checkbox").each(function () {
         if ($(this).is(":checked")) {
           const nodeId = $(this).parent().children()[0].innerText;
