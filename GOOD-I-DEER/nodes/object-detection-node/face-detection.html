@@ -4,7 +4,8 @@
     color: "#a6bbcf",
     defaults: {
       name: { value: "" },
-      threshold: {value: 0.5, validate: function(v){
+      returnType: { value: "information" },
+      threshold: {value: 0.5, validate: function(v) {
         let threshold = Number($("#node-input-threshold").val());
         
         if(threshold < 0 || threshold >= 1){
@@ -13,7 +14,17 @@
           $("#threshold-warning").css('display', 'none'); 
         }
         return threshold >= 0 && threshold < 1;
-      }}
+      }},
+      absolutePathDir: { value: "", validate: function(v) {
+        if ($("#node-input-returnType").val() <= 1) {
+          $("#absolutePathDir-form").css('display', 'none');
+        } else {
+          $("#absolutePathDir-form").css('display', 'block');
+          if(!v)
+            return false;
+        }
+        return true;
+      } }
     },
     inputs: 1,
     outputs: 1,
@@ -21,6 +32,23 @@
     label: function () {
       return this.name || "face-detection";
     },
+    inputLabels: ["Image Buffer"],
+    outputLabels: undefined,
+    oneditsave: function () {
+      const returnType = $("#node-input-returnType").val();
+
+      if(returnType <= 1) {
+        this.outputs = 1;
+        if(returnType == 0) {
+          this._def.outputLabels = ["Information"];
+        } else if(returnType == 1) {
+          this._def.outputLabels = ["Image Buffer"];
+        }
+      } else if (returnType == 2){
+        this.outputs = 0;
+        this._def.outputLabels = undefined;
+      }
+    }
   });
 </script>
 
@@ -30,9 +58,21 @@
     <input type="text" id="node-input-name" placeholder="Name" />
   </div>
   <div class="form-row">
+    <label for="node-input-returnType"><i class="fa fa-file"></i> Model</label>
+    <select type="text" id="node-input-returnType">
+      <option value=0>Inforamation</option>
+      <option value=1>Image Buffer</option>
+      <option value=2>Image File</option>
+    </select>
+  </div>
+  <div class="form-row">
     <label for="node-input-threshold"><i class="fa fa-sort"></i> Threshold</label>
     <input type="number" id="node-input-threshold" step="0.1" />
     <p id="threshold-warning" style="color: red; display: none; margin-left: 105px;" >0 ≤ threshold < 1</p>
+  </div>
+  <div class="form-row" id="absolutePathDir-form">
+    <label for="node-input-absolutePathDir"><i class="fa fa-folder"></i> Absolute Path Dir</label>
+    <input type="text" id="node-input-absolutePathDir" />
   </div>
 </script>
 

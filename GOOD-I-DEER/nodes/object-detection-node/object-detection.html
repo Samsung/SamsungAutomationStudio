@@ -22,21 +22,6 @@
     label: function () {
       return this.name || "object-detection";
     },
-    oneditprepare: function () {
-        $("#node-input-model").typedInput({
-          types:[
-            {
-              value: "model",
-              options: [
-                { value: "yolov8n", label: "YoloV8n"},
-                { value: "yolov8s", label: "YoloV8s"},
-                { value: "yolov8m", label: "YoloV8m"}
-              ]
-            }
-          ]
-        }
-      )
-    }
   });
 </script>
 
@@ -47,7 +32,11 @@
   </div>
   <div class="form-row">
     <label for="node-input-model"><i class="fa fa-wrench"></i> Model</label>
-    <input type="text" id="node-input-model">
+    <select type="text" id="node-input-model">
+      <option value="yolov8n">YoloV8n</option>
+      <option value="yolov8s">YoloV8s</option>
+      <option value="yolov8m">YoloV8m</option>
+    </select>
   </div>
   <div class="form-row">
     <label for="node-input-threshold"><i class="fa fa-sort"></i> Threshold</label>
