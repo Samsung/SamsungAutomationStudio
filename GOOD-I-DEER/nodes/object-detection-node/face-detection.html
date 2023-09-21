@@ -15,10 +15,18 @@
           } else if(returnType == 1) {
             this._def.outputLabels = ["Image Buffer"];
           }
+          this._def.defaults.absolutePathDir.validate = function(v) {
+            return true;
+          };
         } else if (returnType == 2){
           $("#absolutePathDir-form").css('display', 'block');
           this.outputs = 0;
           this._def.outputLabels = undefined;
+          this._def.defaults.absolutePathDir.validate = function(v) {
+            if(v)
+              return true;
+            return false;
+          }
         }
         return true;
       } },
@@ -32,11 +40,7 @@
         }
         return threshold >= 0 && threshold < 1;
       }},
-      absolutePathDir: { value: "", validate: function(v) {
-        if(v)
-          return true;
-        return false;
-      } }
+      absolutePathDir: { value: "" }
     },
     inputs: 1,
     outputs: 1,
