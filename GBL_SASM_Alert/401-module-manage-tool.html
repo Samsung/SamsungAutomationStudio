@@ -29,13 +29,24 @@
   .module-manage-tool__module-title {
     display: flex;
     justify-content: space-between;
-    height: 20px;
+    align-items: center;
+    height: 40px;
     border: solid 1px #aaa;
-    padding: 10px;
+    padding: 0 10px;
     margin: 5px 0;
     font-size: 14px;
     background-color: #ccc;
     z-index: -2;
+  }
+  .module-manage-tool__toggle-visibility {
+    padding: 10px 10px 10px 0;
+  }
+  .module-manage-tool__toggle-detail {
+    width: 100%;
+    padding: 10px 0;
+  }
+  .module-manage-tool__jump-link {
+    padding: 10px 0;
   }
 
   .module-manage-tool__module-detail {
@@ -122,18 +133,17 @@
 
       /* 모듈 노드 관리 도구 업데이트 */
       function updateModuleToolDialog() {
+        let currentTab = RED.workspaces.active();
+
         $(".module-manage-tool__dialog").attr(
           "title",
-          `Modules in ${RED.nodes.workspace(RED.workspaces.active()).label}`
+          `Modules in Current Tab`
         );
         $(".module-manage-tool__dialog")
           .siblings(".ui-dialog-titlebar")
           .children(".ui-dialog-title")
-          .html(
-            `Modules in ${RED.nodes.workspace(RED.workspaces.active()).label}`
-          );
+          .html(`Modules in Current Tab`);
 
-        let currentTab = RED.workspaces.active();
         let moduleNodes = {};
         $(".module-manage-tool__dialog").empty();
         RED.nodes.eachNode(function (node) {
@@ -144,9 +154,14 @@
 
         for (let n in moduleNodes) {
           let node = moduleNodes[n];
+
+          const isModuleVisible = RED.nodes.node(node.id).x > 0;
+          const visibleIcon = isModuleVisible ? "fa-eye" : "fa-eye-slash";
+
           let modules = `<div>
                           <div class="module-manage-tool__module-title" title="${node.info}">
-                            <div>${node.name}</div>
+                            <div class="module-manage-tool__toggle-visibility"><i class="fa ${visibleIcon}"></i></div>
+                            <div class="module-manage-tool__toggle-detail">${node.name}</div>
                             <div class="module-manage-tool__jump-link" id="${node.id}"><i class="fa fa-compass"></i></div>
                           </div>
                           <div class="module-manage-tool__module-detail" >
@@ -189,15 +204,54 @@
       RED.events.on("nodes:reorder", updateModuleToolDialog);
     })();
 
-    $(document).on("click", ".module-manage-tool__module-title", function () {
-      $(this).next(".module-manage-tool__module-detail").slideToggle();
+    /* module tooltip */
+    $(document).on(
+      "mouseover",
+      ".module-manage-tool__module-title",
+      function () {
+        $(this).tooltip({
+          position: {
+            my: "right-5 bottom",
+            at: "left bottom",
+            using: function (position) {
+              $(this).css(position);
+            }
+          }
+        });
+      }
+    );
+
+    /* slideToggle module detail */
+    $(document).on("click", ".module-manage-tool__toggle-detail", function () {
+      $(this).parent().next(".module-manage-tool__module-detail").slideToggle();
     });
 
+    /* submodule tooltip */
+    $(document).on(
+      "mouseover",
+      ".module-manage-tool__submodule-list",
+      function () {
+        $(this).tooltip({
+          position: {
+            my: "right bottom",
+            at: "left bottom",
+            using: function (position) {
+              $(this).css(position);
+            }
+          }
+        });
+      }
+    );
+
+    /* save module */
     $(document).on(
       "click",
       ".module-manage-tool__save-button",
       async function () {
-        const moduleId = $(this).parent().siblings().children()[1].id;
+        const moduleId = $(this)
+          .parent()
+          .prev()
+          .children(".module-manage-tool__jump-link")[0].id;
         const moduleNodeList = RED.nodes.getAllFlowNodes(
           RED.nodes.node(moduleId)
         );
@@ -230,48 +284,48 @@
       }
     );
 
-    $(document).on(
-      "mouseover",
-      ".module-manage-tool__module-title",
-      function () {
-        $(this).tooltip({
-          position: {
-            my: "right-5 bottom",
-            at: "left bottom",
-            using: function (position) {
-              $(this).css(position);
-            }
-          }
-        });
-      }
-    );
-
-    $(document).on(
-      "mouseover",
-      ".module-manage-tool__submodule-list",
-      function () {
-        $(this).tooltip({
-          position: {
-            my: "right bottom",
-            at: "left bottom",
-            using: function (position) {
-              $(this).css(position);
-            }
-          }
-        });
-      }
-    );
-
+    /* jump to module-in node */
     $(document).on("click", ".module-manage-tool__jump-link", function (e) {
       e.stopPropagation();
       RED.view.reveal($(this).attr("id"));
     });
 
+    /* jump to submodule node */
     $(document).on(
       "click",
       ".module-manage-tool__submodule-list",
       function (e) {
         RED.view.reveal($(this).attr("id"));
+      }
+    );
+
+    /* module visibility */
+    const toggleModule = (selectedModuleId, clickedBtn) => {
+      const selectedModuleNodeList = RED.nodes.getAllFlowNodes(
+        RED.nodes.node(selectedModuleId)
+      );
+
+      selectedModuleNodeList.forEach(node => {
+        node.x = -node.x;
+      });
+
+      const workspaceId = RED.workspaces.active();
+      RED.workspaces.hide(workspaceId);
+      RED.workspaces.show(workspaceId);
+    };
+
+    $(document).on(
+      "click",
+      ".module-manage-tool__toggle-visibility",
+      function (e) {
+        e.stopPropagation();
+        const scrollTop = $("#red-ui-workspace-chart").scrollTop();
+        const selectedModuleId = $(this).siblings(
+          ".module-manage-tool__jump-link"
+        )[0].id;
+        toggleModule(selectedModuleId, this);
+        $("#red-ui-workspace-chart").scrollTop(scrollTop);
+        $(".red-ui-deploy-button.disabled").removeClass("disabled");
       }
     );
 
