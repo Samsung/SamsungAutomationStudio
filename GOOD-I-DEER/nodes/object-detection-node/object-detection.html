@@ -1,12 +1,12 @@
 <script type="text/javascript">
   RED.nodes.registerType("object-detection", {
-    category: "Samsung AutomationStudio",
-    color: "#a6bbcf",
+    category: "GOOD I DEER",
+    color: "#1AE5BE",
     defaults: {
       name: { value: "" },
       model: { value: "YoloV8n"},
       threshold: {value: 0.5, validate: function(v){
-        let threshold = Number($("#node-input-threshold").val());
+        let threshold = Number(v);
         
         if(threshold < 0 || threshold >= 1){
           $("#threshold-warning").css('display', 'block'); 
@@ -18,25 +18,13 @@
     },
     inputs: 1,
     outputs: 1,
+    paletteLabel: "Good Object Detection",
+    inputLabels: ["Image Buffer"],
+    outputLabels: ["Information"],
     icon: "font-awesome/fa-object-group",
     label: function () {
-      return this.name || "object-detection";
+      return this.name || "Good Object Detection";
     },
-    oneditprepare: function () {
-        $("#node-input-model").typedInput({
-          types:[
-            {
-              value: "model",
-              options: [
-                { value: "yolov8n", label: "YoloV8n"},
-                { value: "yolov8s", label: "YoloV8s"},
-                { value: "yolov8m", label: "YoloV8m"}
-              ]
-            }
-          ]
-        }
-      )
-    }
   });
 </script>
 
@@ -47,7 +35,11 @@
   </div>
   <div class="form-row">
     <label for="node-input-model"><i class="fa fa-wrench"></i> Model</label>
-    <input type="text" id="node-input-model">
+    <select type="text" id="node-input-model">
+      <option value="yolov8n">YoloV8n</option>
+      <option value="yolov8s">YoloV8s</option>
+      <option value="yolov8m">YoloV8m</option>
+    </select>
   </div>
   <div class="form-row">
     <label for="node-input-threshold"><i class="fa fa-sort"></i> Threshold</label>
