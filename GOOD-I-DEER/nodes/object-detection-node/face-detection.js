@@ -7,6 +7,7 @@ module.exports = function (RED) {
 
     const node = this;
     const returnType = Number(config.returnType);
+    console.log(config.returnType);
     const saveDir = config.absolutePathDir;
     let bufferFromImage;
 
@@ -207,5 +208,5 @@ module.exports = function (RED) {
     }
   }
 
-  RED.nodes.registerType("face-detection", yolov8NodeFace);
+  RED.nodes.registerType("good-face-detection", yolov8NodeFace);
 };

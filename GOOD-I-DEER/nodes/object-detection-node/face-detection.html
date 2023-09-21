@@ -1,10 +1,10 @@
 <script type="text/javascript">
-  RED.nodes.registerType("face-detection", {
+  RED.nodes.registerType("good-face-detection", {
     category: "GOOD I DEER",
     color: "#1AE5BE",
     defaults: {
       name: { value: "" },
-      returnType: { value: "information", validate: function(v) {
+      returnType: { value: 0, validate: function(v) {
         const returnType = Number(v);
 
         if(returnType <= 1) {
@@ -15,10 +15,18 @@
           } else if(returnType == 1) {
             this._def.outputLabels = ["Image Buffer"];
           }
+          this._def.defaults.absolutePathDir.validate = function(v) {
+            return true;
+          };
         } else if (returnType == 2){
           $("#absolutePathDir-form").css('display', 'block');
           this.outputs = 0;
           this._def.outputLabels = undefined;
+          this._def.defaults.absolutePathDir.validate = function(v) {
+            if(v)
+              return true;
+            return false;
+          }
         }
         return true;
       } },
@@ -32,11 +40,7 @@
         }
         return threshold >= 0 && threshold < 1;
       }},
-      absolutePathDir: { value: "", validate: function(v) {
-        if(v)
-          return true;
-        return false;
-      } }
+      absolutePathDir: { value: "" }
     },
     inputs: 1,
     outputs: 1,
@@ -50,7 +54,7 @@
   });
 </script>
 
-<script type="text/html" data-template-name="face-detection">
+<script type="text/html" data-template-name="good-face-detection">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" />
@@ -74,6 +78,6 @@
   </div>
 </script>
 
-<script type="text/html" data-help-name="face-detection">
+<script type="text/html" data-help-name="good-face-detection">
   <p>face-detection node using yolov8</p>
 </script>
