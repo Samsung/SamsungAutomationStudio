@@ -30,7 +30,7 @@ module.exports = function (RED) {
       var stored = [0, 0, 0];
 
       const fs = require("fs");
-      const filePath = "C:/Users/SSAFY/Desktop/output.txt";
+      const filePath = config.file;
 
       try {
         const data = await fs.promises.readFile(filePath, "utf8");
@@ -45,8 +45,6 @@ module.exports = function (RED) {
       var input_vector = msg.payload;
       var stored_vector = await getStoredVector();
 
-      //   console.log("input vector: ", input_vector);
-      //   console.log("stored vector: ", stored_vector);
       console.log(input_vector.length);
       console.log(Object.keys(stored_vector).length);
       var result = 1;
