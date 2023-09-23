@@ -4,21 +4,74 @@
     color: "#1AE5BE",
     defaults: {
       name: { value: "" },
+      inputType: {
+        value: "0",
+        validate: function (v) {
+          const returnType = Number(v);
+          if (returnType == 0) {
+            this._def.inputLabels = ["Single Image"];
+          } else if (returnType == 1) {
+            this._def.inputLabels = ["Image Array"];
+          }
+          return true;
+        },
+      },
+      returnType: {
+        value: "0",
+        validate: function (v) {
+          const returnType = Number(v);
+          if (returnType == 0) {
+            $("#path-form").css("display", "none");
+            this.outputs = 1;
+            this._def.outputLabels = ["Vector"];
+          } else if (returnType == 1) {
+            $("#path-form").css("display", "block");
+            this.outputs = 0;
+            this._def.outputLabels = "Text File";
+            this._def.defaults.path.validate = function (v) {
+              if (v) return true;
+              return false;
+            };
+          }
+          return true;
+        },
+      },
+      path:{value: "" },
     },
     inputs: 1,
     outputs: 1,
     paletteLabel: "Good Face Vectorization",
-    icon: "file.svg",
+    icon: "status.svg",
     label: function () {
       return this.name || "Good Face Vectorization";
     },
+    inputLabels: ["Single Image"],
+    outputLabels: ["Vector"],
   });
 </script>
 
 <script type="text/html" data-template-name="face-vectorization">
   <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name </label>
     <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-inputType"><i class="fa fa-file"></i> Input Type </label>
+    <select type="text" id="node-input-inputType">
+      <option value="0">Single Image</option>
+      <option value="1">Image Array</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-returnType"><i class="fa fa-file"></i> Return Type </label>
+    <select type="text" id="node-input-returnType">
+      <option value="0">Array of Arrays</option>
+      <option value="1">Text File</option>
+    </select>
+  </div>
+  <div class="form-row" id="path-form">
+    <label for="node-input-path"><i class="fa fa-folder"></i> Path </label>
+    <input type="text" id="node-input-path" />
   </div>
 </script>
 
