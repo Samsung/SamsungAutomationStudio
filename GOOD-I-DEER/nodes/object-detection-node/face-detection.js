@@ -11,12 +11,20 @@ module.exports = function (RED) {
     let bufferFromImage;
 
     node.on("input", async function (msg) {
+      if (msg.payload === undefined) {
+        node.error("msg.payload is undefined. please send image buffer");
+        return;
+      }
       bufferFromImage = msg.payload;
-      // 이미지를 제대로 못만든다면!!!
-      console.log("여기오냐!!!");
       const img = sharp(bufferFromImage);
-      console.log("못오냐!!!");
-      const boxes = await detect_face_on_image_informations(img);
+      let boxes;
+      try {
+        boxes = await detect_face_on_image_informations(img);
+      } catch (error) {
+        node.error(error);
+        return;
+      }
+
       if (returnType <= 1) {
         if (returnType === 0) {
           msg.payload = boxes;
@@ -63,10 +71,18 @@ module.exports = function (RED) {
     }
 
     async function run_model(input) {
+      let model;
       // 파일이 존재하지 않는다면!!!!
-      const model = await ort.InferenceSession.create(
-        `${__dirname}/model/yolov8n-face.onnx`
-      );
+      try {
+        model = await ort.InferenceSession.create(
+          `yolov8n-face.onnx`
+          // `${__dirname}/model/yolov8n-face.onnx`
+        );
+      } catch (error) {
+        // throw new Error(error.message + ". please reinstall npm package");
+        return;
+      }
+
       // 여기서 뭔지 모를 에러가 발생한다면!!
       input = new ort.Tensor(Float32Array.from(input), [1, 3, 640, 640]);
       // 여기서도 뭔지 모를 에러가...
