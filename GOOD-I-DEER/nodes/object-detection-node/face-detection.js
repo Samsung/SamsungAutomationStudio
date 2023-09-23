@@ -93,7 +93,7 @@ module.exports = function (RED) {
       }
 
       boxes = boxes.sort((box1, box2) => box2[5] - box1[5]);
-      const result = [];
+      let result = [];
       while (boxes.length > 0) {
         result.push(boxes[0]);
         boxes = boxes.filter((box) => iou(boxes[0], box) < 0.7);

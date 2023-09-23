@@ -3,47 +3,51 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     const ort = require("onnxruntime-node");
     const sharp = require("sharp");
+    const fs = require("fs");
 
     const node = this;
     const modelName = config.model;
+    const saveDir = config.absolutePathDir;
+    let bufferFromImage;
 
-    // console.log("====================================");
-    // console.log(RED);
-    // console.log(RED.server);
-    // console.log(RED.httpNode);
-    // console.log(RED.httpAdmin);
-    // console.log("====================================");
+    let objectsCount;
 
     node.on("input", async function (msg) {
-      const buf = msg.payload;
-      // let start = new Date();
-      const boxes = await detect_objects_on_image(buf);
-      // let end = new Date();
-      // console.log(end - start, "ms");
-      // node.send(boxes);
-      msg.payload = boxes;
-      //   console.log(boxes);
-      node.send(msg);
+      try {
+        bufferFromImage = msg.payload;
+        const img = sharp(bufferFromImage);
+        const boxes = await detect_objects_on_image_informations(img);
+        msg.buff = msg.payload;
+        if (returnType <= 1) {
+          if (returnType === 0) {
+            msg.payload = boxes;
+          } else if (returnType === 1) {
+            msg.payload = await get_image_buffers(boxes);
+          }
+        } else if (returnType === 2) {
+          if (fs.existsSync(saveDir)) {
+            objectsCount = Array(80);
+            msg.payload = await save_images(boxes);
+          } else {
+            msg.payload = [];
+            node.error("folder dosen't exists");
+          }
+        }
+        node.send(msg);
+      } catch (error) {
+        node.log(error);
+      }
     });
 
-    async function detect_objects_on_image(buf) {
-      // =================================================================
-      // print("buf", buf);c
-
-      const [input, img_width, img_height] = await prepare_input(buf);
+    async function detect_objects_on_image_informations(img) {
+      const [input, img_width, img_height] = await prepare_input(img);
       const output = await run_model(input);
-      return process_output(output, img_width, img_height);
-      // msg.payload = process_output(output, img_width, img_height);
-
-      //   return "hi";
+      const boxes = process_output(output, img_width, img_height);
+      return get_image_informations(boxes);
     }
 
-    async function prepare_input(buf) {
-      const img = sharp(buf);
-      // print("img", img);
+    async function prepare_input(img) {
       const md = await img.metadata();
-
-      // print("md", md);
 
       const [img_width, img_height] = [md.width, md.height];
       const pixels = await img
@@ -51,8 +55,6 @@ module.exports = function (RED) {
         .resize({ width: 640, height: 640, fit: "fill" })
         .raw()
         .toBuffer();
-      // print("pixels",pixels)
-      // console.log("pixels.length: " + pixels.length);
       const red = [],
         green = [],
         blue = [];
@@ -62,55 +64,25 @@ module.exports = function (RED) {
         blue.push(pixels[index + 2] / 255.0);
       }
       const input = [...red, ...green, ...blue];
-      // print("input", input);
-      // console.log("input.length: " + input.length);
       return [input, img_width, img_height];
     }
 
     async function run_model(input) {
-      // console.log(__filename);
-      // console.log(__dirname);
-      // console.log(process.cwd());
       const model = await ort.InferenceSession.create(
         `${__dirname}/model/${modelName}.onnx`
       );
-      // print("model", model);
-      // print("input", input);
-      // print("Float32Array", Float32Array.from(input));
-      // new ort.Tensor(Float64Array.from(input), )
       input = new ort.Tensor(Float32Array.from(input), [1, 3, 640, 640]);
-      // input = new ort.Tensor(input, [1, 3, 640, 640]);
-      // 64보다 32가 부정확하지만 연산이 빠름
-      // print("input", input);
       const outputs = await model.run({ images: input });
-      // option줄 수 있는듯
-      // print("outputs", outputs)
       return outputs["output0"].data;
     }
 
     function process_output(output, img_width, img_height) {
       let boxes = [];
-      // for (let index=0;index<1000;index++) {
-      // 왜 8400일까..
-      // output이 사실은 8400 X 80의 배열을 1차원배열로 나타낸거여서!
-      // print("Array(80)", ...Array(80));
-      // print("Array(80).keys()", ...Array(80).keys());
-      // console.log(output);
       for (let index = 0; index < 8400; index++) {
-        // if(index == 0) {
-        //     const temp = [...Array(80).keys()]
-        //     .map(col => [col, output[8400*(col+4)+index]])
-        //     print("temp", temp);
-        //     const temp2 = [...Array(80).keys()]
-        //     .map(col => [col, output[8400*(col+4)+index]])
-        //     .reduce((accum, item) => item[1]>accum[1] ? item : accum,[0,0]);
-        //     print("temp2", temp2);
-        // }
-        const [class_id, prob] = [...Array(80).keys()] // 80개는 라벨링의 갯수 인듯
+        const [class_id, prob] = [...Array(80).keys()]
           .map((col) => [col, output[8400 * (col + 4) + index]])
           .reduce((accum, item) => (item[1] > accum[1] ? item : accum), [0, 0]);
         if (prob < config.threshold) {
-          // 확률이 0.5이하면 무시
           continue;
         }
         const label = yolo_classes[class_id];
@@ -125,33 +97,105 @@ module.exports = function (RED) {
         boxes.push([x1, y1, x2, y2, label, prob]);
       }
 
-      // 지금 boxes에는 여러개가 겹쳐서 나와서 겹치는거를 제거하는 과정
-      // const test_ret = [...boxes];
-      boxes = boxes.sort((box1, box2) => box2[5] - box1[5]); // 정확도 높은 순으로 정렬인듯
-      //   print("boxes", boxes);
-      const result = [];
+      boxes = boxes.sort((box1, box2) => box2[5] - box1[5]);
+      let result = [];
       while (boxes.length > 0) {
-        // 정확도 높은거 먼저 푸시하기
-        const info = {
-          label: boxes[0][4],
-          x: boxes[0][0],
-          y: boxes[0][1],
-          w: boxes[0][2] - boxes[0][0],
-          h: boxes[0][3] - boxes[0][1],
-          prob: boxes[0][5],
-        };
-        result.push(info);
-        // 지금 정확도 가장 높은 박스랑 비교해서 70퍼센트 이상 겹치면 제거
+        result.push(boxes[0]);
         boxes = boxes.filter((box) => iou(boxes[0], box) < 0.7);
       }
-      // print("result", result);
       return result;
-      // return test_ret;
+    }
+
+    function get_image_informations(boxes) {
+      const result = [];
+      boxes.forEach((box) => {
+        const info = {
+          label: box[4],
+          x: box[0],
+          y: box[1],
+          w: box[2] - box[0],
+          h: box[3] - box[1],
+          prob: box[5],
+        };
+        result.push(info);
+      });
+      return result;
+    }
+
+    async function get_image_buffers(boxes) {
+      const result = [];
+      await Promise.all(
+        boxes.map(async (box) => {
+          try {
+            const buffer = await makeBuffer(box);
+            result.push(buffer);
+          } catch (error) {
+            node.error("An error occured, when image cropped");
+          }
+        })
+      );
+      return result;
+    }
+
+    async function save_images(boxes) {
+      const today = new Date();
+      let paths = [];
+      const dateformat =
+        today.getFullYear() +
+        (today.getMonth() + 1 < 10
+          ? "0" + (today.getMonth() + 1)
+          : today.getMonth() + 1) +
+        (today.getDate() < 10 ? "0" + today.getDate() : today.getDate()) +
+        (today.getHours() < 10 ? "0" + today.getHours() : today.getHours()) +
+        (today.getMinutes() < 10
+          ? "0" + today.getMinutes()
+          : today.getMinutes()) +
+        (today.getSeconds() < 10
+          ? "0" + today.getSeconds()
+          : today.getSeconds());
+      const imageName =
+        dateformat +
+        "_" +
+        box.label +
+        ++objectsCount[mapping.get(box.label)] +
+        ".png";
+      await Promise.all(
+        boxes.map(async (box) => {
+          const outputImage = saveDir + "/" + imageName;
+          await sharp(bufferFromImage)
+            .extract({
+              width: parseInt(box.w),
+              height: parseInt(box.h),
+              left: parseInt(box.x),
+              top: parseInt(box.y),
+            })
+            .toFile(outputImage)
+            .then(() => {
+              paths.push(imageName);
+            })
+            .catch(() =>
+              node.error("An error occured, when image cropped and saved")
+            );
+        })
+      );
+      return paths;
+    }
+
+    async function makeBuffer(box) {
+      const buffer = await sharp(bufferFromImage)
+        .extract({
+          width: parseInt(box.w),
+          height: parseInt(box.h),
+          left: parseInt(box.x),
+          top: parseInt(box.y),
+        })
+        .toFormat("png")
+        .toBuffer();
+
+      return buffer;
     }
 
     function iou(box1, box2) {
-      // intersection은 겹치는 부분 넓이
-      // union은 합친 넓이인듯?
       return intersection(box1, box2) / union(box1, box2);
     }
 
@@ -255,6 +299,11 @@ module.exports = function (RED) {
       "hair drier",
       "toothbrush",
     ];
+  }
+
+  const mapping = new Map();
+  for (let i = 0; i < yolo_classes.length; i++) {
+    mapping.set(yolo_classes[i], i);
   }
 
   RED.nodes.registerType("good-object-detection", yolov8Node);
