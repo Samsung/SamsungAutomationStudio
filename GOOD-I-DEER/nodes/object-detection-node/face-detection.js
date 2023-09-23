@@ -7,24 +7,26 @@ module.exports = function (RED) {
 
     const node = this;
     const returnType = Number(config.returnType);
-    console.log(config.returnType);
     const saveDir = config.absolutePathDir;
     let bufferFromImage;
 
     node.on("input", async function (msg) {
-      const img = sharp(msg.payload);
       bufferFromImage = msg.payload;
+      // 이미지를 제대로 못만든다면!!!
+      console.log("여기오냐!!!");
+      const img = sharp(bufferFromImage);
+      console.log("못오냐!!!");
+      const boxes = await detect_face_on_image_informations(img);
       if (returnType <= 1) {
         if (returnType === 0) {
-          msg.payload = await detect_face_on_image_informations(img);
+          msg.payload = boxes;
         } else if (returnType === 1) {
-          msg.payload = await detect_face_on_image_imageBuffer(img);
+          msg.payload = await get_image_buffers(boxes);
         }
         node.send(msg);
       } else if (returnType === 2) {
-        // 저장 위치 존재하는지 검사해야함!!!!!!!!!!!!
         if (fs.existsSync(saveDir)) {
-          await detect_face_on_image_save(img);
+          save_images(boxes);
         } else {
           node.error("folder dosen't exists");
         }
@@ -32,20 +34,11 @@ module.exports = function (RED) {
     });
 
     async function detect_face_on_image_informations(img) {
+      // input 이미지를 만드는 과정이 잘못된다면?
       const [input, img_width, img_height] = await prepare_input(img);
       const output = await run_model(input);
       const boxes = process_output(output, img_width, img_height);
       return get_image_informations(boxes);
-    }
-
-    async function detect_face_on_image_imageBuffer(img) {
-      const boxes = await detect_face_on_image_informations(img);
-      return get_image_buffers(boxes);
-    }
-
-    async function detect_face_on_image_save(img) {
-      const boxes = await detect_face_on_image_informations(img);
-      save_images(boxes);
     }
 
     async function prepare_input(img) {
@@ -70,10 +63,13 @@ module.exports = function (RED) {
     }
 
     async function run_model(input) {
+      // 파일이 존재하지 않는다면!!!!
       const model = await ort.InferenceSession.create(
         `${__dirname}/model/yolov8n-face.onnx`
       );
+      // 여기서 뭔지 모를 에러가 발생한다면!!
       input = new ort.Tensor(Float32Array.from(input), [1, 3, 640, 640]);
+      // 여기서도 뭔지 모를 에러가...
       const outputs = await model.run({ images: input });
       return outputs["output0"].data;
     }
@@ -81,7 +77,7 @@ module.exports = function (RED) {
     function process_output(output, img_width, img_height) {
       let boxes = [];
       for (let index = 0; index < 8400; index++) {
-        const [class_id, prob] = [...Array(1).keys()] // 수정 필요
+        const [class_id, prob] = [...Array(1).keys()] // 수정 필요!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           .map((col) => [col, output[8400 * (col + 4) + index]])
           .reduce((accum, item) => (item[1] > accum[1] ? item : accum), [0, 0]);
         if (prob < config.threshold) {
@@ -172,6 +168,7 @@ module.exports = function (RED) {
     }
 
     async function makeBuffer(box) {
+      // 여기서 사진 추출 오류 발생할 수 있음!!!!!!
       const buffer = await sharp(bufferFromImage)
         .extract({
           width: parseInt(box.w),
