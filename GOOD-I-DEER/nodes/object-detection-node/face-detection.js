@@ -11,38 +11,32 @@ module.exports = function (RED) {
     let bufferFromImage;
 
     node.on("input", async function (msg) {
-      if (msg.payload === undefined) {
-        node.error("msg.payload is undefined. please send image buffer");
-        return;
-      }
-      bufferFromImage = msg.payload;
-      const img = sharp(bufferFromImage);
-      let boxes;
       try {
-        boxes = await detect_face_on_image_informations(img);
-      } catch (error) {
-        node.error(error);
-        return;
-      }
-
-      if (returnType <= 1) {
-        if (returnType === 0) {
-          msg.payload = boxes;
-        } else if (returnType === 1) {
-          msg.payload = await get_image_buffers(boxes);
+        bufferFromImage = msg.payload;
+        const img = sharp(bufferFromImage);
+        const boxes = await detect_face_on_image_informations(img);
+        msg.buff = msg.payload;
+        if (returnType <= 1) {
+          if (returnType === 0) {
+            msg.payload = boxes;
+          } else if (returnType === 1) {
+            msg.payload = await get_image_buffers(boxes);
+          }
+        } else if (returnType === 2) {
+          if (fs.existsSync(saveDir)) {
+            msg.payload = await save_images(boxes);
+          } else {
+            msg.payload = [];
+            node.error("folder dosen't exists");
+          }
         }
         node.send(msg);
-      } else if (returnType === 2) {
-        if (fs.existsSync(saveDir)) {
-          save_images(boxes);
-        } else {
-          node.error("folder dosen't exists");
-        }
+      } catch (error) {
+        node.log(error);
       }
     });
 
     async function detect_face_on_image_informations(img) {
-      // input 이미지를 만드는 과정이 잘못된다면?
       const [input, img_width, img_height] = await prepare_input(img);
       const output = await run_model(input);
       const boxes = process_output(output, img_width, img_height);
@@ -71,21 +65,10 @@ module.exports = function (RED) {
     }
 
     async function run_model(input) {
-      let model;
-      // 파일이 존재하지 않는다면!!!!
-      try {
-        model = await ort.InferenceSession.create(
-          `yolov8n-face.onnx`
-          // `${__dirname}/model/yolov8n-face.onnx`
-        );
-      } catch (error) {
-        // throw new Error(error.message + ". please reinstall npm package");
-        return;
-      }
-
-      // 여기서 뭔지 모를 에러가 발생한다면!!
+      const model = await ort.InferenceSession.create(
+        `${__dirname}/model/yolov8n-face.onnx`
+      );
       input = new ort.Tensor(Float32Array.from(input), [1, 3, 640, 640]);
-      // 여기서도 뭔지 모를 에러가...
       const outputs = await model.run({ images: input });
       return outputs["output0"].data;
     }
@@ -93,11 +76,8 @@ module.exports = function (RED) {
     function process_output(output, img_width, img_height) {
       let boxes = [];
       for (let index = 0; index < 8400; index++) {
-        const [class_id, prob] = [...Array(1).keys()] // 수정 필요!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-          .map((col) => [col, output[8400 * (col + 4) + index]])
-          .reduce((accum, item) => (item[1] > accum[1] ? item : accum), [0, 0]);
+        const prob = output[8400 * 4 + index];
         if (prob < config.threshold) {
-          // 확률이 threshold이하면 무시
           continue;
         }
         const label = "face";
@@ -141,18 +121,22 @@ module.exports = function (RED) {
       const result = [];
       await Promise.all(
         boxes.map(async (box) => {
-          const buffer = await makeBuffer(box);
-          result.push(buffer);
+          try {
+            const buffer = await makeBuffer(box);
+            result.push(buffer);
+          } catch (error) {
+            node.error("An error occured, when image cropped");
+          }
         })
       );
       return result;
     }
 
-    function save_images(boxes) {
+    async function save_images(boxes) {
       let faceCount = 1;
       const today = new Date();
+      let paths = [];
       const dateformat =
-        "/" +
         today.getFullYear() +
         (today.getMonth() + 1 < 10
           ? "0" + (today.getMonth() + 1)
@@ -165,26 +149,30 @@ module.exports = function (RED) {
         (today.getSeconds() < 10
           ? "0" + today.getSeconds()
           : today.getSeconds());
-      boxes.forEach(async (box) => {
-        const outputImage =
-          saveDir + dateformat + "_" + "face" + faceCount++ + ".png";
-        sharp(bufferFromImage)
-          .extract({
-            width: parseInt(box.w),
-            height: parseInt(box.h),
-            left: parseInt(box.x),
-            top: parseInt(box.y),
-          })
-          .toFile(outputImage)
-          .then(() => node.trace("Image cropped and saved in saveDir"))
-          .catch(() =>
-            node.error("An error occured, when image cropped and saved")
-          );
-      });
+      const imageName = dateformat + "_" + "face" + faceCount++ + ".png";
+      await Promise.all(
+        boxes.map(async (box) => {
+          const outputImage = saveDir + "/" + imageName;
+          await sharp(bufferFromImage)
+            .extract({
+              width: parseInt(box.w),
+              height: parseInt(box.h),
+              left: parseInt(box.x),
+              top: parseInt(box.y),
+            })
+            .toFile(outputImage)
+            .then(() => {
+              paths.push(imageName);
+            })
+            .catch(() =>
+              node.error("An error occured, when image cropped and saved")
+            );
+        })
+      );
+      return paths;
     }
 
     async function makeBuffer(box) {
-      // 여기서 사진 추출 오류 발생할 수 있음!!!!!!
       const buffer = await sharp(bufferFromImage)
         .extract({
           width: parseInt(box.w),
