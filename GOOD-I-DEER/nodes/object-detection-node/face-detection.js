@@ -12,10 +12,13 @@ module.exports = function (RED) {
 
     node.on("input", async function (msg) {
       bufferFromImage = msg.payload;
-      // 이미지를 제대로 못만든다면!!!
-      console.log("여기오냐!!!");
-      const img = sharp(bufferFromImage);
-      console.log("못오냐!!!");
+      let img;
+      try {
+        img = sharp(bufferFromImage);
+      } catch (error) {
+        node.error("input type is unsupported");
+        return;
+      }
       const boxes = await detect_face_on_image_informations(img);
       if (returnType <= 1) {
         if (returnType === 0) {
@@ -34,7 +37,6 @@ module.exports = function (RED) {
     });
 
     async function detect_face_on_image_informations(img) {
-      // input 이미지를 만드는 과정이 잘못된다면?
       const [input, img_width, img_height] = await prepare_input(img);
       const output = await run_model(input);
       const boxes = process_output(output, img_width, img_height);
@@ -67,9 +69,7 @@ module.exports = function (RED) {
       const model = await ort.InferenceSession.create(
         `${__dirname}/model/yolov8n-face.onnx`
       );
-      // 여기서 뭔지 모를 에러가 발생한다면!!
       input = new ort.Tensor(Float32Array.from(input), [1, 3, 640, 640]);
-      // 여기서도 뭔지 모를 에러가...
       const outputs = await model.run({ images: input });
       return outputs["output0"].data;
     }
@@ -77,11 +77,8 @@ module.exports = function (RED) {
     function process_output(output, img_width, img_height) {
       let boxes = [];
       for (let index = 0; index < 8400; index++) {
-        const [class_id, prob] = [...Array(1).keys()] // 수정 필요!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-          .map((col) => [col, output[8400 * (col + 4) + index]])
-          .reduce((accum, item) => (item[1] > accum[1] ? item : accum), [0, 0]);
+        const prob = output[8400 * 4 + index];
         if (prob < config.threshold) {
-          // 확률이 threshold이하면 무시
           continue;
         }
         const label = "face";
@@ -125,8 +122,12 @@ module.exports = function (RED) {
       const result = [];
       await Promise.all(
         boxes.map(async (box) => {
-          const buffer = await makeBuffer(box);
-          result.push(buffer);
+          try {
+            const buffer = await makeBuffer(box);
+            result.push(buffer);
+          } catch {
+            node.error("some image doesn't extracted.");
+          }
         })
       );
       return result;
@@ -171,7 +172,7 @@ module.exports = function (RED) {
       // 여기서 사진 추출 오류 발생할 수 있음!!!!!!
       const buffer = await sharp(bufferFromImage)
         .extract({
-          width: parseInt(box.w),
+          width: parseInt(box.w) + 2000,
           height: parseInt(box.h),
           left: parseInt(box.x),
           top: parseInt(box.y),
