@@ -7,6 +7,7 @@ module.exports = function (RED) {
 
     const node = this;
     const modelName = config.model;
+    const returnType = Number(config.returnType);
     const saveDir = config.absolutePathDir;
     let bufferFromImage;
 
@@ -26,7 +27,9 @@ module.exports = function (RED) {
           }
         } else if (returnType === 2) {
           if (fs.existsSync(saveDir)) {
-            objectsCount = Array(80);
+            objectsCount = Array(80)
+              .fill()
+              .map(() => 0);
             msg.payload = await save_images(boxes);
           } else {
             msg.payload = [];
@@ -153,14 +156,15 @@ module.exports = function (RED) {
         (today.getSeconds() < 10
           ? "0" + today.getSeconds()
           : today.getSeconds());
-      const imageName =
-        dateformat +
-        "_" +
-        box.label +
-        ++objectsCount[mapping.get(box.label)] +
-        ".png";
+
       await Promise.all(
         boxes.map(async (box) => {
+          const imageName =
+            dateformat +
+            "_" +
+            box.label +
+            ++objectsCount[mapping.get(box.label)] +
+            ".png";
           const outputImage = saveDir + "/" + imageName;
           await sharp(bufferFromImage)
             .extract({
@@ -299,11 +303,11 @@ module.exports = function (RED) {
       "hair drier",
       "toothbrush",
     ];
-  }
 
-  const mapping = new Map();
-  for (let i = 0; i < yolo_classes.length; i++) {
-    mapping.set(yolo_classes[i], i);
+    const mapping = new Map();
+    for (let i = 0; i < yolo_classes.length; i++) {
+      mapping.set(yolo_classes[i], i);
+    }
   }
 
   RED.nodes.registerType("good-object-detection", yolov8Node);
