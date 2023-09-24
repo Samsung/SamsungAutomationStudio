@@ -15,15 +15,36 @@
           const operation = String($("#node-input-operation").val());
           console.log(operation);
 
-          if (operation == "create") {
+          if (operation == "list") {
+            $("#forms-dbName").css("display", "none");
+            $("#forms-create").css("display", "none");
+            $("#forms-query").css("display", "none");
+            $("#forms-delete").css("display", "none");
+          } else if (operation == "create") {
+            $("#forms-dbName").css("display", "block");
             $("#forms-create").css("display", "block");
             $("#forms-query").css("display", "none");
+            $("#forms-delete").css("display", "none");
           } else if (operation == "insert") {
+            $("#forms-dbName").css("display", "block");
             $("#forms-create").css("display", "none");
             $("#forms-query").css("display", "none");
+            $("#forms-delete").css("display", "none");
           } else if (operation == "query") {
+            $("#forms-dbName").css("display", "block");
             $("#forms-create").css("display", "none");
             $("#forms-query").css("display", "block");
+            $("#forms-delete").css("display", "none");
+          } else if (operation == "delete") {
+            $("#forms-dbName").css("display", "block");
+            $("#forms-create").css("display", "none");
+            $("#forms-query").css("display", "none");
+            $("#forms-delete").css("display", "block");
+          } else if (operation == "drop") {
+            $("#forms-dbName").css("display", "block");
+            $("#forms-create").css("display", "none");
+            $("#forms-query").css("display", "none");
+            $("#forms-delete").css("display", "none");
           }
           return true;
         },
@@ -43,6 +64,7 @@
           return nResults > 0;
         },
       },
+      ids: { value: "" },
     },
     inputs: 1,
     outputs: 1,
@@ -58,11 +80,6 @@
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" />
-  </div>
-
-  <div class="form-row">
-    <label for="node-input-dbName"><i class="fa fa-database"></i> DB Name</label>
-    <input type="text" id="node-input-dbName" placeholder="Database Name" autocomplete="off" />
   </div>
 
   <div class="form-row">
@@ -90,10 +107,18 @@
   <div class="form-row">
     <label for="node-input-operation"><i class="fa fa-wrench"></i> Operation</label>
     <select type="text" id="node-input-operation" style="width:70%!important;">
+      <option value="list">list</option>
       <option value="create">create</option>
       <option value="insert">insert</option>
       <option value="query">query</option>
+      <option value="delete">delete</option>
+      <option value="drop">drop</option>
     </select>
+  </div>
+
+  <div class="form-row" id="forms-dbName">
+    <label for="node-input-dbName"><i class="fa fa-database"></i> DB Name</label>
+    <input type="text" id="node-input-dbName" placeholder="Database Name" autocomplete="off" />
   </div>
 
   <div id="forms-create">
@@ -121,6 +146,13 @@
       <p id="nResults-warning" style="color: red; display: none; margin-left: 105px;">
         Result Count > 0
       </p>
+    </div>
+  </div>
+
+  <div id="forms-delete">
+    <div class="form-row">
+      <label for="node-input-ids"><i class="fa fa-wrench"></i> IDs</label>
+      <input type="text" id="node-input-ids" value="" placeholder="IDs" autocomplete="off" />
     </div>
   </div>
 </script>

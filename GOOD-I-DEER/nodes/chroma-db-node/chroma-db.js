@@ -9,8 +9,10 @@ module.exports = function (RED) {
     });
 
     async function execute(msg) {
-      if (config.operation == "create") {
-        const collection = await chroma.getOrCreateCollection({
+      if (config.operation == "list") {
+        msg.payload = await chroma.listCollections();
+      } else if (config.operation == "create") {
+        msg.payload = await chroma.getOrCreateCollection({
           name: config.dbName,
           metadata: {
             "hnsw:space": config.distance,
@@ -37,6 +39,18 @@ module.exports = function (RED) {
         });
 
         msg.payload = queryData.distances[0];
+      } else if (config.operation == "delete") {
+        const collection = await chroma.getCollection({
+          name: config.dbName,
+        });
+
+        msg.payload = await collection.delete({
+          ids: config.ids,
+        });
+      } else if (config.operation == "drop") {
+        msg.payload = await chroma.deleteCollection({
+          name: config.dbName,
+        });
       }
     }
 
