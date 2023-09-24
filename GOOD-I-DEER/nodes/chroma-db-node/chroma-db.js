@@ -9,48 +9,54 @@ module.exports = function (RED) {
     });
 
     async function execute(msg) {
-      if (config.operation == "list") {
-        msg.payload = await chroma.listCollections();
-      } else if (config.operation == "create") {
-        msg.payload = await chroma.getOrCreateCollection({
-          name: config.dbName,
-          metadata: {
-            "hnsw:space": config.distance,
-          },
-        });
-      } else if (config.operation == "insert") {
-        const collection = await chroma.getCollection({
-          name: config.dbName,
-        });
+      switch (config.operation) {
+        case "list":
+          msg.payload = await chroma.listCollections();
+          break;
+        case "create":
+          msg.payload = await chroma.getOrCreateCollection({
+            name: config.dbName,
+            metadata: {
+              "hnsw:space": config.distance,
+            },
+          });
+          break;
+        case "insert":
+          var collection = await chroma.getCollection({
+            name: config.dbName,
+          });
 
-        const count = (await collection.count()) + 1;
-        await collection.add({
-          ids: ["face-id-" + count],
-          embeddings: Array.from(msg.payload),
-        });
-      } else if (config.operation == "query") {
-        const collection = await chroma.getCollection({
-          name: config.dbName,
-        });
+          const count = (await collection.count()) + 1;
+          await collection.add({
+            ids: ["face-id-" + count],
+            embeddings: Array.from(msg.payload),
+          });
+          break;
+        case "query":
+          var collection = await chroma.getCollection({
+            name: config.dbName,
+          });
 
-        const queryData = await collection.query({
-          queryEmbeddings: Array.from(msg.payload),
-          nResults: config.nResults,
-        });
+          const queryData = await collection.query({
+            queryEmbeddings: Array.from(msg.payload),
+            nResults: config.nResults,
+          });
 
-        msg.payload = queryData.distances[0];
-      } else if (config.operation == "delete") {
-        const collection = await chroma.getCollection({
-          name: config.dbName,
-        });
+          msg.payload = queryData.distances[0];
+          break;
+        case "delete":
+          var collection = await chroma.getCollection({
+            name: config.dbName,
+          });
 
-        msg.payload = await collection.delete({
-          ids: config.ids,
-        });
-      } else if (config.operation == "drop") {
-        msg.payload = await chroma.deleteCollection({
-          name: config.dbName,
-        });
+          msg.payload = await collection.delete({
+            ids: config.ids,
+          });
+          break;
+        case "drop":
+          msg.payload = await chroma.deleteCollection({
+            name: config.dbName,
+          });
       }
     }
 

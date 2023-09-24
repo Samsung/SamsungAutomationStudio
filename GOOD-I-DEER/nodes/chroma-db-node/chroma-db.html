@@ -14,37 +14,32 @@
         validate: function (v) {
           const operation = String($("#node-input-operation").val());
 
-          if (operation == "list") {
-            $("#forms-dbName").css("display", "none");
-            $("#forms-create").css("display", "none");
-            $("#forms-query").css("display", "none");
-            $("#forms-delete").css("display", "none");
-          } else if (operation == "create") {
-            $("#forms-dbName").css("display", "block");
-            $("#forms-create").css("display", "block");
-            $("#forms-query").css("display", "none");
-            $("#forms-delete").css("display", "none");
-          } else if (operation == "insert") {
-            $("#forms-dbName").css("display", "block");
-            $("#forms-create").css("display", "none");
-            $("#forms-query").css("display", "none");
-            $("#forms-delete").css("display", "none");
-          } else if (operation == "query") {
-            $("#forms-dbName").css("display", "block");
-            $("#forms-create").css("display", "none");
-            $("#forms-query").css("display", "block");
-            $("#forms-delete").css("display", "none");
-          } else if (operation == "delete") {
-            $("#forms-dbName").css("display", "block");
-            $("#forms-create").css("display", "none");
-            $("#forms-query").css("display", "none");
-            $("#forms-delete").css("display", "block");
-          } else if (operation == "drop") {
-            $("#forms-dbName").css("display", "block");
-            $("#forms-create").css("display", "none");
-            $("#forms-query").css("display", "none");
-            $("#forms-delete").css("display", "none");
+          $("#forms-dbName").css("display", "none");
+          $("#forms-create").css("display", "none");
+          $("#forms-query").css("display", "none");
+          $("#forms-delete").css("display", "none");
+
+          switch (operation) {
+            case "create":
+              $("#forms-dbName").css("display", "block");
+              $("#forms-create").css("display", "block");
+              break;
+            case "insert":
+              $("#forms-dbName").css("display", "block");
+              break;
+            case "query":
+              $("#forms-dbName").css("display", "block");
+              $("#forms-query").css("display", "block");
+              break;
+            case "delete":
+              $("#forms-dbName").css("display", "block");
+              $("#forms-delete").css("display", "block");
+              break;
+            case "drop":
+              $("#forms-dbName").css("display", "block");
+              break;
           }
+
           return true;
         },
       },
