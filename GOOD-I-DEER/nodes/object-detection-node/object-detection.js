@@ -72,7 +72,7 @@ module.exports = function (RED) {
       // console.log(__dirname);
       // console.log(process.cwd());
       const model = await ort.InferenceSession.create(
-        `${__dirname}/model/${modelName}.onnx`
+        `${__dirname}/../model/${modelName}.onnx`
       );
       // print("model", model);
       // print("input", input);

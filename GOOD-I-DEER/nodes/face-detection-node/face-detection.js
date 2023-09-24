@@ -66,7 +66,7 @@ module.exports = function (RED) {
 
     async function run_model(input) {
       const model = await ort.InferenceSession.create(
-        `${__dirname}/model/yolov8n-face.onnx`
+        `${__dirname}/../model/yolov8n-face.onnx`
       );
       input = new ort.Tensor(Float32Array.from(input), [1, 3, 640, 640]);
       const outputs = await model.run({ images: input });

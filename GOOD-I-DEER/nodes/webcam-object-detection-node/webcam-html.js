@@ -73,7 +73,7 @@ module.exports.code = (config) => {
 
             // model load
             async function loadModel() {
-                return await ort.InferenceSession.create("./model/" + modelName + ".onnx");
+                return await ort.InferenceSession.create("../model/" + modelName + ".onnx");
             }
 
             navigator.mediaDevices.getUserMedia(videoConstraints)
@@ -192,16 +192,16 @@ module.exports.code = (config) => {
                     const x2 = (xc + w / 2) / 640 * img_width;
                     const y2 = (yc + h / 2) / 640 * img_height;
                     boxes.push([x1, y1, x2, y2, label, class_id, prob]);
-            }
+                }
   
-            boxes = boxes.sort((box1,box2) => box2[5]-box1[5])
-            const result = [];
-            while (boxes.length > 0) {
-                result.push(boxes[0]);
-                boxes = boxes.filter(box => iou(boxes[0], box) < 0.7);
+                boxes = boxes.sort((box1,box2) => box2[5]-box1[5])
+                const result = [];
+                while (boxes.length > 0) {
+                    result.push(boxes[0]);
+                    boxes = boxes.filter(box => iou(boxes[0], box) < 0.7);
+                }
+                return result;
             }
-            return result;
-        }
 
            function iou(box1,box2) {
                 return intersection(box1,box2)/union(box1,box2);
