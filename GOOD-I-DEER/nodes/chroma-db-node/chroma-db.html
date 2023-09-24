@@ -13,7 +13,6 @@
         required: true,
         validate: function (v) {
           const operation = String($("#node-input-operation").val());
-          console.log(operation);
 
           if (operation == "list") {
             $("#forms-dbName").css("display", "none");
@@ -53,7 +52,6 @@
         value: "1",
         validate: function (v) {
           let nResults = Number($("#node-input-nResults").val());
-          console.log(nResults);
 
           if (nResults <= 0) {
             $("#nResults-warning").css("display", "block");
