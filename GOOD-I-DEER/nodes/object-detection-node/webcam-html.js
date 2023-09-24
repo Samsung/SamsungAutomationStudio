@@ -48,8 +48,13 @@ module.exports.code = (config) => {
             </div>
         </div>
 
-
+        <script src="/socket.io/socket.io.js"></script>
         <script type="module"> 
+            let ws = new WebSocket("${config.socketUrl}");
+            // let socket = io.connect("${config.socketUrl}");
+            
+        
+
             const modelName = "${config.model}";
 
             const videoElement = document.getElementById('input-video');
@@ -87,6 +92,14 @@ module.exports.code = (config) => {
 
                     const buffer = getBuffer();
                     const boxes = await detect_objects_on_image(buffer);
+                    
+                    if(ws.OPEN){
+                        let msg = {
+                            payload: boxes,
+                        };
+                        ws.send(JSON.stringify(msg));
+                    }
+
                     draw_image_and_boxes(boxes);
                 }, 100);
             })
@@ -110,8 +123,8 @@ module.exports.code = (config) => {
 
             function draw_image_and_boxes(boxes) {
                 const ctx = canvasElement.getContext("2d");
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
-                
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);                 
+
                 boxes.forEach(([x1, y1, x2, y2, label, idx, prob]) => {
                     ctx.strokeStyle = colors[idx];
                     ctx.lineWidth = 5;
@@ -125,6 +138,7 @@ module.exports.code = (config) => {
                     ctx.fillStyle = "#ffffff";
                     ctx.fillText(label + " - " + ((prob * 100).toFixed(1)) + "%", 640 - x2 + 2, y1 + 22);
                 });
+                
                 
             }
 
@@ -231,7 +245,6 @@ module.exports.code = (config) => {
                             '#4a39a4', '#588fdf', '#a5dba2', '#e8f76d', '#f049e7', '#528fa0', '#c32535', '#80ab5d', '#e6f322', '#d4af25', 
                             '#19783e', '#ff5fdf', '#69c83e', '#8c5ac6', '#503754', '#2481fb', '#c91d51', '#0dac54', '#503df1', '#2d2320'
                         ]
-
 
         </script>
     </body>
