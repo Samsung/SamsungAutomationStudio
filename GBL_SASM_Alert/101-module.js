@@ -50,10 +50,8 @@ module.exports = function (RED) {
     const workspaces = {};
     const subflows = {};
 
-    var count = 0;
     // Iterate through all nodes in the flow.
     RED.nodes.eachNode(node => {
-      count++;
       allNode[node.id] = Object.assign({}, node);
       if (node.type === "tab") {
         workspaces[node.id] = node;
@@ -61,7 +59,7 @@ module.exports = function (RED) {
         subflows[node.id] = node;
       } else if (node.type === "moduleflows") {
         moduleflowNode[node.id] = node;
-      } else if (node.type === "module_in") {
+      } else if (node.type === "GBL_module_in") {
         moduleinNode[node.id] = node;
         if (typeof namekeyNode[node.name] === "undefined")
           namekeyNode[node.name] = [];
@@ -85,55 +83,9 @@ module.exports = function (RED) {
           });
         });
       } else {
-        RED.events.emit("GBLtext:" + namekeyNode[nodename][0], {
-          // fill: "green",
-          // shape: "dot",
-          // text: "pass"
-        });
+        RED.events.emit("GBLtext:" + namekeyNode[nodename][0], {});
       }
     }
-
-    // 비동기로 시간 간격 늘려서 입력하기
-    // var delay_time = 65;
-    // for (const nodename in namekeyNode) {
-    //   if (namekeyNode[nodename].length != 1) {
-    //     namekeyNode[nodename].forEach(nodeID => {
-    //       setTimeout(function () {
-    //         RED.events.emit("GBLtext:" + nodeID, {
-    //           fill: "red",
-    //           shape: "dot",
-    //           text: "error"
-    //         });
-    //       }, delay_time);
-    //       delay_time += 65;
-    //     });
-    //   } else {
-    //     setTimeout(function () {
-    //       RED.events.emit("GBLtext:" + namekeyNode[nodename][0], {});
-    //     }, delay_time);
-    //     delay_time += 65;
-    //   }
-    // }
-
-    // 시간 복잡도 고의로 늘리기
-    // RED.nodes.eachNode(node => {
-    //   if (node.type === "module_in") {
-    //     console.log("module in");
-    //     var count = 0;
-    //     RED.nodes.eachNode(compare_node => {
-    //       if (node.name == compare_node.name) count++;
-    //     });
-    //     console.log(count);
-    //     if (count != 1) {
-    //       console.log("중복");
-    //       RED.events.emit("GBLtext:" + node.id, {
-    //         fill: "red",
-    //         shape: "dot",
-    //         text: "error"
-    //       });
-    //     } else RED.events.emit("GBLtext:" + node.id, {});
-    //   }
-    // });
 
     Object.assign(myNodeinFlow, {
       ...moduleflowNode,
@@ -215,24 +167,12 @@ module.exports = function (RED) {
       }
     });
   }
-  RED.nodes.registerType("module_in", module_in);
+  RED.nodes.registerType("GBL_module_in", module_in);
   function module_in(config) {
     RED.nodes.createNode(this, config);
     const node = this;
 
     initMapping(node.context().global);
-
-    // if (config.duplicatedError) {
-    //   console.log("중복이네");
-    //   node.status({
-    //     fill: "red",
-    //     shape: "dot",
-    //     text: `name "${config.name}" is duplication`
-    //   });
-    // } else {
-    //   console.log("중복아님");
-    //   node.status({});
-    // }
 
     var event = "GBLmodule:" + node.id;
     var event_fun = function (msg) {
@@ -242,7 +182,6 @@ module.exports = function (RED) {
 
     var node_text_event = "GBLtext:" + node.id;
     var node_text_event_fun = function (status) {
-      // node.receive({ GBL__: status });
       node.status(status);
     };
     RED.events.on(node_text_event, node_text_event_fun);
@@ -250,17 +189,9 @@ module.exports = function (RED) {
     this.on("close", function () {
       RED.events.removeListener(event, event_fun);
       RED.events.removeListener(node_text_event, node_text_event_fun);
-      // node.status({});
     });
 
     this.on("input", function (msg) {
-      if (typeof msg["GBL__"] != "undefined") {
-        console.log(node.id);
-        console.log(msg["GBL__"]);
-        node.status(msg["GBL__"]);
-        return;
-      }
-
       node.send(msg);
     });
   }

@@ -50,7 +50,7 @@
       //1.1 init module options
       let currentTab = RED.workspaces.active();
       RED.nodes.eachNode(function (node) {
-        if (node.type === "module_in" && node.z == currentTab) {
+        if (node.type === "GBL_module_in" && node.z == currentTab) {
           let option = $("<option></option>");
           option.text(node.name);
           option.val(node.id);
@@ -143,7 +143,7 @@
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType("module_in", {
+  RED.nodes.registerType("GBL_module_in", {
     category: "GBL-SASM-Alert",
     color: "#FA8072",
     defaults: {
@@ -180,7 +180,7 @@
       let allModuleNames = new Set();
       RED.nodes.eachNode(node => {
         if (
-          node.type === "module_in" &&
+          node.type === "GBL_module_in" &&
           node.z == currentTab &&
           node.id != this.id //except this node
         ) {
@@ -218,7 +218,7 @@
         let currentTab = RED.workspaces.active();
         RED.nodes.eachNode(node => {
           if (
-            node.type === "module_in" &&
+            node.type === "GBL_module_in" &&
             node.z == currentTab &&
             node.id != thiz.id //except this node
           ) {
@@ -329,7 +329,7 @@
   </div>
 </script>
 
-<script type="text/html" data-template-name="module_in">
+<script type="text/html" data-template-name="GBL_module_in">
   <div class="form-row" id="actionflows-name">
     <label for="module-in-node-name" id="node-name-label"
       ><i class="icon-tag"></i> Name</label
@@ -374,7 +374,7 @@
     <p>module descrption text</p>
   </div>
 </script>
-<script type="text/html" data-help-name="module_in">
+<script type="text/html" data-help-name="GBL_module_in">
   <div>
     <p>module_in descrption text</p>
   </div>
