@@ -6,25 +6,28 @@ module.exports = function (RED) {
     const fs = require("fs");
 
     const node = this;
-    const modelName = config.model;
     const returnType = Number(config.returnType);
     const saveDir = config.absolutePathDir;
     let bufferFromImage;
 
+    let model;
     let objectsCount;
 
     node.on("input", async function (msg) {
       try {
+        if (model === undefined) {
+          model = await ort.InferenceSession.create(
+            `${__dirname}/model/${config.model}.onnx`
+          );
+        }
         bufferFromImage = msg.payload;
         const img = sharp(bufferFromImage);
         const boxes = await detect_objects_on_image_informations(img);
         msg.buff = msg.payload;
-        if (returnType <= 1) {
-          if (returnType === 0) {
-            msg.payload = boxes;
-          } else if (returnType === 1) {
-            msg.payload = await get_image_buffers(boxes);
-          }
+        if (returnType === 0) {
+          msg.payload = boxes;
+        } else if (returnType === 1) {
+          msg.payload = await get_image_buffers(boxes);
         } else if (returnType === 2) {
           if (fs.existsSync(saveDir)) {
             objectsCount = Array(80)
@@ -71,9 +74,6 @@ module.exports = function (RED) {
     }
 
     async function run_model(input) {
-      const model = await ort.InferenceSession.create(
-        `${__dirname}/model/${modelName}.onnx`
-      );
       input = new ort.Tensor(Float32Array.from(input), [1, 3, 640, 640]);
       const outputs = await model.run({ images: input });
       return outputs["output0"].data;
@@ -174,15 +174,13 @@ module.exports = function (RED) {
               top: parseInt(box.y),
             })
             .toFile(outputImage)
-            .then(() => {
-              paths.push(imageName);
-            })
+            .then(() => paths.push(imageName))
             .catch(() =>
               node.error("An error occured, when image cropped and saved")
             );
         })
       );
-      return paths;
+      return paths.sort();
     }
 
     async function makeBuffer(box) {
