@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType("webcam-object-detection", {
-      category: "Samsung AutomationStudio",
-      color: "#2c6e3b",
+      category: "GOOD I DEER",
+      color: "#1AE5BE",
       defaults: {
         name: { value: "" },
         model: { value: "YoloV8n"},
@@ -20,8 +20,9 @@
       inputs: 1,
       outputs: 1,
       icon: "font-awesome/fa-camera-retro",
+      paletteLabel: "Good Webcam Object Detection",
       label: function () {
-        return this.name || "webcam-object-detection";
+        return this.name || "Good Webcam Object Detection";
       },
       oneditprepare: function () {
         // model 유형 선택

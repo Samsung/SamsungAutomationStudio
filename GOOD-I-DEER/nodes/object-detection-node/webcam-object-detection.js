@@ -1,14 +1,14 @@
 "use-strict";
 
 module.exports = function(RED) {
-    const path = require('path');
+    const staticServer = require('../../static-server')(RED);
 
     function webcamYoloNode(config) {
         RED.nodes.createNode(this, config)
         const node = this;
         
         function HTML() {
-            config.aa = 'testes';
+            console.log("HTML()의 config: ", config);
             return require('./webcam-html.js').code(config)
         }
         
