@@ -1,6 +1,4 @@
 module.exports = function (RED) {
-  // 'use strict'
-
   function yolov8Node(config) {
     RED.nodes.createNode(this, config);
     const ort = require("onnxruntime-node");
@@ -19,7 +17,7 @@ module.exports = function (RED) {
     node.on("input", async function (msg) {
       const buf = msg.payload;
       // let start = new Date();
-      const boxes = await detect_objects_on_image(msg, buf);
+      const boxes = await detect_objects_on_image(buf);
       // let end = new Date();
       // console.log(end - start, "ms");
       // node.send(boxes);
@@ -28,7 +26,7 @@ module.exports = function (RED) {
       node.send(msg);
     });
 
-    async function detect_objects_on_image(msg, buf) {
+    async function detect_objects_on_image(buf) {
       // =================================================================
       // print("buf", buf);c
 
@@ -134,7 +132,15 @@ module.exports = function (RED) {
       const result = [];
       while (boxes.length > 0) {
         // 정확도 높은거 먼저 푸시하기
-        result.push(boxes[0]);
+        const info = {
+          label: boxes[0][4],
+          x: boxes[0][0],
+          y: boxes[0][1],
+          w: boxes[0][2] - boxes[0][0],
+          h: boxes[0][3] - boxes[0][1],
+          prob: boxes[0][5],
+        };
+        result.push(info);
         // 지금 정확도 가장 높은 박스랑 비교해서 70퍼센트 이상 겹치면 제거
         boxes = boxes.filter((box) => iou(boxes[0], box) < 0.7);
       }
@@ -251,5 +257,5 @@ module.exports = function (RED) {
     ];
   }
 
-  RED.nodes.registerType("object-detection", yolov8Node);
+  RED.nodes.registerType("good-object-detection", yolov8Node);
 };

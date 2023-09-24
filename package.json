@@ -22,9 +22,13 @@
       "AWS": "301-AWS.js",
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
-      "ObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js",
-      "WebcamObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/webcam-object-detection.js",
-      "StaticConfig": "GOOD-I-DEER/nodes/config-node/static-config.js"
+      "GoodObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js",
+      "GoodFaceDetection": "GOOD-I-DEER/nodes/object-detection-node/face-detection.js",
+      "GoodWebcamObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/webcam-object-detection.js",
+      "GoodStaticConfig": "GOOD-I-DEER/nodes/config-node/static-config.js",
+      "ChromaDB": "GOOD-I-DEER/nodes/chroma-db-node/chroma-db.js",
+      "FaceVectorization": "GOOD-I-DEER/nodes/face-vectorization-node/face-vectorization.js",
+      "CalculateCosine": "GOOD-I-DEER/nodes/cosine-similarity-node/calculate-cosine.js"
     }
   },
   "dependencies": {
@@ -45,7 +49,8 @@
     "pg": "^8.3.0",
     "proxy-agent": "^5.0",
     "serve-static": "^1.15.0",
-    "sharp": "^0.32.1",
+    "chromadb": "^1.5.9",
+    "sharp": "^0.32.6",
     "when": "3.7.8"
   },
   "devDependencies": {
