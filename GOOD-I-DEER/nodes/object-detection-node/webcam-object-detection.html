@@ -4,9 +4,9 @@
       color: "#1AE5BE",
       defaults: {
         name: { value: "" },
-        model: { value: "YoloV8n"},
+        model: { value: "yoloV8n"},
         threshold: {value: 0.5, validate: function(v){
-          let threshold = Number($("#node-input-threshold").val());
+          let threshold = v;
           
           if(threshold < 0 || threshold >= 1){
             $("#threshold-warning").css('display', 'block'); 
@@ -25,7 +25,6 @@
         return this.name || "Good Webcam Object Detection";
       },
       oneditprepare: function () {
-        // model 유형 선택
           $("#node-input-model").typedInput({
             types:[
               {
@@ -40,7 +39,6 @@
           }
         );
 
-        // webcam 미리 보기
         const inputVideo = document.getElementById('input-video')
         const constraints = {
             audio: false, 
@@ -59,9 +57,7 @@
                 console.log(err)
             })
             
-            // server url 기본 값 설정
             $("#node-input-socketUrl").val() === '' && $("#node-input-socketUrl").val('ws://localhost:1880/ws/socket');
-            // $("#node-input-serverUrl").val('localhost');
         }
 
     });
