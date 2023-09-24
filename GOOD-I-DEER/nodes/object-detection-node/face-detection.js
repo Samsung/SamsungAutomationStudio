@@ -11,22 +11,28 @@ module.exports = function (RED) {
     let bufferFromImage;
 
     node.on("input", async function (msg) {
-      const img = sharp(msg.payload);
-      bufferFromImage = msg.payload;
-      if (returnType <= 1) {
-        if (returnType === 0) {
-          msg.payload = await detect_face_on_image_informations(img);
-        } else if (returnType === 1) {
-          msg.payload = await detect_face_on_image_imageBuffer(img);
+      try {
+        bufferFromImage = msg.payload;
+        const img = sharp(bufferFromImage);
+        const boxes = await detect_face_on_image_informations(img);
+        msg.buff = msg.payload;
+        if (returnType <= 1) {
+          if (returnType === 0) {
+            msg.payload = boxes;
+          } else if (returnType === 1) {
+            msg.payload = await get_image_buffers(boxes);
+          }
+        } else if (returnType === 2) {
+          if (fs.existsSync(saveDir)) {
+            msg.payload = await save_images(boxes);
+          } else {
+            msg.payload = [];
+            node.error("folder dosen't exists");
+          }
         }
         node.send(msg);
-      } else if (returnType === 2) {
-        // 저장 위치 존재하는지 검사해야함!!!!!!!!!!!!
-        if (fs.existsSync(saveDir)) {
-          await detect_face_on_image_save(img);
-        } else {
-          node.error("folder dosen't exists");
-        }
+      } catch (error) {
+        node.log(error);
       }
     });
 
@@ -35,16 +41,6 @@ module.exports = function (RED) {
       const output = await run_model(input);
       const boxes = process_output(output, img_width, img_height);
       return get_image_informations(boxes);
-    }
-
-    async function detect_face_on_image_imageBuffer(img) {
-      const boxes = await detect_face_on_image_informations(img);
-      return get_image_buffers(boxes);
-    }
-
-    async function detect_face_on_image_save(img) {
-      const boxes = await detect_face_on_image_informations(img);
-      save_images(boxes);
     }
 
     async function prepare_input(img) {
@@ -80,11 +76,8 @@ module.exports = function (RED) {
     function process_output(output, img_width, img_height) {
       let boxes = [];
       for (let index = 0; index < 8400; index++) {
-        const [class_id, prob] = [...Array(1).keys()] // 수정 필요
-          .map((col) => [col, output[8400 * (col + 4) + index]])
-          .reduce((accum, item) => (item[1] > accum[1] ? item : accum), [0, 0]);
+        const prob = output[8400 * 4 + index];
         if (prob < config.threshold) {
-          // 확률이 threshold이하면 무시
           continue;
         }
         const label = "face";
@@ -128,18 +121,22 @@ module.exports = function (RED) {
       const result = [];
       await Promise.all(
         boxes.map(async (box) => {
-          const buffer = await makeBuffer(box);
-          result.push(buffer);
+          try {
+            const buffer = await makeBuffer(box);
+            result.push(buffer);
+          } catch (error) {
+            node.error("An error occured, when image cropped");
+          }
         })
       );
       return result;
     }
 
-    function save_images(boxes) {
+    async function save_images(boxes) {
       let faceCount = 1;
       const today = new Date();
+      let paths = [];
       const dateformat =
-        "/" +
         today.getFullYear() +
         (today.getMonth() + 1 < 10
           ? "0" + (today.getMonth() + 1)
@@ -152,22 +149,27 @@ module.exports = function (RED) {
         (today.getSeconds() < 10
           ? "0" + today.getSeconds()
           : today.getSeconds());
-      boxes.forEach(async (box) => {
-        const outputImage =
-          saveDir + dateformat + "_" + "face" + faceCount++ + ".png";
-        sharp(bufferFromImage)
-          .extract({
-            width: parseInt(box.w),
-            height: parseInt(box.h),
-            left: parseInt(box.x),
-            top: parseInt(box.y),
-          })
-          .toFile(outputImage)
-          .then(() => node.trace("Image cropped and saved in saveDir"))
-          .catch(() =>
-            node.error("An error occured, when image cropped and saved")
-          );
-      });
+      const imageName = dateformat + "_" + "face" + faceCount++ + ".png";
+      await Promise.all(
+        boxes.map(async (box) => {
+          const outputImage = saveDir + "/" + imageName;
+          await sharp(bufferFromImage)
+            .extract({
+              width: parseInt(box.w),
+              height: parseInt(box.h),
+              left: parseInt(box.x),
+              top: parseInt(box.y),
+            })
+            .toFile(outputImage)
+            .then(() => {
+              paths.push(imageName);
+            })
+            .catch(() =>
+              node.error("An error occured, when image cropped and saved")
+            );
+        })
+      );
+      return paths;
     }
 
     async function makeBuffer(box) {
@@ -207,5 +209,5 @@ module.exports = function (RED) {
     }
   }
 
-  RED.nodes.registerType("face-detection", yolov8NodeFace);
+  RED.nodes.registerType("good-face-detection", yolov8NodeFace);
 };
