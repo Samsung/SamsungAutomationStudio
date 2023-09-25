@@ -89,18 +89,18 @@ module.exports.code = (config) => {
                 
                 videoElement2.play();
                 
-                setInterval(async()=>{
-                    drawImage(videoElement);
+                if(ws.OPEN){
+                    setInterval(async()=>{
+                        drawImage(videoElement);
 
-                    const buffer = getBuffer();
-                    const boxes = await detect_objects_on_image(buffer);
-                    
-                    if(ws.OPEN){
+                        const buffer = getBuffer();
+                        const boxes = await detect_objects_on_image(buffer);
+                                              
                         ws.send(boxes);
-                    }
-
-                    draw_image_and_boxes(boxes);
-                }, 100);
+                        
+                        draw_image_and_boxes(boxes);
+                    }, 100);
+                }
             })
             .catch(err => {
                 console.log(err);
