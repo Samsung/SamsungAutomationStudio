@@ -1,11 +1,46 @@
 <style>
   .property-container {
-    width: 90%;
+    width: 100%;
     margin: 15px 0;
   }
   .property-inner {
     display: flex;
     justify-content: space-between;
+    padding: 8px;
+  }
+  div.property-list {
+    border: solid 1px #aaa;
+    background-color: #e6eeff;
+    margin: 8px 0;
+  }
+  textarea.property-description {
+    width: 90%;
+    height: 8rem;
+    resize: none;
+    margin: 0 5%;
+  }
+  div.toggle-button {
+    border: solid 1px #aaa;
+    background-color: #ccc;
+    cursor: pointer;
+    padding: 8px 8px;
+  }
+  #node-id {
+    display: none;
+  }
+  #node-name {
+    display: none;
+  }
+  #node-property-name {
+    width: 30%;
+    word-break: break-all;
+  }
+  #node-property-value {
+    width: 50%;
+    word-break: break-all;
+  }
+  .property-checkbox {
+    width: 20%;
   }
 </style>
 
@@ -28,7 +63,7 @@
         $(".property-list").hide();
 
         // click event handler for toggle-button
-        $("button.toggle-button").click(function () {
+        $("div.toggle-button").click(function () {
           $(this.nextSibling).toggle();
         });
 
@@ -42,9 +77,6 @@
                   "placeholder",
                   "Please write a description for the property."
                 )
-                .css("width", "100%")
-                .css("height", "8rem")
-                .css("resize", "none")
             );
           } else {
             $(this.parentNode.parentNode).children()[1].remove();
@@ -63,24 +95,48 @@
         return {
           nodeId: node.id,
           nodeName: node.name || node.type,
-          properties: Object.keys(node._config).filter(
-            config => config !== "x" && config !== "y"
+          properties: Object.entries(node._config).filter(
+            config => config[0] !== "x" && config[0] !== "y"
           )
         };
       });
+      const $nodeCheckboxContainer = $("#node-checkbox-container");
+      if (moduleProperties) {
+        const $nodesTitle = $("<h3>").text("Nodes in current module");
+        $nodeCheckboxContainer.prepend($nodesTitle);
+      }
 
       const nodeCheckboxList = $("#node-checkbox-list");
-
       moduleProperties.forEach(element => {
         // add the node name to toggle properties.
         const $node = $("<div>").attr("class", "form-row");
-        const $nodeName = $("<label>").text(element.nodeName);
-        const $toggleButton = $("<button>")
+        const $nodeName = $("<div>")
           .attr("class", "toggle-button")
-          .html("&#9662;");
+          .html(element.nodeName + " &#9660;");
         const $propertyList = $("<div>").attr("class", "property-list");
-        $node.append($nodeName).append($toggleButton).append($propertyList);
+        const $propertiesTitle = $("<h3>")
+          .text(`Properties of ${element.nodeName} node`)
+          .css("padding-left", "8px");
+        const $propertyInner = $("<div>").attr("class", "property-inner");
+        const $nodeProperty = $("<span>")
+          .attr("id", "node-property-name")
+          .text("property")
+          .css("font-size", "18px");
+        const $nodeValue = $("<span>")
+          .attr("id", "node-property-value")
+          .text("given value")
+          .css("font-size", "18px");
+        const $checkbox = $("<span>")
+          .attr("class", "property-checkbox")
+          .text("checkbox")
+          .css("font-size", "18px");
 
+        $propertyInner
+          .append($nodeProperty)
+          .append($nodeValue)
+          .append($checkbox);
+        $propertyList.append($propertiesTitle).append($propertyInner);
+        $node.append($nodeName).append($propertyList);
         nodeCheckboxList.append($node);
 
         element.properties.forEach(property => {
@@ -92,18 +148,25 @@
           const $propertyInner = $("<div>").attr("class", "property-inner");
           const $nodeId = $("<span>")
             .attr("id", "node-id")
-            .text(element.nodeId)
-            .css("display", "none");
-          const $nodeProperty = $("<span>").text(
-            element.nodeName + "." + property
-          );
+            .text(element.nodeId);
+          const $nodeName = $("<span>")
+            .attr("id", "node-name")
+            .text(element.nodeName);
+          const $nodeProperty = $("<span>")
+            .attr("id", "node-property-name")
+            .text(property[0]);
+          const $nodeValue = $("<span>")
+            .attr("id", "node-property-value")
+            .text(property[1]);
           const $checkBox = $("<input>")
             .attr("type", "checkbox")
             .attr("class", "property-checkbox");
 
           $propertyInner
             .append($nodeId)
+            .append($nodeName)
             .append($nodeProperty)
+            .append($nodeValue)
             .append($checkBox);
           $propertyContainer.append($propertyInner);
           $propertyList.append($propertyContainer);
@@ -113,7 +176,7 @@
           const targetProperty = this.properties.find(
             propertyObject =>
               propertyObject.nodeId === element.nodeId &&
-              propertyObject.property === property
+              propertyObject.propertyName === property[0]
           );
           if (targetProperty) {
             $checkBox.prop("checked", true);
@@ -123,10 +186,7 @@
                 "placeholder",
                 "Please write a description for the property."
               )
-              .val(targetProperty.description)
-              .css("width", "100%")
-              .css("height", "8rem")
-              .css("resize", "none");
+              .val(targetProperty.description);
             $propertyContainer.append($textarea);
           }
         });
@@ -141,15 +201,13 @@
       $(".property-checkbox").each(function () {
         if ($(this).is(":checked")) {
           const nodeId = $(this).parent().children()[0].innerText;
-          const nodeProperty = $(this)
-            .parent()
-            .children()[1]
-            .innerText.split(".");
+          const nodeName = $(this).parent().children()[1].innerText;
+          const propertyName = $(this).parent().children()[2].innerText;
           const description = $(this).parent().parent().children()[1].value;
           node.properties.push({
             nodeId: nodeId,
-            nodeName: nodeProperty[0],
-            property: nodeProperty[1],
+            nodeName: nodeName,
+            propertyName: propertyName,
             description: description
           });
         }
@@ -165,7 +223,7 @@
     <input type="text" id="node-input-name" placeholder="Name" />
   </div>
   <!--nodes in module-->
-  <div>
+  <div id="node-checkbox-container">
     <div id="node-checkbox-list"></div>
   </div>
 </script>
