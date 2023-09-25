@@ -47,11 +47,12 @@ module.exports.code = (config) => {
                 </div>
             </div>
         </div>
+        <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
         <script type="module">         
             import {YOLO_CLASSES, COLORS} from "../static/constants.js";
             
-            let ws = new WebSocket("${config.socketUrl}");
-            
+            let socket = io("${config.socketUrl}:${config.socketPort}");
+
             const mapping = new Map();
             for (let i = 0; i < YOLO_CLASSES.length; i++) {
               mapping.set(YOLO_CLASSES[i], i);
@@ -78,32 +79,33 @@ module.exports.code = (config) => {
                 return await ort.InferenceSession.create("../model/" + modelName + ".onnx");
             }
 
-            navigator.mediaDevices.getUserMedia(videoConstraints)
-            .then(async(stream) => {
-                videoElement.srcObject = stream;
-                videoElement2.srcObject = stream;
-                
-                model = await loadModel();
+            socket.on("connect", () => {
+                navigator.mediaDevices.getUserMedia(videoConstraints)
+                .then(async(stream) => {
+                    videoElement.srcObject = stream;
+                    videoElement2.srcObject = stream;
+                    
+                    model = await loadModel();
 
-                videoElement.play();
-                
-                videoElement2.play();
-                
-                if(ws.OPEN){
-                    setInterval(async()=>{
-                        drawImage(videoElement);
-
-                        const buffer = getBuffer();
-                        const boxes = await detect_objects_on_image(buffer);
-                                              
-                        ws.send(boxes);
+                    videoElement.play();
+                    
+                    videoElement2.play();
+                    
+                        setInterval(async()=>{
+                            drawImage(videoElement);
+                            
+                            const buffer = getBuffer();
+                            const boxes = await detect_objects_on_image(buffer);                                 
+                            
+                            draw_image_and_boxes(boxes);
+                            
+                            socket.emit("DetectedObject", boxes);
+                        }, 100);
                         
-                        draw_image_and_boxes(boxes);
-                    }, 100);
-                }
-            })
-            .catch(err => {
-                console.log(err);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                })
             })
 
             // draw video object to canvas
@@ -124,18 +126,18 @@ module.exports.code = (config) => {
                 const ctx = canvasElement.getContext("2d");
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);                 
 
-                boxes.forEach(([x1, y1, x2, y2, label, prob]) => {
-                    ctx.strokeStyle = COLORS[mapping.get(label)];
+                boxes.forEach((box) => {
+                    ctx.strokeStyle = COLORS[mapping.get(box.label)];
                     ctx.lineWidth = 5;
                     ctx.font = "bold 20px Arial";
                     
-                    ctx.strokeRect(640 - x2, y1, x2-x1, y2-y1);
-                    ctx.fillStyle = COLORS[mapping.get(label)];
-                    const width = ctx.measureText(label).width;
+                    ctx.strokeRect(640 - (box.w + box.x), box.y, box.w, box.h);
+                    ctx.fillStyle = COLORS[mapping.get(box.label)];
+                    const width = ctx.measureText(box.label).width;
 
-                    ctx.fillRect(640 - x2, y1, width + 90, 30);
+                    ctx.fillRect(640 - (box.w + box.x), box.y, width + 90, 30);
                     ctx.fillStyle = "#ffffff";
-                    ctx.fillText(label + " - " + ((prob * 100).toFixed(1)) + "%", 640 - x2 + 2, y1 + 22);
+                    ctx.fillText(box.label + " - " + ((box.prob * 100).toFixed(1)) + "%", 640 - (box.w + box.x) + 2, box.y + 22);
                 });
                 
                 
@@ -144,7 +146,8 @@ module.exports.code = (config) => {
            async function detect_objects_on_image(buf) {
                 const [input,img_width,img_height] = await prepare_input(buf);
                 const output = await run_model(input);
-                return process_output(output,img_width,img_height);
+                const boxes = process_output(output,img_width,img_height);
+                return get_image_informations(boxes);
             }
         
            async function prepare_input(buf) {
@@ -199,6 +202,24 @@ module.exports.code = (config) => {
                     result.push(boxes[0]);
                     boxes = boxes.filter(box => iou(boxes[0], box) < 0.7);
                 }
+                return result;
+            }
+
+            function get_image_informations(boxes) {
+                const result = [];
+
+                boxes.forEach((box) => {
+                  const info = {
+                    label: box[4],
+                    x: box[0],
+                    y: box[1],
+                    w: box[2] - box[0],
+                    h: box[3] - box[1],
+                    prob: box[5],
+                  };
+                  result.push(info);
+                });
+                
                 return result;
             }
 
