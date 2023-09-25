@@ -96,7 +96,7 @@ module.exports.code = (config) => {
                         const buffer = getBuffer();
                         const boxes = await detect_objects_on_image(buffer);
                                               
-                        ws.send(boxes);
+                        //ws.send(boxes);
                         
                         draw_image_and_boxes(boxes);
                     }, 100);
@@ -124,18 +124,18 @@ module.exports.code = (config) => {
                 const ctx = canvasElement.getContext("2d");
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);                 
 
-                boxes.forEach(([x1, y1, x2, y2, label, prob]) => {
-                    ctx.strokeStyle = COLORS[mapping.get(label)];
+                boxes.forEach((box) => {
+                    ctx.strokeStyle = COLORS[mapping.get(box.label)];
                     ctx.lineWidth = 5;
                     ctx.font = "bold 20px Arial";
                     
-                    ctx.strokeRect(640 - x2, y1, x2-x1, y2-y1);
-                    ctx.fillStyle = COLORS[mapping.get(label)];
-                    const width = ctx.measureText(label).width;
+                    ctx.strokeRect(640 - (box.w + box.x), box.y, box.w, box.h);
+                    ctx.fillStyle = COLORS[mapping.get(box.label)];
+                    const width = ctx.measureText(box.label).width;
 
-                    ctx.fillRect(640 - x2, y1, width + 90, 30);
+                    ctx.fillRect(640 - (box.w + box.x), box.y, width + 90, 30);
                     ctx.fillStyle = "#ffffff";
-                    ctx.fillText(label + " - " + ((prob * 100).toFixed(1)) + "%", 640 - x2 + 2, y1 + 22);
+                    ctx.fillText(box.label + " - " + ((box.prob * 100).toFixed(1)) + "%", 640 - (box.w + box.x) + 2, box.y + 22);
                 });
                 
                 
@@ -144,7 +144,8 @@ module.exports.code = (config) => {
            async function detect_objects_on_image(buf) {
                 const [input,img_width,img_height] = await prepare_input(buf);
                 const output = await run_model(input);
-                return process_output(output,img_width,img_height);
+                const boxes = process_output(output,img_width,img_height);
+                return get_image_informations(boxes);
             }
         
            async function prepare_input(buf) {
@@ -199,6 +200,24 @@ module.exports.code = (config) => {
                     result.push(boxes[0]);
                     boxes = boxes.filter(box => iou(boxes[0], box) < 0.7);
                 }
+                return result;
+            }
+
+            function get_image_informations(boxes) {
+                const result = [];
+
+                boxes.forEach((box) => {
+                  const info = {
+                    label: box[4],
+                    x: box[0],
+                    y: box[1],
+                    w: box[2] - box[0],
+                    h: box[3] - box[1],
+                    prob: box[5],
+                  };
+                  result.push(info);
+                });
+                
                 return result;
             }
 
