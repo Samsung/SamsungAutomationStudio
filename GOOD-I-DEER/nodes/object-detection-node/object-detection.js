@@ -1,4 +1,7 @@
 module.exports = function (RED) {
+  require('../../static-server')(RED);
+  const {YOLO_CLASSES} = require("../static/node-constants");
+  
   function yolov8Node(config) {
     RED.nodes.createNode(this, config);
     const ort = require("onnxruntime-node");
@@ -95,7 +98,7 @@ module.exports = function (RED) {
         if (prob < config.threshold) {
           continue;
         }
-        const label = yolo_classes[class_id];
+        const label = YOLO_CLASSES[class_id];
         const xc = output[index];
         const yc = output[8400 + index];
         const w = output[2 * 8400 + index];
@@ -226,92 +229,9 @@ module.exports = function (RED) {
       return (x2 - x1) * (y2 - y1);
     }
 
-    const yolo_classes = [
-      "person",
-      "bicycle",
-      "car",
-      "motorcycle",
-      "airplane",
-      "bus",
-      "train",
-      "truck",
-      "boat",
-      "traffic light",
-      "fire hydrant",
-      "stop sign",
-      "parking meter",
-      "bench",
-      "bird",
-      "cat",
-      "dog",
-      "horse",
-      "sheep",
-      "cow",
-      "elephant",
-      "bear",
-      "zebra",
-      "giraffe",
-      "backpack",
-      "umbrella",
-      "handbag",
-      "tie",
-      "suitcase",
-      "frisbee",
-      "skis",
-      "snowboard",
-      "sports ball",
-      "kite",
-      "baseball bat",
-      "baseball glove",
-      "skateboard",
-      "surfboard",
-      "tennis racket",
-      "bottle",
-      "wine glass",
-      "cup",
-      "fork",
-      "knife",
-      "spoon",
-      "bowl",
-      "banana",
-      "apple",
-      "sandwich",
-      "orange",
-      "broccoli",
-      "carrot",
-      "hot dog",
-      "pizza",
-      "donut",
-      "cake",
-      "chair",
-      "couch",
-      "potted plant",
-      "bed",
-      "dining table",
-      "toilet",
-      "tv",
-      "laptop",
-      "mouse",
-      "remote",
-      "keyboard",
-      "cell phone",
-      "microwave",
-      "oven",
-      "toaster",
-      "sink",
-      "refrigerator",
-      "book",
-      "clock",
-      "vase",
-      "scissors",
-      "teddy bear",
-      "hair drier",
-      "toothbrush",
-    ];
-
     const mapping = new Map();
-    for (let i = 0; i < yolo_classes.length; i++) {
-      mapping.set(yolo_classes[i], i);
+    for (let i = 0; i < YOLO_CLASSES.length; i++) {
+      mapping.set(YOLO_CLASSES[i], i);
     }
   }
 
