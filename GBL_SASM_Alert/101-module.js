@@ -61,7 +61,7 @@ module.exports = function (RED) {
         subflows[node.id] = node;
       } else if (node.type === "moduleflows") {
         moduleflowNode[node.id] = node;
-      } else if (node.type === "module_in") {
+      } else if (node.type === "GBL_module_in") {
         moduleinNode[node.id] = node;
         if (typeof namekeyNode[node.name] === "undefined")
           namekeyNode[node.name] = [];
@@ -215,7 +215,7 @@ module.exports = function (RED) {
       }
     });
   }
-  RED.nodes.registerType("module_in", module_in);
+  RED.nodes.registerType("GBL_module_in", module_in);
   function module_in(config) {
     RED.nodes.createNode(this, config);
     const node = this;
@@ -250,7 +250,6 @@ module.exports = function (RED) {
     this.on("close", function () {
       RED.events.removeListener(event, event_fun);
       RED.events.removeListener(node_text_event, node_text_event_fun);
-      // node.status({});
     });
 
     this.on("input", function (msg) {

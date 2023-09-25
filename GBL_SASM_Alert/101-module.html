@@ -51,10 +51,9 @@
       //1.1 init module options
       let currentTab = RED.workspaces.active();
       RED.nodes.eachNode(function (node) {
-        if (node.type === "module_in" && node.z == currentTab) {
-          let option = $("<option></option>");
-          option.text(node.name);
-          option.val(node.id);
+
+        if (node.type === "GBL_module_in" && node.z == currentTab) {
+          let option = `<option value="${node.id}" title="${node.info}">${node.name}</option>`;
           moduleSelectElem.append(option);
 
           //mapping description
@@ -74,24 +73,23 @@
       //###2. init submodule select
       let submoduleSelectElem = $("#submodule-select");
 
-      let initSubmoduleOptions = function (links) {
-        links.forEach(link => {
-          if (link.target.type === "submodule") {
-            let option = $("<option></option>");
-            option.text(link.target.name);
-            option.val(link.target.id);
-            submoduleSelectElem.append(option);
+      let initSubmoduleOptions = function (node) {
+        let option = `<option value="${node.id}" title="${node.info}">${node.name}</option>`;
+        submoduleSelectElem.append(option);
 
-            //mapping description
-            descriptionMap.set(link.target.id, link.target.info);
-          }
-        });
+        //mapping description
+        descriptionMap.set(node.id, node.info);
       };
 
       //2.2 default submodule option
       if (this.moduleId) {
-        let links = RED.nodes.getNodeLinks(this.moduleId);
-        initSubmoduleOptions(links);
+        RED.nodes
+          .getAllDownstreamNodes(RED.nodes.node(this.moduleId))
+          .forEach(node => {
+            if (node.type === "submodule") {
+              initSubmoduleOptions(node);
+            }
+          });
         if (this.submoduleId) {
           submoduleSelectElem.val(this.submoduleId).prop("selected", true);
         } else {
@@ -151,8 +149,13 @@
         //clear options
         $("select#submodule-select option").remove();
         //get new link and init options
-        let links = RED.nodes.getNodeLinks(changedModuleId);
-        initSubmoduleOptions(links);
+        RED.nodes
+          .getAllDownstreamNodes(RED.nodes.node(changedModuleId))
+          .forEach(node => {
+            if (node.type === "submodule") {
+              initSubmoduleOptions(node);
+            }
+          });
         //default first element selected
         $("#submodule-select option:eq(0)").prop("selected", true);
         $("#submodule-description").text(
@@ -216,7 +219,7 @@
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType("module_in", {
+  RED.nodes.registerType("GBL_module_in", {
     category: "GBL-SASM-Alert",
     color: "#FA8072",
     defaults: {
@@ -253,7 +256,7 @@
       let allModuleNames = new Set();
       RED.nodes.eachNode(node => {
         if (
-          node.type === "module_in" &&
+          node.type === "GBL_module_in" &&
           node.z == currentTab &&
           node.id != this.id //except this node
         ) {
@@ -291,7 +294,7 @@
         let currentTab = RED.workspaces.active();
         RED.nodes.eachNode(node => {
           if (
-            node.type === "module_in" &&
+            node.type === "GBL_module_in" &&
             node.z == currentTab &&
             node.id != thiz.id //except this node
           ) {
@@ -413,7 +416,7 @@
   </div>
 </script>
 
-<script type="text/html" data-template-name="module_in">
+<script type="text/html" data-template-name="GBL_module_in">
   <div class="form-row" id="actionflows-name">
     <label for="module-in-node-name" id="node-name-label"
       ><i class="icon-tag"></i> Name</label
@@ -458,7 +461,7 @@
     <p>module descrption text</p>
   </div>
 </script>
-<script type="text/html" data-help-name="module_in">
+<script type="text/html" data-help-name="GBL_module_in">
   <div>
     <p>module_in descrption text</p>
   </div>
