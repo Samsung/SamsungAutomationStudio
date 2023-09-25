@@ -47,11 +47,12 @@ module.exports.code = (config) => {
                 </div>
             </div>
         </div>
+        <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
         <script type="module">         
             import {YOLO_CLASSES, COLORS} from "../static/constants.js";
             
-            let ws = new WebSocket("${config.socketUrl}");
-            
+            let socket = io("${config.socketUrl}:${config.socketPort}");
+
             const mapping = new Map();
             for (let i = 0; i < YOLO_CLASSES.length; i++) {
               mapping.set(YOLO_CLASSES[i], i);
@@ -78,32 +79,33 @@ module.exports.code = (config) => {
                 return await ort.InferenceSession.create("../model/" + modelName + ".onnx");
             }
 
-            navigator.mediaDevices.getUserMedia(videoConstraints)
-            .then(async(stream) => {
-                videoElement.srcObject = stream;
-                videoElement2.srcObject = stream;
-                
-                model = await loadModel();
+            socket.on("connect", () => {
+                navigator.mediaDevices.getUserMedia(videoConstraints)
+                .then(async(stream) => {
+                    videoElement.srcObject = stream;
+                    videoElement2.srcObject = stream;
+                    
+                    model = await loadModel();
 
-                videoElement.play();
-                
-                videoElement2.play();
-                
-                if(ws.OPEN){
-                    setInterval(async()=>{
-                        drawImage(videoElement);
-
-                        const buffer = getBuffer();
-                        const boxes = await detect_objects_on_image(buffer);
-                                              
-                        //ws.send(boxes);
+                    videoElement.play();
+                    
+                    videoElement2.play();
+                    
+                        setInterval(async()=>{
+                            drawImage(videoElement);
+                            
+                            const buffer = getBuffer();
+                            const boxes = await detect_objects_on_image(buffer);                                 
+                            
+                            draw_image_and_boxes(boxes);
+                            
+                            socket.emit("DetectedObject", boxes);
+                        }, 100);
                         
-                        draw_image_and_boxes(boxes);
-                    }, 100);
-                }
-            })
-            .catch(err => {
-                console.log(err);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                })
             })
 
             // draw video object to canvas

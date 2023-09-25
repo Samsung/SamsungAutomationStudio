@@ -15,10 +15,13 @@
           }
           return threshold >= 0 && threshold < 1;
         }},
-        socketUrl: {value: 'ws://localhost:1880/ws/socket'},
+        serverUrl: {value: "localhost"},
+        socketUrl: {value: "http://localhost"},
+        socketPort: {value: "1889"},
       },
       inputs: 1,
-      outputs: 1,
+      outputs: 2,
+      outputLabels: ["Http Response", "Detected Object"],
       icon: "font-awesome/fa-camera-retro",
       paletteLabel: "Good Webcam Object Detection",
       label: function () {
@@ -57,7 +60,9 @@
                 console.log(err)
             })
             
-            $("#node-input-socketUrl").val() === '' && $("#node-input-socketUrl").val('ws://localhost:1880/ws/socket');
+            $("#node-input-serverUrl").val() === '' && $("#node-input-serverUrl").val('localhost');
+            $("#node-input-socketUrl").val() === '' && $("#node-input-socketUrl").val('http://localhost');
+            $("#node-input-socketPort").val() === '' && $("#node-input-socketPort").val('1889');
         }
 
     });
@@ -83,10 +88,22 @@
       <p id="threshold-warning" style="color: red; display: none; margin-left: 105px;" >0 ≤ threshold < 1</p>
     </div>
 
+    <!-- Server Url -->
+    <div class="form-row">
+        <label for="node-input-serverUrl"><i class="fa fa-tag"></i> Server Url</label>
+        <input type="text" id="node-input-serverUrl" placeholder="default value is 'localhost'">
+    </div>
+
     <!-- Socket Url -->
     <div class="form-row">
         <label for="node-input-socketUrl"><i class="fa fa-tag"></i> Socket Url</label>
-        <input type="text" id="node-input-socketUrl" placeholder="default value is 'ws://localhost:1880/ws/socket'">
+        <input type="text" id="node-input-socketUrl" placeholder="default value is 'http://localhost'">
+    </div>
+
+    <!-- Socket Port -->
+    <div class="form-row">
+        <label for="node-input-socketPort"><i class="fa fa-tag"></i> Socket Port</label>
+        <input type="text" id="node-input-socketPort" placeholder="default value is 1889">
     </div>
 
     <!-- Webcam Test -->
