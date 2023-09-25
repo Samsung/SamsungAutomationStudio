@@ -1,0 +1,353 @@
+<style>
+  .description-box {
+    width: 80%;
+    margin: 20px auto;
+    padding: 30px;
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 0 0 2px 2px #dedede;
+  }
+  .error-box {
+    font-size: 8pt;
+    color: red;
+  }
+  #actionflows-name {
+    display: flex;
+  }
+  #node-name-input-box {
+    display: block;
+    width: 100%;
+  }
+</style>
+<script type="text/javascript">
+  RED.nodes.registerType("moduleflows", {
+    category: "GBL-SASM-Alert",
+    color: "#FFA07A",
+    defaults: {
+      name: { value: "module" },
+      moduleId: { value: "" },
+      submoduleId: { value: "" }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: function () {
+      return "moduleflows_white.png";
+    },
+    label: function () {
+      //change module name => change node name
+      return this.name || "moduleflows";
+    },
+    //open editor box
+    oneditprepare: function () {
+      //###0. init value
+      $("#moduleflows-node-name").val(this.name);
+
+      //###1. Dynamic module select
+      //select element
+      let moduleSelectElem = $("#module-select");
+      let descriptionMap = new Map(); //node-id : description
+
+      //1.1 init module options
+      let currentTab = RED.workspaces.active();
+      RED.nodes.eachNode(function (node) {
+        if (node.type === "module_in" && node.z == currentTab) {
+          let option = $("<option></option>");
+          option.text(node.name);
+          option.val(node.id);
+          moduleSelectElem.append(option);
+
+          //mapping description
+          descriptionMap.set(node.id, node.info);
+        }
+      });
+
+      //1.2 default module option
+      if (this.moduleId) {
+        moduleSelectElem.val(this.moduleId).prop("selected", true);
+      } else {
+        $("#module-select option:eq(0)").prop("selected", true);
+        this.moduleId = $("#module-select").val();
+      }
+      $("#module-description").text(descriptionMap.get(this.moduleId));
+
+      //###2. init submodule select
+      let submoduleSelectElem = $("#submodule-select");
+
+      let initSubmoduleOptions = function (links) {
+        links.forEach(link => {
+          if (link.target.type === "submodule") {
+            let option = $("<option></option>");
+            option.text(link.target.name);
+            option.val(link.target.id);
+            submoduleSelectElem.append(option);
+
+            //mapping description
+            descriptionMap.set(link.target.id, link.target.info);
+          }
+        });
+      };
+
+      //2.2 default submodule option
+      if (this.moduleId) {
+        let links = RED.nodes.getNodeLinks(this.moduleId);
+        initSubmoduleOptions(links);
+        if (this.submoduleId) {
+          submoduleSelectElem.val(this.submoduleId).prop("selected", true);
+        } else {
+          $("#submodule-select option:eq(0)").prop("selected", true);
+        }
+        $("#submodule-description").text(descriptionMap.get(this.submoduleId));
+      }
+
+      //###3. Event
+      let node = this;
+      $("#module-select").on("change", function () {
+        let changedModuleId = $("#module-select").val();
+
+        //3.1 module description
+        $("#module-description").text(descriptionMap.get(changedModuleId));
+
+        //3.2 Dynamic submodule select
+        //clear options
+        $("select#submodule-select option").remove();
+        //get new link and init options
+        let links = RED.nodes.getNodeLinks(changedModuleId);
+        initSubmoduleOptions(links);
+        //default first element selected
+        $("#submodule-select option:eq(0)").prop("selected", true);
+        $("#submodule-description").text(
+          descriptionMap.get($("#submodule-select option:eq(0)").val())
+        );
+      });
+
+      $("#submodule-select").on("change", function () {
+        let changedSubmoduleId = $("#submodule-select").val();
+        $("#submodule-description").text(
+          descriptionMap.get(changedSubmoduleId)
+        );
+      });
+    },
+    oneditsave: function () {
+      var node = this;
+      //name save
+      node.name = $("#moduleflows-node-name").val();
+
+      //module save
+      node.moduleId = $("#module-select").val();
+
+      //submodule save
+      node.submoduleId = $("#submodule-select").val();
+    },
+    oneditcancle: function () {}
+  });
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType("module_in", {
+    category: "GBL-SASM-Alert",
+    color: "#FA8072",
+    defaults: {
+      info: { value: "Describe your module action here." },
+      name: { value: "module in" },
+      errorMsg: { value: "" },
+      duplicatedError: { value: false }
+    },
+    inputs: 0,
+    outputs: 1,
+    icon: function () {
+      return "moduleflows_white.png";
+    },
+    label: function () {
+      return this.name || "module in";
+    },
+    //open editor box
+    oneditprepare: function () {
+      //###0. init value
+      $("#module-in-node-name").val(this.name);
+
+      this.editor = RED.editor.createEditor({
+        id: "node-description-editor",
+        mode: "ace/mode/markdown",
+        value: $("#node-input-info").val()
+      });
+
+      //### 1. Duplicated module name
+      //1.1 all module in node in current tab except this node
+      let currentTab = RED.workspaces.active();
+      let allModuleNames = new Set();
+      RED.nodes.eachNode(node => {
+        if (
+          node.type === "module_in" &&
+          node.z == currentTab &&
+          node.id != this.id //except this node
+        ) {
+          allModuleNames.add(node.name);
+        }
+      });
+
+      //1.2 Event: change name
+      let displayMsg = (msg, color) => {
+        $("#module-in-node-error-box").text(msg);
+        $("#module-in-node-error-box").css("color", color);
+      };
+
+      let checkDuplicatedname = name => {
+        //check duplicated name
+        if (!allModuleNames.has(name)) {
+          //ok
+          this.errorMsg = "Available name";
+          this.duplicatedError = false;
+          displayMsg(this.errorMsg, "green");
+        } else {
+          //error msg
+          this.errorMsg = "Duplicated name";
+          this.duplicatedError = true;
+          displayMsg(this.errorMsg, "red");
+        }
+      };
+      checkDuplicatedname(this.name);
+
+      //test
+      console.log(this.duplicatedError);
+      console.log(this.errorMsg);
+
+      $("#module-in-node-name").on("input", event => {
+        let newName = event.target.value;
+        checkDuplicatedname(newName);
+      });
+    },
+    oneditsave: function () {
+      var node = this;
+      //name save
+      node.name = $("#module-in-node-name").val();
+
+      //description save
+      $("#node-input-info").val(this.editor.getValue());
+
+      this.editor.destroy();
+      delete node.editor;
+    },
+    oneditcancle: function () {
+      this.editor.destroy();
+      delete this.editor;
+    }
+  });
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType("module_out", {
+    category: "GBL-SASM-Alert",
+    color: "#1E90FF",
+    defaults: {
+      name: { value: "module out" }
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: function () {
+      return "moduleflows_white.png";
+    },
+    label: function () {
+      return this.name || "module out";
+    },
+    //open editor box
+    oneditprepare: function () {
+      //###0. init value
+      $("#module-out-node-name").val(this.name);
+    },
+    oneditsave: function () {
+      var node = this;
+      //name save
+      node.name = $("#module-out-node-name").val();
+
+      this.editor.destroy();
+      delete node.editor;
+    },
+    oneditcancle: function () {
+      this.editor.destroy();
+      delete this.editor;
+    }
+  });
+</script>
+
+<script type="text/html" data-template-name="moduleflows">
+  <div class="form-row">
+    <label for="moduleflows-node-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="moduleflows-node-name" placeholder="Name" />
+  </div>
+  <!--module-->
+  <div>
+    <div class="form-row">
+      <label for="node-input-scope"
+        ><i class="fa fa-random"></i> <span>Module</span></label
+      >
+      <select id="module-select"></select>
+    </div>
+    <div id="module-description" class="description-box"></div>
+  </div>
+  <!--submodule-->
+  <div>
+    <div class="form-row">
+      <label for="node-input-scope"
+        ><i class="fa fa-random"></i> <span>SubModule</span></label
+      >
+      <select id="submodule-select"></select>
+    </div>
+    <div id="submodule-description" class="description-box"></div>
+  </div>
+</script>
+
+<script type="text/html" data-template-name="module_in">
+  <div class="form-row" id="actionflows-name">
+    <label for="module-in-node-name" id="node-name-label"
+      ><i class="icon-tag"></i> Name</label
+    >
+    <div id="node-name-input-box">
+      <input type="text" id="module-in-node-name" placeholder="Name" />
+      <div id="module-in-node-error-box" class="error-box"></div>
+    </div>
+  </div>
+
+  <!-- module in : module description -->
+  <!-- markdown options -->
+  <div class="form-row" style="margin-bottom: 0px;">
+    <label for="node-input-info">Description</label>
+    <a
+      href="https://guides.github.com/features/mastering-markdown/"
+      target="_blank"
+      style="font-size: 0.8em; float: right;"
+      >markdown</a
+    >
+    <input type="hidden" id="node-input-info" autofocus="autofocus" />
+  </div>
+  <!-- editor box -->
+  <div class="form-row node-text-editor-row">
+    <div
+      style="height: 250px; min-height:150px;"
+      class="node-text-editor"
+      id="node-description-editor"
+    ></div>
+  </div>
+</script>
+
+<script type="text/html" data-template-name="module_out">
+  <div class="form-row" id="actionflows-name">
+    <label for="module-out-node-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="module-out-node-name" placeholder="Name" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="moduleflows">
+  <div>
+    <p>module descrption text</p>
+  </div>
+</script>
+<script type="text/html" data-help-name="module_in">
+  <div>
+    <p>module_in descrption text</p>
+  </div>
+</script>
+<script type="text/html" data-help-name="module_out">
+  <div>
+    <p>module_out descrption text</p>
+  </div>
+</script>

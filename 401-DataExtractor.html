@@ -1,0 +1,572 @@
+<script type="text/html" data-template-name="data-extractor">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;"/>
+  </div>
+  <div class="form-row">
+    <label for="node-input-response_type"><i class="fa fa-file-o"></i> Type</label>
+    <select type="text" id="node-input-response_type" style="width:70%!important;">
+      <option value="json">JSON</option><option value="xml">XML</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-url"><i class="fa fa-globe"></i> URL</label>
+    <input type="text" id="node-input-url" placeholder="URL" style="width: 60%" />
+    <button type="button" class="red-ui-button" id="node-input-read">Read</button>
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-path"><i class="fa fa-bookmark"></i> Path</label>
+    <textarea id="node-input-path" disabled style="height: 80px; width: 100%;"></textarea>
+  </div>
+  <div class="form-row node-input-api-tree" style="height: calc(80% - 40px);">
+    <label for="node-input-api-tree"><i class="fa fa-key"></i></i> Key</label>
+  </div>
+</script>
+<script type="text/html" data-help-name="data-extractor">
+  <p>A node that extracts specific data you want from REST API response.
+    The criteria for extraction is specific paths checked by user.
+  </p>
+  <p>CORS issues may affect data display.
+  </p>
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>name</dt>
+    <dd>You can tag or naming this data extraction node.</dd>
+    <dt>Type<span class="property-type">require</span></dt>
+    <dd>You can choose the type of input data format between JSON and XML.</dd>
+    <dt>URL<span class="property-type">require</span></dt>
+    <dd>This URL makes the data structure tree of API response keys.</dd>
+    <dt>Path<span class="property-type">optional</span></dt>
+    <dd>This Paths is a list of path that is checked in key tree.</dd>
+    <dt>Key<span class="property-type">optional</span></dt>
+    <dd>This Key Tree is made by URL response.
+      And it provides data path checkboxes for extracting specific data.
+    </dd>
+  </dl>
+</script>
+
+<script type="text/html" data-template-name="data-filter">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-response_type"><i class="fa fa-file-o"></i> Type</label>
+    <select type="text" id="node-input-response_type" style="width:70%!important;">
+      <option value="json">JSON</option><option value="xml">XML</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-url"><i class="fa fa-globe"></i> URL</label>
+    <input type="text" id="node-input-url" placeholder="URL" style="width: 60%" />
+    <button type="button" class="red-ui-button" id="node-input-read">Read</button>
+  </div>
+  <div class="form-row node-input_stdpath" style="height: 180px;">
+    <label for="node-input_stdpath" style="width: 70%;">
+      <i class="fa fa-key"></i>
+      Standard Key
+    </label>
+  </div>
+  <br />
+  <br />
+  <div class="form-row">
+    <label for="node-input-value"><i class="fa fa-ellipsis-h"></i> Compare</label>
+    <div style="display:flex;">
+      <input type="text" id="node-input-label_value" style="width:35%; margin: auto 0;" readonly />
+      <p style="width:10px; margin: auto">=</p>
+      <input type="text" id="node-input-value" style="width:55%; margin: auto;" />
+      <input type="hidden" id="node-input-value_type" />
+    </div>
+  </div>
+  <br />
+  <div class="form-row node-input-output" style="height: calc(50% - 40px);">
+    <label for="node-input-output"><i class="fa fa-list"></i> Output</label>
+  </div>
+</script>
+<script type="text/html" data-help-name="data-filter">
+  <p>
+    A node that filter out specific data you want from REST API response. The criteria for filtering
+    starts from data that satisfy a specific path and value.
+  </p>
+  <p>CORS issues may affect data display.
+  </p>
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>name</dt>
+    <dd>You can tag or naming this data filter node.</dd>
+    <dt>Type<span class="property-type">require</span></dt>
+    <dd>You can choose the type of input data format between JSON and XML.</dd>
+    <dt>URL<span class="property-type">require</span></dt>
+    <dd>This URL makes the data structure tree of API response keys.</dd>
+    <dt>Standard Key<span class="property-type">require</span></dt>
+    <dd>
+      This path is the path to check to extract specific target data. It is made by REST API
+      response of URL.
+    </dd>
+    <dt>Compare<span class="property-type">require</span></dt>
+    <dd>
+      It is a reference value required to extract specific data through comparison of data
+      corresponding to the above path.
+    </dd>
+    <dt>Output<span class="property-type">require</span></dt>
+    <dd>
+      It is data paths that are sibling to reference data. You can check about multiple selection
+    </dd>
+  </dl>
+</script>
+
+<script type="text/javascript">
+  let treeList;
+  let tree = [];
+  let = [];
+
+  RED.nodes.registerType("data-extractor", {
+    category: "Samsung AutomationStudio",
+    paletteLabel: "Data Extractor",
+    color: "#00bffe",
+    defaults: {
+      name: { value: "Data Extractor", },
+      url: { value: "", },
+      tree: { value: [], },
+      paths: { value: [], },
+      response_type: { value: "", }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-crosshairs",
+    label: function () {
+      return "Data Extractor";
+    },
+    oneditsave: function () {
+      this.paths = paths;
+
+      let copiedTree = [];
+      copyTree(tree, copiedTree);
+
+      this.tree = copiedTree;
+    },
+    oneditprepare: function () {
+      const node = this;
+      treeList = $("<div>")
+        .css({ width: "100%", height: "100%" })
+        .appendTo(".node-input-api-tree")
+        .treeList({});
+
+      if (this.tree !== undefined) {
+        tree = [];
+        copyTree(this.tree, tree);
+        treeList.treeList("data", tree);
+      }
+      if (this.paths !== undefined) {
+        paths = this.paths;
+        showPath();
+      }
+
+      $("#node-input-read").on("click", function () {
+        let type = document.getElementById('node-input-response_type').value;
+        const url = $("#node-input-url").val();
+
+        fetch(url)
+          .then(function (response) {
+            if (url.trim() === "" || !response.ok) {
+              throw new Error();
+            }
+            
+            if (type === "json") {
+              return response.json();
+            } else if (type === "xml") {
+              return response.text();
+            }
+          })
+          .then(function (json) {
+            if (type === "xml") {
+              let xmlNode = new DOMParser().parseFromString(json, "text/xml");
+              json = xmlToJson(xmlNode);
+            }
+
+            reset();
+            makeKeyTree(json, tree);
+            treeList.treeList("data", tree);
+          })
+          .catch((error) => {
+            console.log(error);
+            reset();
+          });
+      });
+
+      treeList.on("treelistselect", function (event, item) {
+        if (item === undefined || Object.keys(item).length === 0) {
+          return;
+        }
+        if (item.selected) {
+          if (item.parent !== undefined) {
+            item.parent.treeList.select(true);
+          }
+        } else if (!item.selected) {
+          if (item.children !== undefined) {
+            for (let n of item.children) {
+              if (n.selected) {
+                n.treeList.select(false);
+              }
+            }
+          }
+        }
+
+        paths = [];
+        for (let item of tree) {
+          generatePath(item, "");
+        }
+        showPath();
+      });
+      const hasMatch = function (arr, value) {
+                return arr.some(function (ht) {
+                    return ht.value === value
+                });
+            }
+
+      function reset() {
+        paths = [];
+        tree = [];
+
+        $("#node-input-path").val("");
+        treeList.treeList("empty");
+      }
+
+      function showPath() {
+        let res = "";
+        if (typeof paths === "string") {
+          paths = JSON.parse(paths);
+        }
+        for (let path of paths) {
+          res += path + "\n";
+        }
+
+        $("#node-input-path").val(res);
+      }
+
+      function generatePath(item, pre) {
+        if (!item.selected) {
+          return;
+        }
+
+        let cur = item.depth === 0 ? item.label : pre + "." + item.label;
+        if (item.children === undefined) {
+          paths.push(cur);
+          return;
+        }
+
+        let childChecked = false;
+        for (let n of item.children) {
+          if (n.selected) {
+            childChecked = true;
+            generatePath(n, cur);
+          }
+        }
+        if (!childChecked) {
+          paths.push(cur);
+        }
+      }
+
+      function makeKeyTree(json, subtree) {
+        if (Array.isArray(json) && json.length > 0) {
+          makeKeyTree(json[0], subtree);
+          return;
+        }
+        let keys = Object.keys(json);
+        for (let key of keys) {
+          subtree.push(makeTreeItem(key));
+          if (
+            typeof json[key] === "object" &&
+            json[key] !== null &&
+            Object.keys(json[key]).length > 0
+          ) {
+            subtree[subtree.length - 1]["children"] = [];
+            makeKeyTree(json[key], subtree[subtree.length - 1]["children"]);
+          }
+        }
+      }
+
+      function makeTreeItem(label) {
+        return {
+          label: label,
+          checkbox: true,
+          selected: false,
+          expanded: true,
+        };
+      }
+    },
+  });
+
+  let stdTreeList;
+  let stdTree = [];
+  let stdPath = "";
+  let outputTreeList;
+  let outputTree = [];
+  let outputPaths = [];
+
+  RED.nodes.registerType("data-filter", {
+    category: "Samsung AutomationStudio",
+    color: "#407EC1",
+    defaults: {
+      name: { value: "Data Filter", },
+      response_type: { value: "", },
+      url: { value: "", },
+      value: { value: "", required: true },
+      value_type: { value: "", },
+      label_value: { value: "", },
+      stdPath: { value: "", },
+      stdTree: { value: [], },
+      outputPaths: { value: [], required: true },
+      outputTree: { value: [], required: true },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa fa-filter",
+    paletteLabel: "Data Filter",
+    label: function () {
+      return this.name;
+    },
+    oneditsave: function () {
+      this.stdPath = stdPath;
+      this.outputPaths = outputPaths;
+
+      let copiedStdTree = [];
+      copyTree(stdTree, copiedStdTree);
+      let copiedOutputTree = [];
+      copyTree(outputTree, copiedOutputTree);
+
+      this.stdTree = copiedStdTree;
+      this.outputTree = copiedOutputTree;
+    },
+    oneditprepare: function () {
+      stdTreeList = $("<div>")
+        .css({ width: "100%", height: "100%" })
+        .appendTo(".node-input_stdpath")
+        .treeList({});
+
+      outputTreeList = $("<div>")
+        .css({ width: "100%", height: "100%" })
+        .appendTo(".node-input-output")
+        .treeList({});
+
+      stdPath = this.stdPath;
+      outputPaths = this.outputPaths;
+
+      if (this.stdTree !== undefined) {
+        stdTree = [];
+        copyTree(this.stdTree, stdTree);
+        stdTreeList.treeList("data", stdTree);
+      }
+      if (this.outputTree !== undefined) {
+        outputTree = [];
+        copyTree(this.outputTree, outputTree);
+        outputTreeList.treeList("data", outputTree);
+      }
+
+      $("#node-input-value").typedInput({
+        type: "str",
+        types: ["str", "num", "bool"],
+        typeField: "#node-input-value_type",
+      });
+
+      $("#node-input-read").on("click", function () {
+        let type = document.getElementById('node-input-response_type').value;
+        const url = $("#node-input-url").val();
+
+        fetch(url)
+          .then(function (response) {
+            if (url.trim() === "" || !response.ok) {
+              throw new Error();
+            }
+
+            if (type === "json") {
+              return response.json();
+            } else if (type === "xml") {
+              return response.text();
+            }
+          })
+          .then(function (json) {
+            if (type === "xml") {
+              let xmlNode = new DOMParser().parseFromString(json, "text/xml");
+              json = xmlToJson(xmlNode);
+            }
+            reset();
+            makeStdTree(json, stdTree);
+            stdTreeList.treeList("data", stdTree);
+          })
+          .catch((error) => {
+            console.log(error);
+            reset();
+          });
+      });
+
+      stdTreeList.on("treelistselect", function (event, item) {
+        if (item === undefined || Object.keys(item).length === 0) {
+          return;
+        }
+
+        if (item.selected) {
+          $("#node-input-label_value").val(item.label);
+          stdPath = "";
+          generateStdPath(item);
+
+          outputTree = [];
+          let children = item.parent ? item.parent.children : stdTree;
+          makeOutputTree(outputTree, children);
+          outputTreeList.treeList("data", outputTree);
+        }
+      });
+
+      outputTreeList.on("treelistselect", function (event, item) {
+        if (item === undefined || Object.keys(item).length === 0) {
+          return;
+        }
+
+        outputPaths = [];
+        generateOutputPaths(getPrePath(), outputTree);
+      });
+
+      function reset() {
+        stdTree = [];
+        outputTree = [];
+
+        $("#node-input-label_value").val("");
+        stdTreeList.treeList("empty");
+        outputTreeList.treeList("empty");
+      }
+
+      function getPrePath() {
+        let pathKeywords = stdPath.split(".");
+        let prePath = "";
+
+        if (pathKeywords.length > 1) {
+          for (let i = 0; i < pathKeywords.length - 1; i++) {
+            prePath += pathKeywords[i] + ".";
+          }
+        }
+        return prePath;
+      }
+
+      function generateOutputPaths(prePath, subtree) {
+        subtree.forEach((item) => {
+          if (item.children) {
+            generateOutputPaths(prePath + item.label + ".", item.children);
+            return;
+          }
+          if (item.selected) {
+            outputPaths.push(prePath + item.label);
+          }
+        });
+      }
+
+      function makeOutputTree(outputTree, stdTree) {
+        stdTree.forEach((child) => {
+          if (child.children === undefined) {
+            outputTree.push(makeStdTreeItem(child.label, "outputPath", true));
+            return;
+          }
+
+          outputTree.push(makeStdTreeItem(child.label, "outputPath", false));
+          outputTree[outputTree.length - 1].children = [];
+          makeOutputTree(outputTree[outputTree.length - 1].children, child.children);
+        });
+      }
+
+      function generateStdPath(item) {
+        if (item.parent !== undefined) {
+          generateStdPath(item.parent);
+        }
+        stdPath += item.children ? item.label + "." : item.label;
+      }
+
+      function makeStdTree(json, subtree) {
+        if (Array.isArray(json) && json.length > 0) {
+          makeStdTree(json[0], subtree);
+          return;
+        }
+        let keys = Object.keys(json);
+        for (let key of keys) {
+          if (
+            typeof json[key] === "object" &&
+            json[key] !== null &&
+            Object.keys(json[key]).length > 0
+          ) {
+            subtree.push(makeStdTreeItem(key, "stdPath", false));
+            subtree[subtree.length - 1]["children"] = [];
+            makeStdTree(json[key], subtree[subtree.length - 1]["children"]);
+            continue;
+          }
+
+          subtree.push(makeStdTreeItem(key, "stdPath", true));
+        }
+      }
+
+      function makeStdTreeItem(label, type, display) {
+        if (type === "stdPath") {
+          return {
+            label: label,
+            radio: display,
+            selected: false,
+            expanded: true,
+          };
+        } else {
+          return {
+            label: label,
+            checkbox: display,
+            selected: false,
+            expanded: true,
+          };
+        }
+      }
+    },
+  });
+
+  function copyTree(origin, copy) {
+    for (let item of origin) {
+      let obj = {};
+      for (let key in item) {
+        if (key === "treeList" || key === "depth" || key === "parent") {
+          continue;
+        }
+        if (key === "children") {
+          obj[key] = [];
+          copyTree(item[key], obj[key]);
+          continue;
+        }
+        obj[key] = item[key];
+      }
+      copy.push(obj);
+    }
+  }
+
+  function xmlToJson(xml) {
+    if (xml.nodeType === Node.TEXT_NODE) {
+      return xml.nodeValue;
+    }
+
+    const obj = {};
+
+    if (xml.hasChildNodes()) {
+      for (let i = 0; i < xml.childNodes.length; i++) {
+        const item = xml.childNodes[i];
+        const nodeName = item.nodeName;
+
+        if (item.childNodes.length === 1 && item.firstChild.nodeType === Node.TEXT_NODE) {
+          obj[nodeName] = item.firstChild.nodeValue;
+        } else if (item.nodeType === Node.ELEMENT_NODE) {
+          if (!obj[nodeName]) {
+            obj[nodeName] = xmlToJson(item);
+          } else {
+            if (!Array.isArray(obj[nodeName])) {
+              obj[nodeName] = [obj[nodeName]];
+            }
+            obj[nodeName].push(xmlToJson(item));
+          }
+        }
+      }
+    }
+
+    return obj;
+  }
+</script>
