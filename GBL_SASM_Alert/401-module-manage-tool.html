@@ -147,7 +147,7 @@
         let moduleNodes = {};
         $(".module-manage-tool__dialog").empty();
         RED.nodes.eachNode(function (node) {
-          if (node.type === "module_in" && node.z == currentTab) {
+          if (node.type === "GBL_module_in" && node.z == currentTab) {
             moduleNodes[node.id] = node;
           }
         });
@@ -309,9 +309,8 @@
         node.x = -node.x;
       });
 
-      const workspaceId = RED.workspaces.active();
-      RED.workspaces.hide(workspaceId);
-      RED.workspaces.show(workspaceId);
+      RED.workspaces.add();
+      RED.workspaces.remove();
     };
 
     $(document).on(
