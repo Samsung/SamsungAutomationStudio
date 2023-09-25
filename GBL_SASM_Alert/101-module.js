@@ -61,8 +61,10 @@ module.exports = function (RED) {
         moduleflowNode[node.id] = node;
       } else if (node.type === "GBL_module_in") {
         moduleinNode[node.id] = node;
-        if (typeof namekeyNode[node.name] === "undefined")
-          namekeyNode[node.name] = [];
+        if (typeof namekeyNode[node.z] === "undefined")
+          namekeyNode[node.z] = {};
+        if (typeof namekeyNode[node.z][node.name] === "undefined")
+          namekeyNode[node.z][node.name] = [];
         namekeyNode[node.name].push(node.id);
       } else if (node.type === "module_out") {
         moduleoutNode[node.id] = node;
@@ -73,13 +75,13 @@ module.exports = function (RED) {
     });
 
     // 정석 체크
-    for (const nodename in namekeyNode) {
+    for (const flowtab in namekeyNode) {
       if (namekeyNode[nodename].length != 1) {
         namekeyNode[nodename].forEach(nodeID => {
           RED.events.emit("GBLtext:" + nodeID, {
             fill: "red",
             shape: "dot",
-            text: "error"
+            text: `name '${nodename}' is duplication`
           });
         });
       } else {
