@@ -13,7 +13,5 @@ const serveStatic = require("serve-static");
 
 function init(RED) {
   const app = RED.httpNode || RED.httpAdmin;
-
-  app.use('/model', serveStatic(path.join(__dirname, './nodes/model')));
-  
+  app.use('/', serveStatic(path.join(__dirname, './nodes')))  
 }
