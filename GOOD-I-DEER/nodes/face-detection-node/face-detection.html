@@ -4,22 +4,22 @@
     color: "#1AE5BE",
     defaults: {
       name: { value: "" },
-      returnType: {
+      returnValue: {
         value: 0,
         validate: function (v) {
-          const returnType = Number(v);
+          const returnValue = Number(v);
 
-          if (returnType <= 1) {
+          if (returnValue <= 1) {
             $("#absolutePathDir-form").css("display", "none");
-            if (returnType == 0) {
-              this._def.outputLabels = ["Information"];
-            } else if (returnType == 1) {
+            if (returnValue == 0) {
+              this._def.outputLabels = ["Detected Object"];
+            } else if (returnValue == 1) {
               this._def.outputLabels = ["Image Buffer"];
             }
             this._def.defaults.absolutePathDir.validate = function (v) {
               return true;
             };
-          } else if (returnType == 2) {
+          } else if (returnValue == 2) {
             $("#absolutePathDir-form").css("display", "block");
             this._def.outputLabels = ["Image Path"];
             this._def.defaults.absolutePathDir.validate = function (v) {
@@ -53,7 +53,7 @@
       return this.name || "Good Face Detection";
     },
     inputLabels: ["Image Buffer"],
-    outputLabels: ["Information"],
+    outputLabels: ["Detected Object"],
   });
 </script>
 
@@ -63,11 +63,11 @@
     <input type="text" id="node-input-name" placeholder="Name" />
   </div>
   <div class="form-row">
-    <label for="node-input-returnType"
-      ><i class="fa fa-file"></i> Return Type</label
+    <label for="node-input-returnValue"
+      ><i class="fa fa-file"></i> Return Value</label
     >
-    <select type="text" id="node-input-returnType">
-      <option value="0">Information</option>
+    <select type="text" id="node-input-returnValue">
+      <option value="0">Detected Object</option>
       <option value="1">Image Buffer</option>
       <option value="2">Image File</option>
     </select>
