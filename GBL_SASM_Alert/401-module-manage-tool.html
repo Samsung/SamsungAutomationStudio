@@ -306,7 +306,7 @@
       );
 
       selectedModuleNodeList.forEach(node => {
-        node.x = -node.x;
+        node.x = -(node.x + 500);
       });
 
       RED.workspaces.add();
