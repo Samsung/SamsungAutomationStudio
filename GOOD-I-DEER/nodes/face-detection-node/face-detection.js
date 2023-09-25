@@ -6,7 +6,7 @@ module.exports = function (RED) {
     const fs = require("fs");
 
     const node = this;
-    const returnType = Number(config.returnType);
+    const returnValue = Number(config.returnValue);
     const saveDir = config.absolutePathDir;
     let bufferFromImage;
 
@@ -23,13 +23,13 @@ module.exports = function (RED) {
         }
         bufferFromImage = msg.payload;
         const img = sharp(bufferFromImage);
-        const boxes = await detect_face_on_image_informations(img);
+        const boxes = await detect_face_on_image(img);
         msg.buff = msg.payload;
-        if (returnType === 0) {
+        if (returnValue === 0) {
           msg.payload = boxes;
-        } else if (returnType === 1) {
+        } else if (returnValue === 1) {
           msg.payload = await get_image_buffers(boxes);
-        } else if (returnType === 2) {
+        } else if (returnValue === 2) {
           if (fs.existsSync(saveDir)) {
             msg.payload = await save_images(boxes);
           } else {
@@ -44,11 +44,11 @@ module.exports = function (RED) {
       }
     });
 
-    async function detect_face_on_image_informations(img) {
+    async function detect_face_on_image(img) {
       const [input, img_width, img_height] = await prepare_input(img);
       const output = await run_model(input);
       const boxes = process_output(output, img_width, img_height);
-      return get_image_informations(boxes);
+      return get_detected_objects(boxes);
     }
 
     async function prepare_input(img) {
@@ -106,7 +106,7 @@ module.exports = function (RED) {
       return result;
     }
 
-    function get_image_informations(boxes) {
+    function get_detected_objects(boxes) {
       const result = [];
       boxes.forEach((box) => {
         const info = {

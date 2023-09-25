@@ -1,7 +1,7 @@
 module.exports = function (RED) {
-  require('../../static-server')(RED);
-  const {YOLO_CLASSES} = require("../static/node-constants");
-  
+  require("../../static-server")(RED);
+  const { YOLO_CLASSES } = require("../static/node-constants");
+
   function yolov8Node(config) {
     RED.nodes.createNode(this, config);
     const ort = require("onnxruntime-node");
@@ -9,7 +9,7 @@ module.exports = function (RED) {
     const fs = require("fs");
 
     const node = this;
-    const returnType = Number(config.returnType);
+    const returnValue = Number(config.returnValue);
     const saveDir = config.absolutePathDir;
     let bufferFromImage;
 
@@ -17,25 +17,24 @@ module.exports = function (RED) {
     let objectsCount;
 
     node.on("input", async function (msg) {
-      
       this.status({ fill: "blue", shape: "dot", text: "processing..." });
-      
+
       try {
         if (model === undefined) {
-           model = await ort.InferenceSession.create(
+          model = await ort.InferenceSession.create(
             `${__dirname}/../model/${config.model}.onnx`
           );
         }
-      
+
         bufferFromImage = msg.payload;
         const img = sharp(bufferFromImage);
-        const boxes = await detect_objects_on_image_informations(img);
+        const boxes = await detect_objects_on_image(img);
         msg.buff = msg.payload;
-        if (returnType === 0) {
+        if (returnValue === 0) {
           msg.payload = boxes;
-        } else if (returnType === 1) {
+        } else if (returnValue === 1) {
           msg.payload = await get_image_buffers(boxes);
-        } else if (returnType === 2) {
+        } else if (returnValue === 2) {
           if (fs.existsSync(saveDir)) {
             objectsCount = Array(80)
               .fill()
@@ -49,17 +48,16 @@ module.exports = function (RED) {
 
         node.send(msg);
         this.status({});
-        
       } catch (error) {
         node.log(error);
       }
     });
 
-    async function detect_objects_on_image_informations(img) {
+    async function detect_objects_on_image(img) {
       const [input, img_width, img_height] = await prepare_input(img);
       const output = await run_model(input);
       const boxes = process_output(output, img_width, img_height);
-      return get_image_informations(boxes);
+      return get_detected_objects(boxes);
     }
 
     async function prepare_input(img) {
@@ -119,7 +117,7 @@ module.exports = function (RED) {
       return result;
     }
 
-    function get_image_informations(boxes) {
+    function get_detected_objects(boxes) {
       const result = [];
       boxes.forEach((box) => {
         const info = {
