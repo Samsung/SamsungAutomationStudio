@@ -28,15 +28,11 @@
             $("#path-form").css("display", "block");
             this.outputs = 0;
             this._def.outputLabels = "Text File";
-            this._def.defaults.path.validate = function (v) {
-              if (v) return true;
-              return false;
-            };
           }
           return true;
         },
       },
-      path:{value: "" },
+      path: { value: "" },
     },
     inputs: 1,
     outputs: 1,
