@@ -1,7 +1,7 @@
 module.exports = function (RED) {
-  require('../../static-server')(RED);
-  const {YOLO_CLASSES} = require("../static/node-constants");
-  
+  require("../../static-server")(RED);
+  const { YOLO_CLASSES } = require("../static/node-constants");
+
   function yolov8Node(config) {
     RED.nodes.createNode(this, config);
     const ort = require("onnxruntime-node");
@@ -9,57 +9,54 @@ module.exports = function (RED) {
     const fs = require("fs");
 
     const node = this;
-    const returnType = Number(config.returnType);
+    const returnValue = Number(config.returnValue);
     const saveDir = config.absolutePathDir;
     let bufferFromImage;
 
     let model;
-    let objectsCount;
 
     node.on("input", async function (msg) {
-      
       this.status({ fill: "blue", shape: "dot", text: "processing..." });
-      
+
       try {
         if (model === undefined) {
-           model = await ort.InferenceSession.create(
+          model = await ort.InferenceSession.create(
             `${__dirname}/../model/${config.model}.onnx`
           );
         }
-      
+
+        if (returnValue === 2 && fs.existsSync(saveDir) === false) {
+          node.error("folder dosen't exists");
+          return;
+        }
+
         bufferFromImage = msg.payload;
         const img = sharp(bufferFromImage);
-        const boxes = await detect_objects_on_image_informations(img);
-        msg.buff = msg.payload;
-        if (returnType === 0) {
-          msg.payload = boxes;
-        } else if (returnType === 1) {
-          msg.payload = await get_image_buffers(boxes);
-        } else if (returnType === 2) {
-          if (fs.existsSync(saveDir)) {
-            objectsCount = Array(80)
-              .fill()
-              .map(() => 0);
-            msg.payload = await save_images(boxes);
-          } else {
-            msg.payload = [];
-            node.error("folder dosen't exists");
-          }
+        const boxes = await detect_objects_on_image(img);
+        msg.payload = {};
+        msg.payload.originImg = bufferFromImage;
+        if (returnValue === 0) {
+          msg.payload.data = get_detected_objects(boxes);
+        } else if (returnValue === 1) {
+          msg.payload.data = await get_image_buffers(boxes);
+        } else if (returnValue === 2) {
+          let objectsCount = Array(80)
+            .fill()
+            .map(() => 0);
+          msg.payload.data = await save_images(boxes, objectsCount);
         }
 
         node.send(msg);
         this.status({});
-        
       } catch (error) {
         node.log(error);
       }
     });
 
-    async function detect_objects_on_image_informations(img) {
+    async function detect_objects_on_image(img) {
       const [input, img_width, img_height] = await prepare_input(img);
       const output = await run_model(input);
-      const boxes = process_output(output, img_width, img_height);
-      return get_image_informations(boxes);
+      return process_output(output, img_width, img_height);
     }
 
     async function prepare_input(img) {
@@ -119,29 +116,35 @@ module.exports = function (RED) {
       return result;
     }
 
-    function get_image_informations(boxes) {
-      const result = [];
+    function get_detected_objects(boxes) {
+      const result = {};
       boxes.forEach((box) => {
         const info = {
-          label: box[4],
           x: box[0],
           y: box[1],
           w: box[2] - box[0],
           h: box[3] - box[1],
           prob: box[5],
         };
-        result.push(info);
+
+        if (result.hasOwnProperty(box[4]) === false) {
+          result[box[4]] = [];
+        }
+        result[box[4]].push(info);
       });
       return result;
     }
 
     async function get_image_buffers(boxes) {
-      const result = [];
+      const result = {};
       await Promise.all(
         boxes.map(async (box) => {
           try {
             const buffer = await makeBuffer(box);
-            result.push(buffer);
+            if (result.hasOwnProperty(box[4]) === false) {
+              result[box[4]] = [];
+            }
+            result[box[4]].push(buffer);
           } catch (error) {
             node.error("An error occured, when image cropped");
           }
@@ -150,9 +153,8 @@ module.exports = function (RED) {
       return result;
     }
 
-    async function save_images(boxes) {
+    async function save_images(boxes, objectsCount) {
       const today = new Date();
-      let paths = [];
       const dateformat =
         today.getFullYear() +
         (today.getMonth() + 1 < 10
@@ -167,39 +169,52 @@ module.exports = function (RED) {
           ? "0" + today.getSeconds()
           : today.getSeconds());
 
+      const result = {};
       await Promise.all(
         boxes.map(async (box) => {
+          const label = box[4];
+          if (result.hasOwnProperty(label) === false) {
+            result[label] = [];
+          }
+
           const imageName =
             dateformat +
             "_" +
-            box.label +
-            ++objectsCount[mapping.get(box.label)] +
+            label +
+            ++objectsCount[mapping.get(label)] +
             ".png";
           const outputImage = saveDir + "/" + imageName;
           await sharp(bufferFromImage)
             .extract({
-              width: parseInt(box.w),
-              height: parseInt(box.h),
-              left: parseInt(box.x),
-              top: parseInt(box.y),
+              width: parseInt(box[2] - box[0]),
+              height: parseInt(box[3] - box[1]),
+              left: parseInt(box[0]),
+              top: parseInt(box[1]),
             })
             .toFile(outputImage)
-            .then(() => paths.push(imageName))
+            .then(() => result[label].push(imageName))
             .catch(() =>
               node.error("An error occured, when image cropped and saved")
             );
         })
       );
-      return paths.sort();
+
+      for (let key in result) {
+        result[key].sort((name1, name2) => {
+          console.log(name1 + " " + name2);
+          return name1.length - name2.length || name1.localeCompare(name2);
+        });
+      }
+      return result;
     }
 
     async function makeBuffer(box) {
       const buffer = await sharp(bufferFromImage)
         .extract({
-          width: parseInt(box.w),
-          height: parseInt(box.h),
-          left: parseInt(box.x),
-          top: parseInt(box.y),
+          width: parseInt(box[2] - box[0]),
+          height: parseInt(box[3] - box[1]),
+          left: parseInt(box[0]),
+          top: parseInt(box[1]),
         })
         .toFormat("png")
         .toBuffer();
