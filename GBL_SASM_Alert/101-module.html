@@ -100,40 +100,40 @@
         $("#submodule-description").text(descriptionMap.get(this.submoduleId));
       }
 
-      //###2.3 init module properties select
+      //###2.3 init module properties inputs
       let propertySelectElem = $("#property-input");
 
       let initPropertyInputs = function (links) {
         links.forEach(link => {
           if (link.target.type === "config") {
             link.target.properties.forEach(property => {
-              console.log(RED.nodes.getAllFlowNodes());
-              // RED.nodes.getAllFlowNodes().forEach(moduleNode => {
-              //   console.log(moduleNode);
-              //   if (moduleNode.id === property.nodeId) {
-              //     let label = $("<label>").attr("for", "property-input-scope");
-              //     label.append('<i class="fa fa-gear"</i>');
-              //     label.append("<span> " + property.property + " </span>");
-              //     label.css("display", "inline");
+              let moduleNode = RED.nodes.node(property.nodeId);
+              if (moduleNode.id === property.nodeId) {
+                let label = $("<label>").attr("for", "property-input-scope");
+                label.append('<i class="fa fa-gear"</i>');
+                label.append("<span> " + property.propertyName + " </span>");
+                label.css("display", "inline");
 
-              //     let input = $("<input>")
-              //       .val(moduleNode[property.property])
-              //       .attr("type", "text")
-              //       .attr("name", "property")
-              //       .css("display", "inline");
+                let input = $("<input>")
+                  .val(
+                    typeof moduleNode[property.propertyName] === "object"
+                      ? JSON.stringify(moduleNode[property.propertyName])
+                      : moduleNode[property.propertyName]
+                  )
+                  .attr("type", "text")
+                  .attr("name", property.propertyName)
+                  .css("display", "inline");
 
-              //     let descriptionDev = $("<span> ").text(property.description);
-
-              //     propertySelectElem.append(label, input, descriptionDev);
-              //     propertySelectElem.append("<br>");
-              //   }
-              // });
+                let descriptionDev = $("<span> ").text(property.description);
+                propertySelectElem.append(label, input, descriptionDev);
+                propertySelectElem.append("<br>");
+              }
             });
           }
         });
       };
 
-      //2.4 default property option
+      //2.4 default property inputs
       if (this.moduleId) {
         let links = RED.nodes.getNodeLinks(this.moduleId);
         initPropertyInputs(links);
@@ -165,7 +165,7 @@
         $("div#property-input div").remove();
         $("div#property-input br").remove();
         //get new link and init options
-        initSubmoduleOptions(links);
+        initPropertyInputs(links);
       });
 
       $("#submodule-select").on("change", function () {
@@ -186,7 +186,7 @@
       //submodule save
       node.submoduleId = $("#submodule-select").val();
 
-      //properties save
+      //properties save and customize other module nodes
       let links = RED.nodes.getNodeLinks(node.moduleId);
       links.forEach(link => {
         if (link.target.type === "config") {
@@ -194,22 +194,22 @@
         }
       });
 
-      if (this.moduleId) {
-        console.log(RED);
-        console.log(RED.nodes);
-        console.log(RED.nodes.node(RED.nodes.node(node.moduleId)._config));
-        RED.nodes
-          .getAllDownstreamNodes(RED.nodes.node(node.moduleId))
-          .forEach(moduleNode => {
-            node.properties.forEach(property => {
-              if (moduleNode.id === property.nodeId) {
-                moduleNode.name = "hi";
-                console.log(moduleNode);
-                RED.nodes.add(moduleNode);
-              }
-            });
-          });
-      }
+      node.properties.forEach(property => {
+        let moduleNode = RED.nodes.node(property.nodeId);
+        let inputs = $("#property-input input");
+        inputs.each(function () {
+          let inputName = $(this).attr("name");
+          let inputValue = $(this).val();
+
+          if (property.propertyName === inputName) {
+            moduleNode[inputName] =
+              typeof moduleNode[inputName] === "object"
+                ? JSON.parse(inputValue)
+                : inputValue;
+            RED.nodes.add(moduleNode);
+          }
+        });
+      });
     },
     oneditcancle: function () {}
   });
