@@ -61,11 +61,12 @@ module.exports = function (RED) {
         moduleflowNode[node.id] = node;
       } else if (node.type === "GBL_module_in") {
         moduleinNode[node.id] = node;
+
         if (typeof namekeyNode[node.z] === "undefined")
           namekeyNode[node.z] = {};
         if (typeof namekeyNode[node.z][node.name] === "undefined")
           namekeyNode[node.z][node.name] = [];
-        namekeyNode[node.name].push(node.id);
+        namekeyNode[node.z][node.name].push(node.id);
       } else if (node.type === "module_out") {
         moduleoutNode[node.id] = node;
       } else if (node.type == "submodule") {
@@ -74,20 +75,20 @@ module.exports = function (RED) {
       }
     });
 
-    // 정석 체크
-    for (const flowtab in namekeyNode) {
-      if (namekeyNode[nodename].length != 1) {
-        namekeyNode[nodename].forEach(nodeID => {
-          RED.events.emit("GBLtext:" + nodeID, {
-            fill: "red",
-            shape: "dot",
-            text: `name '${nodename}' is duplication`
+    for (const tabflow in namekeyNode)
+      for (const nodename in namekeyNode[tabflow]) {
+        if (namekeyNode[tabflow][nodename].length != 1) {
+          namekeyNode[tabflow][nodename].forEach(nodeID => {
+            RED.events.emit("GBLtext:" + nodeID, {
+              fill: "red",
+              shape: "dot",
+              text: `name '${nodename}' is duplication`
+            });
           });
-        });
-      } else {
-        RED.events.emit("GBLtext:" + namekeyNode[nodename][0], {});
+        } else {
+          RED.events.emit("GBLtext:" + namekeyNode[tabflow][nodename][0], {});
+        }
       }
-    }
 
     Object.assign(myNodeinFlow, {
       ...moduleflowNode,
