@@ -51,7 +51,6 @@
       //1.1 init module options
       let currentTab = RED.workspaces.active();
       RED.nodes.eachNode(function (node) {
-
         if (node.type === "GBL_module_in" && node.z == currentTab) {
           let option = `<option value="${node.id}" title="${node.info}">${node.name}</option>`;
           moduleSelectElem.append(option);
@@ -105,8 +104,8 @@
         links.forEach(link => {
           if (link.target.type === "config") {
             link.target.properties.forEach(property => {
-              let moduleNode = RED.nodes.node(property.nodeId);
-              if (moduleNode.id === property.nodeId) {
+              let nodeOfModule = RED.nodes.node(property.nodeId);
+              if (nodeOfModule.id === property.nodeId) {
                 let label = $("<label>").attr("for", "property-input-scope");
                 label.append('<i class="fa fa-gear"</i>');
                 label.append("<span> " + property.propertyName + " </span>");
@@ -114,9 +113,9 @@
 
                 let input = $("<input>")
                   .val(
-                    typeof moduleNode[property.propertyName] === "object"
-                      ? JSON.stringify(moduleNode[property.propertyName])
-                      : moduleNode[property.propertyName]
+                    typeof nodeOfModule[property.propertyName] === "object"
+                      ? JSON.stringify(nodeOfModule[property.propertyName])
+                      : nodeOfModule[property.propertyName]
                   )
                   .attr("type", "text")
                   .attr("name", property.propertyName)
@@ -198,18 +197,18 @@
       });
 
       node.properties.forEach(property => {
-        let moduleNode = RED.nodes.node(property.nodeId);
+        let nodeOfModule = RED.nodes.node(property.nodeId);
         let inputs = $("#property-input input");
         inputs.each(function () {
           let inputName = $(this).attr("name");
           let inputValue = $(this).val();
 
           if (property.propertyName === inputName) {
-            moduleNode[inputName] =
-              typeof moduleNode[inputName] === "object"
+            nodeOfModule[inputName] =
+              typeof nodeOfModule[inputName] === "object"
                 ? JSON.parse(inputValue)
                 : inputValue;
-            RED.nodes.add(moduleNode);
+            RED.nodes.add(nodeOfModule);
           }
         });
       });
