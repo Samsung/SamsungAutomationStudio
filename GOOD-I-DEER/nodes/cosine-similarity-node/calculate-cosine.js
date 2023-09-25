@@ -2,13 +2,11 @@ module.exports = function (RED) {
   function CalculateCosine(config) {
     RED.nodes.createNode(this, config);
 
-    // function that calculates cosine similarity of Vector A and Vetor B
     function cosineSimilarity(vectorA, vectorB) {
       if (vectorA.length !== vectorB.length || vectorA.length === 0 || vectorB.length === 0) {
         throw new Error("These two vectors has different length or size 0.");
       }
 
-      // calculate DotProduct
       let dotProduct = 0;
       let magnitudeA = 0;
       let magnitudeB = 0;
