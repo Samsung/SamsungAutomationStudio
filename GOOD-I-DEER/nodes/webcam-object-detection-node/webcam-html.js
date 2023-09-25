@@ -48,8 +48,13 @@ module.exports.code = (config) => {
             </div>
         </div>
 
-
+        <script src="/socket.io/socket.io.js"></script>
         <script type="module"> 
+            let ws = new WebSocket("${config.socketUrl}");
+            // let socket = io.connect("${config.socketUrl}");
+            
+        
+
             const modelName = "${config.model}";
 
             const videoElement = document.getElementById('input-video');
@@ -68,7 +73,7 @@ module.exports.code = (config) => {
 
             // model load
             async function loadModel() {
-                return await ort.InferenceSession.create("./model/" + modelName + ".onnx");
+                return await ort.InferenceSession.create("../model/" + modelName + ".onnx");
             }
 
             navigator.mediaDevices.getUserMedia(videoConstraints)
@@ -87,6 +92,14 @@ module.exports.code = (config) => {
 
                     const buffer = getBuffer();
                     const boxes = await detect_objects_on_image(buffer);
+                    
+                    if(ws.OPEN){
+                        let msg = {
+                            payload: boxes,
+                        };
+                        ws.send(JSON.stringify(msg));
+                    }
+
                     draw_image_and_boxes(boxes);
                 }, 100);
             })
@@ -110,8 +123,8 @@ module.exports.code = (config) => {
 
             function draw_image_and_boxes(boxes) {
                 const ctx = canvasElement.getContext("2d");
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
-                
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);                 
+
                 boxes.forEach(([x1, y1, x2, y2, label, idx, prob]) => {
                     ctx.strokeStyle = colors[idx];
                     ctx.lineWidth = 5;
@@ -125,6 +138,7 @@ module.exports.code = (config) => {
                     ctx.fillStyle = "#ffffff";
                     ctx.fillText(label + " - " + ((prob * 100).toFixed(1)) + "%", 640 - x2 + 2, y1 + 22);
                 });
+                
                 
             }
 
@@ -178,16 +192,16 @@ module.exports.code = (config) => {
                     const x2 = (xc + w / 2) / 640 * img_width;
                     const y2 = (yc + h / 2) / 640 * img_height;
                     boxes.push([x1, y1, x2, y2, label, class_id, prob]);
-            }
+                }
   
-            boxes = boxes.sort((box1,box2) => box2[5]-box1[5])
-            const result = [];
-            while (boxes.length > 0) {
-                result.push(boxes[0]);
-                boxes = boxes.filter(box => iou(boxes[0], box) < 0.7);
+                boxes = boxes.sort((box1,box2) => box2[5]-box1[5])
+                const result = [];
+                while (boxes.length > 0) {
+                    result.push(boxes[0]);
+                    boxes = boxes.filter(box => iou(boxes[0], box) < 0.7);
+                }
+                return result;
             }
-            return result;
-        }
 
            function iou(box1,box2) {
                 return intersection(box1,box2)/union(box1,box2);
@@ -231,7 +245,6 @@ module.exports.code = (config) => {
                             '#4a39a4', '#588fdf', '#a5dba2', '#e8f76d', '#f049e7', '#528fa0', '#c32535', '#80ab5d', '#e6f322', '#d4af25', 
                             '#19783e', '#ff5fdf', '#69c83e', '#8c5ac6', '#503754', '#2481fb', '#c91d51', '#0dac54', '#503df1', '#2d2320'
                         ]
-
 
         </script>
     </body>

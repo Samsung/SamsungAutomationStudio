@@ -23,9 +23,8 @@
       "DB": "302-DB.js",
       "SlackNotification": "303-SlackNotification.js",
       "GoodObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js",
-      "GoodFaceDetection": "GOOD-I-DEER/nodes/object-detection-node/face-detection.js",
-      "GoodWebcamObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/webcam-object-detection.js",
-      "GoodStaticConfig": "GOOD-I-DEER/nodes/config-node/static-config.js",
+      "GoodFaceDetection": "GOOD-I-DEER/nodes/face-detection-node/face-detection.js",
+      "GoodWebcamObjectDetection": "GOOD-I-DEER/nodes/webcam-object-detection-node/webcam-object-detection.js",
       "ChromaDB": "GOOD-I-DEER/nodes/chroma-db-node/chroma-db.js",
       "FaceVectorization": "GOOD-I-DEER/nodes/face-vectorization-node/face-vectorization.js",
       "CalculateCosine": "GOOD-I-DEER/nodes/cosine-similarity-node/calculate-cosine.js"

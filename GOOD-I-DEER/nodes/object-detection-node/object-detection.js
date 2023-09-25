@@ -14,12 +14,16 @@ module.exports = function (RED) {
     let objectsCount;
 
     node.on("input", async function (msg) {
+      
+      this.status({ fill: "blue", shape: "dot", text: "processing..." });
+      
       try {
         if (model === undefined) {
-          model = await ort.InferenceSession.create(
-            `${__dirname}/model/${config.model}.onnx`
+           model = await ort.InferenceSession.create(
+            `${__dirname}/../model/${config.model}.onnx`
           );
         }
+      
         bufferFromImage = msg.payload;
         const img = sharp(bufferFromImage);
         const boxes = await detect_objects_on_image_informations(img);
@@ -39,7 +43,10 @@ module.exports = function (RED) {
             node.error("folder dosen't exists");
           }
         }
+
         node.send(msg);
+        this.status({});
+        
       } catch (error) {
         node.log(error);
       }

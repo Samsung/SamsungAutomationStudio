@@ -13,10 +13,12 @@ module.exports = function (RED) {
     let model;
 
     node.on("input", async function (msg) {
+      this.status({ fill: "blue", shape: "dot", text: "processing..." });
+
       try {
         if (model === undefined) {
           model = await ort.InferenceSession.create(
-            `${__dirname}/model/yolov8n-face.onnx`
+            `${__dirname}/../model/yolov8n-face.onnx`
           );
         }
         bufferFromImage = msg.payload;
@@ -36,6 +38,7 @@ module.exports = function (RED) {
           }
         }
         node.send(msg);
+        this.status({});
       } catch (error) {
         node.log(error);
       }
