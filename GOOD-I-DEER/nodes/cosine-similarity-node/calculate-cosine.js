@@ -43,8 +43,6 @@ module.exports = function (RED) {
       var input_vector = msg.payload;
       var stored_vector = await getStoredVector();
 
-      console.log(input_vector.length);
-      console.log(Object.keys(stored_vector).length);
       var result = 1;
       if (typeof input_vector == "undefined" || input_vector == null || input_vector == "") {
         console.error("Input vector is not valid.");
