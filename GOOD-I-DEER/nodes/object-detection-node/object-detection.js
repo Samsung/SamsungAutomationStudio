@@ -26,6 +26,7 @@ module.exports = function (RED) {
         }
 
         if (returnValue === 2 && fs.existsSync(saveDir) === false) {
+          this.status({ fill: "red", shape: "ring", text: "fail" });
           node.error("folder dosen't exists");
           return;
         }
@@ -201,7 +202,6 @@ module.exports = function (RED) {
 
       for (let key in result) {
         result[key].sort((name1, name2) => {
-          console.log(name1 + " " + name2);
           return name1.length - name2.length || name1.localeCompare(name2);
         });
       }
