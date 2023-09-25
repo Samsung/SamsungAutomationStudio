@@ -196,9 +196,9 @@
         }
       });
 
+      let inputs = $("#property-input input");
       node.properties.forEach(property => {
         let nodeOfModule = RED.nodes.node(property.nodeId);
-        let inputs = $("#property-input input");
         inputs.each(function () {
           let inputName = $(this).attr("name");
           let inputValue = $(this).val();
