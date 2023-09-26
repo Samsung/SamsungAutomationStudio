@@ -75,7 +75,6 @@ module.exports = function (RED) {
           this.error("The Vector is not available to calculate.", "Error");
         } else {
           msg.payload = result;
-          msg.topid = "Result";
           this.send(msg);
         }
       }
