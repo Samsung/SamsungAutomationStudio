@@ -10,7 +10,6 @@ module.exports = function (RED) {
 
   function yolov8Node(config) {
     RED.nodes.createNode(this, config);
-    const imageSize = 640;
 
     const ort = require("onnxruntime-node");
     const sharp = require("sharp");
@@ -84,7 +83,7 @@ module.exports = function (RED) {
       const [imgWidth, imgHeight] = [md.width, md.height];
       const pixels = await img
         .removeAlpha()
-        .resize({ width: imageSize, height: imageSize, fit: "fill" })
+        .resize({ width: 640, height: 640, fit: "fill" })
         .raw()
         .toBuffer();
       const red = [],
@@ -100,12 +99,7 @@ module.exports = function (RED) {
     }
 
     async function runModel(input) {
-      input = new ort.Tensor(Float32Array.from(input), [
-        1,
-        3,
-        imageSize,
-        imageSize,
-      ]);
+      input = new ort.Tensor(Float32Array.from(input), [1, 3, 640, 640]);
       const outputs = await model.run({ images: input });
       return outputs["output0"].data;
     }
@@ -125,10 +119,10 @@ module.exports = function (RED) {
         const w = output[2 * 8400 + index];
         const h = output[3 * 8400 + index];
 
-        const x1 = ((xc - w / 2) / imageSize) * imgWidth;
-        const y1 = ((yc - h / 2) / imageSize) * imgHeight;
-        const x2 = ((xc + w / 2) / imageSize) * imgWidth;
-        const y2 = ((yc + h / 2) / imageSize) * imgHeight;
+        const x1 = ((xc - w / 2) / 640) * imgWidth;
+        const y1 = ((yc - h / 2) / 640) * imgHeight;
+        const x2 = ((xc + w / 2) / 640) * imgWidth;
+        const y2 = ((yc + h / 2) / 640) * imgHeight;
         boxes.push([x1, y1, x2, y2, label, prob]);
       }
 
