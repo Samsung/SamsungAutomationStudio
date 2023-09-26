@@ -15,8 +15,6 @@ module.exports = function (RED) {
     const sharp = require("sharp");
     const fs = require("fs");
 
-    RED.nodes.createNode(this, config);
-
     const node = this;
     const returnValue = Number(config.returnValue);
     const saveDir = config.absolutePathDir;
@@ -56,6 +54,7 @@ module.exports = function (RED) {
           let objectsCount = Array(80)
             .fill()
             .map(() => 0);
+
           msg.payload.data = await saveImages(
             boxes,
             objectsCount,
@@ -86,15 +85,19 @@ module.exports = function (RED) {
         .resize({ width: 640, height: 640, fit: "fill" })
         .raw()
         .toBuffer();
-      const red = [],
-        green = [],
-        blue = [];
+
+      const red = [];
+      const green = [];
+      const blue = [];
+
       for (let index = 0; index < pixels.length; index += 3) {
         red.push(pixels[index] / 255.0);
         green.push(pixels[index + 1] / 255.0);
         blue.push(pixels[index + 2] / 255.0);
       }
+
       const input = [...red, ...green, ...blue];
+
       return [input, imgWidth, imgHeight];
     }
 
