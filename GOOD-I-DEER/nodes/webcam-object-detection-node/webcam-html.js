@@ -18,7 +18,6 @@ module.exports.code = (config) => {
 
             #title {
                 margin-top: 20px;
-                margin-bottom: 20px;
                 font-size: 1.5em;
                 font-weight: bold;
             }
@@ -29,18 +28,24 @@ module.exports.code = (config) => {
                  -webkit-transform: scaleX(-1);
             }
 
+            .videoTitle {
+                font-weight: 700;
+                font-size: 1em;
+                margin-bottom: 10px;
+            }
+
         </style>
     </head>
     <body>
         <p id="title">📷 Object Detection 📷</p>
-        <div style="display: flex; flex-wrap: wrap;">
+        <div style="display: flex; flex-wrap: wrap; width: 100%; justify-content: space-around">
             <div class="video" style="width: 640px">
-                <h4>WebCam</h4>
+                <p class="videoTitle">WebCam</p>
                 <video id="input-video" crossorigin="anonymous"  width="640px" height="640px" style="overfit : fill; "></video>
             </div>
 
             <div class="video" style="width: 640px">
-                <h4>Detect Result</h4>
+                <p class="videoTitle">Detect Result</p>
                 <div style="position: relative;">
                     <video id="output-video" crossorigin="anonymous"  width="640px" height="640px" style="overfit : fill; position: absolute; right: 0; top: 0;" muted="true"></video>
                     <canvas id="output-canvas" width="640px" height="640px" style="position: absolute; right: 0; top: 0;"></canvas>
@@ -122,28 +127,30 @@ module.exports.code = (config) => {
                 const ctx = canvas.getContext("2d");
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);                 
 
-                boxes.forEach((box) => {
-                    const labelIdx = mapping.get(box.label);
+                for(const [label, values] of Object.entries(boxes)) {
+                    const labelIdx = mapping.get(label);
 
                     ctx.strokeStyle = COLORS[labelIdx];
                     ctx.lineWidth = 5;
                     ctx.font = "bold 20px Arial";
-                    ctx.strokeRect(640 - (box.w + box.x), box.y, box.w, box.h);
-                    ctx.fillStyle = COLORS[labelIdx];
-
-                    const width = ctx.measureText(box.label).width;
-
-                    ctx.fillRect(640 - (box.w + box.x), box.y, width + 90, 30);
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillText(box.label + " - " + ((box.prob * 100).toFixed(1)) + "%", 640 - (box.w + box.x) + 2, box.y + 22);
-                });
+                    const width = ctx.measureText(label).width;
+                    
+                    values.forEach((detectedObj) => {
+                        ctx.fillStyle = COLORS[labelIdx];
+                        ctx.strokeRect(640 - (detectedObj.w + detectedObj.x), detectedObj.y, detectedObj.w, detectedObj.h);
+    
+                        ctx.fillRect(640 - (detectedObj.w + detectedObj.x), detectedObj.y, width + 90, 30);
+                        ctx.fillStyle = "#ffffff";
+                        ctx.fillText(label + " - " + ((detectedObj.prob * 100).toFixed(1)) + "%", 640 - (detectedObj.w + detectedObj.x) + 2, detectedObj.y + 22);
+                    });
+                }
             }
 
             async function detectObjectsOnImage(buf) {
                 const [input, width, height] = await prepareInput(buf);
                 const output = await runModel(input);
                 const boxes = processOutput(output, width, height);
-                return getImageInformations(boxes);
+                return getDetectedObjects(boxes);
             }
         
             async function prepareInput(buf) {
@@ -206,19 +213,25 @@ module.exports.code = (config) => {
                 return result;
             }
 
-            function getImageInformations(boxes) {
-                const result = [];
+            function getDetectedObjects(boxes) {
+                const result = {};
 
                 boxes.forEach((box) => {
+                  const [x1, y1, x2, y2, label, prob] = box;
+                  
                   const info = {
-                    label: box[4],
-                    x: box[0],
-                    y: box[1],
-                    w: box[2] - box[0],
-                    h: box[3] - box[1],
-                    prob: box[5],
+                    x: x1,
+                    y: y1,
+                    w: x2 - x1,
+                    h: y2 - y1,
+                    prob: prob,
                   };
-                  result.push(info);
+    
+                  if(!result[label]) {
+                     result[label] = [];
+                  }
+
+                  result[label].push(info);
                 });
                 
                 return result;
