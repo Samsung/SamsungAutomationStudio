@@ -63,9 +63,11 @@ module.exports = function (RED) {
         moduleflowNode[node.id] = node;
       } else if (node.type === "GBL_module_in") {
         moduleinNode[node.id] = node;
-        if (typeof namekeyNode[node.name] === "undefined")
-          namekeyNode[node.name] = [];
-        namekeyNode[node.name].push(node.id);
+        if (typeof namekeyNode[node.z] === "undefined")
+          namekeyNode[node.z] = {};
+        if (typeof namekeyNode[node.z][node.name] === "undefined")
+          namekeyNode[node.z][node.name] = [];
+        namekeyNode[node.z][node.name].push(node.id);
       } else if (node.type === "module_out") {
         moduleoutNode[node.id] = node;
       } else if (node.type == "submodule") {
@@ -74,66 +76,62 @@ module.exports = function (RED) {
       }
     });
 
-    // 정석 체크
-    for (const nodename in namekeyNode) {
-      if (namekeyNode[nodename].length != 1) {
-        namekeyNode[nodename].forEach(nodeID => {
-          RED.events.emit("GBLtext:" + nodeID, {
-            fill: "red",
-            shape: "dot",
-            text: "error"
+    // check module in node name duplication
+    for (const tabflow in namekeyNode)
+      for (const nodename in namekeyNode[tabflow]) {
+        if (namekeyNode[tabflow][nodename].length != 1) {
+          namekeyNode[tabflow][nodename].forEach(nodeID => {
+            RED.events.emit("GBLtext:" + nodeID, {
+              fill: "red",
+              shape: "dot",
+              text: `name '${nodename}' is duplication`
+            });
           });
+        } else {
+          RED.events.emit("GBLtext:" + namekeyNode[tabflow][nodename][0], {});
+        }
+      }
+
+    // check wirednode about submodule
+    for (const nodeID in moduleinNode) {
+      const moduleInNode = moduleinNode[nodeID];
+      let count = 0;
+      let submodule = 0;
+      const subflownamekey = {};
+      for (const wiredID of moduleInNode.wires[0]) {
+        const wiredNode = allNode[wiredID];
+
+        count += 1;
+        if (wiredNode.type === "submodule") {
+          if (typeof subflownamekey[wiredNode.name] === "undefined")
+            subflownamekey[wiredNode.name] = [];
+          subflownamekey[wiredNode.name].push(wiredNode.id);
+          submodule += 1;
+        }
+      }
+
+      if (submodule != 0 && submodule != count)
+        RED.events.emit("GBLtext:" + nodeID, {
+          fill: "red",
+          shape: "dot",
+          text: `wired node error`
         });
-      } else {
-        RED.events.emit("GBLtext:" + namekeyNode[nodename][0], {
-          // fill: "green",
-          // shape: "dot",
-          // text: "pass"
-        });
+
+      for (const subnodename in subflownamekey) {
+        if (subflownamekey[subnodename].length != 1) {
+          subflownamekey[subnodename].forEach(nodeID => {
+            RED.events.emit("GBLtext:" + nodeID, {
+              fill: "red",
+              shape: "dot",
+              text: `name '${subnodename}' is duplication`
+            });
+          });
+        } else {
+          RED.events.emit("GBLtext:" + subflownamekey[subnodename][0], {});
+        }
+
       }
     }
-
-    // 비동기로 시간 간격 늘려서 입력하기
-    // var delay_time = 65;
-    // for (const nodename in namekeyNode) {
-    //   if (namekeyNode[nodename].length != 1) {
-    //     namekeyNode[nodename].forEach(nodeID => {
-    //       setTimeout(function () {
-    //         RED.events.emit("GBLtext:" + nodeID, {
-    //           fill: "red",
-    //           shape: "dot",
-    //           text: "error"
-    //         });
-    //       }, delay_time);
-    //       delay_time += 65;
-    //     });
-    //   } else {
-    //     setTimeout(function () {
-    //       RED.events.emit("GBLtext:" + namekeyNode[nodename][0], {});
-    //     }, delay_time);
-    //     delay_time += 65;
-    //   }
-    // }
-
-    // 시간 복잡도 고의로 늘리기
-    // RED.nodes.eachNode(node => {
-    //   if (node.type === "module_in") {
-    //     console.log("module in");
-    //     var count = 0;
-    //     RED.nodes.eachNode(compare_node => {
-    //       if (node.name == compare_node.name) count++;
-    //     });
-    //     console.log(count);
-    //     if (count != 1) {
-    //       console.log("중복");
-    //       RED.events.emit("GBLtext:" + node.id, {
-    //         fill: "red",
-    //         shape: "dot",
-    //         text: "error"
-    //       });
-    //     } else RED.events.emit("GBLtext:" + node.id, {});
-    //   }
-    // });
 
     Object.assign(myNodeinFlow, {
       ...moduleflowNode,
@@ -174,12 +172,15 @@ module.exports = function (RED) {
     this.on("input", function (msg) {
       const mynodes = MappingNodes.get("myModuleflows");
       if (config.moduleId === null) {
+        console.log("1");
         target_error();
         return;
       } else if (
         typeof mynodes[config.moduleId] === "undefined" ||
-        mynodes[config.moduleId].type != "module_in"
+        mynodes[config.moduleId].type != "GBL_module_in"
       ) {
+        console.log("2");
+
         target_error();
         return;
       } else if (
@@ -187,6 +188,8 @@ module.exports = function (RED) {
         (typeof mynodes[config.submoduleId] === "undefined" ||
           mynodes[config.submoduleId].type != "submodule")
       ) {
+        console.log("3");
+
         target_error();
         return;
       }
@@ -201,6 +204,8 @@ module.exports = function (RED) {
       //start linked module in
       if (config.submoduleId === null) {
         if (typeof mynodes[config.moduleId] === "undefind") {
+          console.log("4");
+
           target_error();
           return;
         }
@@ -208,6 +213,8 @@ module.exports = function (RED) {
         RED.events.emit("GBLmodule:" + config.moduleId, msg);
       } else {
         if (typeof mynodes[config.submoduleId] === "undefind") {
+          console.log("5");
+
           target_error();
           return;
         }
@@ -222,17 +229,6 @@ module.exports = function (RED) {
 
     initMapping(node.context().global);
 
-    // if (config.duplicatedError) {
-    //   console.log("중복이네");
-    //   node.status({
-    //     fill: "red",
-    //     shape: "dot",
-    //     text: `name "${config.name}" is duplication`
-    //   });
-    // } else {
-    //   console.log("중복아님");
-    //   node.status({});
-    // }
 
     var event = "GBLmodule:" + node.id;
     var event_fun = function (msg) {
