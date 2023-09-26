@@ -84,20 +84,20 @@
       const _nr1Header = $("ul.red-ui-header-toolbar");
       if (_nr1Header.length) {
         _nr1Header.prepend(`
-              <li>
-                <button class="button-group red-ui-deploy-button toolbar-button global-module-manager__button" href="#">
-                  <i class="fa fa-cog"></i> Global Modules</button>
-                </button>
-              </li>
-          `);
+                <li>
+                  <button class="button-group red-ui-deploy-button toolbar-button global-module-manager__button" href="#">
+                    <i class="fa fa-cog"></i> Global Modules</button>
+                  </button>
+                </li>
+            `);
       } else {
         $(".header-toolbar").prepend(`
-              <span>
                 <span>
-                  <button class="toolbar-button"><i class="fa fa-cog"></i> Global Modules</button>
+                  <span>
+                    <button class="toolbar-button"><i class="fa fa-cog"></i> Global Modules</button>
+                  </span>
                 </span>
-              </span>
-          `);
+            `);
       }
 
       $("body").prepend(`<div class="global-module-manager__dialog"></div>`);
@@ -141,8 +141,8 @@
 
           const moduleDeleteButton = $(
             `<div class="global-module-manage__delete-button">
-              <div><i class="fa fa-trash"></i> Delete</div>
-            </div>`
+                <div><i class="fa fa-trash"></i> Delete</div>
+              </div>`
           );
           $(moduleDetail).append(moduleDeleteButton);
 
@@ -232,11 +232,21 @@
       $(moduleManageToolDialog).dialog({
         height: 450,
         width: 400,
-        buttons: {
-          Cancel: function () {
-            $(moduleManageToolDialog).dialog("close");
+        buttons: [
+          {
+            text: "Open Local Directory",
+            icon: "ui-icon-folder-open",
+            click: function () {
+              $.ajax({ url: "/open-local-directory" });
+            }
+          },
+          {
+            text: "Close",
+            click: function () {
+              $(moduleManageToolDialog).dialog("close");
+            }
           }
-        }
+        ]
       });
     });
   });

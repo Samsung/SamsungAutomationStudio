@@ -1,5 +1,23 @@
 const path = require("path"),
   fs = require("fs-extra");
+const { exec } = require("child_process");
+
+function openFileExplorer(path) {
+  let command;
+  if (process.platform === "win32") {
+    command = `explorer.exe /select,"${path}"`;
+  } else if (process.platform === "darwin") {
+    command = `open -R "${path}"`;
+  } else {
+    command = `xdg-open "${path}"`;
+  }
+
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing command: ${error}`);
+    }
+  });
+}
 
 async function checkIfDirectoryExists(dirPath) {
   try {
@@ -19,21 +37,31 @@ async function checkIfDirectoryExists(dirPath) {
 
 async function main() {
   const basePath = RED.settings.userDir;
+  const manualFilePath = `${basePath}/utils/★PUT YOUR JSON FILES OF MODULE HERE★.txt`;
 
   RED.httpAdmin.get("/localModules", async function (req, res) {
     try {
+      fs.pathExists(manualFilePath, (err, exists) => {
+        if (!exists) {
+          const content = "Put your JSON files of module in 'utils' folder.";
+          fs.writeFile(manualFilePath, content);
+        }
+      });
+
       let modulesObject = [];
       if (checkIfDirectoryExists(`${basePath}/utils`)) {
         let moduleFiles = await fs.readdirSync(path.join(basePath, "utils"));
 
         moduleFiles.forEach(async file => {
           const filePath = path.join(basePath, "utils", file);
-          const fileContent = fs.readFileSync(filePath, "utf-8");
-          const moduleFile = {
-            filePath: filePath,
-            fileContent: JSON.parse(fileContent)
-          };
-          modulesObject.push(moduleFile);
+          try {
+            const fileContent = fs.readFileSync(filePath, "utf-8");
+            const moduleFile = {
+              filePath: filePath,
+              fileContent: JSON.parse(fileContent)
+            };
+            modulesObject.push(moduleFile);
+          } catch (e) {}
         });
       }
       res.send(modulesObject);
@@ -62,6 +90,17 @@ async function main() {
             timeout: 3000
           });
         });
+    } catch (e) {
+      res.status(404).send();
+    }
+  });
+
+  RED.httpAdmin.get("/open-local-directory", async function (req, res) {
+    try {
+      openFileExplorer(
+        `${basePath}\\utils\\★PUT YOUR JSON FILES OF MODULE HERE★.txt`
+      );
+      res.status(200).send();
     } catch (e) {
       res.status(404).send();
     }
