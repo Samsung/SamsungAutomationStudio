@@ -34,6 +34,7 @@
     "aws-sdk": "^2.732.0",
     "axios": "^0.24.0",
     "body-parser": "^1.19.0",
+    "chromadb": "^1.5.9",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "express": "^4.18.2",
@@ -48,8 +49,8 @@
     "pg": "^8.3.0",
     "proxy-agent": "^5.0",
     "serve-static": "^1.15.0",
-    "chromadb": "^1.5.9",
     "sharp": "^0.32.6",
+    "socket.io": "^4.7.2",
     "when": "3.7.8"
   },
   "devDependencies": {
