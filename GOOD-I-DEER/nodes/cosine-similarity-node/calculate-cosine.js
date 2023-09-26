@@ -60,23 +60,19 @@ module.exports = function (RED) {
       var stored_vectors = await getStoredVector();
 
       if (!stored_vectors) {
-        msg.payload = "There is no such file or directory.";
-        msg.topic = "Error";
-        this.send(msg);
+        this.error("There is no such file or directory.", "Error");
       } else {
-        var result = 1;
+        var result = false;
         if (!input_vectors) {
-          console.error("Input vector is not valid.");
+          this.error("Input vector is not valid.");
         } else if (!stored_vectors) {
-          console.error("Stored vector is not valid.");
+          this.error("Stored vector is not valid.");
         } else {
           result = devideSimilarity(input_vectors, stored_vectors);
         }
 
         if (!result) {
-          msg.payload = "The Vector is not available to calculate.";
-          msg.topic = "Error";
-          this.send(msg);
+          this.error("The Vector is not available to calculate.", "Error");
         } else {
           msg.payload = result;
           msg.topid = "Result";
