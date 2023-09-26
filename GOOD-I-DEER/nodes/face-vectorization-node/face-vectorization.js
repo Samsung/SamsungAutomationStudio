@@ -18,10 +18,10 @@ module.exports = function (RED) {
       try {
         const vectors = [];
         if (config.inputType == 0) {
-          vectors.push(await image_vectorization(inputData));
+          vectors.push(await imageVectorization(inputData));
         } else if (config.inputType == 1) {
           for (let i = 0; i < inputData.length; ++i) {
-            vectors.push(await image_vectorization(inputData[i]));
+            vectors.push(await imageVectorization(inputData[i]));
           }
         }
 
@@ -52,7 +52,7 @@ module.exports = function (RED) {
       }
     });
 
-    async function image_vectorization(inputData) {
+    async function imageVectorization(inputData) {
       try {
         const model = await onnx.InferenceSession.create(modelPath);
 
@@ -60,12 +60,9 @@ module.exports = function (RED) {
 
         const inputDims = [1, 3, 224, 224];
 
-        const input = await image_transfer(inputData);
+        const input = await imageTransfer(inputData);
 
-        const inputTensor = new onnx.Tensor(
-          Float32Array.from(input),
-          inputDims
-        );
+        const inputTensor = new onnx.Tensor(Float32Array.from(input), inputDims);
 
         const feeds = {};
         feeds[inputName] = inputTensor;
@@ -74,13 +71,11 @@ module.exports = function (RED) {
 
         return Array.from(outputData.output.data);
       } catch (error) {
-        throw new Error(
-          "Image vectorization error: " + error.message.split("\n")[0]
-        );
+        throw new Error("Image vectorization error: " + error.message.split("\n")[0]);
       }
     }
 
-    async function image_transfer(inputData) {
+    async function imageTransfer(inputData) {
       try {
         const img = sharp(inputData);
 
@@ -104,9 +99,7 @@ module.exports = function (RED) {
 
         return input;
       } catch (error) {
-        throw new Error(
-          "Image transfer error: " + error.message.split("\n")[0]
-        );
+        throw new Error("Image transfer error: " + error.message.split("\n")[0]);
       }
     }
   }
