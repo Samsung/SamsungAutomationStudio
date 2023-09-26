@@ -18,7 +18,6 @@ module.exports.code = (config) => {
 
             #title {
                 margin-top: 20px;
-                margin-bottom: 20px;
                 font-size: 1.5em;
                 font-weight: bold;
             }
@@ -29,18 +28,24 @@ module.exports.code = (config) => {
                  -webkit-transform: scaleX(-1);
             }
 
+            .videoTitle {
+                font-weight: 700;
+                font-size: 1em;
+                margin-bottom: 10px;
+            }
+
         </style>
     </head>
     <body>
         <p id="title">📷 Object Detection 📷</p>
-        <div style="display: flex; flex-wrap: wrap;">
+        <div style="display: flex; flex-wrap: wrap; width: 100%; justify-content: space-around">
             <div class="video" style="width: 640px">
-                <h4>WebCam</h4>
+                <p class="videoTitle">WebCam</p>
                 <video id="input-video" crossorigin="anonymous"  width="640px" height="640px" style="overfit : fill; "></video>
             </div>
 
             <div class="video" style="width: 640px">
-                <h4>Detect Result</h4>
+                <p class="videoTitle">Detect Result</p>
                 <div style="position: relative;">
                     <video id="output-video" crossorigin="anonymous"  width="640px" height="640px" style="overfit : fill; position: absolute; right: 0; top: 0;" muted="true"></video>
                     <canvas id="output-canvas" width="640px" height="640px" style="position: absolute; right: 0; top: 0;"></canvas>
