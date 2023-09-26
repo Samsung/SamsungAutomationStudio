@@ -48,6 +48,7 @@ module.exports = function (RED) {
         stored = JSON.parse(data);
       } catch (err) {
         console.error("Error occured while parsing file.", err);
+        return false;
       }
       return stored;
     }
@@ -56,17 +57,25 @@ module.exports = function (RED) {
       var input_vectors = JSON.parse(msg.payload);
       var stored_vectors = await getStoredVector();
 
-      var result = 1;
-      if (!input_vectors) {
-        console.error("Input vector is not valid.");
-      } else if (!stored_vectors) {
-        console.error("Stored vector is not valid.");
+      if(!stored_vectors) {
+        msg.payload = "There is no such file or directory.";
+        msg.topic = "Error";
+        this.send(msg);
       } else {
-        result = devideSimilarity(input_vectors, stored_vectors);
+        var result = 1;
+        if (!input_vectors) {
+          console.error("Input vector is not valid.");
+        } else if (!stored_vectors) {
+          console.error("Stored vector is not valid.");
+        } else {
+          result = devideSimilarity(input_vectors, stored_vectors);
+        }
+  
+        msg.payload = result;
+        msg.topid = "Result";
+        this.send(msg);  
       }
 
-      msg.payload = result;
-      this.send(msg);
     });
   }
   RED.nodes.registerType("calculate-cosine", CalculateCosine);

@@ -4,7 +4,19 @@
         color: '#1AE5BE',
         defaults: {
             name: { value: "" },
-            file: { value: "" },
+            file: {
+                value: "",
+                validate: function (v) {
+                    let fileValue = String(v);
+                    if (!fileValue) {
+                        $("#nResults-warning").css("display", "block");
+                        return false;
+                    } else {
+                        $("#nResults-warning").css("display", "none");
+                        return true;
+                    }
+                },
+            },
         },
         inputs: 1,
         outputs: 1,
@@ -24,6 +36,12 @@
     <div class="form-row">
         <label for="node-input-file"><i class="fa fa-file"></i> File</label>
         <input type="text" id="node-input-file" placeholder="Vector File">
+        <p
+            id="nResults-warning"
+            style="color: red; display: none; margin-left: 105px;"
+        >
+            You should select file.
+        </p>
     </div>
 </script>
 
