@@ -30,6 +30,9 @@ module.exports = function (RED) {
       } else if (config.returnType == 1) {
         const dir = config.path;
         const textData = JSON.stringify(vectors);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
         fs.writeFileSync(dir, textData, "utf-8");
       }
     });
