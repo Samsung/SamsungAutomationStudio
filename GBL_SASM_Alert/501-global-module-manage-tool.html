@@ -1,4 +1,56 @@
 <style>
+  @font-face {
+    font-family: "Pretendard-Regular";
+    src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+      format("woff");
+    font-weight: 400;
+    font-style: normal;
+  }
+  .ui-dialog:has(.global-module-manager__dialog) {
+    font-family: "Pretendard-Regular";
+    border-radius: 10px;
+  }
+  .ui-dialog:has(.global-module-manager__dialog) .ui-dialog-titlebar,
+  .ui-dialog:has(.global-module-manager__dialog) .ui-dialog-buttonpane {
+    background-color: transparent;
+  }
+  .ui-dialog:has(.global-module-manager__dialog) .ui-dialog-titlebar-close {
+    background: transparent;
+    border: none;
+    margin-right: 5px;
+  }
+
+  .ui-dialog:has(.global-module-manager__dialog) .ui-button-danger {
+    background-color: #dc3545;
+    color: white !important;
+    border-radius: 5px;
+    border: none !important;
+  }
+  .ui-dialog:has(.global-module-manager__dialog)
+    .ui-dialog-buttonset
+    button.ui-button-danger:not(.disabled):not(:disabled):hover {
+    color: white !important;
+    background-color: rgb(194, 20, 55) !important;
+  }
+  .ui-dialog:has(.global-module-manager__dialog)
+    .ui-dialog-buttonset
+    button.ui-button-danger:not(.disabled):not(:disabled):focus {
+    color: white !important;
+    outline: none;
+  }
+
+  .ui-dialog:has(.global-module-manager__dialog) .ui-button-primary {
+    border-radius: 5px;
+  }
+  .global-module-manager__dialog.ui-dialog-content::-webkit-scrollbar {
+    width: 5px;
+    background-color: #efefef;
+  }
+  .global-module-manager__dialog.ui-dialog-content::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #767676;
+  }
+
   .toolbar-button {
     border: none;
     color: #eee;
@@ -36,12 +88,14 @@
   }
 
   .global-module-manager__module-container {
-    border: solid 1px #aaa;
     border-radius: 5px;
     padding: 15px;
     margin-bottom: 10px;
-    background-color: #e6eeff;
+    background-color: #f1f5ff;
     cursor: grab;
+  }
+  .global-module-manager__module-container:hover {
+    background-color: #e6eeff;
   }
 
   .global-module-manager__module-title {
@@ -55,20 +109,25 @@
     font-weight: 400;
   }
 
-  .global-module-manage__delete-button {
+  .global-module-manage__delete-button-container {
     margin-top: 15px;
     display: flex;
     justify-content: end;
   }
 
-  .global-module-manage__delete-button > div {
-    background-color: rgb(237, 100, 100);
+  .global-module-manage__delete-button {
+    border: 1px solid #dc3545;
+    border-radius: 5px;
     padding: 8px 0;
     width: 60px;
     font-size: 12px;
     text-align: center;
-    color: #fff;
+    color: #dc3545;
     cursor: pointer;
+  }
+  .global-module-manage__delete-button:hover {
+    background: #dc3545;
+    color: #fff;
   }
 </style>
 
@@ -140,8 +199,8 @@
             .text(file.fileContent[0].info);
 
           const moduleDeleteButton = $(
-            `<div class="global-module-manage__delete-button">
-                <div><i class="fa fa-trash"></i> Delete</div>
+            `<div class="global-module-manage__delete-button-container">
+                <div class="global-module-manage__delete-button"><i class="fa fa-trash"></i> Delete</div>
               </div>`
           );
           $(moduleDetail).append(moduleDeleteButton);
@@ -238,13 +297,15 @@
             icon: "ui-icon-folder-open",
             click: function () {
               $.ajax({ url: "/open-local-directory" });
-            }
+            },
+            class: "ui-button-primary"
           },
           {
             text: "Close",
             click: function () {
               $(moduleManageToolDialog).dialog("close");
-            }
+            },
+            class: "ui-button-danger"
           }
         ]
       });

@@ -1,4 +1,49 @@
 <style>
+  @font-face {
+    font-family: "Pretendard-Regular";
+    src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+      format("woff");
+    font-weight: 400;
+    font-style: normal;
+  }
+  .ui-dialog:has(.module-manage-tool__dialog) {
+    font-family: "Pretendard-Regular";
+    border-radius: 10px;
+  }
+  .ui-dialog:has(.module-manage-tool__dialog) .ui-dialog-titlebar,
+  .ui-dialog:has(.module-manage-tool__dialog) .ui-dialog-buttonpane {
+    background-color: transparent;
+  }
+  .ui-dialog:has(.module-manage-tool__dialog) .ui-dialog-titlebar-close {
+    background: transparent;
+    border: none;
+    margin-right: 5px;
+  }
+  .ui-dialog:has(.module-manage-tool__dialog) .ui-button-danger {
+    background-color: #dc3545;
+    color: white !important;
+    border-radius: 5px;
+    border: none !important;
+  }
+  .ui-dialog-buttonset
+    button.ui-button-danger:not(.disabled):not(:disabled):hover {
+    color: white !important;
+    background-color: rgb(194, 20, 55) !important;
+  }
+  .ui-dialog-buttonset
+    button.ui-button-danger:not(.disabled):not(:disabled):focus {
+    color: white !important;
+    outline: none;
+  }
+  .module-manage-tool__dialog.ui-dialog-content::-webkit-scrollbar {
+    width: 5px;
+    background-color: #efefef;
+  }
+  .module-manage-tool__dialog.ui-dialog-content::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #767676;
+  }
+
   .toolbar-button {
     border: none;
     color: #eee;
@@ -31,15 +76,22 @@
     justify-content: space-between;
     align-items: center;
     height: 40px;
-    border: solid 1px #aaa;
     padding: 0 10px;
-    margin: 5px 0;
+    margin-top: 10px;
     font-size: 14px;
-    background-color: #ccc;
+    font-weight: 700;
+    background-color: #e6eeff;
     z-index: -2;
   }
+  .module-manage-tool__module-title:hover {
+    background-color: #dbe6ff;
+  }
+
   .module-manage-tool__toggle-visibility {
     padding: 10px 10px 10px 0;
+  }
+  .module-manage-tool__toggle-visibility:hover {
+    color: #6790ef;
   }
   .module-manage-tool__toggle-detail {
     width: 100%;
@@ -48,13 +100,15 @@
   .module-manage-tool__jump-link {
     padding: 10px 0;
   }
+  .module-manage-tool__jump-link:hover {
+    color: #6790ef;
+  }
 
   .module-manage-tool__module-detail {
     display: none;
-    border: solid 1px #aaa;
     padding: 10px;
     font-size: 14px;
-    background-color: #e6eeff;
+    background-color: #f6f9ff;
     z-index: 1;
   }
 
@@ -70,6 +124,9 @@
     text-decoration: underline;
     cursor: pointer;
   }
+  .module-manage-tool__submodule-list:hover {
+    color: #769fff;
+  }
 
   .module-manage-tool__no-submodule {
     padding: 8px;
@@ -77,19 +134,23 @@
     font-style: italic;
   }
 
-  .module-manage-tool__save-button {
+  .module-manage-tool__save-button-container {
+    margin-top: 10px;
     display: flex;
     justify-content: end;
   }
 
-  .module-manage-tool__save-button > div {
+  .module-manage-tool__save-button {
     background-color: cornflowerblue;
-    padding: 8px 0;
-    width: 120px;
+    padding: 8px;
     font-size: 12px;
     text-align: center;
     color: #fff;
     cursor: pointer;
+    border-radius: 4px;
+  }
+  .module-manage-tool__save-button:hover {
+    background-color: rgb(84, 131, 219);
   }
 
   /* tooltip style */
@@ -98,7 +159,7 @@
     padding: 10px 15px;
     color: white;
     border-radius: 8px;
-    border: none;
+    border: none !important;
     box-shadow: none;
   }
 
@@ -168,8 +229,8 @@
                             <div class="module-manage-tool__submodule" id="submodule-${node.id}">
                               <div class="module-manage-tool__submodule-title">Submodules</div>
                             </div>
-                            <div class="module-manage-tool__save-button">
-                              <div><i class="fa fa-save"></i> Save in Local</div>
+                            <div class="module-manage-tool__save-button-container">
+                              <div class="module-manage-tool__save-button"><i class="fa fa-save"></i> Save in Local</div>
                             </div>
                           </div>
                         </div>`;
@@ -340,11 +401,15 @@
       $(moduleManageToolDialog).dialog({
         height: 450,
         width: 400,
-        buttons: {
-          Cancel: function () {
-            $(moduleManageToolDialog).dialog("close");
+        buttons: [
+          {
+            text: "Close",
+            click: function () {
+              $(moduleManageToolDialog).dialog("close");
+            },
+            class: "ui-button-danger"
           }
-        }
+        ]
       });
     });
   });
