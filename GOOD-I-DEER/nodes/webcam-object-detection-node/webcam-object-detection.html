@@ -45,7 +45,7 @@
         const inputVideo = document.getElementById('input-video')
         const constraints = {
             audio: false, 
-            video: { width: 1280, height: 720 }
+            video: true,
         }
 
         navigator.mediaDevices.getUserMedia(constraints)
