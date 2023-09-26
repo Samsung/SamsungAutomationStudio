@@ -2,16 +2,22 @@ module.exports = function (RED) {
   require("../../static-server")(RED);
   const { YOLO_CLASSES } = require("../static/node-constants");
 
+  const mapping = new Map();
+
+  for (let i = 0; i < YOLO_CLASSES.length; i++) {
+    mapping.set(YOLO_CLASSES[i], i);
+  }
+
   function yolov8Node(config) {
-    RED.nodes.createNode(this, config);
     const ort = require("onnxruntime-node");
     const sharp = require("sharp");
     const fs = require("fs");
 
+    RED.nodes.createNode(this, config);
+
     const node = this;
     const returnValue = Number(config.returnValue);
     const saveDir = config.absolutePathDir;
-    let bufferFromImage;
 
     let model;
 
@@ -30,20 +36,24 @@ module.exports = function (RED) {
           return;
         }
 
-        bufferFromImage = msg.payload;
+        const bufferFromImage = msg.payload;
         const img = sharp(bufferFromImage);
-        const boxes = await detect_objects_on_image(img);
+        const boxes = await detectObjectsOnImage(img);
         msg.payload = {};
         msg.payload.originImg = bufferFromImage;
         if (returnValue === 0) {
-          msg.payload.data = get_detected_objects(boxes);
+          msg.payload.data = getDetectedObjects(boxes);
         } else if (returnValue === 1) {
-          msg.payload.data = await get_image_buffers(boxes);
+          msg.payload.data = await getImageBuffers(boxes);
         } else if (returnValue === 2) {
           let objectsCount = Array(80)
             .fill()
             .map(() => 0);
-          msg.payload.data = await save_images(boxes, objectsCount);
+          msg.payload.data = await saveImages(
+            boxes,
+            objectsCount,
+            bufferFromImage
+          );
         }
 
         node.send(msg);
@@ -53,16 +63,16 @@ module.exports = function (RED) {
       }
     });
 
-    async function detect_objects_on_image(img) {
-      const [input, img_width, img_height] = await prepare_input(img);
-      const output = await run_model(input);
-      return process_output(output, img_width, img_height);
+    async function detectObjectsOnImage(img) {
+      const [input, imgWidth, imgHeight] = await prepareInput(img);
+      const output = await runModel(input);
+      return processOutput(output, imgWidth, imgHeight);
     }
 
-    async function prepare_input(img) {
+    async function prepareInput(img) {
       const md = await img.metadata();
 
-      const [img_width, img_height] = [md.width, md.height];
+      const [imgWidth, imgHeight] = [md.width, md.height];
       const pixels = await img
         .removeAlpha()
         .resize({ width: 640, height: 640, fit: "fill" })
@@ -77,33 +87,33 @@ module.exports = function (RED) {
         blue.push(pixels[index + 2] / 255.0);
       }
       const input = [...red, ...green, ...blue];
-      return [input, img_width, img_height];
+      return [input, imgWidth, imgHeight];
     }
 
-    async function run_model(input) {
+    async function runModel(input) {
       input = new ort.Tensor(Float32Array.from(input), [1, 3, 640, 640]);
       const outputs = await model.run({ images: input });
       return outputs["output0"].data;
     }
 
-    function process_output(output, img_width, img_height) {
+    function processOutput(output, imgWidth, imgHeight) {
       let boxes = [];
       for (let index = 0; index < 8400; index++) {
-        const [class_id, prob] = [...Array(80).keys()]
+        const [classId, prob] = [...Array(80).keys()]
           .map((col) => [col, output[8400 * (col + 4) + index]])
           .reduce((accum, item) => (item[1] > accum[1] ? item : accum), [0, 0]);
         if (prob < config.threshold) {
           continue;
         }
-        const label = YOLO_CLASSES[class_id];
+        const label = YOLO_CLASSES[classId];
         const xc = output[index];
         const yc = output[8400 + index];
         const w = output[2 * 8400 + index];
         const h = output[3 * 8400 + index];
-        const x1 = ((xc - w / 2) / 640) * img_width;
-        const y1 = ((yc - h / 2) / 640) * img_height;
-        const x2 = ((xc + w / 2) / 640) * img_width;
-        const y2 = ((yc + h / 2) / 640) * img_height;
+        const x1 = ((xc - w / 2) / 640) * imgWidth;
+        const y1 = ((yc - h / 2) / 640) * imgHeight;
+        const x2 = ((xc + w / 2) / 640) * imgWidth;
+        const y2 = ((yc + h / 2) / 640) * imgHeight;
         boxes.push([x1, y1, x2, y2, label, prob]);
       }
 
@@ -116,7 +126,7 @@ module.exports = function (RED) {
       return result;
     }
 
-    function get_detected_objects(boxes) {
+    function getDetectedObjects(boxes) {
       const result = {};
       boxes.forEach((box) => {
         const info = {
@@ -135,7 +145,7 @@ module.exports = function (RED) {
       return result;
     }
 
-    async function get_image_buffers(boxes) {
+    async function getImageBuffers(boxes) {
       const result = {};
       await Promise.all(
         boxes.map(async (box) => {
@@ -153,7 +163,7 @@ module.exports = function (RED) {
       return result;
     }
 
-    async function save_images(boxes, objectsCount) {
+    async function saveImages(boxes, objectsCount, bufferFromImage) {
       const today = new Date();
       const dateformat =
         today.getFullYear() +
@@ -242,11 +252,6 @@ module.exports = function (RED) {
       const x2 = Math.min(box1_x2, box2_x2);
       const y2 = Math.min(box1_y2, box2_y2);
       return (x2 - x1) * (y2 - y1);
-    }
-
-    const mapping = new Map();
-    for (let i = 0; i < YOLO_CLASSES.length; i++) {
-      mapping.set(YOLO_CLASSES[i], i);
     }
   }
 
