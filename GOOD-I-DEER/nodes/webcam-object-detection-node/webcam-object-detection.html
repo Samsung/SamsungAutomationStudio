@@ -83,9 +83,13 @@
 
     <!-- Threshold -->
     <div class="form-row">
-      <label for="node-input-threshold"><i class="fa fa-sort"></i> Confidence Threshold</label>
-      <input type="number" id="node-input-threshold" step="0.1" />
-      <p id="threshold-warning" style="color: red; display: none; margin-left: 105px;" >
+      <div style="display: flex;">
+        <label for="node-input-threshold">
+          <i class="fa fa-sort"></i>Confidence Threshold
+        </label>
+        <input type="number" id="node-input-threshold" step="0.1" />
+      </div>
+      <p id="threshold-warning" style="color: red; display: none; margin-left: 105px;">
         threshold must be greater or equal to 0 and less than 1.
       </p>
     </div>
