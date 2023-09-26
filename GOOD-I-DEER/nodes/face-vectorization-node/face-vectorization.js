@@ -24,15 +24,20 @@ module.exports = function (RED) {
         }
       }
 
-      const filePath = config.path;
-      const textData = JSON.stringify(vectors);
+      if (config.returnType == 0) {
+        msg.payload = vectors;
+        node.send(msg);
+      } else if (config.returnType == 1) {
+        const filePath = config.path;
+        const textData = JSON.stringify(vectors);
 
-      const dir = path.dirname(filePath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+        const dir = path.dirname(filePath);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+
+        fs.writeFileSync(filePath, textData, "utf-8");
       }
-
-      fs.writeFileSync(filePath, textData, "utf-8");
     });
 
     async function image_vectorization(inputData) {
