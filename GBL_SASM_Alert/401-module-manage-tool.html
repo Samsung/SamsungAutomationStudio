@@ -159,10 +159,10 @@
           const visibleIcon = isModuleVisible ? "fa-eye" : "fa-eye-slash";
 
           let modules = `<div>
-                          <div class="module-manage-tool__module-title" title="${node.info}">
+                          <div class="module-manage-tool__module-title" title="${node.info}" id="module-${node.id}">
                             <div class="module-manage-tool__toggle-visibility"><i class="fa ${visibleIcon}"></i></div>
                             <div class="module-manage-tool__toggle-detail">${node.name}</div>
-                            <div class="module-manage-tool__jump-link" id="${node.id}"><i class="fa fa-compass"></i></div>
+                            <div class="module-manage-tool__jump-link" id="link-${node.id}"><i class="fa fa-compass"></i></div>
                           </div>
                           <div class="module-manage-tool__module-detail" >
                             <div class="module-manage-tool__submodule" id="submodule-${node.id}">
@@ -179,7 +179,7 @@
             links.forEach(link => {
               if (link.target.type === "submodule") {
                 $(`#submodule-${node.id}`).append(
-                  `<div class="module-manage-tool__submodule-list" id="${link.target.id}" title="${link.target.info}">${link.target.name}</div>`
+                  `<div class="module-manage-tool__submodule-list" id="submodule_link-${link.target.id}" title="${link.target.info}">${link.target.name}</div>`
                 );
               }
             });
@@ -250,8 +250,8 @@
       async function () {
         const moduleId = $(this)
           .parent()
-          .prev()
-          .children(".module-manage-tool__jump-link")[0].id;
+          .prev(".module-manage-tool__module-title")[0]
+          .id.split("-")[1];
         const moduleNodeList = RED.nodes.getAllFlowNodes(
           RED.nodes.node(moduleId)
         );
@@ -287,7 +287,7 @@
     /* jump to module-in node */
     $(document).on("click", ".module-manage-tool__jump-link", function (e) {
       e.stopPropagation();
-      RED.view.reveal($(this).attr("id"));
+      RED.view.reveal($(this).attr("id").split("-")[1]);
     });
 
     /* jump to submodule node */
@@ -295,7 +295,7 @@
       "click",
       ".module-manage-tool__submodule-list",
       function (e) {
-        RED.view.reveal($(this).attr("id"));
+        RED.view.reveal($(this).attr("id").split("-")[1]);
       }
     );
 
@@ -309,8 +309,9 @@
         node.x = -(node.x + 500);
       });
 
-      RED.workspaces.add();
-      RED.workspaces.remove();
+      const workspaceId = RED.workspaces.active();
+      RED.workspaces.hide(workspaceId);
+      RED.workspaces.show(workspaceId);
     };
 
     $(document).on(
@@ -319,9 +320,9 @@
       function (e) {
         e.stopPropagation();
         const scrollTop = $("#red-ui-workspace-chart").scrollTop();
-        const selectedModuleId = $(this).siblings(
-          ".module-manage-tool__jump-link"
-        )[0].id;
+        const selectedModuleId = $(this)
+          .parent(".module-manage-tool__module-title")[0]
+          .id.split("-")[1];
         toggleModule(selectedModuleId, this);
         $("#red-ui-workspace-chart").scrollTop(scrollTop);
         $(".red-ui-deploy-button.disabled").removeClass("disabled");
