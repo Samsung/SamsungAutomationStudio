@@ -57,13 +57,9 @@ module.exports = function (RED) {
       var stored_vectors = await getStoredVector();
 
       var result = 1;
-      if (typeof input_vectors == "undefined" || input_vectors == null || input_vectors == "") {
+      if (!input_vectors) {
         console.error("Input vector is not valid.");
-      } else if (
-        typeof stored_vectors == "undefined" ||
-        stored_vectors == null ||
-        stored_vectors == ""
-      ) {
+      } else if (!stored_vectors) {
         console.error("Stored vector is not valid.");
       } else {
         result = devideSimilarity(input_vectors, stored_vectors);
