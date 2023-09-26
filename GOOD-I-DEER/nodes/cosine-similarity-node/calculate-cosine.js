@@ -5,7 +5,9 @@ module.exports = function (RED) {
     function devideSimilarity(ArrayA, ArrayB) {
       var resultArray = [];
       for (var i = 0; i < ArrayA.length; i++) {
-        resultArray.push(cosineSimilarity(ArrayA[i], ArrayB));
+        let resultCosineSimilarity = cosineSimilarity(ArrayA[i], ArrayB);
+        if (!resultCosineSimilarity || isNaN(resultCosineSimilarity)) return false;
+        resultArray.push(resultCosineSimilarity);
       }
       return resultArray;
     }
@@ -28,7 +30,7 @@ module.exports = function (RED) {
         magnitudeB = Math.sqrt(magnitudeB);
 
         if (magnitudeA === 0 || magnitudeB === 0) {
-          throw new Error("Can't calculate cosine similarity of 0 Vector.");
+          return false;
         }
 
         const similarity = dotProduct / (magnitudeA * magnitudeB);
@@ -57,7 +59,7 @@ module.exports = function (RED) {
       var input_vectors = JSON.parse(msg.payload);
       var stored_vectors = await getStoredVector();
 
-      if(!stored_vectors) {
+      if (!stored_vectors) {
         msg.payload = "There is no such file or directory.";
         msg.topic = "Error";
         this.send(msg);
@@ -70,10 +72,16 @@ module.exports = function (RED) {
         } else {
           result = devideSimilarity(input_vectors, stored_vectors);
         }
-  
-        msg.payload = result;
-        msg.topid = "Result";
-        this.send(msg);  
+
+        if (!result) {
+          msg.payload = "The Vector is not available to calculate.";
+          msg.topic = "Error";
+          this.send(msg);
+        } else {
+          msg.payload = result;
+          msg.topid = "Result";
+          this.send(msg);
+        }
       }
 
     });
