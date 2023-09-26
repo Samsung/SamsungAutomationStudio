@@ -9,6 +9,8 @@ module.exports = function (RED) {
   }
 
   function yolov8Node(config) {
+    RED.nodes.createNode(this, config);
+
     const ort = require("onnxruntime-node");
     const sharp = require("sharp");
     const fs = require("fs");
@@ -32,7 +34,11 @@ module.exports = function (RED) {
         }
 
         if (returnValue === 2 && fs.existsSync(saveDir) === false) {
-          this.status({ fill: "red", shape: "ring", text: "fail" });
+          this.status({
+            fill: "red",
+            shape: "ring",
+            text: "folder dosen't exists",
+          });
           node.error("folder dosen't exists");
           return;
         }
@@ -60,6 +66,7 @@ module.exports = function (RED) {
         node.send(msg);
         this.status({});
       } catch (error) {
+        this.status({ fill: "red", shape: "ring", text: error });
         node.log(error);
       }
     });
@@ -111,6 +118,7 @@ module.exports = function (RED) {
         const yc = output[8400 + index];
         const w = output[2 * 8400 + index];
         const h = output[3 * 8400 + index];
+
         const x1 = ((xc - w / 2) / 640) * imgWidth;
         const y1 = ((yc - h / 2) / 640) * imgHeight;
         const x2 = ((xc + w / 2) / 640) * imgWidth;
