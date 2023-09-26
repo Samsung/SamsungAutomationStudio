@@ -61,7 +61,6 @@ module.exports = function (RED) {
         moduleflowNode[node.id] = node;
       } else if (node.type === "GBL_module_in") {
         moduleinNode[node.id] = node;
-
         if (typeof namekeyNode[node.z] === "undefined")
           namekeyNode[node.z] = {};
         if (typeof namekeyNode[node.z][node.name] === "undefined")
@@ -75,6 +74,7 @@ module.exports = function (RED) {
       }
     });
 
+    // check module in node name duplication
     for (const tabflow in namekeyNode)
       for (const nodename in namekeyNode[tabflow]) {
         if (namekeyNode[tabflow][nodename].length != 1) {
@@ -89,6 +89,46 @@ module.exports = function (RED) {
           RED.events.emit("GBLtext:" + namekeyNode[tabflow][nodename][0], {});
         }
       }
+
+    // check wirednode about submodule
+    for (const nodeID in moduleinNode) {
+      const moduleInNode = moduleinNode[nodeID];
+      let count = 0;
+      let submodule = 0;
+      const subflownamekey = {};
+      for (const wiredID of moduleInNode.wires[0]) {
+        const wiredNode = allNode[wiredID];
+
+        count += 1;
+        if (wiredNode.type === "submodule") {
+          if (typeof subflownamekey[wiredNode.name] === "undefined")
+            subflownamekey[wiredNode.name] = [];
+          subflownamekey[wiredNode.name].push(wiredNode.id);
+          submodule += 1;
+        }
+      }
+
+      if (submodule != 0 && submodule != count)
+        RED.events.emit("GBLtext:" + nodeID, {
+          fill: "red",
+          shape: "dot",
+          text: `wired node error`
+        });
+
+      for (const subnodename in subflownamekey) {
+        if (subflownamekey[subnodename].length != 1) {
+          subflownamekey[subnodename].forEach(nodeID => {
+            RED.events.emit("GBLtext:" + nodeID, {
+              fill: "red",
+              shape: "dot",
+              text: `name '${subnodename}' is duplication`
+            });
+          });
+        } else {
+          RED.events.emit("GBLtext:" + subflownamekey[subnodename][0], {});
+        }
+      }
+    }
 
     Object.assign(myNodeinFlow, {
       ...moduleflowNode,
@@ -129,12 +169,15 @@ module.exports = function (RED) {
     this.on("input", function (msg) {
       const mynodes = MappingNodes.get("myModuleflows");
       if (config.moduleId === null) {
+        console.log("1");
         target_error();
         return;
       } else if (
         typeof mynodes[config.moduleId] === "undefined" ||
-        mynodes[config.moduleId].type != "module_in"
+        mynodes[config.moduleId].type != "GBL_module_in"
       ) {
+        console.log("2");
+
         target_error();
         return;
       } else if (
@@ -142,6 +185,8 @@ module.exports = function (RED) {
         (typeof mynodes[config.submoduleId] === "undefined" ||
           mynodes[config.submoduleId].type != "submodule")
       ) {
+        console.log("3");
+
         target_error();
         return;
       }
@@ -156,6 +201,8 @@ module.exports = function (RED) {
       //start linked module in
       if (config.submoduleId === null) {
         if (typeof mynodes[config.moduleId] === "undefind") {
+          console.log("4");
+
           target_error();
           return;
         }
@@ -163,6 +210,8 @@ module.exports = function (RED) {
         RED.events.emit("GBLmodule:" + config.moduleId, msg);
       } else {
         if (typeof mynodes[config.submoduleId] === "undefind") {
+          console.log("5");
+
           target_error();
           return;
         }
