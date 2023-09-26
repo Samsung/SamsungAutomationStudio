@@ -45,7 +45,7 @@ module.exports = function (RED) {
         if (returnValue === 0) {
           msg.payload.data = getDetectedObjects(boxes);
         } else if (returnValue === 1) {
-          msg.payload.data = await getImageBuffers(boxes);
+          msg.payload.data = await getImageBuffers(boxes, bufferFromImage);
         } else if (returnValue === 2) {
           let objectsCount = Array(80)
             .fill()
@@ -146,12 +146,12 @@ module.exports = function (RED) {
       return result;
     }
 
-    async function getImageBuffers(boxes) {
+    async function getImageBuffers(boxes, bufferFromImage) {
       const result = {};
       await Promise.all(
         boxes.map(async (box) => {
           try {
-            const buffer = await makeBuffer(box);
+            const buffer = await makeBuffer(box, bufferFromImage);
             if (result.hasOwnProperty(box[4]) === false) {
               result[box[4]] = [];
             }
@@ -218,7 +218,7 @@ module.exports = function (RED) {
       return result;
     }
 
-    async function makeBuffer(box) {
+    async function makeBuffer(box, bufferFromImage) {
       const buffer = await sharp(bufferFromImage)
         .extract({
           width: parseInt(box[2] - box[0]),
