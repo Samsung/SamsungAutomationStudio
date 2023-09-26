@@ -1,6 +1,5 @@
 const ERROR_VECTOR_LENGTH_ZERO = -100;
 const ERROR_COSINE_SIMILARITY_NAN = -200;
-const ERROR_INPUT_VECTOR_TYPE = -300;
 const ERROR_FILE_PARSING = -500;
 
 module.exports = function (RED) {
@@ -61,7 +60,6 @@ module.exports = function (RED) {
     }
 
     this.on("input", async function (msg) {
-      // let input_vectors = JSON.parse(msg.payload);
       let input_vectors = msg.payload;
       let stored_vectors = await getStoredVector();
 
@@ -70,14 +68,7 @@ module.exports = function (RED) {
       } else if (stored_vectors == ERROR_FILE_PARSING) {
         this.error("Stored vector is not valid.");
       } else {
-        let result = 0;
-        
-        try {
-          input_vectors = JSON.parse(input_vectors);
-          result = devideSimilarity(input_vectors, stored_vectors);
-        } catch (err) {
-          result = ERROR_INPUT_VECTOR_TYPE;
-        }
+        let result = devideSimilarity(input_vectors, stored_vectors);
         
         switch (result) {
           case ERROR_VECTOR_LENGTH_ZERO:
@@ -85,9 +76,6 @@ module.exports = function (RED) {
             break;
           case ERROR_COSINE_SIMILARITY_NAN:
             this.error("The cosine similarity is Nan.", "Error");
-            break;
-          case ERROR_INPUT_VECTOR_TYPE:
-            this.error("Input Value is not arrays of vector.", "Error");
             break;
           case ERROR_FILE_PARSING:
             this.error("Error occured while parsing file.", "Error");
