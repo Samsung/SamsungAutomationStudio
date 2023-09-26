@@ -2,30 +2,45 @@ module.exports = function (RED) {
   function CalculateCosine(config) {
     RED.nodes.createNode(this, config);
 
-    function cosineSimilarity(vectorA, vectorB) {
-      if (vectorA.length !== vectorB.length || vectorA.length === 0 || vectorB.length === 0) {
-        throw new Error("These two vectors has different length or size 0.");
+    function devideSimilarity(ArrayA, ArrayB) {
+      var resultArray = [];
+      for (var i = 0; i < ArrayA.length; i++) {
+        let resultCosineSimilarity = cosineSimilarity(ArrayA[i], ArrayB);
+        if (!resultCosineSimilarity || isNaN(resultCosineSimilarity)) return false;
+        resultArray.push(resultCosineSimilarity);
       }
+      return resultArray;
+    }
 
-      let dotProduct = 0;
-      let magnitudeA = 0;
-      let magnitudeB = 0;
-      for (let i = 0; i < vectorA.length; i++) {
-        dotProduct += vectorA[i] * vectorB[i];
-        magnitudeA += vectorA[i] * vectorA[i];
-        magnitudeB += vectorB[i] * vectorB[i];
+    function cosineSimilarity(vectorA, ArrayB) {
+      var resultArray = [];
+
+      for (var i = 0; i < ArrayB.length; i++) {
+        let vectorB = ArrayB[i];
+
+        let dotProduct = 0;
+        let magnitudeA = 0;
+        let magnitudeB = 0;
+        for (let i = 0; i < vectorA.length; i++) {
+          dotProduct += vectorA[i] * vectorB[i];
+          magnitudeA += vectorA[i] * vectorA[i];
+          magnitudeB += vectorB[i] * vectorB[i];
+        }
+        magnitudeA = Math.sqrt(magnitudeA);
+        magnitudeB = Math.sqrt(magnitudeB);
+
+        if (magnitudeA === 0 || magnitudeB === 0) {
+          return false;
+        }
+
+        const similarity = dotProduct / (magnitudeA * magnitudeB);
+        resultArray.push(similarity);
       }
-      magnitudeA = Math.sqrt(magnitudeA);
-      magnitudeB = Math.sqrt(magnitudeB);
-      if (magnitudeA === 0 || magnitudeB === 0) {
-        throw new Error("Can't calculate cosine similarity of 0 Vector.");
-      }
-      const similarity = dotProduct / (magnitudeA * magnitudeB);
-      return similarity;
+      return resultArray;
     }
 
     async function getStoredVector() {
-      var stored = [0, 0, 0];
+      var stored = [[0]];
 
       const fs = require("fs");
       const filePath = config.file;
@@ -35,31 +50,35 @@ module.exports = function (RED) {
         stored = JSON.parse(data);
       } catch (err) {
         console.error("Error occured while parsing file.", err);
+        return false;
       }
       return stored;
     }
 
     this.on("input", async function (msg) {
-      var input_vector = msg.payload;
-      var stored_vector = await getStoredVector();
+      var input_vectors = JSON.parse(msg.payload);
+      var stored_vectors = await getStoredVector();
 
-      console.log(input_vector.length);
-      console.log(Object.keys(stored_vector).length);
-      var result = 1;
-      if (typeof input_vector == "undefined" || input_vector == null || input_vector == "") {
-        console.error("Input vector is not valid.");
-      } else if (
-        typeof stored_vector == "undefined" ||
-        stored_vector == null ||
-        stored_vector == ""
-      ) {
-        console.error("Stored vector is not valid.");
+      if (!stored_vectors) {
+        this.error("There is no such file or directory.", "Error");
       } else {
-        result = cosineSimilarity(input_vector, stored_vector);
+        var result = false;
+        if (!input_vectors) {
+          this.error("Input vector is not valid.");
+        } else if (!stored_vectors) {
+          this.error("Stored vector is not valid.");
+        } else {
+          result = devideSimilarity(input_vectors, stored_vectors);
+        }
+
+        if (!result) {
+          this.error("The Vector is not available to calculate.", "Error");
+        } else {
+          msg.payload = result;
+          this.send(msg);
+        }
       }
 
-      msg.payload = String(result);
-      this.send(msg);
     });
   }
   RED.nodes.registerType("calculate-cosine", CalculateCosine);
