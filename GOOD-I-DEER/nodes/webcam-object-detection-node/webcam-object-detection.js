@@ -18,6 +18,7 @@ module.exports = function(RED) {
         const port = config.socketPort;
         const app = express();
         const httpServer = http.createServer(app);
+
         let socketServer;
 
         httpServer.once("error", (err) => {
@@ -26,7 +27,6 @@ module.exports = function(RED) {
             }
         });
          
-      
         httpServer.once("listening", () => {
           console.log(`Socket.io [good webcam] : port ${port} is now ready.`);
     
