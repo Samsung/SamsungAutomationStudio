@@ -1,7 +1,7 @@
 <style>
   .property-container {
     width: 100%;
-    margin: 15px 0;
+    padding: 8px 0;
   }
   .property-inner {
     display: flex;
@@ -10,8 +10,7 @@
   }
   div.property-list {
     border: solid 1px #aaa;
-    background-color: #e6eeff;
-    margin: 8px 0;
+    margin-bottom: 8px;
   }
   textarea.property-description {
     width: 90%;
@@ -32,15 +31,24 @@
     display: none;
   }
   #node-property-name {
-    width: 30%;
+    width: 40%;
     word-break: break-all;
+    padding: 0 5px;
   }
   #node-property-value {
     width: 50%;
     word-break: break-all;
+    padding: 0 5px;
   }
   .property-checkbox {
-    width: 20%;
+    width: 10%;
+    max-height: 15px;
+    max-width: 10%;
+  }
+  #checkbox-description {
+    padding-left: 8px;
+    margin-bottom: 15px;
+    color: #737373;
   }
 </style>
 
@@ -117,59 +125,72 @@
         const $propertiesTitle = $("<h3>")
           .text(`Properties of ${element.nodeName} node`)
           .css("padding-left", "8px");
+        const $description = $("<div>")
+          .attr("id", "checkbox-description")
+          .text(
+            `Select properties of ${element.nodeName} node that need to be modified.`
+          );
         const $propertyInner = $("<div>").attr("class", "property-inner");
+        const $checkbox = $("<span>").attr("class", "property-checkbox");
         const $nodeProperty = $("<span>")
           .attr("id", "node-property-name")
-          .text("property")
-          .css("font-size", "18px");
+          .text("Property Name")
+          .css("font-weight", "800");
         const $nodeValue = $("<span>")
           .attr("id", "node-property-value")
-          .text("given value")
-          .css("font-size", "18px");
-        const $checkbox = $("<span>")
-          .attr("class", "property-checkbox")
-          .text("checkbox")
-          .css("font-size", "18px");
-
+          .text("Given Value")
+          .css("font-weight", "800");
+        const $container = $("<div>")
+          .css("border", "solid 1px #C9C9C9")
+          .css("margin", "5px");
         $propertyInner
+          .append($checkbox)
           .append($nodeProperty)
-          .append($nodeValue)
-          .append($checkbox);
-        $propertyList.append($propertiesTitle).append($propertyInner);
+          .append($nodeValue);
+        $container.append($propertyInner);
+        $propertyList
+          .append($propertiesTitle)
+          .append($description)
+          .append($container);
         $node.append($nodeName).append($propertyList);
         nodeCheckboxList.append($node);
 
-        element.properties.forEach(property => {
+        element.properties.forEach((property, index) => {
           // add checkbox of each node's properties
           const $propertyContainer = $("<div>").attr(
             "class",
             "property-container"
           );
+          if (index % 2 == 0) {
+            $propertyContainer.css("background-color", "#F6F9FF");
+          }
           const $propertyInner = $("<div>").attr("class", "property-inner");
+
           const $nodeId = $("<span>")
             .attr("id", "node-id")
             .text(element.nodeId);
           const $nodeName = $("<span>")
             .attr("id", "node-name")
             .text(element.nodeName);
+          const $checkBox = $("<input>")
+            .attr("type", "checkbox")
+            .attr("class", "property-checkbox");
           const $nodeProperty = $("<span>")
             .attr("id", "node-property-name")
             .text(property[0]);
           const $nodeValue = $("<span>")
             .attr("id", "node-property-value")
             .text(property[1]);
-          const $checkBox = $("<input>")
-            .attr("type", "checkbox")
-            .attr("class", "property-checkbox");
 
           $propertyInner
             .append($nodeId)
             .append($nodeName)
+            .append($checkBox)
             .append($nodeProperty)
-            .append($nodeValue)
-            .append($checkBox);
+            .append($nodeValue);
+
           $propertyContainer.append($propertyInner);
-          $propertyList.append($propertyContainer);
+          $container.append($propertyContainer);
 
           // If there are existing properties saved
           // check the checkbox and fill in the description in the textarea.
@@ -202,7 +223,7 @@
         if ($(this).is(":checked")) {
           const nodeId = $(this).parent().children()[0].innerText;
           const nodeName = $(this).parent().children()[1].innerText;
-          const propertyName = $(this).parent().children()[2].innerText;
+          const propertyName = $(this).parent().children()[3].innerText;
           const description = $(this).parent().parent().children()[1].value;
           node.properties.push({
             nodeId: nodeId,
