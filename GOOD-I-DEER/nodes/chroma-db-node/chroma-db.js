@@ -14,35 +14,50 @@ module.exports = function (RED) {
           msg.payload = await chroma.listCollections();
           break;
         case "create":
-          msg.payload = await chroma.getOrCreateCollection({
+          var collection = await chroma.getOrCreateCollection({
             name: config.dbName,
             metadata: {
               "hnsw:space": config.distance,
             },
           });
+
+          msg.result = "Collection successfully created";
           break;
         case "insert":
           var collection = await chroma.getCollection({
             name: config.dbName,
           });
 
+          const embeddings = Array.from(msg.payload);
+
           const count = (await collection.count()) + 1;
+
+          var len = 1;
+          if (Array.isArray(embeddings[0])) {
+            len = embeddings.length;
+          }
+
+          var ids = [];
+          for (var i = 0; i < len; i++) {
+            ids.push("id-" + (count + i));
+          }
+
           await collection.add({
-            ids: ["face-id-" + count],
-            embeddings: Array.from(msg.payload),
+            ids: ids,
+            embeddings: embeddings,
           });
+
+          msg.result = ids;
           break;
         case "query":
           var collection = await chroma.getCollection({
             name: config.dbName,
           });
 
-          const queryData = await collection.query({
+          msg.payload = await collection.query({
             queryEmbeddings: Array.from(msg.payload),
             nResults: config.nResults,
           });
-
-          msg.payload = queryData.distances[0];
           break;
         case "delete":
           var collection = await chroma.getCollection({
@@ -50,13 +65,16 @@ module.exports = function (RED) {
           });
 
           msg.payload = await collection.delete({
-            ids: config.ids,
+            ids: JSON.parse(config.ids),
           });
           break;
         case "drop":
           msg.payload = await chroma.deleteCollection({
             name: config.dbName,
           });
+
+          msg.result = "Collection successfully droped";
+          break;
       }
     }
 
