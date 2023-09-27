@@ -24,6 +24,57 @@
     display: block;
     width: 100%;
   }
+  .property-container {
+    width: 100%;
+    padding: 8px 0;
+  }
+  .property-inner {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+  }
+  div.property-list {
+    border: solid 1px #aaa;
+    margin-bottom: 8px;
+  }
+  textarea.property-description {
+    width: 90%;
+    height: 8rem;
+    resize: none;
+    margin: 0 5%;
+  }
+  div.toggle-button {
+    border: solid 1px #aaa;
+    background-color: #ccc;
+    cursor: pointer;
+    padding: 8px 8px;
+  }
+  #node-id {
+    display: none;
+  }
+  #node-name {
+    display: none;
+  }
+  #node-property-name {
+    width: 40%;
+    word-break: break-all;
+    padding: 0 5px;
+  }
+  #node-property-value {
+    width: 50%;
+    word-break: break-all;
+    padding: 0 5px;
+  }
+  .property-checkbox {
+    width: 10%;
+    max-height: 15px;
+    max-width: 10%;
+  }
+  #checkbox-description {
+    padding-left: 8px;
+    margin-bottom: 15px;
+    color: #737373;
+  }
 </style>
 <script type="text/javascript">
   RED.nodes.registerType("moduleflows", {
@@ -109,48 +160,44 @@
       //###2.3 init module properties inputs
       let propertySelectElem = $("#property-input");
 
-      let initPropertyInputs = function (links) {
-        links.forEach(link => {
-          if (link.target.type === "config") {
-            link.target.properties.forEach(property => {
-              let nodeOfModule = RED.nodes.node(property.nodeId);
-              if (nodeOfModule.id === property.nodeId) {
-                let newDiv = $("<div>");
-                newDiv.addClass("form-row");
+      let initPropertyInputs = function (inNode) {
+        inNode.properties.forEach(property => {
+          let nodeOfModule = RED.nodes.node(property.nodeId);
+          if (nodeOfModule.id === property.nodeId) {
+            let newDiv = $("<div>");
+            newDiv.addClass("form-row");
 
-                let label = $("<label>").attr("for", "node-input-scope");
-                label.append('<i class="fa fa-gear"> </i>');
-                label.append("<span> " + property.propertyName + "</span>");
+            let label = $("<label>").attr("for", "node-input-scope");
+            label.append('<i class="fa fa-gear"> </i>');
+            label.append("<span> " + property.propertyName + "</span>");
 
-                let input = $("<input>")
-                  .val(
-                    typeof nodeOfModule[property.propertyName] === "object"
-                      ? JSON.stringify(nodeOfModule[property.propertyName])
-                      : nodeOfModule[property.propertyName]
-                  )
-                  .attr("type", "text")
-                  .attr("name", property.propertyName)
-                  .attr("nodeId", property.nodeId);
+            let input = $("<input>")
+              .val(
+                typeof nodeOfModule[property.propertyName] === "object"
+                  ? JSON.stringify(nodeOfModule[property.propertyName])
+                  : nodeOfModule[property.propertyName]
+              )
+              .attr("type", "text")
+              .attr("name", property.propertyName)
+              .attr("nodeId", property.nodeId);
 
-                let descriptionDev = $(
-                  '<div id="description-box" class="property-description-box">'
-                ).text(
-                  property.description
-                    ? property.description
-                    : "property lacks a description"
-                );
-                newDiv.append(label, input, descriptionDev);
-                propertySelectElem.append(newDiv);
-              }
-            });
+            let descriptionDev = $(
+              '<div id="description-box" class="property-description-box">'
+            ).text(
+              property.description
+                ? property.description
+                : "property lacks a description"
+            );
+            newDiv.append(label, input, descriptionDev);
+            propertySelectElem.append(newDiv);
           }
         });
       };
 
       //2.4 default property inputs
       if (this.moduleId) {
-        let links = RED.nodes.getNodeLinks(this.moduleId);
-        initPropertyInputs(links);
+        let inNode = RED.nodes.node(this.moduleId);
+        initPropertyInputs(inNode);
       }
 
       //###3. Event
@@ -190,8 +237,8 @@
         $("div#property-input div").remove();
         $("div#property-input br").remove();
         //get new link and init options
-        let links = RED.nodes.getNodeLinks(changedModuleId);
-        initPropertyInputs(links);
+        let changedNode = RED.nodes.node(changedModuleId);
+        initPropertyInputs(changedNode);
       });
 
       $("#submodule-select").on("change", function () {
@@ -214,12 +261,8 @@
 
       //properties save and customize other module nodes
       if (node.moduleId) {
-        let links = RED.nodes.getNodeLinks(node.moduleId);
-        links.forEach(link => {
-          if (link.target.type === "config") {
-            node.properties = link.target.properties;
-          }
-        });
+        let inNode = RED.nodes.node(node.moduleId);
+        node.properties = inNode.properties;
 
         let inputs = $("#property-input input");
         node.properties.forEach(property => {
@@ -257,7 +300,8 @@
         required: true
       },
       errorMsg: { value: "" },
-      duplicatedError: { value: false }
+      duplicatedError: { value: false },
+      properties: { value: [] }
     },
     inputs: 0,
     outputs: 1,
@@ -269,6 +313,162 @@
     },
     //open editor box
     oneditprepare: function () {
+      $(document).ready(function () {
+        // initially, hide property list
+        $(".property-list").hide();
+
+        // click event handler for toggle-button
+        $("div.toggle-button").click(function () {
+          $(this.nextSibling).toggle();
+        });
+
+        // input window appear when click the checkbox
+        $(".property-checkbox").change(function () {
+          if ($(this).is(":checked")) {
+            $(this.parentNode.parentNode).append(
+              $("<textarea>")
+                .attr("class", "property-description")
+                .attr(
+                  "placeholder",
+                  "Please write a description for the property."
+                )
+            );
+          } else {
+            $(this.parentNode.parentNode).children()[1].remove();
+          }
+        });
+      });
+
+      // get all downstream nodes after moduleflows_in node without moduleflows-out node
+      const moduleFlows = RED.nodes
+        .getAllDownstreamNodes(this)
+        .filter(
+          elem =>
+            elem.type !== "moduleflows_out" && elem.type !== "submoduleflows"
+        );
+      // filter required info from all node's property
+      const moduleProperties = moduleFlows.map(node => {
+        return {
+          nodeId: node.id,
+          nodeName: node.name || node.type,
+          properties: Object.keys(node._def.defaults).map(key => [
+            key,
+            node[key]
+          ])
+        };
+      });
+
+      const $nodeCheckboxContainer = $("#node-checkbox-container");
+      if (moduleProperties) {
+        const $nodesTitle = $("<h3>").text("Nodes in current module");
+        $nodeCheckboxContainer.prepend($nodesTitle);
+      }
+      const nodeCheckboxList = $("#node-checkbox-list");
+      moduleProperties.forEach(element => {
+        // add the node name to toggle properties.
+        const $node = $("<div>").attr("class", "form-row");
+        const $nodeName = $("<div>")
+          .attr("class", "toggle-button")
+          .html(element.nodeName + " &#9660;");
+        const $propertyList = $("<div>").attr("class", "property-list");
+        const $propertiesTitle = $("<h3>")
+          .text(`Properties of ${element.nodeName} node`)
+          .css("padding-left", "8px");
+        const $description = $("<div>")
+          .attr("id", "checkbox-description")
+          .text(
+            `Select properties of ${element.nodeName} node that need to be modified.`
+          );
+        const $propertyInner = $("<div>").attr("class", "property-inner");
+        const $checkbox = $("<span>").attr("class", "property-checkbox");
+        const $nodeProperty = $("<span>")
+          .attr("id", "node-property-name")
+          .text("Property Name")
+          .css("font-weight", "800");
+        const $nodeValue = $("<span>")
+          .attr("id", "node-property-value")
+          .text("Given Value")
+          .css("font-weight", "800");
+        const $container = $("<div>")
+          .css("border", "solid 1px #C9C9C9")
+          .css("margin", "5px");
+        $propertyInner
+          .append($checkbox)
+          .append($nodeProperty)
+          .append($nodeValue);
+        $container.append($propertyInner);
+        $propertyList
+          .append($propertiesTitle)
+          .append($description)
+          .append($container);
+        $node.append($nodeName).append($propertyList);
+        nodeCheckboxList.append($node);
+
+        element.properties.forEach((property, index) => {
+          // add checkbox of each node's properties
+          const $propertyContainer = $("<div>").attr(
+            "class",
+            "property-container"
+          );
+          if (index % 2 == 0) {
+            $propertyContainer.css("background-color", "#F6F9FF");
+          }
+          const $propertyInner = $("<div>").attr("class", "property-inner");
+
+          const $nodeId = $("<span>")
+            .attr("id", "node-id")
+            .text(element.nodeId);
+          const $nodeName = $("<span>")
+            .attr("id", "node-name")
+            .text(element.nodeName);
+          const $checkBox = $("<input>")
+            .attr("type", "checkbox")
+            .attr("class", "property-checkbox");
+          const $nodeProperty = $("<span>")
+            .attr("id", "node-property-name")
+            .text(property[0]);
+          const $nodeValue = $("<span>")
+            .attr("id", "node-property-value")
+            .text(
+              typeof property[1] === "object"
+                ? JSON.stringify(property[1])
+                : property[1]
+            );
+
+          $propertyInner
+            .append($nodeId)
+            .append($nodeName)
+            .append($checkBox)
+            .append($nodeProperty)
+            .append($nodeValue);
+
+          $propertyContainer.append($propertyInner);
+          $container.append($propertyContainer);
+
+          // If there are existing properties saved
+          // check the checkbox and fill in the description in the textarea.
+          const targetProperty = this.properties.find(
+            propertyObject =>
+              propertyObject.nodeId === element.nodeId &&
+              propertyObject.propertyName === property[0]
+          );
+          if (targetProperty) {
+            $checkBox.prop("checked", true);
+            const $textarea = $("<textarea>")
+              .attr("class", "property-description")
+              .attr(
+                "placeholder",
+                "Please write a description for the property."
+              )
+              .val(targetProperty.description);
+            $propertyContainer.append($textarea);
+          }
+        });
+      });
+
+      // initialize properties
+      this.properties = [];
+
       //###0. init value
       $("#module-in-node-name").val(this.name);
 
@@ -357,6 +557,21 @@
       //description save
       $("#node-input-info").val(this.editor.getValue());
 
+      // save properties
+      $(".property-checkbox").each(function () {
+        if ($(this).is(":checked")) {
+          const nodeId = $(this).parent().children()[0].innerText;
+          const nodeName = $(this).parent().children()[1].innerText;
+          const propertyName = $(this).parent().children()[3].innerText;
+          const description = $(this).parent().parent().children()[1].value;
+          node.properties.push({
+            nodeId: nodeId,
+            nodeName: nodeName,
+            propertyName: propertyName,
+            description: description
+          });
+        }
+      });
       this.editor.destroy();
       delete node.editor;
     },
@@ -465,6 +680,10 @@
       class="node-text-editor"
       id="node-description-editor"
     ></div>
+  </div>
+  <!-- nodes list with config -->
+  <div id="node-checkbox-container">
+    <div id="node-checkbox-list"></div>
   </div>
 </script>
 
