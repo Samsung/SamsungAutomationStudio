@@ -129,7 +129,8 @@
                       : nodeOfModule[property.propertyName]
                   )
                   .attr("type", "text")
-                  .attr("name", property.propertyName);
+                  .attr("name", property.propertyName)
+                  .attr("nodeId", property.nodeId);
 
                 let descriptionDev = $(
                   '<div id="description-box" class="property-description-box">'
@@ -224,10 +225,11 @@
         node.properties.forEach(property => {
           let nodeOfModule = RED.nodes.node(property.nodeId);
           inputs.each(function () {
+            let moduleNodeId = $(this).attr("nodeId");
             let inputName = $(this).attr("name");
             let inputValue = $(this).val();
 
-            if (property.propertyName === inputName) {
+            if (property.nodeId === moduleNodeId) {
               nodeOfModule[inputName] =
                 typeof nodeOfModule[inputName] === "object"
                   ? JSON.parse(inputValue)
