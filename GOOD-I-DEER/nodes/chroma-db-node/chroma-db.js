@@ -65,7 +65,7 @@ module.exports = function (RED) {
           });
 
           msg.payload = await collection.delete({
-            ids: JSON.parse(config.ids),
+            ids: Array.from(msg.payload),
           });
           break;
         case "drop":

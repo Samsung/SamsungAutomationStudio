@@ -12,12 +12,11 @@
         value: "insert",
         required: true,
         validate: function (v) {
-          const operation = String($("#node-input-operation").val());
+          const operation = String(v);
 
           $("#forms-dbName").css("display", "block");
           $("#forms-create").css("display", "none");
           $("#forms-query").css("display", "none");
-          $("#forms-delete").css("display", "none");
 
           switch (operation) {
             case "list":
@@ -29,9 +28,6 @@
             case "query":
               $("#forms-query").css("display", "block");
               break;
-            case "delete":
-              $("#forms-delete").css("display", "block");
-              break;
           }
 
           return true;
@@ -40,7 +36,7 @@
       nResults: {
         value: "1",
         validate: function (v) {
-          let nResults = Number($("#node-input-nResults").val());
+          let nResults = Number(v);
 
           if (nResults <= 0) {
             $("#nResults-warning").css("display", "block");
@@ -51,7 +47,6 @@
           return nResults > 0;
         },
       },
-      ids: { value: "" },
     },
     inputs: 1,
     outputs: 1,
@@ -149,19 +144,6 @@
       >
         Result Count > 0
       </p>
-    </div>
-  </div>
-
-  <div id="forms-delete">
-    <div class="form-row">
-      <label for="node-input-ids"><i class="fa fa-wrench"></i> IDs</label>
-      <input
-        type="text"
-        id="node-input-ids"
-        value=""
-        placeholder="IDs"
-        autocomplete="off"
-      />
     </div>
   </div>
 </script>
