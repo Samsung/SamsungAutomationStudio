@@ -1,0 +1,153 @@
+<script type="text/javascript">
+  RED.nodes.registerType("chroma-db", {
+    category: "GOOD I DEER",
+    color: "#1AE5BE",
+    defaults: {
+      name: { value: "" },
+      dbIp: { value: "http://localhost", required: true },
+      dbPort: { value: "8000", required: true },
+      dbName: { value: "", required: true },
+      distance: { value: "cosine", required: true },
+      operation: {
+        value: "insert",
+        required: true,
+        validate: function (v) {
+          const operation = String(v);
+
+          $("#forms-dbName").css("display", "block");
+          $("#forms-create").css("display", "none");
+          $("#forms-query").css("display", "none");
+
+          switch (operation) {
+            case "list":
+              $("#forms-dbName").css("display", "none");
+              break;
+            case "create":
+              $("#forms-create").css("display", "block");
+              break;
+            case "query":
+              $("#forms-query").css("display", "block");
+              break;
+          }
+
+          return true;
+        },
+      },
+      nResults: {
+        value: "1",
+        validate: function (v) {
+          let nResults = Number(v);
+
+          if (nResults <= 0) {
+            $("#nResults-warning").css("display", "block");
+            $("#node-input-nResults").val(1);
+          } else {
+            $("#nResults-warning").css("display", "none");
+          }
+          return nResults > 0;
+        },
+      },
+    },
+    inputs: 1,
+    outputs: 1,
+    paletteLabel: "Good ChromaDB",
+    icon: "db.png",
+    label: function () {
+      return this.name || "Good ChromaDB";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="chroma-db">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-dbIp"><i class="fa fa-wrench"></i> Host</label>
+    <input
+      type="text"
+      id="node-input-dbIp"
+      value="http://localhost"
+      placeholder="Database Ip Address"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-dbPort"><i class="fa fa-wrench"></i> Port</label>
+    <input
+      type="number"
+      id="node-input-dbPort"
+      value="8000"
+      placeholder="Database Port Number"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-operation"
+      ><i class="fa fa-wrench"></i> Operation</label
+    >
+    <select type="text" id="node-input-operation" style="width:70%!important;">
+      <option value="list">list</option>
+      <option value="create">create</option>
+      <option value="insert">insert</option>
+      <option value="query">query</option>
+      <option value="delete">delete</option>
+      <option value="drop">drop</option>
+    </select>
+  </div>
+
+  <div class="form-row" id="forms-dbName">
+    <label for="node-input-dbName"
+      ><i class="fa fa-database"></i> DB Name</label
+    >
+    <input
+      type="text"
+      id="node-input-dbName"
+      placeholder="Database Name"
+      autocomplete="off"
+    />
+  </div>
+
+  <div id="forms-create">
+    <div class="form-row">
+      <label for="node-input-distance"
+        ><i class="fa fa-wrench"></i> Dist Method</label
+      >
+      <select type="text" id="node-input-distance" style="width:70%!important;">
+        <option value="l2">Squared L2</option>
+        <option value="ip">Inner product</option>
+        <option value="cosine">Cosine similarity</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="forms-query">
+    <div class="form-row">
+      <label for="node-input-nResults"
+        ><i class="fa fa-wrench"></i> Result Count</label
+      >
+      <input
+        type="number"
+        id="node-input-nResults"
+        value="1"
+        placeholder="Number of Results"
+        autocomplete="off"
+        step="1"
+      />
+      <p
+        id="nResults-warning"
+        style="color: red; display: none; margin-left: 105px;"
+      >
+        Result Count > 0
+      </p>
+    </div>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="chroma-db">
+  <p>A node that connect and operate with chroma-db</p>
+</script>

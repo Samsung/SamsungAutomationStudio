@@ -1,0 +1,108 @@
+<script type="text/javascript">
+  RED.nodes.registerType("good-object-detection", {
+    category: "GOOD I DEER",
+    color: "#1AE5BE",
+    defaults: {
+      name: { value: "" },
+      returnValue: {
+        value: 0,
+        validate: function (v) {
+          const returnValue = Number(v);
+
+          if (returnValue <= 1) {
+            $("#absolutePathDir-form").css("display", "none");
+            if (returnValue == 0) {
+              this._def.outputLabels = ["Detected Object"];
+            } else if (returnValue == 1) {
+              this._def.outputLabels = ["Image Buffer"];
+            }
+            this._def.defaults.absolutePathDir.validate = function (v) {
+              return true;
+            };
+          } else if (returnValue == 2) {
+            $("#absolutePathDir-form").css("display", "block");
+            this._def.outputLabels = ["Image Path"];
+            this._def.defaults.absolutePathDir.validate = function (v) {
+              if (v) return true;
+              return false;
+            };
+          }
+          return true;
+        },
+      },
+      model: { value: "yolov8n" },
+      threshold: {
+        value: 0.5,
+        validate: function (v) {
+          let threshold = Number(v);
+
+          if (threshold < 0 || threshold >= 1) {
+            $("#threshold-warning").css("display", "block");
+          } else {
+            $("#threshold-warning").css("display", "none");
+          }
+          return threshold >= 0 && threshold < 1;
+        },
+      },
+      absolutePathDir: { value: "" },
+    },
+    inputs: 1,
+    outputs: 1,
+    paletteLabel: "Good Object Detection",
+    inputLabels: ["Image Buffer"],
+    outputLabels: ["Detected Object"],
+    icon: "font-awesome/fa-object-group",
+    label: function () {
+      return this.name || "Good Object Detection";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="good-object-detection">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-model"><i class="fa fa-wrench"></i> Model</label>
+    <select type="text" id="node-input-model">
+      <option value="yolov8n">YoloV8n</option>
+      <option value="yolov8s">YoloV8s</option>
+      <option value="yolov8m">YoloV8m</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-returnValue">
+      <i class="fa fa-file"></i> Return Value
+    </label>
+    <select type="text" id="node-input-returnValue">
+      <option value="0">Detected Object</option>
+      <option value="1">Image Buffer</option>
+      <option value="2">Image File</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <div style="display: flex;">
+      <label for="node-input-threshold">
+        <i class="fa fa-sort"></i>Confidence Threshold
+      </label>
+      <input type="number" id="node-input-threshold" step="0.1" />
+    </div>
+    <p
+      id="threshold-warning"
+      style="color: red; display: none; margin-left: 105px;"
+    >
+      threshold must be greater or equal to 0 and less than 1.
+    </p>
+  </div>
+  <div class="form-row" id="absolutePathDir-form">
+    <label for="node-input-absolutePathDir">
+      <i class="fa fa-folder"></i> Absolute Path Dir
+    </label>
+    <input type="text" id="node-input-absolutePathDir" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="good-object-detection">
+  <p>object-detection node using pre-trained yolov8 model</p>
+</script>

@@ -1,0 +1,127 @@
+<script type="text/javascript">
+    RED.nodes.registerType("webcam-object-detection", {
+      category: "GOOD I DEER",
+      color: "#1AE5BE",
+      defaults: {
+        name: { value: "" },
+        model: { value: "yolov8n"},
+        threshold: {value: 0.5, validate: function(v){
+          let threshold = v;
+          
+          if(threshold < 0 || threshold >= 1){
+            $("#threshold-warning").css('display', 'block'); 
+          }else{
+            $("#threshold-warning").css('display', 'none'); 
+          }
+          return threshold >= 0 && threshold < 1;
+        }},
+        serverUrl: {value: "localhost"},
+        socketUrl: {value: "http://localhost"},
+        socketPort: {value: "1889"},
+      },
+      inputs: 1,
+      outputs: 2,
+      outputLabels: ["Http Response", "Detected Object"],
+      icon: "font-awesome/fa-camera-retro",
+      paletteLabel: "Good Webcam Object Detection",
+      label: function () {
+        return this.name || "Good Webcam Object Detection";
+      },
+      oneditprepare: function () {
+          $("#node-input-model").typedInput({
+            types:[
+              {
+                value: "model",
+                options: [
+                  { value: "yolov8n", label: "YoloV8n"},
+                  { value: "yolov8s", label: "YoloV8s"},
+                  { value: "yolov8m", label: "YoloV8m"}
+                ]
+              }
+            ]
+          }
+        );
+
+        const inputVideo = document.getElementById('input-video')
+        const constraints = {
+            audio: false, 
+            video: true,
+        }
+
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(stream => {
+                inputVideo.srcObject = stream;
+            
+                inputVideo.onloadedmetadata = function(e) {
+                    inputVideo.play()
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            
+            $("#node-input-serverUrl").val() === '' && $("#node-input-serverUrl").val('localhost');
+            $("#node-input-socketUrl").val() === '' && $("#node-input-socketUrl").val('http://localhost');
+            $("#node-input-socketPort").val() === '' && $("#node-input-socketPort").val('1889');
+        }
+
+    });
+  </script>
+
+  <script type="text/html" data-template-name="webcam-object-detection">
+    <!-- Name -->
+    <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name" />
+    </div>
+
+    <!-- Model -->
+    <div class="form-row">
+      <label for="node-input-model"><i class="fa fa-wrench"></i> Model</label>
+      <input type="text" id="node-input-model">
+    </div>
+
+    <!-- Threshold -->
+    <div class="form-row">
+      <div style="display: flex;">
+        <label for="node-input-threshold">
+          <i class="fa fa-sort"></i>Confidence Threshold
+        </label>
+        <input type="number" id="node-input-threshold" step="0.1" />
+      </div>
+      <p id="threshold-warning" style="color: red; display: none; margin-left: 105px;">
+        threshold must be greater or equal to 0 and less than 1.
+      </p>
+    </div>
+
+    <!-- Server Url -->
+    <div class="form-row">
+        <label for="node-input-serverUrl"><i class="fa fa-link"></i> Server Url</label>
+        <input type="text" id="node-input-serverUrl" placeholder="default value is 'localhost'">
+    </div>
+
+    <!-- Socket Url -->
+    <div class="form-row">
+        <label for="node-input-socketUrl"><i class="fa fa-link"></i> Socket Url</label>
+        <input type="text" id="node-input-socketUrl" placeholder="default value is 'http://localhost'">
+    </div>
+
+    <!-- Socket Port -->
+    <div class="form-row">
+        <label for="node-input-socketPort"><i class="fa fa-random"></i> Socket Port</label>
+        <input type="text" id="node-input-socketPort" placeholder="default value is 1889">
+    </div>
+
+    <!-- Webcam Test -->
+    <div class="form-row" style="text-align: left;">
+        <label for="node-webcam-test" style="display: flex; width: 102px; justify-content: space-between; align-items: center;"><i class="fa fa-camera"></i> <p style="margin: 0">Webcam Test</p></label>
+    </div>
+    <div class="form-row" id="node-webcam-test" style="text-align: center;">
+        <video id="input-video" style="height:360px; width:640px; transform: scaleX(-1); -webkit-transform: scaleX(-1);"></video>
+    </div>
+  </script>
+  
+  <script type="text/html" data-help-name="webcam-object-detection">
+    <p>object-detection node with webcam</p>
+  </script>
+  

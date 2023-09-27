@@ -1,0 +1,90 @@
+<script type="text/javascript">
+  RED.nodes.registerType("face-vectorization", {
+    category: "GOOD I DEER",
+    color: "#1AE5BE",
+    defaults: {
+      name: { value: "" },
+      inputType: {
+        value: "0",
+        validate: function (v) {
+          const returnType = Number(v);
+          if (returnType == 0) {
+            this._def.inputLabels = ["Single Face Image"];
+          } else if (returnType == 1) {
+            this._def.inputLabels = ["Face Image Array"];
+          }
+          return true;
+        },
+      },
+      returnType: {
+        value: "0",
+        validate: function (v) {
+          const returnType = Number(v);
+          if (returnType == 0) {
+            $("#path-form").css("display", "none");
+            $("#method-form").css("display", "none");
+            this.outputs = 1;
+          } else if (returnType == 1) {
+            $("#path-form").css("display", "block");
+            $("#method-form").css("display", "block");
+            this.outputs = 0;
+          }
+          return true;
+        },
+      },
+      method: { value: "0" },
+      path: { value: "" },
+    },
+    inputs: 1,
+    outputs: 1,
+    paletteLabel: "Good Face Vectorization",
+    icon: "status.svg",
+    label: function () {
+      return this.name || "Good Face Vectorization";
+    },
+    inputLabels: ["Single Face Image"],
+    outputLabels: ["Face Vector Array"],
+  });
+</script>
+
+<script type="text/html" data-template-name="face-vectorization">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name </label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-inputType"
+      ><i class="fa fa-file"></i> Input Type
+    </label>
+    <select type="text" id="node-input-inputType">
+      <option value="0">Single Image</option>
+      <option value="1">Image Array</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-returnType"
+      ><i class="fa fa-file"></i> Return Type
+    </label>
+    <select type="text" id="node-input-returnType">
+      <option value="0">Array of Arrays</option>
+      <option value="1">Text File</option>
+    </select>
+  </div>
+  <div class="form-row" id="path-form">
+    <label for="node-input-path"><i class="fa fa-folder"></i> Path </label>
+    <input type="text" id="node-input-path" />
+  </div>
+  <div class="form-row" id="method-form">
+    <label for="node-input-method"
+      ><i class="fa fa-database"></i> Method
+    </label>
+    <select type="text" id="node-input-method">
+      <option value="0">Overwrite</option>
+      <option value="1">Add</option>
+    </select>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="face-vectorization">
+  <p>A node that converts the face image payloads into vector data</p>
+</script>
