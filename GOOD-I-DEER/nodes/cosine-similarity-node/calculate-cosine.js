@@ -66,19 +66,15 @@ module.exports = function (RED) {
       if (!input_vectors) {
         this.error("Input vector is not valid.");
       } else if (stored_vectors == ERROR_FILE_PARSING) {
-        this.error("Stored vector is not valid.");
+        this.error("Stored vector is not valid. Error occured while parsing file.");
       } else {
         let result = devideSimilarity(input_vectors, stored_vectors);
-        
         switch (result) {
           case ERROR_VECTOR_LENGTH_ZERO:
             this.error("The Vector length is 0, can not calculate.", "Error");
             break;
           case ERROR_COSINE_SIMILARITY_NAN:
             this.error("The cosine similarity is Nan.", "Error");
-            break;
-          case ERROR_FILE_PARSING:
-            this.error("Error occured while parsing file.", "Error");
             break;
           default:
             msg.payload = result;
