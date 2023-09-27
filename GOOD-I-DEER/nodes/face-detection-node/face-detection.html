@@ -48,12 +48,12 @@
     inputs: 1,
     outputs: 1,
     paletteLabel: "Good Face Detection",
+    inputLabels: ["Image Buffer"],
+    outputLabels: ["Detected Object"],
     icon: "font-awesome/fa-smile-o",
     label: function () {
       return this.name || "Good Face Detection";
     },
-    inputLabels: ["Image Buffer"],
-    outputLabels: ["Detected Object"],
   });
 </script>
 
@@ -95,5 +95,5 @@
 </script>
 
 <script type="text/html" data-help-name="good-face-detection">
-  <p>face-detection node using yolov8</p>
+  <p>face-detection node using pre-trained yolov8 model</p>
 </script>
