@@ -176,7 +176,7 @@
         _nr1Header.prepend(`
             <li>
               <button class="button-group red-ui-deploy-button toolbar-button module-manage-tool__button" href="#">
-                <i class="fa fa-cog"></i> Manage Modules</button>
+                <i class="fa fa-cog"></i> ModuleFlows in Current Tab</button>
               </button>
             </li>
         `);
@@ -184,7 +184,7 @@
         $(".header-toolbar").prepend(`
             <span>
               <span>
-                <button class="toolbar-button"><i class="fa fa-cog"></i> Manage Modules</button>
+                <button class="toolbar-button"><i class="fa fa-cog"></i> ModuleFlows in Current Tab</button>
               </span>
             </span>
         `);
@@ -198,17 +198,17 @@
 
         $(".module-manage-tool__dialog").attr(
           "title",
-          `Modules in Current Tab`
+          `ModuleFlows in Current Tab`
         );
         $(".module-manage-tool__dialog")
           .siblings(".ui-dialog-titlebar")
           .children(".ui-dialog-title")
-          .html(`Modules in Current Tab`);
+          .html(`ModuleFlows in Current Tab`);
 
         let moduleNodes = {};
         $(".module-manage-tool__dialog").empty();
         RED.nodes.eachNode(function (node) {
-          if (node.type === "GBL_module_in" && node.z == currentTab) {
+          if (node.type === "moduleflows_in" && node.z == currentTab) {
             moduleNodes[node.id] = node;
           }
         });
@@ -227,31 +227,33 @@
                           </div>
                           <div class="module-manage-tool__module-detail" >
                             <div class="module-manage-tool__submodule" id="submodule-${node.id}">
-                              <div class="module-manage-tool__submodule-title">Submodules</div>
+                              <div class="module-manage-tool__submodule-title">SubModuleflows</div>
                             </div>
                             <div class="module-manage-tool__save-button-container">
-                              <div class="module-manage-tool__save-button"><i class="fa fa-save"></i> Save in Local</div>
+                              <div class="module-manage-tool__save-button" id="save-${node.id}"><i class="fa fa-save"></i> Save in Local</div>
                             </div>
                           </div>
                         </div>`;
           $(".module-manage-tool__dialog").append(modules);
 
-          const initSubmodulesList = links => {
-            links.forEach(link => {
-              if (link.target.type === "submodule") {
-                $(`#submodule-${node.id}`).append(
-                  `<div class="module-manage-tool__submodule-list" id="submodule_link-${link.target.id}" title="${link.target.info}">${link.target.name}</div>`
-                );
-              }
-            });
+          const initSubmodulesList = subnode => {
+            $(`#submodule-${node.id}`).append(
+              `<div class="module-manage-tool__submodule-list" id="submodule_link-${subnode.id}" title="${subnode.info}">${subnode.name}</div>`
+            );
           };
 
-          const links = RED.nodes.getNodeLinks(node.id);
-          initSubmodulesList(links);
+          RED.nodes
+            .getAllDownstreamNodes(RED.nodes.node(node.id))
+            .forEach(subnode => {
+              console.log(subnode);
+              if (subnode.type === "submoduleflows") {
+                initSubmodulesList(subnode);
+              }
+            });
 
           if ($(`#submodule-${node.id}`).children().length === 1) {
             $(`#submodule-${node.id}`).append(
-              `<div class="module-manage-tool__no-submodule">There are no submodules in this module.</div>`
+              `<div class="module-manage-tool__no-submodule">There are no submoduleflows in this moduleflows.</div>`
             );
           }
         }
@@ -309,10 +311,7 @@
       "click",
       ".module-manage-tool__save-button",
       async function () {
-        const moduleId = $(this)
-          .parent()
-          .prev(".module-manage-tool__module-title")[0]
-          .id.split("-")[1];
+        const moduleId = $(this)[0].id.split("-")[1];
         const moduleNodeList = RED.nodes.getAllFlowNodes(
           RED.nodes.node(moduleId)
         );

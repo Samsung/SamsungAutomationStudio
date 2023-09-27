@@ -145,7 +145,7 @@
         _nr1Header.prepend(`
                 <li>
                   <button class="button-group red-ui-deploy-button toolbar-button global-module-manager__button" href="#">
-                    <i class="fa fa-cog"></i> Global Modules</button>
+                    <i class="fa fa-cog"></i> ModuleFlows in Your Local</button>
                   </button>
                 </li>
             `);
@@ -153,7 +153,7 @@
         $(".header-toolbar").prepend(`
                 <span>
                   <span>
-                    <button class="toolbar-button"><i class="fa fa-cog"></i> Global Modules</button>
+                    <button class="toolbar-button"><i class="fa fa-cog"></i> ModuleFlows in Your Local</button>
                   </span>
                 </span>
             `);
@@ -165,18 +165,18 @@
       async function updateModuleToolDialog() {
         $(".global-module-manager__dialog").attr(
           "title",
-          "Modules in Your Local Directory"
+          "ModuleFlows in Your Local Directory"
         );
 
         $(".global-module-manager__dialog")
           .siblings(".ui-dialog-titlebar")
           .children(".ui-dialog-title")
-          .html("Modules in Your Local Directory");
+          .html("ModuleFlows in Your Local Directory");
 
         const moduleFiles = await ajax({ url: "/localModules" });
         $(".global-module-manager__dialog").empty();
 
-        const moduleSearchContainer = `<input type="text" class="global-module-manager__search-box" id="moduleSearch" placeholder="Search modules by name and description.">`;
+        const moduleSearchContainer = `<input type="text" class="global-module-manager__search-box" id="moduleSearch" placeholder="Search moduleflows by name and description.">`;
         $(".global-module-manager__dialog").append(moduleSearchContainer);
 
         moduleFiles.forEach(file => {
@@ -251,7 +251,7 @@
         const moduleContainer = $(this).closest(
           ".global-module-manager__module-container"
         );
-        RED.notify("Do you really want to delete this module?", {
+        RED.notify("Do you really want to delete this moduleflow?", {
           type: "warning",
           buttons: [
             {
