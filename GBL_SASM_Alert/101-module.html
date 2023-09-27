@@ -1,11 +1,17 @@
 <style>
   .description-box {
-    width: 80%;
-    margin: 20px auto;
-    padding: 30px;
+    width: 100%;
+    margin: 0px 0px 12px 0px;
+    padding: 5px;
     position: relative;
-    border-radius: 5px;
-    box-shadow: 0 0 2px 2px #dedede;
+    border-left: 5px solid #333333;
+  }
+  .property-description-box {
+    width: 100%;
+    margin: 12px 0px 12px 0px;
+    padding: 5px;
+    position: relative;
+    border-left: 5px solid #333333;
   }
   .error-box {
     font-size: 8pt;
@@ -24,7 +30,7 @@
     category: "GBL-SASM-Alert",
     color: "#FFA07A",
     defaults: {
-      name: { value: "module" },
+      name: { value: "moduleflows" },
       moduleId: { value: "" },
       submoduleId: { value: "" },
       properties: { value: [] }
@@ -35,7 +41,6 @@
       return "moduleflows_white.png";
     },
     label: function () {
-      //change module name => change node name
       return this.name || "moduleflows";
     },
     //open editor box
@@ -51,7 +56,7 @@
       //1.1 init module options
       let currentTab = RED.workspaces.active();
       RED.nodes.eachNode(function (node) {
-        if (node.type === "GBL_module_in" && node.z == currentTab) {
+        if (node.type === "moduleflows_in" && node.z == currentTab) {
           let option = `<option value="${node.id}" title="${node.info}">${node.name}</option>`;
           moduleSelectElem.append(option);
 
@@ -82,11 +87,13 @@
 
       //2.2 default submodule option
       if (this.moduleId) {
+        let isSubmoduleExist = false;
         RED.nodes
           .getAllDownstreamNodes(RED.nodes.node(this.moduleId))
           .forEach(node => {
-            if (node.type === "submodule") {
+            if (node.type === "submoduleflows") {
               initSubmoduleOptions(node);
+              isSubmoduleExist = true;
             }
           });
         if (this.submoduleId) {
@@ -95,6 +102,8 @@
           $("#submodule-select option:eq(0)").prop("selected", true);
         }
         $("#submodule-description").text(descriptionMap.get(this.submoduleId));
+
+        if (!isSubmoduleExist) $("#submodule").css("display", "none");
       }
 
       //###2.3 init module properties inputs
@@ -106,10 +115,12 @@
             link.target.properties.forEach(property => {
               let nodeOfModule = RED.nodes.node(property.nodeId);
               if (nodeOfModule.id === property.nodeId) {
-                let label = $("<label>").attr("for", "property-input-scope");
-                label.append('<i class="fa fa-gear"</i>');
-                label.append("<span> " + property.propertyName + " </span>");
-                label.css("display", "inline");
+                let newDiv = $("<div>");
+                newDiv.addClass("form-row");
+
+                let label = $("<label>").attr("for", "node-input-scope");
+                label.append('<i class="fa fa-gear"> </i>');
+                label.append("<span> " + property.propertyName + "</span>");
 
                 let input = $("<input>")
                   .val(
@@ -118,12 +129,17 @@
                       : nodeOfModule[property.propertyName]
                   )
                   .attr("type", "text")
-                  .attr("name", property.propertyName)
-                  .css("display", "inline");
+                  .attr("name", property.propertyName);
 
-                let descriptionDev = $("<span> ").text(property.description);
-                propertySelectElem.append(label, input, descriptionDev);
-                propertySelectElem.append("<br>");
+                let descriptionDev = $(
+                  '<div id="description-box" class="property-description-box">'
+                ).text(
+                  property.description
+                    ? property.description
+                    : "property lacks a description"
+                );
+                newDiv.append(label, input, descriptionDev);
+                propertySelectElem.append(newDiv);
               }
             });
           }
@@ -148,13 +164,19 @@
         //clear options
         $("select#submodule-select option").remove();
         //get new link and init options
+        let isSubmoduleExist = false;
+
         RED.nodes
           .getAllDownstreamNodes(RED.nodes.node(changedModuleId))
           .forEach(node => {
-            if (node.type === "submodule") {
+            if (node.type === "submoduleflows") {
               initSubmoduleOptions(node);
+              isSubmoduleExist = true;
             }
           });
+
+        if (!isSubmoduleExist) $("#submodule").css("display", "none");
+        else $("#submodule").css("display", "block");
         //default first element selected
         $("#submodule-select option:eq(0)").prop("selected", true);
         $("#submodule-description").text(
@@ -167,6 +189,7 @@
         $("div#property-input div").remove();
         $("div#property-input br").remove();
         //get new link and init options
+        let links = RED.nodes.getNodeLinks(changedModuleId);
         initPropertyInputs(links);
       });
 
@@ -189,42 +212,46 @@
       node.submoduleId = $("#submodule-select").val();
 
       //properties save and customize other module nodes
-      let links = RED.nodes.getNodeLinks(node.moduleId);
-      links.forEach(link => {
-        if (link.target.type === "config") {
-          node.properties = link.target.properties;
-        }
-      });
-
-      let inputs = $("#property-input input");
-      node.properties.forEach(property => {
-        let nodeOfModule = RED.nodes.node(property.nodeId);
-        inputs.each(function () {
-          let inputName = $(this).attr("name");
-          let inputValue = $(this).val();
-
-          if (property.propertyName === inputName) {
-            nodeOfModule[inputName] =
-              typeof nodeOfModule[inputName] === "object"
-                ? JSON.parse(inputValue)
-                : inputValue;
-            RED.nodes.add(nodeOfModule);
+      if (node.moduleId) {
+        let links = RED.nodes.getNodeLinks(node.moduleId);
+        links.forEach(link => {
+          if (link.target.type === "config") {
+            node.properties = link.target.properties;
           }
         });
-      });
+
+        let inputs = $("#property-input input");
+        node.properties.forEach(property => {
+          let nodeOfModule = RED.nodes.node(property.nodeId);
+          inputs.each(function () {
+            let inputName = $(this).attr("name");
+            let inputValue = $(this).val();
+
+            if (property.propertyName === inputName) {
+              nodeOfModule[inputName] =
+                typeof nodeOfModule[inputName] === "object"
+                  ? JSON.parse(inputValue)
+                  : inputValue;
+              RED.nodes.add(nodeOfModule);
+
+              property[inputName] = inputValue;
+            }
+          });
+        });
+      }
     },
     oneditcancle: function () {}
   });
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType("GBL_module_in", {
+  RED.nodes.registerType("moduleflows_in", {
     category: "GBL-SASM-Alert",
     color: "#FA8072",
     defaults: {
       info: { value: "Describe your module action here." },
       name: {
-        value: "module in",
+        value: "moduleflows in",
         required: true
       },
       errorMsg: { value: "" },
@@ -236,7 +263,7 @@
       return "moduleflows_white.png";
     },
     label: function () {
-      return this.name || "module in";
+      return this.name || "moduleflows in";
     },
     //open editor box
     oneditprepare: function () {
@@ -250,12 +277,12 @@
       });
 
       //### 1. Duplicated module name
-      //1.1 all module in node in current tab except this node
+      //1.1 all moduleflows in node in current tab except this node
       let currentTab = RED.workspaces.active();
       let allModuleNames = new Set();
       RED.nodes.eachNode(node => {
         if (
-          node.type === "GBL_module_in" &&
+          node.type === "moduleflows_in" &&
           node.z == currentTab &&
           node.id != this.id //except this node
         ) {
@@ -289,11 +316,11 @@
       $("#module-in-node-name").on("input", event => {
         let newName = event.target.value;
 
-        //1.1 all module in node in current tab except this node
+        //1.1 all moduleflows in node in current tab except this node
         let currentTab = RED.workspaces.active();
         RED.nodes.eachNode(node => {
           if (
-            node.type === "GBL_module_in" &&
+            node.type === "moduleflows_in" &&
             node.z == currentTab &&
             node.id != thiz.id //except this node
           ) {
@@ -301,8 +328,6 @@
               //same name => change node duplicatedError
               node.errorMsg = "Duplicated name";
               node.duplicatedError = true;
-              // console.log(node.errorMsg);
-              // console.log(node.duplicatedError);
 
               thiz.errorMsg = "Duplicated name";
               thiz.duplicatedError = true;
@@ -310,8 +335,6 @@
             } else {
               node.errorMsg = "Available name";
               node.duplicatedError = false;
-              // console.log(node.errorMsg);
-              // console.log(node.duplicatedError);
 
               //ok
               thiz.errorMsg = "Available name";
@@ -343,11 +366,11 @@
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType("module_out", {
+  RED.nodes.registerType("moduleflows_out", {
     category: "GBL-SASM-Alert",
     color: "#1E90FF",
     defaults: {
-      name: { value: "module out" }
+      name: { value: "moduleflows out" }
     },
     inputs: 1,
     outputs: 0,
@@ -355,17 +378,17 @@
       return "moduleflows_white.png";
     },
     label: function () {
-      return this.name || "module out";
+      return this.name || "moduleflows out";
     },
     //open editor box
     oneditprepare: function () {
       //###0. init value
-      $("#module-out-node-name").val(this.name);
+      $("#moduleflows-out-node-name").val(this.name);
     },
     oneditsave: function () {
       var node = this;
       //name save
-      node.name = $("#module-out-node-name").val();
+      node.name = $("#moduleflows-out-node-name").val();
 
       this.editor.destroy();
       delete node.editor;
@@ -394,7 +417,7 @@
     <div id="module-description" class="description-box"></div>
   </div>
   <!--submodule-->
-  <div>
+  <div id="submodule">
     <div class="form-row">
       <label for="node-input-scope">
         <i class="fa fa-random"></i> <span>SubModule</span>
@@ -403,19 +426,14 @@
     </div>
     <div id="submodule-description" class="description-box"></div>
   </div>
+  <hr width="100%" color="black" size="4" />
   <!--module property-->
-  <div>
-    <div class="form-row">
-      <label for="node-input-scope">
-        <i class="fa fa-random"></i>
-        <span>Property</span>
-      </label>
-    </div>
-    <div id="property-input"></div>
+  <div id="property-input">
+    <div class="form-row"></div>
   </div>
 </script>
 
-<script type="text/html" data-template-name="GBL_module_in">
+<script type="text/html" data-template-name="moduleflows_in">
   <div class="form-row" id="actionflows-name">
     <label for="module-in-node-name" id="node-name-label"
       ><i class="icon-tag"></i> Name</label
@@ -426,7 +444,7 @@
     </div>
   </div>
 
-  <!-- module in : module description -->
+  <!-- moduleflows in : module description -->
   <!-- markdown options -->
   <div class="form-row" style="margin-bottom: 0px;">
     <label for="node-input-info">Description</label>
@@ -448,10 +466,10 @@
   </div>
 </script>
 
-<script type="text/html" data-template-name="module_out">
+<script type="text/html" data-template-name="moduleflows_out">
   <div class="form-row" id="actionflows-name">
-    <label for="module-out-node-name"><i class="icon-tag"></i> Name</label>
-    <input type="text" id="module-out-node-name" placeholder="Name" />
+    <label for="moduleflows-out-node-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="moduleflows-out-node-name" placeholder="Name" />
   </div>
 </script>
 
@@ -460,13 +478,13 @@
     <p>module descrption text</p>
   </div>
 </script>
-<script type="text/html" data-help-name="GBL_module_in">
+<script type="text/html" data-help-name="moduleflows_in">
   <div>
-    <p>module_in descrption text</p>
+    <p>moduleflows_in descrption text</p>
   </div>
 </script>
-<script type="text/html" data-help-name="module_out">
+<script type="text/html" data-help-name="moduleflows_out">
   <div>
-    <p>module_out descrption text</p>
+    <p>moduleflows_out descrption text</p>
   </div>
 </script>
