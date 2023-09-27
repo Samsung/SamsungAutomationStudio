@@ -245,7 +245,6 @@
           RED.nodes
             .getAllDownstreamNodes(RED.nodes.node(node.id))
             .forEach(subnode => {
-              console.log(subnode);
               if (subnode.type === "submoduleflows") {
                 initSubmodulesList(subnode);
               }

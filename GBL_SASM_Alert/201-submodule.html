@@ -32,7 +32,6 @@
 
       let allSubModuleNames = new Set();
       let upstreamNodes = RED.nodes.getAllUpstreamNodes(this);
-      console.log(upstreamNodes);
       upstreamNodes.forEach(node => {
         if (node.type === "submoduleflows") {
           allSubModuleNames.add(node.name);
@@ -61,10 +60,6 @@
       };
       checkDuplicatedname(this.name);
 
-      //test
-      console.log(this.errorMsg);
-      console.log(this.duplicatedError);
-
       const thiz = this;
       $("#submodule-node-name").on("input", event => {
         let newName = event.target.value;
@@ -74,8 +69,6 @@
             if (node.name === newName) {
               node.errorMsg = "Duplicated name";
               node.duplicatedError = true;
-              // console.log(node.errorMsg);
-              // console.log(node.duplicatedError);
 
               thiz.errorMsg = "Duplicated name";
               thiz.duplicatedError = true;
@@ -83,8 +76,6 @@
             } else {
               node.errorMsg = "Available name";
               node.duplicatedError = false;
-              // console.log(node.errorMsg);
-              // console.log(node.duplicatedError);
 
               //ok
               thiz.errorMsg = "Available name";

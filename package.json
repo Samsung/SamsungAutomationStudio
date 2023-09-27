@@ -24,10 +24,9 @@
       "SlackNotification": "303-SlackNotification.js",
       "DataExtractor": "401-DataExtractor.js",
       "module": "GBL_SASM_Alert/101-module.js",
-      "config": "GBL_SASM_Alert/201-config.js",
-      "submodule": "GBL_SASM_Alert/301-submodule.js",
-      "module-manage-tool": "GBL_SASM_Alert/401-module-manage-tool.js",
-      "global-module-manage-tool": "GBL_SASM_Alert/501-global-module-manage-tool.js"
+      "submodule": "GBL_SASM_Alert/201-submodule.js",
+      "module-manage-tool": "GBL_SASM_Alert/301-module-manage-tool.js",
+      "global-module-manage-tool": "GBL_SASM_Alert/401-global-module-manage-tool.js"
     }
   },
   "dependencies": {

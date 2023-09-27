@@ -12,7 +12,6 @@ async function checkIfDirectoryExists(dirPath) {
       return false;
     }
   } catch (err) {
-    console.log(err.message);
     return false;
   }
 }
