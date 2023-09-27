@@ -1,21 +1,27 @@
+const ERROR_VECTOR_LENGTH_ZERO = -100;
+const ERROR_COSINE_SIMILARITY_NAN = -200;
+const ERROR_FILE_PARSING = -500;
+
 module.exports = function (RED) {
   function CalculateCosine(config) {
     RED.nodes.createNode(this, config);
 
     function devideSimilarity(ArrayA, ArrayB) {
-      var resultArray = [];
-      for (var i = 0; i < ArrayA.length; i++) {
+      let resultArray = [];
+      for (let i = 0; i < ArrayA.length; i++) {
         let resultCosineSimilarity = cosineSimilarity(ArrayA[i], ArrayB);
-        if (!resultCosineSimilarity || isNaN(resultCosineSimilarity)) return false;
+        if (resultCosineSimilarity === ERROR_VECTOR_LENGTH_ZERO || resultCosineSimilarity === ERROR_COSINE_SIMILARITY_NAN) {
+          return resultCosineSimilarity;
+        }
         resultArray.push(resultCosineSimilarity);
       }
       return resultArray;
     }
 
     function cosineSimilarity(vectorA, ArrayB) {
-      var resultArray = [];
+      let resultArray = [];
 
-      for (var i = 0; i < ArrayB.length; i++) {
+      for (let i = 0; i < ArrayB.length; i++) {
         let vectorB = ArrayB[i];
 
         let dotProduct = 0;
@@ -30,52 +36,49 @@ module.exports = function (RED) {
         magnitudeB = Math.sqrt(magnitudeB);
 
         if (magnitudeA === 0 || magnitudeB === 0) {
-          return false;
+          return ERROR_VECTOR_LENGTH_ZERO;
         }
 
         const similarity = dotProduct / (magnitudeA * magnitudeB);
+        if (isNaN(similarity)) return ERROR_COSINE_SIMILARITY_NAN;
         resultArray.push(similarity);
       }
       return resultArray;
     }
 
     async function getStoredVector() {
-      var stored = [[0]];
-
+      let stored = [[0]];
       const fs = require("fs");
       const filePath = config.file;
-
       try {
         const data = await fs.promises.readFile(filePath, "utf8");
         stored = JSON.parse(data);
       } catch (err) {
-        console.error("Error occured while parsing file.", err);
-        return false;
+        return ERROR_FILE_PARSING;
       }
       return stored;
     }
 
     this.on("input", async function (msg) {
-      var input_vectors = JSON.parse(msg.payload);
-      var stored_vectors = await getStoredVector();
+      let input_vectors = msg.payload;
+      let stored_vectors = await getStoredVector();
 
-      if (!stored_vectors) {
-        this.error("There is no such file or directory.", "Error");
+      if (!input_vectors) {
+        this.error("Input vector is not valid.");
+      } else if (stored_vectors == ERROR_FILE_PARSING) {
+        this.error("Stored vector is not valid. Error occured while parsing file.");
       } else {
-        var result = false;
-        if (!input_vectors) {
-          this.error("Input vector is not valid.");
-        } else if (!stored_vectors) {
-          this.error("Stored vector is not valid.");
-        } else {
-          result = devideSimilarity(input_vectors, stored_vectors);
-        }
-
-        if (!result) {
-          this.error("The Vector is not available to calculate.", "Error");
-        } else {
-          msg.payload = result;
-          this.send(msg);
+        let result = devideSimilarity(input_vectors, stored_vectors);
+        switch (result) {
+          case ERROR_VECTOR_LENGTH_ZERO:
+            this.error("The Vector length is 0, can not calculate.", "Error");
+            break;
+          case ERROR_COSINE_SIMILARITY_NAN:
+            this.error("The cosine similarity is Nan.", "Error");
+            break;
+          default:
+            msg.payload = result;
+            this.send(msg);
         }
       }
 
