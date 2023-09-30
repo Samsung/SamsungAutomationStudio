@@ -93,7 +93,7 @@ Here are some example flows face vectorization.
 
 ### JSON
 
-```
+```json
 [
     {
         "id": "e64532d90f9d901d",
@@ -105,7 +105,7 @@ Here are some example flows face vectorization.
     },
     {
         "id": "41638e97512ab913",
-        "type": "face-vectorization",
+        "type": "good-face-vectorization",
         "z": "e64532d90f9d901d",
         "name": "",
         "inputType": "0",
