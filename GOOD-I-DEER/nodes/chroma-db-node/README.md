@@ -169,7 +169,7 @@ The following are example flows using Good ChromaDB.
     },
     {
         "id": "a1d2c13b66902955",
-        "type": "chroma-db",
+        "type": "good-chroma-db",
         "z": "1e6ef671efdf6e7b",
         "name": "Create Collection",
         "dbIp": "http://localhost",
@@ -234,7 +234,7 @@ The following are example flows using Good ChromaDB.
     },
     {
         "id": "ad9903267e9a109b",
-        "type": "chroma-db",
+        "type": "good-chroma-db",
         "z": "1e6ef671efdf6e7b",
         "name": "",
         "dbIp": "http://localhost",
@@ -316,7 +316,7 @@ The following are example flows using Good ChromaDB.
     },
     {
         "id": "f23b2a02822fdbe3",
-        "type": "chroma-db",
+        "type": "good-chroma-db",
         "z": "1e6ef671efdf6e7b",
         "name": "",
         "dbIp": "http://localhost",
@@ -398,7 +398,7 @@ The following are example flows using Good ChromaDB.
     },
     {
         "id": "1108f63a24c5d88d",
-        "type": "chroma-db",
+        "type": "good-chroma-db",
         "z": "1e6ef671efdf6e7b",
         "name": "",
         "dbIp": "http://localhost",
@@ -490,7 +490,7 @@ The following are example flows using Good ChromaDB.
     },
     {
         "id": "570b7979c422cf5d",
-        "type": "chroma-db",
+        "type": "good-chroma-db",
         "z": "1e6ef671efdf6e7b",
         "name": "Insert Embeddings",
         "dbIp": "http://localhost",
@@ -555,7 +555,7 @@ The following are example flows using Good ChromaDB.
     },
     {
         "id": "ad2edd8fdd7f5a59",
-        "type": "chroma-db",
+        "type": "good-chroma-db",
         "z": "1e6ef671efdf6e7b",
         "name": "Query Embeddings",
         "dbIp": "http://localhost",
@@ -620,7 +620,7 @@ The following are example flows using Good ChromaDB.
     },
     {
         "id": "ce5b74ea33560546",
-        "type": "chroma-db",
+        "type": "good-chroma-db",
         "z": "1e6ef671efdf6e7b",
         "name": "Delete Embeddings",
         "dbIp": "http://localhost",
@@ -675,7 +675,7 @@ The following are example flows using Good ChromaDB.
     },
     {
         "id": "5ca25edbc0087091",
-        "type": "chroma-db",
+        "type": "good-chroma-db",
         "z": "1e6ef671efdf6e7b",
         "name": "Insert Embeddings",
         "dbIp": "http://localhost",
@@ -730,7 +730,7 @@ The following are example flows using Good ChromaDB.
     },
     {
         "id": "b012cae245dd3643",
-        "type": "chroma-db",
+        "type": "good-chroma-db",
         "z": "1e6ef671efdf6e7b",
         "name": "Drop Collection",
         "dbIp": "http://localhost",

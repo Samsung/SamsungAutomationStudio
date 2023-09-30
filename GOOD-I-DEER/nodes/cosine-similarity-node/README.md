@@ -101,7 +101,7 @@ Here are some example flows of cosine similarity.
     },
     {
         "id": "0e57c1a384a6551d",
-        "type": "calculate-cosine",
+        "type": "good-calculate-cosine",
         "z": "02168a0656dc6f37",
         "name": "",
         "file": "C:\\Users\\SSAFY\\Desktop\\ssdc\\object\\vectors\\stored.txt",

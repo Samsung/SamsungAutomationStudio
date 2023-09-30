@@ -270,7 +270,7 @@ This is a simple example of this node.
   },
   {
     "id": "7c36ca24529c9981",
-    "type": "webcam-object-detection",
+    "type": "good-webcam-object-detection",
     "z": "ff67e0c22a0e9932",
     "name": "",
     "model": "yolov8n",
