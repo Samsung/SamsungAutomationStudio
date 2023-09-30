@@ -86,5 +86,5 @@ module.exports = function (RED) {
         });
     });
   }
-  RED.nodes.registerType("chroma-db", ChromaDBNode);
+  RED.nodes.registerType("good-chroma-db", ChromaDBNode);
 };

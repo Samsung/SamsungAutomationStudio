@@ -84,5 +84,5 @@ module.exports = function (RED) {
 
     });
   }
-  RED.nodes.registerType("calculate-cosine", CalculateCosine);
+  RED.nodes.registerType("good-calculate-cosine", CalculateCosine);
 };

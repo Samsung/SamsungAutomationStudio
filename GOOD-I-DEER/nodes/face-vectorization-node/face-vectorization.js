@@ -103,5 +103,5 @@ module.exports = function (RED) {
       }
     }
   }
-  RED.nodes.registerType("face-vectorization", FaceVectorizationNode);
+  RED.nodes.registerType("good-face-vectorization", FaceVectorizationNode);
 };

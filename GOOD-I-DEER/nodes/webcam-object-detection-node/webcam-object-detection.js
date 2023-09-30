@@ -57,5 +57,5 @@ module.exports = function(RED) {
         })
     }
 
-    RED.nodes.registerType("webcam-object-detection", webcamYoloNode)
+    RED.nodes.registerType("good-webcam-object-detection", webcamYoloNode)
 }
