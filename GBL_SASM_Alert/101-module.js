@@ -1,6 +1,7 @@
+const { name } = require("mustache");
+
 module.exports = function (RED) {
   let MappingNodes = {};
-
   /**
    * Initialize the mapping functionality.
    *
@@ -25,7 +26,6 @@ module.exports = function (RED) {
         }
       };
     }
-
     RED.events.on("flows:started", Mapping);
 
     initMapping.isruned = true;
@@ -34,27 +34,26 @@ module.exports = function (RED) {
   /**
    * Perform mapping when the flow starts.
    *
-   * This function is executed every time the Node-RED flow starts. It collects metadata and instances of various node types, such as moduleflows, module_in, and module_out nodes. It also identifies workspaces and subflows within the flow.
+   * This function is executed every time the Node-RED flow starts. It collects metadata and instances of various node types, such as moduleflows, moduleflows_in, and moduleflows_out nodes. It also identifies workspaces and subflows within the flow.
    *
    */
   function Mapping() {
     const moduleflowNode = {};
     const moduleinNode = {};
     const moduleoutNode = {};
+    const submoduleNode = {};
     const myNodeinFlow = {};
 
-    const moduleflowNodeInstance = {};
-    const moduleinNodeInstance = {};
-    const moduleoutNodeInstance = {};
-    const myNodeInstanceinFlow = {};
-    const myNodeInstanceInSubflow = {};
+    const namekeyNode = {};
 
     const allNode = {};
     const workspaces = {};
     const subflows = {};
 
+    var count = 0;
     // Iterate through all nodes in the flow.
     RED.nodes.eachNode(node => {
+      count++;
       allNode[node.id] = Object.assign({}, node);
       if (node.type === "tab") {
         workspaces[node.id] = node;
@@ -62,41 +61,85 @@ module.exports = function (RED) {
         subflows[node.id] = node;
       } else if (node.type === "moduleflows") {
         moduleflowNode[node.id] = node;
-
-        const nodeInstance = RED.nodes.getNode(node.id);
-        if (nodeInstance) {
-          moduleflowNodeInstance[node.id] = nodeInstance;
-        }
-      } else if (node.type === "module_in") {
+      } else if (node.type === "moduleflows_in") {
         moduleinNode[node.id] = node;
-        const nodeInstance = RED.nodes.getNode(node.id);
-        if (nodeInstance) {
-          moduleinNodeInstance[node.id] = nodeInstance;
-        }
-      } else if (node.type === "module_out") {
+        if (typeof namekeyNode[node.z] === "undefined")
+          namekeyNode[node.z] = {};
+        if (typeof namekeyNode[node.z][node.name] === "undefined")
+          namekeyNode[node.z][node.name] = [];
+        namekeyNode[node.z][node.name].push(node.id);
+      } else if (node.type === "moduleflows_out") {
         moduleoutNode[node.id] = node;
-        const nodeInstance = RED.nodes.getNode(node.id);
-        if (nodeInstance) {
-          moduleoutNodeInstance[node.id] = nodeInstance;
-        }
+      } else if (node.type == "submoduleflows") {
+        submoduleNode[node.id] = node;
       } else if (node.type.startsWith("subflow:")) {
       }
     });
 
-    Object.assign(myNodeInstanceinFlow, {
-      ...moduleflowNodeInstance,
-      ...moduleinNodeInstance,
-      ...moduleoutNodeInstance,
-      ...myNodeInstanceInSubflow
-    });
+    // check moduleflows in node name duplication
+    for (const tabflow in namekeyNode)
+      for (const nodename in namekeyNode[tabflow]) {
+        if (namekeyNode[tabflow][nodename].length != 1) {
+          namekeyNode[tabflow][nodename].forEach(nodeID => {
+            RED.events.emit("GBLtext:" + nodeID, {
+              fill: "red",
+              shape: "dot",
+              text: `name '${nodename}' is duplication`
+            });
+          });
+        } else {
+          RED.events.emit("GBLtext:" + namekeyNode[tabflow][nodename][0], {});
+        }
+      }
+
+    // check wirednode about submodule
+    for (const nodeID in moduleinNode) {
+      const moduleInNode = moduleinNode[nodeID];
+      let count = 0;
+      let submodule = 0;
+      const subflownamekey = {};
+      for (const wiredID of moduleInNode.wires[0]) {
+        const wiredNode = allNode[wiredID];
+
+        count += 1;
+        if (wiredNode.type === "submoduleflows") {
+          if (typeof subflownamekey[wiredNode.name] === "undefined")
+            subflownamekey[wiredNode.name] = [];
+          subflownamekey[wiredNode.name].push(wiredNode.id);
+          submodule += 1;
+        }
+      }
+
+      if (submodule != 0 && submodule != count)
+        RED.events.emit("GBLtext:" + nodeID, {
+          fill: "red",
+          shape: "dot",
+          text: `wired node error`
+        });
+
+      for (const subnodename in subflownamekey) {
+        if (subflownamekey[subnodename].length != 1) {
+          subflownamekey[subnodename].forEach(nodeID => {
+            RED.events.emit("GBLtext:" + nodeID, {
+              fill: "red",
+              shape: "dot",
+              text: `name '${subnodename}' is duplication`
+            });
+          });
+        } else {
+          RED.events.emit("GBLtext:" + subflownamekey[subnodename][0], {});
+        }
+      }
+    }
 
     Object.assign(myNodeinFlow, {
       ...moduleflowNode,
       ...moduleinNode,
-      ...moduleoutNode
+      ...moduleoutNode,
+      ...submoduleNode
     });
 
-    MappingNodes.set("myModuleflows", moduleinNode);
+    MappingNodes.set("myModuleflows", myNodeinFlow);
   }
 
   RED.nodes.registerType("moduleflows", moduleflows);
@@ -117,7 +160,34 @@ module.exports = function (RED) {
       node.status({});
     });
 
+    const target_error = function () {
+      node.status({
+        fill: "red",
+        shape: "dot",
+        text: "target missed"
+      });
+    };
+
     this.on("input", function (msg) {
+      const mynodes = MappingNodes.get("myModuleflows");
+      if (config.moduleId === null) {
+        target_error();
+        return;
+      } else if (
+        typeof mynodes[config.moduleId] === "undefined" ||
+        mynodes[config.moduleId].type != "moduleflows_in"
+      ) {
+        target_error();
+        return;
+      } else if (
+        config.submoduleId != null &&
+        (typeof mynodes[config.submoduleId] === "undefined" ||
+          mynodes[config.submoduleId].type != "submoduleflows")
+      ) {
+        target_error();
+        return;
+      }
+
       // To return to this node, stack is used.
       if (typeof msg.__GBLstack == "undefined") {
         msg.__GBLstack = [];
@@ -125,14 +195,25 @@ module.exports = function (RED) {
 
       msg.__GBLstack.push(event);
 
-      //start linked module in
+      //start linked moduleflows in
       if (config.submoduleId === null) {
+        if (typeof mynodes[config.moduleId] === "undefind") {
+          target_error();
+          return;
+        }
+
         RED.events.emit("GBLmodule:" + config.moduleId, msg);
-      } else RED.events.emit("GBLmodule:" + config.submoduleId, msg);
+      } else {
+        if (typeof mynodes[config.submoduleId] === "undefind") {
+          target_error();
+          return;
+        }
+        RED.events.emit("GBLmodule:" + config.submoduleId, msg);
+      }
     });
   }
-  RED.nodes.registerType("module_in", module_in);
-  function module_in(config) {
+  RED.nodes.registerType("moduleflows_in", moduleflows_in);
+  function moduleflows_in(config) {
     RED.nodes.createNode(this, config);
     const node = this;
 
@@ -142,41 +223,32 @@ module.exports = function (RED) {
     var event_fun = function (msg) {
       node.receive(msg);
     };
-
     RED.events.on(event, event_fun);
+
+    var node_text_event = "GBLtext:" + node.id;
+    var node_text_event_fun = function (status) {
+      // node.receive({ GBL__: status });
+      node.status(status);
+    };
+    RED.events.on(node_text_event, node_text_event_fun);
+
     this.on("close", function () {
       RED.events.removeListener(event, event_fun);
-      node.status({});
+      RED.events.removeListener(node_text_event, node_text_event_fun);
     });
-    this.on("input", function (msg) {
-      let node_count = 0;
-      let submodule_count = 0;
-      config.wires[0].forEach(wiredID => {
-        node_count += 1;
-        if (RED.nodes.getNode(wiredID).type === "submodule")
-          submodule_count += 1;
-      });
 
-      if (submodule_count === 0) node.send(msg);
-      else {
-        if (submodule_count === node_count)
-          this.status({
-            fill: "red",
-            shape: "dot",
-            text: "this node cant start"
-          });
-        else
-          this.status({ fill: "red", shape: "dot", text: "wired node error" });
-        if (typeof msg.__GBLstack != "undefined") {
-          RED.events.emit(msg.__GBLstack.pop(), msg);
-        }
+    this.on("input", function (msg) {
+      if (typeof msg["GBL__"] != "undefined") {
+        node.status(msg["GBL__"]);
         return;
       }
+
+      node.send(msg);
     });
   }
 
-  RED.nodes.registerType("module_out", module_out);
-  function module_out(config) {
+  RED.nodes.registerType("moduleflows_out", moduleflows_out);
+  function moduleflows_out(config) {
     RED.nodes.createNode(this, config);
     const node = this;
 

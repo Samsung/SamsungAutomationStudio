@@ -1,10 +1,10 @@
 <script type="text/javascript">
-  RED.nodes.registerType("submodule", {
+  RED.nodes.registerType("submoduleflows", {
     category: "GBL-SASM-Alert",
     color: "#E0C67E",
     defaults: {
       info: { value: "Describe your sub-module action here." },
-      name: { value: "submodule" },
+      name: { value: "submoduleflows" },
       errorMsg: { value: "" },
       duplicatedError: { value: false }
     },
@@ -14,7 +14,7 @@
       return "submodule_white.png";
     },
     label: function () {
-      return this.name || "module in";
+      return this.name || "submoduleflows";
     },
     //create description editor box
     oneditprepare: function () {
@@ -27,14 +27,13 @@
         value: $("#node-input-info").val()
       });
 
-      //### 1. Duplicated submodule name
-      //1.1 all 'submodule' node in current moduleflows except this node
+      //### 1. Duplicated submoduleflows name
+      //1.1 all 'submoduleflows' node in current moduleflows except this node
 
       let allSubModuleNames = new Set();
       let upstreamNodes = RED.nodes.getAllUpstreamNodes(this);
-      console.log(upstreamNodes);
       upstreamNodes.forEach(node => {
-        if (node.type === "submodule") {
+        if (node.type === "submoduleflows") {
           allSubModuleNames.add(node.name);
         }
       });
@@ -61,13 +60,30 @@
       };
       checkDuplicatedname(this.name);
 
-      //test
-      console.log(this.errorMsg);
-      console.log(this.duplicatedError);
-
+      const thiz = this;
       $("#submodule-node-name").on("input", event => {
         let newName = event.target.value;
-        checkDuplicatedname(newName);
+
+        RED.nodes.getAllUpstreamNodes(thiz).forEach(node => {
+          if (node.type === "submoduleflows") {
+            if (node.name === newName) {
+              node.errorMsg = "Duplicated name";
+              node.duplicatedError = true;
+
+              thiz.errorMsg = "Duplicated name";
+              thiz.duplicatedError = true;
+              displayMsg(thiz.errorMsg, "red");
+            } else {
+              node.errorMsg = "Available name";
+              node.duplicatedError = false;
+
+              //ok
+              thiz.errorMsg = "Available name";
+              thiz.duplicatedError = false;
+              displayMsg(thiz.errorMsg, "green");
+            }
+          }
+        });
       });
     },
     oneditsave: function () {
@@ -87,7 +103,7 @@
   });
 </script>
 
-<script type="text/html" data-template-name="submodule">
+<script type="text/html" data-template-name="submoduleflows">
   <div class="form-row">
     <label for="submodule-node-name"><i class="icon-tag"></i> Name</label>
     <div id="node-name-input-box">
@@ -117,8 +133,8 @@
   </div>
 </script>
 
-<script type="text/html" data-help-name="submodule">
+<script type="text/html" data-help-name="submoduleflows">
   <div>
-    <p>submodule descrption text</p>
+    <p>This node is the start of the “subflow”, allowing you to provide the name and description of the submodule. This node allows for the execution of a portion of the logic within the “moduleflows”.</p>
   </div>
 </script>
