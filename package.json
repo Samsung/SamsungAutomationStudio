@@ -34,7 +34,6 @@
       "ChromaDB": "GOOD-I-DEER/nodes/chroma-db-node/chroma-db.js",
       "FaceVectorization": "GOOD-I-DEER/nodes/face-vectorization-node/face-vectorization.js",
       "CalculateCosine": "GOOD-I-DEER/nodes/cosine-similarity-node/calculate-cosine.js"
-
     }
   },
   "dependencies": {

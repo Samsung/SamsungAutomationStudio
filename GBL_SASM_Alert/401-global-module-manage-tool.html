@@ -1,0 +1,314 @@
+<style>
+  @font-face {
+    font-family: "Pretendard-Regular";
+    src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+      format("woff");
+    font-weight: 400;
+    font-style: normal;
+  }
+  .ui-dialog:has(.global-module-manager__dialog) {
+    font-family: "Pretendard-Regular";
+    border-radius: 10px;
+  }
+  .ui-dialog:has(.global-module-manager__dialog) .ui-dialog-titlebar,
+  .ui-dialog:has(.global-module-manager__dialog) .ui-dialog-buttonpane {
+    background-color: transparent;
+  }
+  .ui-dialog:has(.global-module-manager__dialog) .ui-dialog-titlebar-close {
+    background: transparent;
+    border: none;
+    margin-right: 5px;
+  }
+
+  .ui-dialog:has(.global-module-manager__dialog) .ui-button-danger {
+    background-color: #dc3545;
+    color: white !important;
+    border-radius: 5px;
+    border: none !important;
+  }
+  .ui-dialog:has(.global-module-manager__dialog)
+    .ui-dialog-buttonset
+    button.ui-button-danger:not(.disabled):not(:disabled):hover {
+    color: white !important;
+    background-color: rgb(194, 20, 55) !important;
+  }
+  .ui-dialog:has(.global-module-manager__dialog)
+    .ui-dialog-buttonset
+    button.ui-button-danger:not(.disabled):not(:disabled):focus {
+    color: white !important;
+    outline: none;
+  }
+
+  .ui-dialog:has(.global-module-manager__dialog) .ui-button-primary {
+    border-radius: 5px;
+  }
+  .global-module-manager__dialog.ui-dialog-content::-webkit-scrollbar {
+    width: 5px;
+    background-color: #efefef;
+  }
+  .global-module-manager__dialog.ui-dialog-content::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #767676;
+  }
+
+  .toolbar-button {
+    border: none;
+    color: #eee;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: auto 0 auto 12pt;
+    padding: 3.5pt 5pt;
+  }
+
+  .toolbar-button.toolbar-button-disabled {
+    color: #999 !important;
+    background-color: #444 !important;
+    cursor: default !important;
+  }
+
+  button.toolbar-button.global-module-manager__button {
+    background-color: #451ce8 !important;
+  }
+
+  .global-module-manager__dialog {
+    overflow-y: scroll;
+    width: calc(100% - 2em) !important;
+    padding: 0.5em 1em !important;
+  }
+
+  .global-module-manager__search-box {
+    margin: 5px 0 10px 0;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+
+  .global-module-manager__module-container {
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f1f5ff;
+    cursor: grab;
+  }
+  .global-module-manager__module-container:hover {
+    background-color: #e6eeff;
+  }
+
+  .global-module-manager__module-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .global-module-manager__module-detail {
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .global-module-manage__delete-button-container {
+    margin-top: 15px;
+    display: flex;
+    justify-content: end;
+  }
+
+  .global-module-manage__delete-button {
+    border: 1px solid #dc3545;
+    border-radius: 5px;
+    padding: 8px 0;
+    width: 60px;
+    font-size: 12px;
+    text-align: center;
+    color: #dc3545;
+    cursor: pointer;
+  }
+  .global-module-manage__delete-button:hover {
+    background: #dc3545;
+    color: #fff;
+  }
+</style>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    (async () => {
+      function ajax(options) {
+        return new Promise(function (resolve, reject) {
+          $.ajax(options).done(resolve).fail(reject);
+        });
+      }
+
+      const _nr1Header = $("ul.red-ui-header-toolbar");
+      if (_nr1Header.length) {
+        _nr1Header.prepend(`
+                <li>
+                  <button class="button-group red-ui-deploy-button toolbar-button global-module-manager__button" href="#">
+                    <i class="fa fa-cog"></i> ModuleFlows in Your Local</button>
+                  </button>
+                </li>
+            `);
+      } else {
+        $(".header-toolbar").prepend(`
+                <span>
+                  <span>
+                    <button class="toolbar-button"><i class="fa fa-cog"></i> ModuleFlows in Your Local</button>
+                  </span>
+                </span>
+            `);
+      }
+
+      $("body").prepend(`<div class="global-module-manager__dialog"></div>`);
+
+      /* 모듈 노드 관리 도구 업데이트 */
+      async function updateModuleToolDialog() {
+        $(".global-module-manager__dialog").attr(
+          "title",
+          "ModuleFlows in Your Local Directory"
+        );
+
+        $(".global-module-manager__dialog")
+          .siblings(".ui-dialog-titlebar")
+          .children(".ui-dialog-title")
+          .html("ModuleFlows in Your Local Directory");
+
+        const moduleFiles = await ajax({ url: "/localModules" });
+        $(".global-module-manager__dialog").empty();
+
+        const moduleSearchContainer = `<input type="text" class="global-module-manager__search-box" id="moduleSearch" placeholder="Search moduleflows by name and description.">`;
+        $(".global-module-manager__dialog").append(moduleSearchContainer);
+
+        moduleFiles.forEach(file => {
+          const moduleContainer = $("<div>")
+            .addClass("global-module-manager__module-container")
+            .attr("draggable", "true");
+
+          $(moduleContainer).on("dragstart", function (e) {
+            e.originalEvent.dataTransfer.setData(
+              "text/plain",
+              JSON.stringify(file.fileContent)
+            );
+          });
+
+          const moduleTitle = $("<div>")
+            .addClass("global-module-manager__module-title")
+            .text(file.fileContent[0].name);
+          const moduleDetail = $("<div>")
+            .addClass("global-module-manager__module-detail")
+            .text(file.fileContent[0].info);
+
+          const moduleDeleteButton = $(
+            `<div class="global-module-manage__delete-button-container">
+                <div class="global-module-manage__delete-button"><i class="fa fa-trash"></i> Delete</div>
+              </div>`
+          );
+          $(moduleDetail).append(moduleDeleteButton);
+
+          $(moduleContainer).append(moduleTitle, moduleDetail);
+          $(".global-module-manager__dialog").append(moduleContainer);
+        });
+      }
+      updateModuleToolDialog();
+      RED.events.on("workspace:change", updateModuleToolDialog);
+    })();
+
+    const moduleManageToolButton = document.querySelector(
+      ".global-module-manager__button"
+    );
+    const moduleManageToolDialog = document.querySelector(
+      ".global-module-manager__dialog"
+    );
+
+    $(document).on("input", "#moduleSearch", function () {
+      const searchText = $(this).val().toLowerCase();
+
+      $(".global-module-manager__module-container").each(function () {
+        const moduleTitle = $(this)
+          .find(".global-module-manager__module-title")
+          .text()
+          .toLowerCase();
+        const moduleDetail = $(this)
+          .find(".global-module-manager__module-detail")
+          .text()
+          .toLowerCase();
+
+        if (
+          moduleTitle.includes(searchText) ||
+          moduleDetail.includes(searchText)
+        ) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    $(document).on(
+      "click",
+      ".global-module-manage__delete-button",
+      async function () {
+        const moduleContainer = $(this).closest(
+          ".global-module-manager__module-container"
+        );
+        RED.notify("Do you really want to delete this moduleflow?", {
+          type: "warning",
+          buttons: [
+            {
+              text: "cancel",
+              click: function (e) {
+                myNotification.close();
+              }
+            },
+            {
+              text: "delete",
+              class: "primary",
+              click: async function (e) {
+                const selectedModuleName = $(moduleContainer)
+                  .children(".global-module-manager__module-title")
+                  .text();
+
+                const notifyObj = await $.ajax({
+                  url: "/delete-selected-module",
+                  type: "POST",
+                  data: { selectedModuleName: selectedModuleName }
+                });
+
+                $(moduleContainer).remove();
+
+                RED.notify(notifyObj["msg"], {
+                  type: notifyObj["type"],
+                  timeout: notifyObj["timeout"]
+                });
+              }
+            }
+          ]
+        });
+      }
+    );
+
+    moduleManageToolButton.addEventListener("click", function (e) {
+      $(moduleManageToolDialog).dialog({
+        height: 450,
+        width: 400,
+        buttons: [
+          {
+            text: "Open Local Directory",
+            icon: "ui-icon-folder-open",
+            click: function () {
+              $.ajax({ url: "/open-local-directory" });
+            },
+            class: "ui-button-primary"
+          },
+          {
+            text: "Close",
+            click: function () {
+              $(moduleManageToolDialog).dialog("close");
+            },
+            class: "ui-button-danger"
+          }
+        ]
+      });
+    });
+  });
+</script>
