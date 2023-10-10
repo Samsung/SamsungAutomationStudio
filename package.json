@@ -24,15 +24,23 @@
       "SlackNotification": "303-SlackNotification.js",
       "DataExtractor": "401-DataExtractor.js",
       "module": "GBL_SASM_Alert/101-module.js",
-      "submodule": "GBL_SASM_Alert/201-submodule.js",
-      "module-manage-tool": "GBL_SASM_Alert/301-module-manage-tool.js",
-      "global-module-manage-tool": "GBL_SASM_Alert/401-global-module-manage-tool.js"
+      "config": "GBL_SASM_Alert/201-config.js",
+      "submodule": "GBL_SASM_Alert/301-submodule.js",
+      "module-manage-tool": "GBL_SASM_Alert/401-module-manage-tool.js",
+      "global-module-manage-tool": "GBL_SASM_Alert/501-global-module-manage-tool.js",
+      "GoodObjectDetection": "GOOD-I-DEER/nodes/object-detection-node/object-detection.js",
+      "GoodFaceDetection": "GOOD-I-DEER/nodes/face-detection-node/face-detection.js",
+      "GoodWebcamObjectDetection": "GOOD-I-DEER/nodes/webcam-object-detection-node/webcam-object-detection.js",
+      "ChromaDB": "GOOD-I-DEER/nodes/chroma-db-node/chroma-db.js",
+      "FaceVectorization": "GOOD-I-DEER/nodes/face-vectorization-node/face-vectorization.js",
+      "CalculateCosine": "GOOD-I-DEER/nodes/cosine-similarity-node/calculate-cosine.js"
     }
   },
   "dependencies": {
     "aws-sdk": "^2.732.0",
     "axios": "^0.24.0",
     "body-parser": "^1.19.0",
+    "chromadb": "^1.5.9",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "fs-extra": "^11.1.1",
@@ -42,10 +50,17 @@
     "mustache": "^4.0.0",
     "mysql": "~2.18.1",
     "on-headers": "^1.0.2",
+    "onnxruntime-node": "^1.14.0",
+    "path": "^0.12.7",
     "pg": "^8.3.0",
     "proxy-agent": "^5.0",
     "when": "3.7.8",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "express": "^4.18.2",
+    "serve-static": "^1.15.0",
+    "sharp": "^0.32.6",
+    "socket.io": "^4.7.2"
+
   },
   "devDependencies": {
     "grunt": "^1.6.1"
