@@ -1403,7 +1403,7 @@
         }
     });
 
-    var operator = {
+    const operators = {
         string: [
             {v: "eq", t: "=="},
             {v: "neq", t: "!="}
@@ -1413,20 +1413,20 @@
             {v: "nin", t: "not contains"}
         ],
         integer: [
-            {v: "eq", t: "=="},
-            {v: "neq", t: "!="},
-            {v: "lt", t: "<"},
-            {v: "lte", t: "<="},
-            {v: "gt", t: ">"},
-            {v: "gte", t: ">="}
+			{ v: 'eq', t: '==' },
+			{ v: 'neq', t: '!=' },
+			{ v: 'gt', t: '<' },
+			{ v: 'gte', t: '<=' },
+			{ v: 'lt', t: '>' },
+			{ v: 'lte', t: '>=' },
         ],
         number: [
-            {v: "eq", t: "=="},
-            {v: "neq", t: "!="},
-            {v: "lt", t: "<"},
-            {v: "lte", t: "<="},
-            {v: "gt", t: ">"},
-            {v: "gte", t: ">="}
+			{ v: 'eq', t: '==' },
+			{ v: 'neq', t: '!=' },
+			{ v: 'gt', t: '<' },
+			{ v: 'gte', t: '<=' },
+			{ v: 'lt', t: '>' },
+			{ v: 'lte', t: '>=' },
         ],
         object: [
             {v: "o_eq", t: "all values equal"},
@@ -1437,12 +1437,12 @@
             {v: "neq", t: "!="}
         ],
         Iso8601Date: [
-            {v: "eq", t: "=="},
-            {v: "neq", t: "!="},
-            {v: "lt", t: "<"},
-            {v: "lte", t: "<="},
-            {v: "gt", t: ">"},
-            {v: "gte", t: ">="}
+			{ v: 'eq', t: '==' },
+			{ v: 'neq', t: '!=' },
+			{ v: 'gt', t: '<' },
+			{ v: 'gte', t: '<=' },
+			{ v: 'lt', t: '>' },
+			{ v: 'lte', t: '>=' },
         ],
         json: [
             {v: "o_eq", t: "all values equal "},
@@ -1813,8 +1813,8 @@
             }
             function createOperatorField(valueType){
                 var operatorField = $('<select/>', {class: "attrOperator ruleField", style: "width:auto; margin-right: 5px; text-align: center;max-width:25%"})
-                if (operator[valueType]) {
-                    operator[valueType].forEach(function (op) {
+                if (operators[valueType]) {
+                    operators[valueType].forEach(function (op) {
                         operatorField.append($("<option></option>").val(op.v).text(op.t))
                     })
                 }
