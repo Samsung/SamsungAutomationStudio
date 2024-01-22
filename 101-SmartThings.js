@@ -617,7 +617,7 @@ module.exports = function (RED) {
 									} else {
 										ruleValue = RED.util.evaluateNodeProperty(ruleValue, rule.argType, NODE, msg);
 									}
-									opCheck = operators[rule.operator](deviceEvent.value, ruleValue);
+									opCheck = operators[rule.operator](ruleValue, deviceEvent.value);
 								}
 
 								if (opCheck) {
@@ -664,9 +664,9 @@ module.exports = function (RED) {
 									ruleValue = "\'\'";
 								}
 								if (rule.valueType == 'Iso8601Date') {
-									opCheck = operators[rule.operator](new Date(attributeValue), new Date(ruleValue));
+									opCheck = operators[rule.operator](new Date(ruleValue), new Date(attributeValue));
 								} else {
-									opCheck = operators[rule.operator](attributeValue, ruleValue);
+									opCheck = operators[rule.operator](ruleValue, attributeValue);
 								}
 								if (opCheck) {
 									// sendDebug(NODE.attributeId+"=\""+attributeValue+"\", ("+idx+")port success")
