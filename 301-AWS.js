@@ -119,8 +119,12 @@ module.exports = function(RED) {
 				if (typeof awsService[node.methods] == "function"){
 					node.status({fill:"blue",shape:"dot",text:node.methods});
 
-					var paramValue = JSON.parse(mustache.render(node.params, new NodeContext(msg, node.context())));
-					var request = awsService[node.methods](paramValue || msg.param, _cb);
+					if (node.params) {
+						const paramValue = JSON.parse(mustache.render(node.params, new NodeContext(msg, node.context())));
+						awsService[node.methods](paramValue, _cb);
+					} else {
+						awsService[node.methods](msg.params, _cb);
+					}
 				} else {
 					node.error("failed: Invalid Operation - " + node.methods);
 				}
