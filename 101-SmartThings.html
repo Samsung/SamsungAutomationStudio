@@ -2118,7 +2118,7 @@
                     this.deviceNodeId = selectedDeviceOption.dataset?.deviceNodeId;
                 }
                 const selectedCapabilityOption = document.querySelector('#node-input-capabilityId').selectedOptions[0];
-                if (selectedDeviceOption && selectedDeviceOption.dataset.deviceNodeId) {
+                if (selectedCapabilityOption && selectedCapabilityOption.dataset.componentId) {
                     this.componentId = selectedCapabilityOption.dataset?.componentId;
                 }
             },
@@ -2221,8 +2221,9 @@
                 if (selectedOption && selectedOption.dataset.deviceNodeId) {
                     this.deviceNodeId = selectedOption.dataset?.deviceNodeId;
                 }
-                if (selectedOption && selectedOption.dataset.componentId) {
-                    this.componentId = selectedOption.dataset?.componentId;
+                const selectedCapabilityOption = document.querySelector('#node-input-capabilityId').selectedOptions[0];
+                if (selectedCapabilityOption && selectedCapabilityOption.dataset.componentId) {
+                    this.componentId = selectedCapabilityOption.dataset?.componentId;
                 }
             },
             oneditprepare: function () {
@@ -2400,8 +2401,9 @@
                 if (selectedOption && selectedOption.dataset.deviceNodeId) {
                     this.deviceNodeId = selectedOption.dataset?.deviceNodeId;
                 }
-                if (selectedOption && selectedOption.dataset.componentId) {
-                    this.componentId = selectedOption.dataset?.componentId;
+                const selectedCapabilityOption = document.querySelector('#node-input-capabilityId').selectedOptions[0];
+                if (selectedCapabilityOption && selectedCapabilityOption.dataset.componentId) {
+                    this.componentId = selectedCapabilityOption.dataset?.componentId;
                 }
             },
             oneditprepare: function () {

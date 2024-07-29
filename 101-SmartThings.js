@@ -591,6 +591,7 @@ module.exports = function (RED) {
 				var param = {deviceId: ""};
 
 				if (RED.nodes.getNode(NODE.deviceNodeId).type == ST_MY_DEVICE) {
+					deviceConfig = { deviceId: NODE.deviceId, componentId: NODE.componentId };
 					authToken = RED.nodes.getCredentials(NODE.deviceNodeId).stAccessToken;
 					param.deviceId = NODE.deviceId || RED.nodes.getNode(NODE.deviceNodeId).device.deviceId
 				} else {
