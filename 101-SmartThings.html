@@ -649,14 +649,15 @@
                         }).then(resolve, reject)
                     });
                 },
-                getDevices: function (token) {
+                getDevices: function (url, token) {
                     return new Promise((resolve, reject) => {
                         $.ajax({
-                            url: "https://api.smartthings.com/v1/devices", headers: {
-                                Authorization: 'Bearer ' + token
-                            }
-                        }).then(resolve, reject)
-                    })
+                            url: url,
+                            headers: {
+                                Authorization: 'Bearer ' + token,
+                            },
+                        }).then(resolve, reject);
+                    });
                 },
                 getDeviceList: function (token, done, fail) {
                     return $.ajax({
@@ -797,6 +798,17 @@
             this.validatePat = function (pat) {
                 return SmartThingsApi.getCapability(pat, 'switch', 1);
             }
+            this.fetchAllDevices = (url, pat, allDevices = []) => {
+                return SmartThingsApi.getDevices(url, pat).then(response => {
+                    const combinedDevices = allDevices.concat(response.items);
+
+                    if (response._links && response._links.next && response._links.next.href) {
+                        return SmartThingsProfile.fetchAllDevices(response._links.next.href, pat, combinedDevices);
+                    } else {
+                        return combinedDevices;
+                    }
+                });
+            };
             this.addPersonalToken = function (nodeId, pat, isRefresh) {
                 if (!pat) {
                     _mydevices[nodeId] = Promise.resolve(null);
@@ -824,10 +836,9 @@
                                 return locations;
                             })
 
-                        const getDevicesPR = SmartThingsApi.getDevices(pat)
+                            const getDevicesPR = SmartThingsProfile.fetchAllDevices('https://api.smartthings.com/v1/devices', pat)
                             .then(devicesResult => {
-                                return devicesResult.items
-                                    .map(d => {
+                                return devicesResult.map(d => {
                                         return {
                                             deviceId: d.deviceId,
                                             name: d.label || d.name,
@@ -852,6 +863,7 @@
                                 var prs = devices.map(d => d.components).flat()
                                     .map(cmp => cmp.capabilities).flat()
                                     .filter(cp => !SmartThingsProfile.getCapability(cp.id + '_v' + cp.version))
+                                    .filter((d, index, self) => index === self.findIndex((t) => t.id === d.id && t.version === d.version))
                                     .map(cp => SmartThingsApi.getCapability(pat, cp.id, cp.version))
                                 return Promise.allSettled(prs);
                             });
@@ -1225,7 +1237,19 @@
                                 })
                             })
                             mydevice.devices.forEach(function (device) {
+                                let locationEl = document.querySelector(`.md_list__location[data-location-id="${device.locationId}"]`);
                                 let roomEl = document.querySelector(`.md_list__room[data-location-id="${device.locationId}"][data-room-id="${device.roomId}"]`);
+                                
+                                if (!locationEl) {
+                                    locationEl = createLocationEl({ locationId: device.locationId });
+                                    mdContainerEl.append(locationEl);
+                                }
+
+                                if (!roomEl) {
+                                    roomEl = createRoomEl({ locationId: device.locationId, roomId: device.roomId });
+                                    locationEl.append(roomEl);
+                                }
+                                
                                 roomEl.append(createDeviceEl(device));
                             });
                         } else {
