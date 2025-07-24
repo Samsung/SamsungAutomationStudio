@@ -36,8 +36,8 @@ module.exports = function (RED) {
 	const bodyParser = require("body-parser");
 	const cors = require('cors');
 	const jsonParser = bodyParser.json();
-	const SmartThingsAPI = require('./lib/SmartThingsAPI');
-	const SmartThingsProfile = require('./lib/SmartThingsProfile');
+	const SmartThingsAPI = require('../lib/SmartThingsAPI');
+	const SmartThingsProfile = require('../lib/SmartThingsProfile');
 	const corsHandler = cors({
 		origin: "*",
 		methods: "POST"

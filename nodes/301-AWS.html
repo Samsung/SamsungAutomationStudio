@@ -105,8 +105,8 @@
 </script>
 
 <script type="text/x-red" data-help-name="aws-sdk">
-    <p>AWS SDK</p>
-    <p>You can extend this flow by connecting it to your AWS using the AWS SDK node. Refer to <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html" target="_blank">AWS api documents.</a></p>
+    <p>AWS SDK v2</p>
+    <p>You can extend this flow by connecting it to your AWS using the AWS SDK v2 node. Refer to <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html" target="_blank">AWS api documents.</a></p>
     <h3>Properties</h3>
 <dl class="message-properties">
     <dt>Name</dt>
@@ -121,6 +121,49 @@
         <dd>Insert a params of method. refer to each method description on AWS api documents. It's a JSON string. You can use <a href="http://mustache.github.io/mustache.5.html" target="_blank">mustache</a> templates.</dd>
     </dl>
 
+</script>
+
+<script type="text/x-red" data-template-name="aws-sdk-v3">
+	<div class="form-row">
+	    <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+	    <input type="text" id="node-input-name" placeholder="Name"></input>
+	</div>
+	<div class="form-row">
+	    <label for="node-input-config"><i class="fa fa-user"></i> AWS Config</label>
+	    <select type="text" id="node-input-config"></select>
+	</div>
+	<div class="form-row">
+	    <label for="node-input-client"><i class="fa fa-cog"></i> Service</label>
+	    <select type="text" id="node-input-client"></select>
+	</div>
+	<div class="form-row">
+	    <label for="node-input-operation"><i class="fa fa-wrench"></i> Command</label>
+	    <select type="text" id="node-input-operation"></select>
+	</div>
+    <div class="form-row">
+        <label for="node-input-params"><i class="fa fa-code"></i> Params</label>
+        <input type="hidden" id="node-input-params" value="{}" autofocus="autofocus"/>
+        <input type="hidden" id="node-input-noerr"/>
+        <div class="form-row node-text-editor-row"><div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-param-editor" ></div></div>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="aws-sdk-v3">
+	    <p>AWS SDK v3</p>
+	    <p>You can extend this flow by connecting it to your AWS using the AWS SDK v3 node. Refer to <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html" target="_blank">AWS api documents.</a></p>
+	    <h3>Properties</h3>
+	<dl class="message-properties">
+	    <dt>Name</dt>
+	        <dd>You can tag or describe this aws-sdk-v3.</dd>
+	    <dt>AWS Config <span class="property-type">required</span></dt>
+	        <dd>Choose a AWS Config Node.</dd>
+	    <dt>Service <span class="property-type">required</span></dt>
+	        <dd>Choose a AWS Service</dd>
+	    <dt>Command <span class="property-type">required</span></dt>
+	        <dd>Choose a AWS Command.</dd>
+	    <dt>Params <span class="property-type">optional</span></dt>
+	        <dd>Insert a params of method. refer to each method description on AWS api documents. It's a JSON string. You can use <a href="http://mustache.github.io/mustache.5.html" target="_blank">mustache</a> templates.</dd>
+	    </dl>
 </script>
 
 <script type="text/javascript">
@@ -167,13 +210,13 @@
         },
         inputs: 1,
         outputs: 1,
-        paletteLabel: "AWS SDK",
+        paletteLabel: "AWS SDK v2",
         icon: "aws.png",
         align: "right",
         label: function () {
             if (this.name) return this.name;
             if (this.service && this.operation) return this.service + "." + this.operation;
-            return "AWS SDK";
+            return "AWS SDK v2";
         },
         oneditprepare: function () {
             var NODE = this;
@@ -235,6 +278,165 @@
             this.editor.resize();
         }
     });
+
+    let allClientsData = null;
+    async function loadAWSClientsData() {
+        if (allClientsData) {
+            return allClientsData;
+        }
+
+        allClientsData = await $.ajax({
+            url: 'icons/node-red-contrib-samsung-automation-studio-nodes/aws_sdk_v3_clients.json',
+            dataType: 'json',
+        })
+
+        return allClientsData;
+    }
+
+    function removeClientSuffix(clientName) {
+        if (clientName.endsWith("Client")) {
+            return clientName.slice(0, -6);
+        }
+        return clientName;
+    }
+
+    RED.nodes.registerType('aws-sdk-v3', {
+		category: 'Samsung AutomationStudio',
+		color: '#FF9900',
+		defaults: {
+            config: {
+                value: '', required: true,
+                validate: function (val) {
+                    var isValidAwsConfig = false;
+                    RED.nodes.eachNode(function (node) {
+                        if (node.id == val) {
+                            isValidAwsConfig = true
+                        }
+                    })
+                    return !!val && isValidAwsConfig
+                }
+            },
+            name: {value: ''},
+            client: {value: '', required: true},
+            operation: {value: '', required: true},
+            params: {value: '{}'}
+        },
+        inputs: 1,
+        outputs: 1,
+        paletteLabel: "AWS SDK v3",
+        icon: "aws.png",
+        align: "right",
+        label: function () {
+            if (this.name) return this.name;
+            if (this.operation) return this.operation;
+            return "AWS SDK v3";
+        },
+        oneditprepare: function () {
+            var NODE = this;
+            $("#node-input-config").html('');
+            RED.nodes.eachNode(function (node) {
+                if (node.name && node.region && node.type == 'aws-config') {
+                    $("#node-input-config").append($("<option></option>").val(node.id).text(node.name + " (" + node.id + ")"));
+                }
+            });
+
+            console.log("data : ");
+            loadAWSClientsData().then((data) => {
+                console.log("data : ", data);
+				const clientEl = $('#node-input-client');
+				const operationEl = $('#node-input-operation');
+
+				const initialClient = NODE.client || null;
+				const initialOperation = NODE.operation || null;
+
+				clientEl.on('change', (e) => {
+					const selectedClient = e.target.value;
+					const commands = data[selectedClient].commands;
+
+					operationEl.empty();
+
+					if (Array.isArray(commands)) {
+						commands.forEach(command => {
+							operationEl.append(
+								$('<option></option>')
+									.val(command)
+									.text(command)
+							);
+						});
+
+						if (initialClient === selectedClient && initialOperation) {
+							operationEl.val(initialOperation);
+						}
+					}
+				});
+
+				Object.keys(data).forEach(packageName => {
+					clientEl.append(
+						$('<option></option>')
+							.val(packageName)
+							.text(removeClientSuffix(data[packageName].client))
+					);
+				});
+
+				if (initialClient && data[initialClient]) {
+					clientEl.val(initialClient);
+				}
+
+				clientEl.trigger('change');
+			});
+
+            $("#node-input-config").val(NODE.config);
+            this.editor = RED.editor.createEditor({
+                id: 'node-input-param-editor',
+                mode: 'ace/mode/mustache',
+                value: $("#node-input-params").val(),
+                globals: {
+                    msg: true,
+                    context: true,
+                    RED: true,
+                    util: true,
+                    flow: true,
+                    global: true,
+                    console: true,
+                    Buffer: true,
+                    setTimeout: true,
+                    clearTimeout: true,
+                    setInterval: true,
+                    clearInterval: true
+                }
+            });
+            this.editor.focus();
+        },
+        oneditsave: function () {
+            var annot = this.editor.getSession().getAnnotations();
+            this.noerr = 0;
+            $("#node-input-noerr").val(0);
+            for (var k = 0; k < annot.length; k++) {
+                if (annot[k].type === "error") {
+                    $("#node-input-noerr").val(annot.length);
+                    this.noerr = annot.length;
+                }
+            }
+            $("#node-input-params").val(this.editor.getValue());
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditcancel: function () {
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditresize: function (size) {
+            var rows = $("#dialog-form>div:not(.node-text-editor-row)");
+            var height = $("#dialog-form").height();
+            for (var i = 0; i < rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            var editorRow = $("#dialog-form>div.node-text-editor-row");
+            height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+            $(".node-text-editor").css("height", height + "px");
+            this.editor.resize();
+        }
+	});
 </script>
 
 
