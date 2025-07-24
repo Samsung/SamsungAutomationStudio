@@ -17,6 +17,7 @@ module.exports = function(RED) {
 	"use strict";
 	var AWS = require("aws-sdk");
 	var mustache = require("mustache");
+	const AWSClients = require('./lib/AWSClients.js');
 
 	function NodeContext(msg, nodeContext,parent) {
 		this.msgContext = new mustache.Context(msg,parent);
@@ -136,6 +137,76 @@ module.exports = function(RED) {
 		});
 	}
 
+	function AwsSdkV3Node(n) {
+		RED.nodes.createNode(this,n);
+		var node = this;
+		node.name = n.name;
+		node.classes = n.client;
+		node.methods = n.operation;
+		node.params = n.params;
+		node.configId = n.config;
+		RED.nodes.eachNode(function (nn) {
+			if(node.configId==nn.id) {
+				node.config = nn;
+                node.config.credentials = RED.nodes.getCredentials(nn.id)
+			}
+		});
+		if(!node.config) {
+			node.error("failed: Invalid AWS credentials");
+			return;
+		}
+		if (node.config.proxyRequired){
+			var proxy = require('proxy-agent');
+			AWS.config.update({
+				httpOptions: { agent: new proxy(node.config.proxy) }
+			});
+		}
+		node.on("input", function(msg) {
+			try {
+				const Client = AWSClients.getClient(node.classes);
+				const clientConfig = {
+					credentials: {
+						accessKeyId: node.config.credentials.accessKey,
+						secretAccessKey: node.config.credentials.secretKey,
+					},
+					region: node.config.region,
+				};
+
+				const client = new Client(clientConfig);
+				const CommandClass = AWSClients.getCommand(node.classes, node.methods);
+				let command;
+				if (node.params) {
+					const paramValue = JSON.parse(mustache.render(node.params, new NodeContext(msg, node.context())));
+					command = new CommandClass(paramValue)
+				} else {
+					command = new CommandClass(msg.params);
+				}
+				node.status({fill:"blue",shape:"dot",text:node.methods});
+				client.send(command)
+					.then(response => {
+						if (response.Body && typeof response.Body.transformToString === 'function') {
+							return response.Body.transformToString();
+						}
+						return response;
+					})
+					.then(body => {
+						msg.payload = body;
+						node.status({});
+						node.send(msg);
+					})
+					.catch((e) => {
+						node.status({fill:"red",shape:"ring",text:"error"});
+						node.error(e);
+						node.send([null, { err: e }]);
+					});
+			}
+			catch (e) {
+				node.status({ fill: "red", shape: "dot", text: "error" });
+				node.error(e);
+			}
+		});
+	}
+
 	RED.nodes.registerType("aws-config", AwsConfig,{
 		credentials: {
 			accessKey: {type: "text", required: true},
@@ -143,4 +214,5 @@ module.exports = function(RED) {
 		}
 	});
 	RED.nodes.registerType("aws-sdk", AwsSdkNode);
+	RED.nodes.registerType("aws-sdk-v3", AwsSdkV3Node);
 };
