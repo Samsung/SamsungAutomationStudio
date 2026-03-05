@@ -1,0 +1,396 @@
+<style>
+	.slider-input-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		margin-bottom: 12px;
+	}
+
+	input[type=range] {
+		cursor: pointer;
+		background-color: #ECECF1;
+		-webkit-appearance: none;
+		height: 5px;
+		width: 100%;
+		border-radius: 2.5px;
+		outline: none;
+	}
+
+	input[type=range]::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 16px;
+		height: 16px;
+		background-color: white;
+		cursor: pointer;
+		border-radius: 50%;
+		box-shadow: 0px 0px 5px gray;
+		border: 2px solid #C5C5D2;
+		margin-top: -6px;
+	}
+
+	input[type=range]:focus::-webkit-slider-thumb {
+		border: 2px solid #1f93ffad;
+	}
+
+	input[type=range]::-webkit-slider-runnable-track {
+		background: linear-gradient(to right, #C5C5D2 0%, #C5C5D2 var(--percentage), #ECECF1 var(--percentage), #ECECF1 100%);
+		height: 5px;
+		border-radius: 2.5px;
+	}
+
+	.slider-input-container label {
+		margin-top: 0rem;
+	}
+</style>
+<script type="text/x-red" data-template-name="googleai-config">
+	<div class="form-row">
+	    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+	    <input type="text" id="node-input-name">
+	</div>
+	<div class="form-row">
+	    <label for="node-input-secretKey"><i class="fa fa-user"></i> SecretKey</label>
+	    <input type="password" id="node-input-secretKey" list="secretKey_datalist" placeholder="GoogleAI SecretKey" style="width:calc(100% - 50px);" autocomplete="off">
+	</div>
+</script>
+
+<script type="text/x-red" data-help-name="googleai-config">
+	<p>GoogleAI Config</p>
+	<p>When AI GoogleAI nodes are invoked, GoogleAI Config node is required.</p>
+	<h3>Properties</h3>
+	<dl class="message-properties">
+	    <dt>Name</dt>
+	        <dd>You can tag or describe this googleai-config.</dd>
+	    <dt>SecretKey <span class="property-type">required</span></dt>
+	        <dd>Manage your access keys as securely as you do your user name and password. Do not provide your access keys to a third party, even to help find your canonical user ID. By doing this, you might give someone permanent access to your account.</dd>
+	    </dl>
+</script>
+
+<script type="text/x-red" data-template-name="googleai-generate">
+	<div class="form-row">
+	    <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
+	    <input type="text" id="node-input-name" placeholder="Name"></input>
+	</div>
+	<div class="form-row">
+	    <label for="node-input-config"><i class="fa fa-user"></i> GoogleAI Config</label>
+	    <select type="text" id="node-input-config"></select>
+	</div>
+	<div class="form-row">
+	    <label for="node-input-modelId"><i class="fa fa-cog"></i> Model</label>
+	    <select id="node-input-modelId"></select>
+	</div>
+	<div class="form-row">
+	    <label for="node-input-mode"><i class="fa fa-commenting"></i> Interaction Mode</label>
+	    <select type="text" id="node-input-mode">
+			<option value="single">Single Prompt</option>
+			<option value="chat">Multi-turn Chat</option>
+		</select>
+	</div>
+	<div class="form-row">
+	    <label for="node-input-field"><i class="fa fa-edit"></i> Set property</span></label>
+	    <input type="text" id="node-input-field" placeholder="payload" style="width:100%">
+	    <input type="hidden" id="node-input-fieldType">
+	</div>
+	<div class="form-row">
+	    <label for="node-input-params"><i class="fa fa-file-code-o"></i> Prompt</label>
+	    <input type="hidden" id="node-input-params" value="{}"/>
+	    <input type="hidden" id="node-input-noerr"/>
+	    <div class="form-row node-text-editor-row"><div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-param-editor" ></div></div>
+	</div>
+</script>
+
+<script type="text/x-red" data-help-name="googleai-generate">
+	<p>GoogleAI Generate</p>
+	<p>You can extend this flow by connecting it to your GoogleAI using the GoogleAI api node. Refer to <a href="https://ai.google.dev/api" target="_blank">GoogleAI api documents.</a></p>
+	<h3>Properties</h3>
+<dl class="message-properties">
+	<dt>Name</dt>
+		<dd>You can tag or describe this googleai-generate.</dd>
+	<dt>GoogleAI Config <span class="property-type">required</span></dt>
+		<dd>Choose a GoogleAI Config Node.</dd>
+	<dt>Model <span class="property-type">required</span></dt>
+		<dd>Choose a GoogleAI generate Model.</dd>
+	<dt>Interaction Mode <span class="property-type">required</span></dt>
+		<dd>Choose a Interaction Mode.</dd>
+	<dt>Set property <span class="property-type">required</span></dt>
+		<dd>a msg with a property set by populating the configured prompt with properties from the incoming msg.</dd>
+	<dt>Prompt <span class="property-type">required</span></dt>
+		<dd>Insert a prompt of method. refer to each method description on GoogleAI api documents. You can use <a href="http://mustache.github.io/mustache.5.html" target="_blank">mustache</a> templates.</dd>
+	</dl>
+</script>
+
+<script type="text/javascript">
+	(function () {
+		GoogleAIApi = {
+			getModels: function (secretKey) {
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						url: `https://generativelanguage.googleapis.com/v1beta/models?key=${secretKey}&pageSize=100`,
+					}).then(resolve, reject);
+				});
+			}
+		}
+	})();
+</script>
+
+<script type="text/javascript">
+	(function () {
+		const ST_NODES_CATEGORY = 'Samsung AutomationStudio';
+		const GOOGLEAI_CONFIG = 'googleai-config';
+		const GOOGLEAI_GENERATE = 'googleai-generate';
+		const GOOGLEAI_SUPPORT_MODELS = [
+			'gemini-3-flash-preview',
+			'gemini-3-pro',
+			'gemini-2.5-pro',
+			'gemini-2.5-flash',
+			'gemini-2.5-flash-lite',
+			'gemini-2.0-flash',
+			'gemini-2.0-flash-lite',
+			'gemini-2.0-flash-exp', // 실험적이지만 채팅 가능
+			'gemma-3-27b',
+			'gemma-3-12b',
+			'gemma-3-4b',
+			'gemma-3-2b',
+			'gemma-3-1b'
+		];
+
+		function _GoogleAIProfile() {
+			var _mymodelIds = {};
+
+			this.getMyModelIds = (nodeId) => {
+				if (_mymodelIds[nodeId]) {
+					return _mymodelIds[nodeId];
+				} else {
+					return Promise.reject(null);
+				}
+			};
+
+			this.addMyGoogleModels = (nodeId, secretKey, isRefresh) => {
+				if (!secretKey) {
+					_mymodelIds[nodeId] = Promise.resolve(null);
+					return Promise.reject(null);
+				}
+				if (!_mymodelIds[nodeId] || isRefresh) {
+					return GoogleAIApi.getModels(secretKey)
+						.then((models) => {
+							_mymodelIds[nodeId] = Promise.resolve(models.models.map((d) => d.name.replace("models/", "")));
+							return _mymodelIds[nodeId]
+						})
+						.catch((e) => {
+							_mymodelIds[nodeId] = Promise.resolve(null);
+							return Promise.reject(null);
+						});
+				} else if (_mymodelIds[nodeId]) {
+					return _mymodelIds[nodeId];
+				}
+			}
+
+			this.clearMyModels = () => {
+				_mymodelIds = {};
+			};
+		}
+
+		const GoogleAIProfile = new _GoogleAIProfile();
+
+	
+		RED.nodes.registerType(GOOGLEAI_CONFIG, {
+			category: ST_NODES_CATEGORY,
+			paletteLabel: 'GoogleAI Config',
+			color: '#74AA9C',
+			defaults: {
+				name: { value: 'GoogleAI Config' }
+			},
+			credentials: {
+				secretKey: { type: 'password', required: true },
+			},
+			inputs: 0,
+			outputs: 0,
+			icon: 'google-ai.png',
+			label: function () {
+				if (this.name) return this.name;
+				return 'GoogleAI Config';
+			},
+			oneditprepare: function () {
+				const NODE = this;
+				// if (NODE.credentials?.secretKey) {
+				// 	const stateEl = document.querySelector('.st_state');
+				// 	stateEl.classList.add('st_state--loading');
+
+				// 	GoogleAIProfile.getMyModelIds(NODE.id)
+				// 		.then((models) => {
+				// 			if (models == null) {
+				// 				stateEl.classList.remove('st_state--valid');
+				// 			} else {
+				// 				stateEl.classList.add('st_state--valid');
+				// 			}
+				// 		})
+				// 		.catch((err) => {
+				// 			stateEl.classList.remove('st_state--valid');
+				// 		})
+				// 		.finally(() => {
+				// 			stateEl.classList.remove('st_state--loading');
+				// 		});
+				// }
+
+				// function secretKeyChangeEvent(e, isRefresh) {
+				// 	const pat = document.querySelector('#node-input-secretKey').value;
+				// 	const stateEl = document.querySelector('.st_state');
+				// 	stateEl.classList.add('st_state--loading');
+
+				// 	GoogleAIProfile.addMyGoogleModels(NODE.id, pat, isRefresh)
+				// 		.then((models) => {
+				// 			if (models == null) {
+				// 				stateEl.classList.remove('st_state--valid');
+				// 			} else {
+				// 				stateEl.classList.add('st_state--valid');
+				// 			}
+				// 		})
+				// 		.catch((err) => {
+				// 			stateEl.classList.remove('st_state--valid');
+				// 		})
+				// 		.finally(() => {
+				// 			stateEl.classList.remove('st_state--loading');
+				// 		});
+				// }
+				// document.querySelector('#node-input-secretKey').addEventListener('change', secretKeyChangeEvent);
+				// document.querySelector('.st_state').addEventListener('click', (e) => {
+				// 	secretKeyChangeEvent(e, true);
+				// });
+			}
+		});
+
+		RED.nodes.registerType(GOOGLEAI_GENERATE, {
+			category: ST_NODES_CATEGORY,
+			paletteLabel: 'GoogleAI Generate',
+			color: '#69CEAF',
+			defaults: {
+				name: { value: '' },
+				field: { value: 'payload', validate: RED.validators.typedInput('fieldType') },
+				fieldType: { value: 'msg' },
+				modelId: { value: '', required: true },
+				mode: { value: 'single', required: true },
+				config: {
+					value: '',
+					required: true,
+					validate: function (val) {
+						var isValidConfig = false;
+						RED.nodes.eachNode(function (node) {
+							if (node.id == val) {
+								isValidConfig = true;
+							}
+						});
+						return !!val && isValidConfig;
+					},
+				},
+				params: { value: 'This is the payload: {{payload}} !', required: true },
+			},
+			inputs: 1,
+			outputs: 1,
+			icon: 'google-ai.png',
+			label: function () {
+				if (this.name) return this.name;
+				return 'GoogleAI Generate';
+			},
+			oneditprepare: function () {
+				var NODE = this;
+				$('#node-input-config').html('');
+
+				RED.nodes.eachNode(function (node) {
+					if (node.type == 'googleai-config') {
+						const opEl = document.createElement('option');
+						opEl.value = node.id;
+						opEl.type = node.type;
+						opEl.dataset.configNodeId = node.id;
+						opEl.innerText = node.name + ' (' + node.id + ')';
+						$('#node-input-config').append(opEl);
+					}
+				});
+
+				if (NODE.mode == undefined) {
+					$('#node-input-mode').val('single');
+				}
+				$('#node-input-config').val(NODE.config);
+				$('#node-input-field').typedInput({
+					default: 'msg',
+					types: ['msg', 'flow', 'global'],
+					typeField: $('#node-input-fieldType'),
+				});
+
+				NODE.editor = RED.editor.createEditor({
+					id: 'node-input-param-editor',
+					mode: 'ace/mode/handlebars',
+					value: $('#node-input-params').val(),
+					globals: {
+						msg: true,
+						context: true,
+						RED: true,
+						util: true,
+						flow: true,
+						global: true,
+						console: true,
+						Buffer: true,
+						setTimeout: true,
+						clearTimeout: true,
+						setInterval: true,
+						clearInterval: true,
+					},
+				});
+				this.editor.focus();
+
+				NODE.initModelSelect = function (configId, initModelId) {
+					const modelIdSelect = $('#node-input-modelId')
+					modelIdSelect.empty();
+
+					GOOGLEAI_SUPPORT_MODELS.forEach((modelId) => {
+						const optionEl = document.createElement('option');
+						optionEl.value = modelId;
+						optionEl.innerText = modelId;
+						modelIdSelect.append(optionEl);
+					});
+
+					if (initModelId) {
+						modelIdSelect.val(initModelId);
+					}
+				}
+
+				function configChangeEvent(e, isRefresh) {
+					const configId = e.target.selectedOptions[0]?.dataset?.configNodeId;
+					NODE.initModelSelect(configId, NODE.modelId);
+				}
+
+				NODE.initModelSelect(NODE.config, NODE.modelId);
+				document.querySelector('#node-input-config').addEventListener('change', configChangeEvent);
+			},
+			oneditsave: function () {
+				var annot = this.editor.getSession().getAnnotations();
+				this.noerr = 0;
+				$('#node-input-noerr').val(0);
+				for (var k = 0; k < annot.length; k++) {
+					if (annot[k].type === 'error') {
+						$('#node-input-noerr').val(annot.length);
+						this.noerr = annot.length;
+					}
+				}
+				$('#node-input-params').val(this.editor.getValue());
+				this.editor.destroy();
+				delete this.editor;
+			},
+			oneditcancel: function () {
+				this.editor.destroy();
+				delete this.editor;
+			},
+			oneditresize: function (size) {
+				var rows = $('#dialog-form>div:not(.node-text-editor-row)');
+				var height = $('#dialog-form').height();
+				for (var i = 0; i < rows.size(); i++) {
+					height -= $(rows[i]).outerHeight(true);
+				}
+				var editorRow = $('#dialog-form>div.node-text-editor-row');
+				height -= parseInt(editorRow.css('marginTop')) + parseInt(editorRow.css('marginBottom'));
+				$('.node-text-editor').css('height', height + 'px');
+				this.editor.resize();
+			}
+		});
+	})();
+</script>
