@@ -244,7 +244,7 @@
                 </span>
             </div>
             <span class="dp_cp__custom">
-                <input type="text" list="stAccessToken_datalist" id="node-input-stAccessToken" placeholder="SmartThings AccessToken">
+                <input type="password" list="stAccessToken_datalist" id="node-input-stAccessToken" placeholder="SmartThings AccessToken">
                 <span class="st_state" title="refresh">
                     <svg>
                         <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
@@ -290,11 +290,11 @@
 
     <div class="form-row">
         <label for="node-input-name">Node Name</label>
-        <input type="text" id="node-input-name" placeholder="default, 'token:xxxxxxxx'">
+        <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row md_pat">
         <label for="node-input-stAccessToken">Personal<br> Access Token</label>
-        <input type="text" class="md_pat__input" id="node-input-stAccessToken" list="stAccessToken_datalist" placeholder="SmartThings PAT">
+        <input type="password" class="md_pat__input" id="node-input-stAccessToken" list="stAccessToken_datalist" placeholder="SmartThings PAT">
         <span class="st_state" title="refresh">
             <svg>
                 <circle class="st_state__back" cx="13" cy="13" r="9"></circle>
@@ -1015,7 +1015,7 @@
                 capabilityId_custom: { value: '' }
             },
             credentials: {
-                stAccessToken: { type: 'text' }
+                stAccessToken: { type: 'password' }
             },
             inputs: 0,
             outputs: 0,
@@ -1121,7 +1121,7 @@
                 profileId: { value: '' }
             },
             credentials: {
-                stAccessToken: { type: 'text', required: true }
+                stAccessToken: { type: 'password', required: true }
             },
             inputs: 0,
             outputs: 0,
@@ -1136,9 +1136,6 @@
                 if (document.querySelectorAll('#md_list .md_list__device.md_list__item--selected').length > 0) {
                     this.devices = Array.from(document.querySelectorAll('#md_list .md_list__device.md_list__item--selected')).map(el => el.dataset.deviceId);
                 }
-                if (document.querySelector('#node-input-stAccessToken').value) {
-                    this.alias = `token:${document.querySelector('#node-input-stAccessToken').value.slice(0, 8)}`;
-                }
             },
             oneditprepare: function () {
                 const NODE = this;
@@ -1146,15 +1143,14 @@
                 //profileId: DeviceNode 참조 backup ID
                 STRefCheck();
 
-                if (NODE.credentials?.stAccessToken) {
-                    const stateEl = document.querySelector('.st_state');
+                const stateEl = document.querySelector('.st_state');
                     stateEl.classList.add('st_state--loading');
                     SmartThingsProfile.getMyDevices(NODE.id)
                         .then(mydevice => createMyDeviceList(mydevice, NODE.devices))
                         .then(() => { stateEl.classList.add('st_state--valid') })
                         .catch(() => { stateEl.classList.remove('st_state--valid') })
                         .finally(() => { stateEl.classList.remove('st_state--loading') })
-                }
+                
 
                 function patChangeEventMD(e, isRefresh) {
                     const pat = document.querySelector('#node-input-stAccessToken').value;
