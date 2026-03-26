@@ -526,7 +526,7 @@ module.exports = function (RED) {
 
 	RED.nodes.registerType(ST_DEVICE_PROFILE, DeviceConfigNode, {
 		credentials: {
-			stAccessToken: {type: 'text'}
+			stAccessToken: {type: 'password'}
 		}
 	});
 
@@ -551,7 +551,7 @@ module.exports = function (RED) {
 	RED.nodes.registerType(ST_MY_DEVICE, installedDeviceConfigNode, {
 		credentials: {
 			stAccessToken: {
-				type: 'text',
+				type: 'password',
 				required: true
 			}
 		}
