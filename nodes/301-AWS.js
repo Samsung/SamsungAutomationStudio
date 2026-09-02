@@ -18,6 +18,12 @@ module.exports = function(RED) {
 	var AWS = require("aws-sdk");
 	var mustache = require("mustache");
 	const AWSClients = require('./lib/AWSClients.js');
+	const { ProxyAgent } = require('proxy-agent');
+	const { NodeHttpHandler } = require('@smithy/node-http-handler');
+
+	function buildProxyAgent(proxyUrl) {
+		return new ProxyAgent({ getProxyForUrl: () => proxyUrl });
+	}
 
 	function NodeContext(msg, nodeContext,parent) {
 		this.msgContext = new mustache.Context(msg,parent);
@@ -84,10 +90,9 @@ module.exports = function(RED) {
 			node.error("failed: Invalid AWS credentials");
 			return;
 		}
-		if (node.config.proxyRequired){
-			var proxy = require('proxy-agent');
+		if (node.config.proxyRequired && node.config.proxy){
 			AWS.config.update({
-				httpOptions: { agent: new proxy(node.config.proxy) }
+				httpOptions: { agent: buildProxyAgent(node.config.proxy) }
 			});
 		}
 		node.on("input", function(msg) {
@@ -155,11 +160,10 @@ module.exports = function(RED) {
 			node.error("failed: Invalid AWS credentials");
 			return;
 		}
-		if (node.config.proxyRequired){
-			var proxy = require('proxy-agent');
-			AWS.config.update({
-				httpOptions: { agent: new proxy(node.config.proxy) }
-			});
+		let requestHandler;
+		if (node.config.proxyRequired && node.config.proxy){
+			const agent = buildProxyAgent(node.config.proxy);
+			requestHandler = new NodeHttpHandler({ httpAgent: agent, httpsAgent: agent });
 		}
 		node.on("input", function(msg) {
 			try {
@@ -171,6 +175,9 @@ module.exports = function(RED) {
 					},
 					region: node.config.region,
 				};
+				if (requestHandler) {
+					clientConfig.requestHandler = requestHandler;
+				}
 
 				const client = new Client(clientConfig);
 				const CommandClass = AWSClients.getCommand(node.classes, node.methods);
