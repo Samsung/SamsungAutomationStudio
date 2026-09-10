@@ -1185,21 +1185,35 @@
                     const locationEl = document.querySelector('.md_list__location[data-location-id="' + location.locationId + '"]') || document.createElement('div');
                     Object.assign(locationEl.dataset, { locationId: location.locationId, name: location.name });
                     locationEl.className = `md_list__item md_list__location ${location.name == undefined ? 'md_list__item--unknown' : ''}`;
-                    locationEl.innerHTML = `<input type="checkbox"> ${location.name} <i class="fa fa-angle-down"></i>`;
+                    const locationCb = document.createElement('input');
+                    locationCb.type = 'checkbox';
+                    const locationIcon = document.createElement('i');
+                    locationIcon.className = 'fa fa-angle-down';
+                    locationEl.replaceChildren(locationCb, ` ${location.name} `, locationIcon);
                     return locationEl;
                 }
                 function createRoomEl(room) {
                     const roomEl = document.querySelector(`.md_list__room[data-location-id="${room.locationId}"][data-room-id="${room.roomId}"]`) || document.createElement('div');
                     Object.assign(roomEl.dataset, { locationId: room.locationId, roomId: room.roomId, name: room.name });
                     roomEl.className = `md_list__item md_list__room ${room.name == undefined ? 'md_list__item--unknown' : ''}`;
-                    roomEl.innerHTML = `<input type="checkbox"> ${room.name} <i class="fa fa-angle-down"></i>`;
+                    const roomCb = document.createElement('input');
+                    roomCb.type = 'checkbox';
+                    const roomIcon = document.createElement('i');
+                    roomIcon.className = 'fa fa-angle-down';
+                    roomEl.replaceChildren(roomCb, ` ${room.name} `, roomIcon);
                     return roomEl;
                 }
                 function createDeviceEl(device) {
                     const deviceEl = document.createElement('div');
                     Object.assign(deviceEl.dataset, { locationId: device.locationId, roomId: device.roomId, deviceId: device.deviceId, name: device.name });
                     deviceEl.className = 'md_list__item md_list__device md_list__item--close md_list__item--show';
-                    deviceEl.innerHTML = `<input type="checkbox" class="md_list__device__check" data-device-id="${device.deviceId}"> ${device.name} <i class="fa fa-angle-down"></i>`;
+                    const deviceCb = document.createElement('input');
+                    deviceCb.type = 'checkbox';
+                    deviceCb.className = 'md_list__device__check';
+                    deviceCb.dataset.deviceId = device.deviceId;
+                    const deviceIcon = document.createElement('i');
+                    deviceIcon.className = 'fa fa-angle-down';
+                    deviceEl.replaceChildren(deviceCb, ` ${device.name} `, deviceIcon);
 
                     device.components.forEach(cmp => {
                         const cmpEl = document.createElement('div');
